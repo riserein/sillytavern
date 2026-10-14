@@ -36,7 +36,7 @@ test.beforeEach(async ({ page }) => {
     await page.waitForFunction(() => !document.getElementById('preloader'));
     await page.unroute('**/api/settings/get');
     await page.locator('#stm-launcher').click();
-    await expect(page.getByRole('heading', { name: '酒馆音乐播放器' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: '音乐播放器', exact: true })).toBeVisible();
 });
 
 test('SillyTavern loads the extension and the empty player is usable', async ({ page }) => {
@@ -169,4 +169,132 @@ test('filenames are rendered as text, and the player fits a small screen', async
     expect(bounds.y).toBeGreaterThanOrEqual(0);
     await page.locator('#stm-player').evaluate(panel => { panel.scrollTop = panel.scrollHeight; });
     await expect(page.locator('.stm-footer')).toBeInViewport();
+});
+
+async function dragTo(page, element, target) {
+    const bounds = await element.boundingBox();
+    if (!bounds) throw new Error('Missing drag handle');
+    await page.mouse.move(bounds.x + 12, bounds.y + 12);
+    await page.mouse.down();
+    await page.mouse.move(target.x + 12, target.y + 12, { steps: 8 });
+    await page.mouse.up();
+}
+
+test('the launcher and window drag independently, preserve their positions and do not toggle on drag', async ({ page }) => {
+    await expect(page.locator('#stm-player h2')).toHaveCount(0);
+    await expect(page.locator('#stm-player')).not.toContainText('酒馆音乐播放器');
+    await page.getByRole('button', { name: '关闭播放器', exact: true }).click();
+    await dragTo(page, page.locator('#stm-launcher'), { x: 180, y: 160 });
+    let launcher = await page.locator('#stm-launcher').boundingBox();
+    expect(launcher.x).toBeCloseTo(180, 0);
+    expect(launcher.y).toBeCloseTo(160, 0);
+    await expect(page.locator('#stm-player')).toBeHidden();
+    await page.locator('#stm-launcher').click();
+    const header = await page.locator('.stm-header').boundingBox();
+    const original = await page.locator('#stm-player').boundingBox();
+    const saved = page.waitForResponse(response => response.url().endsWith('/api/settings/save') && response.ok());
+    await dragTo(page, page.locator('.stm-header'), { x: 350 + header.x - original.x, y: 40 + header.y - original.y });
+    await saved;
+    const panel = await page.locator('#stm-player').boundingBox();
+    expect(panel.x).toBeCloseTo(350, 0);
+    expect(panel.y).toBeCloseTo(40, 0);
+    launcher = await page.locator('#stm-launcher').boundingBox();
+    expect(launcher.x).toBeCloseTo(180, 0);
+    await page.reload();
+    await expect(page.locator('#stm-launcher')).toBeVisible();
+    await page.waitForFunction(() => !document.getElementById('preloader'));
+    launcher = await page.locator('#stm-launcher').boundingBox();
+    expect(launcher.x).toBeCloseTo(180, 0);
+    expect(launcher.y).toBeCloseTo(160, 0);
+    await page.locator('#stm-launcher').click();
+    const restored = await page.locator('#stm-player').boundingBox();
+    expect(restored.x).toBeCloseTo(350, 0);
+    expect(restored.y).toBeCloseTo(40, 0);
+});
+
+test('dragging is bounded, a smaller viewport remains usable, and positions can be reset', async ({ page }) => {
+    await page.getByRole('button', { name: '关闭播放器', exact: true }).click();
+    await dragTo(page, page.locator('#stm-launcher'), { x: -50, y: -50 });
+    let launcher = await page.locator('#stm-launcher').boundingBox();
+    expect(launcher.x).toBeCloseTo(8, 0);
+    expect(launcher.y).toBeCloseTo(8, 0);
+    await dragTo(page, page.locator('#stm-launcher'), { x: 1150, y: 620 });
+    await page.locator('#stm-launcher').click();
+    await dragTo(page, page.locator('.stm-header'), { x: 1050, y: 600 });
+    await page.setViewportSize({ width: 375, height: 667 });
+    await expect.poll(async () => {
+        const panel = await page.locator('#stm-player').boundingBox();
+        const ball = await page.locator('#stm-launcher').boundingBox();
+        return [panel, ball].every(box => box.x >= 7 && box.y >= 7 && box.x + box.width <= 368 && box.y + box.height <= 660);
+    }).toBe(true);
+    await page.getByRole('button', { name: '◐ 配色', exact: true }).click();
+    await page.getByRole('button', { name: '重置位置', exact: true }).click();
+    launcher = await page.locator('#stm-launcher').boundingBox();
+    expect(launcher.x).toBeCloseTo(317, 0);
+    expect(launcher.y).toBeCloseTo(535, 0);
+    await expect.poll(() => page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.positions)).toEqual({ launcher: null, panel: null });
+});
+
+test('all six palettes and both materials apply to both controls without interrupting music, and persist', async ({ page }) => {
+    await importSongs(page, ['配色时继续播放']);
+    await page.getByRole('button', { name: '播放：配色时继续播放', exact: true }).click();
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
+    await page.getByRole('button', { name: '◐ 配色', exact: true }).click();
+    const colors = new Set();
+    for (const theme of ['amber', 'ocean', 'forest', 'rose', 'lavender', 'pearl']) {
+        await page.locator(`[data-theme-choice="${theme}"]`).click();
+        await expect(page.locator('#stm-player')).toHaveAttribute('data-theme', theme);
+        await expect(page.locator('#stm-launcher')).toHaveAttribute('data-theme', theme);
+        await expect(page.locator(`[data-theme-choice="${theme}"]`)).toHaveAttribute('aria-pressed', 'true');
+        colors.add(await page.locator('#stm-player').evaluate(panel => getComputedStyle(panel).color));
+    }
+    expect(colors.size).toBe(6);
+    const glass = await page.locator('#stm-player').evaluate(panel => getComputedStyle(panel).backdropFilter);
+    await page.getByRole('button', { name: '雾面', exact: true }).click();
+    await expect(page.locator('#stm-launcher')).toHaveAttribute('data-surface', 'matte');
+    const matte = await page.locator('#stm-player').evaluate(panel => getComputedStyle(panel).backdropFilter);
+    expect(glass).not.toBe(matte);
+    expect(glass).toContain('blur(24px)');
+    expect(matte).toContain('blur(12px)');
+    const saved = page.waitForResponse(response => response.url().endsWith('/api/settings/save') && response.ok());
+    await page.getByRole('button', { name: '配色：月紫', exact: true }).click();
+    await saved;
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
+    await page.reload();
+    await expect(page.locator('#stm-launcher')).toHaveAttribute('data-theme', 'lavender');
+    await expect(page.locator('#stm-launcher')).toHaveAttribute('data-surface', 'matte');
+    await page.waitForFunction(() => !document.getElementById('preloader'));
+    await page.locator('#stm-launcher').click();
+    await expect(page.locator('#stm-player')).toHaveAttribute('data-theme', 'lavender');
+    await expect(page.locator('#stm-player')).toHaveAttribute('data-surface', 'matte');
+});
+
+test.describe('touch dragging', () => {
+    test.use({ hasTouch: true });
+    test('touch moves the ball and header, and a cancelled gesture does not break the next click', async ({ page }) => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await page.getByRole('button', { name: '关闭播放器', exact: true }).click();
+        const client = await page.context().newCDPSession(page);
+        const original = await page.locator('#stm-launcher').boundingBox();
+        await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: original.x + 23, y: original.y + 23, id: 1 }] });
+        await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: 200, y: 230, id: 1 }] });
+        await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        const ball = await page.locator('#stm-launcher').boundingBox();
+        expect(ball.x).toBeCloseTo(177, 0);
+        expect(ball.y).toBeCloseTo(207, 0);
+        await expect(page.locator('#stm-player')).toBeHidden();
+        await page.locator('#stm-launcher').click();
+        const before = await page.locator('#stm-player').boundingBox();
+        const header = await page.locator('.stm-header').boundingBox();
+        await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: header.x + 15, y: header.y + 15, id: 2 }] });
+        await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: header.x + 15, y: header.y + 65, id: 2 }] });
+        await client.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
+        const after = await page.locator('#stm-player').boundingBox();
+        expect(after.y).toBeGreaterThan(before.y);
+        await page.getByRole('button', { name: '关闭播放器', exact: true }).click();
+        await expect(page.locator('#stm-player')).toBeHidden();
+        await page.locator('#stm-launcher').click();
+        await expect(page.locator('#stm-player')).toBeVisible();
+        await client.detach();
+    });
 });

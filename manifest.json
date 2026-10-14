@@ -1,12 +1,12 @@
 {
-    "display_name": "酒馆音乐播放器",
+    "display_name": "音乐播放器",
     "loading_order": 20,
     "requires": [],
     "optional": [],
     "js": "index.js",
     "css": "style.css",
     "author": "riserein",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "homePage": "https://github.com/riserein/sillytavern",
     "auto_update": false
 }

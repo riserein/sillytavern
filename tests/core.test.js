@@ -5,11 +5,28 @@ import { MAX_TRACKS, MAX_FILE_BYTES, createTrackId, normalizeSettings, normalize
 const tracks = ['a', 'b', 'c'].map(id => ({ id, kind: 'local', title: id }));
 
 test('new playlists have safe playback defaults', () => {
-    assert.deepEqual(normalizeSettings(), { tracks: [], volume: 0.6, mode: 'list', currentId: null });
+    assert.deepEqual(normalizeSettings(), {
+        tracks: [], volume: 0.6, mode: 'list', currentId: null,
+        theme: 'amber', surface: 'glass', positions: { launcher: null, panel: null },
+    });
     assert.equal(normalizeSettings(null).volume, 0.6);
     assert.equal(normalizeSettings({ volume: NaN, mode: 'bad', currentId: 'missing' }).mode, 'list');
     assert.equal(normalizeSettings({ volume: 50 }).volume, 1);
     assert.equal(normalizeSettings({ volume: -2 }).volume, 0);
+});
+
+test('old settings migrate without losing music and invalid appearance/positions recover', () => {
+    const old = normalizeSettings({ tracks, currentId: 'b', volume: 0.3 });
+    assert.equal(old.theme, 'amber');
+    assert.equal(old.surface, 'glass');
+    assert.deepEqual(old.tracks, tracks);
+    assert.equal(old.currentId, 'b');
+    const settings = normalizeSettings({ theme: 'unknown', surface: 'unknown', positions: { launcher: { x: -2, y: 5 }, panel: { x: NaN, y: 0.5 } } });
+    assert.equal(settings.theme, 'amber');
+    assert.equal(settings.surface, 'glass');
+    assert.deepEqual(settings.positions, { launcher: { x: 0, y: 1 }, panel: null });
+    assert.equal(normalizeSettings({ theme: 'pearl', surface: 'matte' }).theme, 'pearl');
+    assert.equal(normalizeSettings({ theme: 'pearl', surface: 'matte' }).surface, 'matte');
 });
 
 test('restoration removes invalid URLs and duplicate IDs, retaining valid local files', () => {

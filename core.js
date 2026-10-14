@@ -1,6 +1,13 @@
 export const MAX_TRACKS = 200;
 export const MAX_FILE_BYTES = 100 * 1024 * 1024;
 export const PLAY_MODES = ['sequence', 'list', 'single', 'shuffle'];
+export const THEMES = ['amber', 'ocean', 'forest', 'rose', 'lavender', 'pearl'];
+export const SURFACES = ['matte', 'glass'];
+
+function normalizePosition(position) {
+    if (!Number.isFinite(position?.x) || !Number.isFinite(position?.y)) return null;
+    return { x: Math.min(1, Math.max(0, position.x)), y: Math.min(1, Math.max(0, position.y)) };
+}
 
 /** randomUUID is unavailable on some HTTP LAN installations; getRandomValues is not. */
 export function createTrackId(source = globalThis.crypto) {
@@ -59,6 +66,12 @@ export function normalizeSettings(raw = {}) {
         volume: Math.min(1, Math.max(0, volume)),
         mode: PLAY_MODES.includes(raw.mode) ? raw.mode : 'list',
         currentId: tracks.some(t => t.id === raw.currentId) ? raw.currentId : (tracks[0]?.id ?? null),
+        theme: THEMES.includes(raw.theme) ? raw.theme : 'amber',
+        surface: SURFACES.includes(raw.surface) ? raw.surface : 'glass',
+        positions: {
+            launcher: normalizePosition(raw.positions?.launcher),
+            panel: normalizePosition(raw.positions?.panel),
+        },
     };
 }
 

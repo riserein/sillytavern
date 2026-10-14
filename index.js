@@ -1,5 +1,6 @@
 import { MAX_TRACKS, createTrackId, normalizeSettings, normalizeUrl, titleFromUrl, nextTrackId, formatTime, validateAudioFile } from './core.js';
 import { LocalMusicStore } from './local-store.js';
+import { makeDraggable } from './floating.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
 
@@ -7,7 +8,7 @@ function initialize() {
     if (document.getElementById('stm-player')) return;
     const context = globalThis.SillyTavern?.getContext();
     if (!context?.extensionSettings || !context.saveSettingsDebounced) {
-        console.error('[酒馆音乐播放器] 无法获取酒馆扩展接口，请更新 SillyTavern。');
+        console.error('[音乐播放器] 无法获取酒馆扩展接口，请更新 SillyTavern。');
         return;
     }
 
@@ -22,7 +23,7 @@ function initialize() {
     launcher.type = 'button';
     launcher.className = 'stm-launcher';
     launcher.textContent = '♫';
-    launcher.title = '打开音乐播放器';
+    launcher.title = '点击打开音乐播放器，拖动可移动';
     launcher.setAttribute('aria-label', '打开音乐播放器');
     launcher.setAttribute('aria-controls', 'stm-player');
     launcher.setAttribute('aria-expanded', 'false');
@@ -32,12 +33,23 @@ function initialize() {
     panel.className = 'stm-player';
     panel.hidden = true;
     panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-labelledby', 'stm-heading');
+    panel.setAttribute('aria-label', '音乐播放器');
     panel.innerHTML = `
-        <header class="stm-header">
-            <div><span class="stm-eyebrow">TAVERN MUSIC</span><h2 id="stm-heading">酒馆音乐播放器</h2></div>
-            <button type="button" class="stm-icon" data-action="close" aria-label="关闭播放器" title="关闭面板，音乐继续播放">×</button>
+        <header class="stm-header" tabindex="0" aria-label="拖动播放器窗口，可用方向键移动" title="拖动这里移动窗口">
+            <span class="stm-grip" aria-hidden="true">⠿</span>
+            <div class="stm-header-actions">
+                <button type="button" class="stm-secondary" data-action="appearance" aria-expanded="false" aria-controls="stm-appearance">◐ 配色</button>
+                <button type="button" class="stm-icon" data-action="close" aria-label="关闭播放器" title="关闭面板，音乐继续播放">×</button>
+            </div>
         </header>
+        <div id="stm-appearance" class="stm-appearance" hidden>
+            <div class="stm-theme-grid" role="group" aria-label="选择配色"></div>
+            <div class="stm-surface-row" role="group" aria-label="选择质感">
+                <button type="button" class="stm-secondary" data-surface-choice="matte">雾面</button>
+                <button type="button" class="stm-secondary" data-surface-choice="glass">毛玻璃</button>
+                <button type="button" class="stm-secondary stm-reset-position" data-action="reset-position">重置位置</button>
+            </div>
+        </div>
         <div class="stm-now">
             <span class="stm-art" aria-hidden="true">♫</span>
             <div class="stm-now-info"><strong data-role="title">还没有音乐</strong><span data-role="source">导入喜欢的音乐，为故事配上背景</span></div>
@@ -94,6 +106,60 @@ function initialize() {
         context.saveSettingsDebounced();
     }
 
+    const launcherDrag = makeDraggable(launcher, launcher, {
+        getPosition: () => settings.positions.launcher,
+        onPositionChange: position => { settings.positions.launcher = position; save(); },
+    });
+    const panelDrag = makeDraggable(panel, query('.stm-header'), {
+        getPosition: () => settings.positions.panel,
+        onPositionChange: position => { settings.positions.panel = position; save(); },
+    });
+    const themes = { amber: '暖砂', ocean: '雾蓝', forest: '松绿', rose: '烟粉', lavender: '月紫', pearl: '珍珠白' };
+    for (const [theme, name] of Object.entries(themes)) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'stm-theme-choice';
+        button.dataset.theme = theme;
+        button.dataset.themeChoice = theme;
+        button.setAttribute('aria-label', `配色：${name}`);
+        const swatch = document.createElement('span');
+        swatch.className = 'stm-swatch';
+        swatch.setAttribute('aria-hidden', 'true');
+        const label = document.createElement('span');
+        label.textContent = name;
+        button.append(swatch, label);
+        button.addEventListener('click', () => { settings.theme = theme; applyAppearance(); save(); });
+        query('.stm-theme-grid').append(button);
+    }
+    function applyAppearance() {
+        for (const element of [panel, launcher]) {
+            element.dataset.theme = settings.theme;
+            element.dataset.surface = settings.surface;
+        }
+        for (const button of panel.querySelectorAll('[data-theme-choice]')) {
+            button.setAttribute('aria-pressed', String(button.dataset.themeChoice === settings.theme));
+        }
+        for (const button of panel.querySelectorAll('[data-surface-choice]')) {
+            button.setAttribute('aria-pressed', String(button.dataset.surfaceChoice === settings.surface));
+        }
+    }
+    query('[data-action="appearance"]').addEventListener('click', event => {
+        const options = query('#stm-appearance');
+        options.hidden = !options.hidden;
+        event.currentTarget.setAttribute('aria-expanded', String(!options.hidden));
+        panelDrag.refresh();
+    });
+    for (const button of panel.querySelectorAll('[data-surface-choice]')) {
+        button.addEventListener('click', () => { settings.surface = button.dataset.surfaceChoice; applyAppearance(); save(); });
+    }
+    query('[data-action="reset-position"]').addEventListener('click', () => {
+        settings.positions = { launcher: null, panel: null };
+        launcherDrag.reset();
+        panelDrag.reset();
+        save();
+    });
+    applyAppearance();
+
     function showStatus(message = '', error = false) {
         status.textContent = message;
         status.classList.toggle('stm-error', error);
@@ -102,7 +168,7 @@ function initialize() {
     function setOpen(open) {
         panel.hidden = !open;
         launcher.setAttribute('aria-expanded', String(open));
-        if (open) query('[data-action="close"]').focus();
+        if (open) { panelDrag.refresh(); query('[data-action="close"]').focus(); }
         else if (panel.contains(document.activeElement)) launcher.focus();
     }
 
@@ -154,7 +220,7 @@ function initialize() {
         const playing = !audio.paused && !audio.ended;
         playButton.textContent = playing ? 'Ⅱ 暂停' : '▶ 播放';
         launcher.classList.toggle('stm-playing', playing);
-        launcher.title = playing ? '正在播放音乐 · 打开播放器' : '打开音乐播放器';
+        launcher.title = playing ? '正在播放音乐 · 点击打开，拖动可移动' : '点击打开音乐播放器，拖动可移动';
         launcher.setAttribute('aria-label', launcher.title);
     }
 
@@ -338,7 +404,7 @@ function initialize() {
         const button = document.createElement('button');
         button.className = 'menu_button';
         button.type = 'button';
-        button.textContent = '♫ 打开酒馆音乐播放器';
+        button.textContent = '♫ 打开音乐播放器';
         button.addEventListener('click', () => setOpen(true));
         entry.append(button);
         settingsArea.append(entry);
