@@ -10,7 +10,7 @@
 2. 粘贴以下仓库地址并安装：
 
    ```text
-   https://github.com/riserein/sillytavern
+   https://github.com/riserein/sillytavern.git
    ```
 
 3. 刷新酒馆页面，点击右下角的 **♫** 按钮。也可以在扩展设置中点击“打开酒馆音乐播放器”。
