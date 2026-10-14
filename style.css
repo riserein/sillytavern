@@ -62,8 +62,26 @@
 .stm-volume { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
 .stm-volume output { flex-shrink: 0; width: 38px; color: var(--stm-muted); font-size: 11px; text-align: right; }
 .stm-divider { border-top: 1px solid var(--stm-line); margin: 16px 0; }
+.stm-library-nav, .stm-import-target, .stm-playlist-actions { display: flex; align-items: center; gap: 8px; }
+.stm-player .stm-library-nav select, .stm-player .stm-import-target select { flex: 1; width: 100%; min-width: 0; }
+.stm-player .stm-role-status { margin: 5px 0 12px; font-size: 10px; color: var(--stm-muted); overflow-wrap: anywhere; }
+.stm-import-target { margin: 12px 0; font-size: 11px; color: var(--stm-muted); }
+.stm-import-target label { flex-shrink: 0; }
+.stm-playlist-manager { padding: 10px; margin: 8px 0; border: 1px solid var(--stm-line); border-radius: 12px; background: var(--stm-subtle); }
+.stm-inline-form { display: flex; gap: 6px; margin-bottom: 8px; }
+.stm-player .stm-inline-form input, .stm-player .stm-inline-form select { flex: 1; width: 100%; min-width: 0; padding: 6px 8px; border: 1px solid var(--stm-line); border-radius: 8px; color: inherit; background: var(--stm-solid); font-size: 12px; }
+.stm-playlist-actions { justify-content: space-between; margin-bottom: 8px; }
+.stm-player .stm-danger { color: var(--stm-error); }
+.stm-role-picker { max-height: 150px; overflow-y: auto; margin: 8px 0; font-size: 11px; }
+.stm-role-picker label { display: flex; align-items: center; gap: 8px; padding: 5px 0; cursor: pointer; }
+.stm-role-picker label > span { min-width: 0; overflow-wrap: anywhere; }
+.stm-role-picker input { flex-shrink: 0; accent-color: var(--stm-accent); }
+.stm-role-picker small { display: block; color: var(--stm-muted); font-size: 10px; }
+.stm-membership { padding: 10px; margin-top: 10px; border: 1px solid var(--stm-line); border-radius: 10px; background: var(--stm-subtle); }
+.stm-membership .stm-inline-form { margin: 6px 0 0; }
 .stm-list-heading h3 { font-size: 13px; font-weight: 500; }
 .stm-list-heading h3 span { color: var(--stm-muted); margin-left: 4px; }
+.stm-list-heading [data-role="collection-title"] { color: inherit; margin-left: 0; overflow-wrap: anywhere; }
 .stm-player .stm-secondary { background: var(--stm-subtle); color: inherit; border: 1px solid var(--stm-line); border-radius: 8px; padding: 5px 9px; font-size: 12px; white-space: nowrap; min-height: 32px; }
 .stm-player .stm-secondary:hover { background: var(--stm-active); border-color: var(--stm-accent); }
 .stm-url-form { display: flex; gap: 6px; margin-top: 12px; }

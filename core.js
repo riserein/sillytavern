@@ -1,4 +1,5 @@
 export const MAX_TRACKS = 200;
+export const MAX_PLAYLISTS = 50;
 export const MAX_FILE_BYTES = 100 * 1024 * 1024;
 export const PLAY_MODES = ['sequence', 'list', 'single', 'shuffle'];
 export const THEMES = ['amber', 'ocean', 'forest', 'rose', 'lavender', 'pearl'];
@@ -61,11 +62,36 @@ export function normalizeSettings(raw = {}) {
         if (tracks.length === MAX_TRACKS) break;
     }
     const volume = typeof raw.volume === 'number' && Number.isFinite(raw.volume) ? raw.volume : 0.6;
+    const playlistIds = new Set();
+    const boundCharacters = new Set();
+    const playlists = [];
+    for (const item of Array.isArray(raw.playlists) ? raw.playlists : []) {
+        if (!item || typeof item.id !== 'string' || !item.id || playlistIds.has(item.id)) continue;
+        playlistIds.add(item.id);
+        const trackIds = [...new Set(Array.isArray(item.trackIds) ? item.trackIds : [])].filter(id => ids.has(id));
+        const characterAvatars = [...new Set(Array.isArray(item.characterAvatars) ? item.characterAvatars : [])]
+            .filter(avatar => typeof avatar === 'string' && avatar && !boundCharacters.has(avatar));
+        characterAvatars.forEach(avatar => boundCharacters.add(avatar));
+        playlists.push({
+            id: item.id,
+            name: String(item.name || '未命名歌单').trim().slice(0, 80) || '未命名歌单',
+            trackIds,
+            characterAvatars,
+            lastTrackId: trackIds.includes(item.lastTrackId) ? item.lastTrackId : (trackIds[0] ?? null),
+        });
+        if (playlists.length === MAX_PLAYLISTS) break;
+    }
+    const activePlaylist = playlists.find(playlist => playlist.id === raw.activePlaylistId);
+    const activeTracks = activePlaylist ? tracks.filter(track => activePlaylist.trackIds.includes(track.id)) : tracks;
+    const currentId = activeTracks.some(track => track.id === raw.currentId) ? raw.currentId
+        : (activePlaylist?.lastTrackId ?? activeTracks[0]?.id ?? null);
     return {
         tracks,
+        playlists,
+        activePlaylistId: activePlaylist?.id ?? null,
         volume: Math.min(1, Math.max(0, volume)),
         mode: PLAY_MODES.includes(raw.mode) ? raw.mode : 'list',
-        currentId: tracks.some(t => t.id === raw.currentId) ? raw.currentId : (tracks[0]?.id ?? null),
+        currentId,
         theme: THEMES.includes(raw.theme) ? raw.theme : 'amber',
         surface: SURFACES.includes(raw.surface) ? raw.surface : 'glass',
         positions: {
@@ -73,6 +99,79 @@ export function normalizeSettings(raw = {}) {
             panel: normalizePosition(raw.positions?.panel),
         },
     };
+}
+
+export function getQueue(settings, playlistId = settings.activePlaylistId) {
+    const playlist = settings.playlists.find(item => item.id === playlistId);
+    if (!playlist) return settings.tracks;
+    const tracksById = new Map(settings.tracks.map(track => [track.id, track]));
+    return playlist.trackIds.map(id => tracksById.get(id)).filter(Boolean);
+}
+
+export function createPlaylist(settings, name, id = createTrackId()) {
+    name = String(name).trim();
+    if (!name || name.length > 80) throw new Error('歌单名称需要 1 至 80 个字符。');
+    if (name === '总曲库' || settings.playlists.some(item => item.name === name)) throw new Error('这个歌单名称已被使用。');
+    if (settings.playlists.length >= MAX_PLAYLISTS) throw new Error(`最多可以创建 ${MAX_PLAYLISTS} 个歌单。`);
+    const playlist = { id, name, trackIds: [], characterAvatars: [], lastTrackId: null };
+    settings.playlists.push(playlist);
+    return playlist;
+}
+
+export function addTrackToPlaylist(settings, playlistId, trackId) {
+    const playlist = settings.playlists.find(item => item.id === playlistId);
+    if (!playlist || !settings.tracks.some(track => track.id === trackId)) return false;
+    if (playlist.trackIds.includes(trackId)) return false;
+    playlist.trackIds.push(trackId);
+    playlist.lastTrackId ??= trackId;
+    return true;
+}
+
+export function renamePlaylist(settings, playlistId, name) {
+    const playlist = settings.playlists.find(item => item.id === playlistId);
+    if (!playlist) return;
+    name = String(name).trim();
+    if (!name || name.length > 80) throw new Error('歌单名称需要 1 至 80 个字符。');
+    if (name === '总曲库' || settings.playlists.some(item => item.id !== playlistId && item.name === name)) throw new Error('这个歌单名称已被使用。');
+    playlist.name = name;
+}
+
+export function removeTrackFromPlaylist(settings, playlistId, trackId) {
+    const playlist = settings.playlists.find(item => item.id === playlistId);
+    if (!playlist) return;
+    playlist.trackIds = playlist.trackIds.filter(id => id !== trackId);
+    if (playlist.lastTrackId === trackId) playlist.lastTrackId = playlist.trackIds[0] ?? null;
+}
+
+export function deleteTrackFromLibrary(settings, trackId) {
+    settings.tracks = settings.tracks.filter(track => track.id !== trackId);
+    for (const playlist of settings.playlists) removeTrackFromPlaylist(settings, playlist.id, trackId);
+    if (settings.currentId === trackId) settings.currentId = null;
+}
+
+export function deletePlaylist(settings, playlistId) {
+    settings.playlists = settings.playlists.filter(playlist => playlist.id !== playlistId);
+    if (settings.activePlaylistId === playlistId) settings.activePlaylistId = null;
+}
+
+/** A card has one automatic playlist; a playlist may be shared by any number of cards. */
+export function bindPlaylistCharacters(settings, playlistId, avatars) {
+    const playlist = settings.playlists.find(item => item.id === playlistId);
+    if (!playlist) return;
+    const selected = [...new Set(avatars)].filter(avatar => typeof avatar === 'string' && avatar);
+    for (const item of settings.playlists) {
+        item.characterAvatars = item.id === playlistId ? selected : item.characterAvatars.filter(avatar => !selected.includes(avatar));
+    }
+}
+
+export function currentCharacterAvatar(context) {
+    if ((context.groupId !== undefined && context.groupId !== null && context.groupId !== '') || context.characterId === undefined || context.characterId === null) return null;
+    const avatar = context.characters?.[context.characterId]?.avatar;
+    return typeof avatar === 'string' && avatar && avatar !== 'none' ? avatar : null;
+}
+
+export function playlistForCharacter(settings, avatar) {
+    return avatar ? settings.playlists.find(playlist => playlist.characterAvatars.includes(avatar)) ?? null : null;
 }
 
 /** Single repeat applies to automatic completion; manual navigation still changes songs. */
