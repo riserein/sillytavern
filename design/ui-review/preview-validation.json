@@ -1,0 +1,45 @@
+{
+  "status": "passed",
+  "date": "2026-10-15T13:24:39.951Z",
+  "sourceRevision": "99fb474",
+  "results": [
+    {
+      "direction": "a",
+      "errors": [],
+      "mobileBounds": {
+        "x": 12,
+        "y": 165,
+        "width": 351,
+        "height": 640
+      },
+      "nativePlayback": true,
+      "pageSwitchPreservesAudio": true,
+      "roleSwitchPauses": true,
+      "homePauses": true,
+      "librarySearch": true,
+      "sourceFilter": true,
+      "membershipFromDetails": true,
+      "vinylPauseKeepsAngle": true,
+      "reducedMotion": true
+    },
+    {
+      "direction": "b",
+      "errors": [],
+      "mobileBounds": {
+        "x": 12,
+        "y": 165,
+        "width": 351,
+        "height": 640
+      },
+      "nativePlayback": true,
+      "pageSwitchPreservesAudio": true,
+      "roleSwitchPauses": true,
+      "homePauses": true,
+      "librarySearch": true,
+      "sourceFilter": true,
+      "membershipFromDetails": true,
+      "vinylPauseKeepsAngle": true,
+      "reducedMotion": true
+    }
+  ]
+}

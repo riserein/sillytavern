@@ -1,0 +1,14 @@
+{
+  "version": "1.9.0",
+  "navFont": "10px",
+  "rowButtons": 5,
+  "rowPlaySize": {
+    "width": 29,
+    "height": 30
+  },
+  "headerCloseSize": {
+    "width": 30,
+    "height": 30
+  },
+  "containerQueriesInOriginal": false
+}
