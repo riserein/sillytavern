@@ -345,3 +345,9 @@
 
 .stm-share-tracks { max-height: 200px; overflow-y: auto; overscroll-behavior: contain; }
 .stm-online-result.stm-active strong { color: var(--stm-accent); }
+.stm-official-player iframe, [data-online="official-list-player"] iframe { display: block; border: 0; border-radius: 12px; min-height: 166px; background: var(--stm-subtle); }
+.stm-import-selection > div { display: flex; gap: 4px; flex-wrap: wrap; }
+#stm-player .stm-share-tracks .stm-online-result { display: grid; grid-template-columns: auto 38px minmax(0, 1fr); }
+#stm-player .stm-share-tracks .stm-online-result:not(:has(input)) { grid-template-columns: 38px minmax(0, 1fr); }
+#stm-player .stm-online-results .stm-online-result { flex-wrap: wrap; }
+#stm-player .stm-probe { font-size: .8em; }

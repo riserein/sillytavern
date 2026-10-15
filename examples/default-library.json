@@ -1,0 +1,20 @@
+{
+    "title": "默认曲库",
+    "sources": [
+        {
+            "type": "audio",
+            "id": "replace-with-stable-id",
+            "url": "https://your-domain.example/music/your-recording.mp3",
+            "title": "替换为歌名",
+            "artist": "替换为作者",
+            "sourceUrl": "https://your-domain.example/music/credits",
+            "permanent": false,
+            "authorized": false,
+            "license": {
+                "code": "替换为许可名称或作者授权说明",
+                "url": "https://your-domain.example/music/permission",
+                "attribution": "替换为作品名称、作者与授权署名"
+            }
+        }
+    ]
+}

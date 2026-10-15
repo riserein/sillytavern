@@ -15,7 +15,8 @@ export function createMusicRequest({ fetcher = globalThis.fetch, timeout = 12000
         if (signal?.aborted) throw new DOMException('请求已取消。', 'AbortError');
         if (cooldown.get(url.host) > time)
             throw new MusicRequestError('这个来源正在限流，请稍后再试。', 'RATE_LIMIT', cooldown.get(url.host));
-        if (cache.has(key) && cache.get(key).until > time) return structuredClone(cache.get(key).data);
+        if (cacheMs > 0 && cache.has(key) && cache.get(key).until > time) return structuredClone(cache.get(key).data);
+        if (cacheMs <= 0) cache.delete(key);
         const controller = new AbortController();
         const abort = () => controller.abort();
         signal?.addEventListener('abort', abort, { once: true });
@@ -37,6 +38,8 @@ export function createMusicRequest({ fetcher = globalThis.fetch, timeout = 12000
                 cooldown.set(url.host, until);
                 throw new MusicRequestError('这个来源请求次数已达上限，请稍后再试。', 'RATE_LIMIT', until);
             }
+            if (response.headers.get('cf-mitigated') === 'challenge')
+                throw new MusicRequestError('来源网站要求网页安全验证，播放器暂时无法读取；请稍后再试或换一个来源。', 'CHALLENGE');
             if ([401, 403].includes(response.status))
                 throw new MusicRequestError('此来源需要开发者接入或账号权限，当前无法使用。', 'AUTH');
             if (response.status === 404 || response.status === 410)

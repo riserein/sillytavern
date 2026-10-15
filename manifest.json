@@ -1,12 +1,12 @@
 {
-    "display_name": "音乐播放器",
+    "display_name": "\u97f3\u4e50\u64ad\u653e\u5668",
     "loading_order": 20,
     "requires": [],
     "optional": [],
     "js": "index.js",
     "css": "style.css",
     "author": "riserein",
-    "version": "1.8.0",
+    "version": "1.9.0",
     "homePage": "https://github.com/riserein/sillytavern",
     "auto_update": false
 }

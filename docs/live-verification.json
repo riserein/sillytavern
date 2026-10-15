@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-15T12:29:13.278Z",
+  "apiMocks": false,
+  "audioMocks": false,
+  "results": [
+    {
+      "source": "Openverse",
+      "search": false,
+      "playback": false,
+      "error": "无法连接音乐来源，请检查网络；该来源也可能不允许跨域访问。"
+    },
+    {
+      "source": "Audius",
+      "status": "未配置维护者公开 Key；正式适配器关闭"
+    },
+    {
+      "source": "Audius 匿名探测（非正式启用）",
+      "search": false,
+      "playback": false,
+      "error": "无法连接音乐来源，请检查网络；该来源也可能不允许跨域访问。"
+    },
+    {
+      "source": "soundcloud.com",
+      "metadata": false,
+      "error": "无法连接音乐来源，请检查网络；该来源也可能不允许跨域访问。"
+    },
+    {
+      "source": "open.spotify.com",
+      "metadata": false,
+      "error": "无法连接音乐来源，请检查网络；该来源也可能不允许跨域访问。"
+    }
+  ],
+  "browserErrors": [
+    "Unexpected token 'I', \"Internal S\"... is not valid JSON"
+  ],
+  "failedRequests": [
+    {
+      "host": "api.openverse.org",
+      "error": "net::ERR_CERT_AUTHORITY_INVALID"
+    },
+    {
+      "host": "api.audius.co",
+      "error": "net::ERR_CERT_AUTHORITY_INVALID"
+    },
+    {
+      "host": "soundcloud.com",
+      "error": "net::ERR_CERT_AUTHORITY_INVALID"
+    },
+    {
+      "host": "open.spotify.com",
+      "error": "net::ERR_CERT_AUTHORITY_INVALID"
+    }
+  ],
+  "fullPlaybackVerified": false
+}

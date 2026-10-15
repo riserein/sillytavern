@@ -1477,19 +1477,19 @@ test('online search plays real fixture audio, shows attribution, deduplicates sa
 
 test('sharing unsupported platform songs produces explicit external bookmarks while unsupported playlists never import',async({page})=>{
     await page.setViewportSize({width:375,height:667});await onlineMode(page,'分享链接');
-    await page.locator('#stm-share-text').fill('分享歌曲 https://open.spotify.com/track/ABC?si=test。');await page.locator('.stm-share-form button[type=submit]').click();
+    await page.locator('#stm-share-text').fill('分享歌曲 https://music.163.com/song?id=123。');await page.locator('.stm-share-form button[type=submit]').click();
     await expect(page.locator('[data-online="preview-warning"]')).toContainText('只能保存来源链接');
     await expect(page.locator('[data-online="preview-count"]')).toContainText('站内播放 0 首');
-    await page.locator('#stm-share-title').fill('我的 Spotify 收藏');await page.locator('[data-online-action=confirm]').click();
+    await page.locator('#stm-share-title').fill('我的网易云收藏');await page.locator('[data-online-action=confirm]').click();
     await expect(page.locator('.stm-track')).toHaveCount(1);
-    await playerPage(page,'曲库');await expect(page.locator('.stm-track .stm-external-source')).toHaveAttribute('href','https://open.spotify.com/track/ABC?si=test');
+    await playerPage(page,'曲库');await expect(page.locator('.stm-track .stm-external-source')).toHaveAttribute('href','https://music.163.com/song?id=123');
     await expect(page.locator('.stm-track .stm-row-play')).toHaveCount(0);
-    await page.getByRole('button',{name:'播放：我的 Spotify 收藏',exact:true}).click();
+    await page.getByRole('button',{name:'播放：我的网易云收藏',exact:true}).click();
     await expect(page.getByRole('dialog',{name:'歌曲详情',exact:true})).toBeVisible();
     await expect(page.locator('[data-role=platform-credit]')).toContainText('仅支持前往官方平台');
     await expect.poll(()=>page.locator('#stm-player audio').evaluate(audio=>audio.paused)).toBe(true);
     expect(await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player.playEvents.length)).toBe(0);
-    await onlineMode(page,'分享链接');await page.locator('#stm-share-text').fill('https://open.spotify.com/playlist/ABC');await page.locator('.stm-share-form button[type=submit]').click();
+    await onlineMode(page,'分享链接');await page.locator('#stm-share-text').fill('https://music.163.com/playlist?id=456');await page.locator('.stm-share-form button[type=submit]').click();
     await expect(page.locator('[data-online=status]')).toContainText('没有导入歌曲');await expect(page.locator('.stm-share-preview')).toBeHidden();
     expect(await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player.playlists.length)).toBe(0);
 });
@@ -1577,4 +1577,118 @@ test('conditional playlist adapter previews every page, refuses overflow and reu
     await page.locator('[data-online-action=confirm]').click();await expect(page.locator('[data-online=status]')).toContainText('新增 101 首');
     await page.locator('[data-online-action=confirm]').click();await expect(page.locator('[data-online=status]')).toContainText('新增 0 首');
     expect(await page.evaluate(()=>{const s=SillyTavern.getContext().extensionSettings.riserein_music_player;return {tracks:s.tracks.length,lists:s.playlists.length,last:s.tracks.at(-1).title,members:s.playlists[0].trackIds.length};})).toEqual({tracks:101,lists:1,last:'顺序 100',members:101});
+});
+
+test('official music embeds preserve metadata, pause native playback, stop on dismissal and never fabricate history', async ({ page }) => {
+    await page.route('**/platforms/config.js', route => route.fulfill({ contentType: 'text/javascript', body: 'export const PLATFORM_CONFIG={embeds:{spotify:true,soundcloud:true}};' }));
+    await page.reload(); await page.waitForFunction(() => !document.getElementById('preloader')); await page.locator('#stm-launcher').click();
+    await importSongs(page, ['原生音乐']); await playSong(page, '原生音乐');
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(.1);
+    await page.route('https://open.spotify.com/oembed**', route => route.fulfill({ json: { provider_name: 'Spotify', title: '官方测试曲目', thumbnail_url: 'https://example.test/art.jpg', html: '<script>window.bad=true</script>' }, headers: { 'access-control-allow-origin': '*' } }));
+    await page.route('https://open.spotify.com/embed/**', route => route.fulfill({ contentType: 'text/html', body: '<p>官方播放器测试替身；没有音乐</p>' }));
+    await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.tracks.push({ id:'platform:spotify:ABC',kind:'platform',platform:'spotify',platformTrackId:'ABC',sourceUrl:'https://open.spotify.com/track/ABC',title:'Spotify · ABC',metadataStatus:'reference',playback:'external',lyrics:'个人歌词保留' }));
+    await onlineMode(page, '分享链接'); await page.locator('#stm-share-text').fill('https://open.spotify.com/track/ABC');
+    await page.locator('.stm-share-form button[type=submit]').click();
+    await expect(page.locator('[data-online="preview-warning"]')).toContainText('官方播放器');
+    await page.locator('[data-online-action=confirm]').click();
+    await playerPage(page, '曲库');
+    await expect(page.locator('.stm-track-title')).toHaveText(['原生音乐', '官方测试曲目']);
+    expect(await page.evaluate(() => { const t=SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[1]; return { reference:t.metadataStatus,lyrics:t.lyrics }; })).toEqual({ reference:undefined,lyrics:'个人歌词保留' });
+    const before = await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.playEvents.length);
+    await page.getByRole('button', { name: '打开官方播放器：官方测试曲目', exact: true }).click();
+    await expect(page.locator('[data-role="official-player"] iframe')).toHaveAttribute('src', 'https://open.spotify.com/embed/track/ABC');
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(true);
+    expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.playEvents.length)).toBe(before);
+    expect(await page.evaluate(() => window.bad)).toBeUndefined();
+    await page.getByRole('button', { name: '关闭歌曲详情', exact: true }).click();
+    await expect(page.locator('[data-role="official-player"] iframe')).toHaveCount(0);
+    await playSong(page, '原生音乐');
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
+    await page.setViewportSize({ width: 375, height: 667 });
+    await onlineMode(page, '分享链接'); await page.locator('#stm-share-text').fill('https://open.spotify.com/playlist/ABC');
+    await page.locator('.stm-share-form button[type=submit]').click();
+    await expect(page.locator('[data-online=status]')).toContainText('没有导入歌曲');
+    await page.locator('[data-online-action=official-list]').click();
+    await expect(page.locator('[data-online="official-list-player"] iframe')).toHaveAttribute('src', 'https://open.spotify.com/embed/playlist/ABC');
+    expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.playlists.length)).toBe(0);
+    await page.locator('#stm-share-text').fill('https://music.163.com/song?id=123');
+    await expect(page.locator('[data-online="official-list-player"] iframe')).toHaveCount(0);
+});
+
+test('expired platform audio is refreshed on manual retry and the real playback check requires advancing audio', async ({ page }) => {
+    let details = 0;
+    await page.route('https://api.openverse.org/v1/audio/**', route => {
+        const detail = new URL(route.request().url()).pathname !== '/v1/audio/';
+        if (detail) details++;
+        const record = onlineFixture({ url: detail ? 'https://audio.example.test/fresh.wav' : 'https://audio.example.test/stale.mp3' });
+        return route.fulfill({ json: detail ? record : { results: [record], next: null }, headers: { 'access-control-allow-origin': '*' } });
+    });
+    await page.route('https://audio.example.test/stale.mp3', route => route.fulfill({ status: 403, body: 'expired' }));
+    await page.route('https://audio.example.test/fresh.wav', route => route.fulfill({ contentType: 'audio/wav', body: wav(30) }));
+    await onlineMode(page, '在线搜索'); await page.locator('#stm-online-query').fill('piano'); await page.locator('.stm-search-form button[type=submit]').click();
+    await page.getByRole('button', { name: '检查真实播放：公开许可测试音频', exact: true }).click();
+    await expect(page.locator('[data-online=status]')).toContainText('未通过播放检查');
+    expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.playEvents.length)).toBe(0);
+    await page.getByRole('button', { name: '检查真实播放：公开许可测试音频', exact: true }).click();
+    await expect(page.locator('[data-online=status]')).toContainText('真实播放已通过');
+    expect(details).toBe(1);
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(.5);
+    expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.playEvents.length)).toBe(1);
+});
+
+test('a large playlist can be explicitly selected to fit capacity without silently discarding tracks or source artwork', async ({ page }) => {
+    await page.route('**/platforms/config.js', route => route.fulfill({ contentType: 'text/javascript', body: 'export const PLATFORM_CONFIG={audius:{apiKey:"public-fixture",baseUrl:"https://api.audius.co/v1/"}};' }));
+    await page.route('https://api.audius.co/v1/**', route => {
+        const url = new URL(route.request().url()), headers = { 'access-control-allow-origin': '*' };
+        if (url.pathname.endsWith('/resolve')) return route.fulfill({ json: { data: [{ id: 'select-list', playlist_name: '选择歌单', track_count: 205, user: { name: '原作者' }, artwork: { '480x480': 'https://example.test/list.jpg' } }] }, headers });
+        const offset = Number(url.searchParams.get('offset'));
+        return route.fulfill({ json: { data: Array.from({ length: Math.min(100, 205-offset) }, (_, n) => ({ id: `choice${offset+n}`, title: `选曲 ${offset+n}`, permalink: `/artist/choice${offset+n}`, user: { name: '作者' }, is_stream_gated: offset+n===3 })) }, headers });
+    });
+    await page.reload(); await page.waitForFunction(() => !document.getElementById('preloader')); await page.locator('#stm-launcher').click();
+    await onlineMode(page, '分享链接'); await page.locator('#stm-share-text').fill('https://audius.co/user/playlist/test'); await page.locator('.stm-share-form button[type=submit]').click();
+    await expect(page.locator('.stm-share-tracks li')).toHaveCount(205);
+    await page.locator('[data-online-action=confirm]').click(); await expect(page.locator('[data-online=status]')).toContainText('超出上限');
+    await page.locator('[data-online-action=select-fit]').click();
+    await expect(page.locator('[data-online="selection-count"]')).toContainText('已选 200 / 205 首');
+    await page.getByRole('checkbox', { name: '选择导入：选曲 3', exact: true }).uncheck();
+    const saved = waitForPlayerSave(page, s => s.tracks.length===199 && s.playlists[0]?.source?.author==='原作者');
+    await page.locator('[data-online-action=confirm]').click(); await expect(page.locator('[data-online=status]')).toContainText('199 / 205'); await saved;
+    await page.reload(); await page.waitForFunction(() => !document.getElementById('preloader')); await page.locator('#stm-launcher').click();
+    const result = await page.evaluate(() => { const s=SillyTavern.getContext().extensionSettings.riserein_music_player; return { count:s.tracks.length, last:s.tracks.at(-1).title, source:s.playlists[0].source, members:s.playlists[0].trackIds.length }; });
+    expect(result.count).toBe(199); expect(result.members).toBe(199); expect(result.last).toBe('选曲 199');
+    expect(result.source.total).toBe(205); expect(result.source.cover).toBe('https://example.test/list.jpg'); expect(result.source.author).toBe('原作者');
+});
+
+test('a licensed permanent direct default plays through the real native player and viewing details does not copy it', async ({ page }) => {
+    const track = { kind:'platform',platform:'direct',platformTrackId:'rain',title:'开发者直链测试',artist:'测试作者',sourceUrl:'https://example.test/license',url:'https://audio.example.test/default.wav',playback:'full',license:{code:'by',url:'https://creativecommons.org/licenses/by/4.0/',attribution:'测试录音 — 作者'} };
+    await page.route('**/builtin-tracks.js', route => route.fulfill({ contentType:'text/javascript',body:`export const BUILTIN_CATALOG=${JSON.stringify({version:20,title:'测试默认',tracks:[track]})};` }));
+    await page.route('https://audio.example.test/default.wav', route => route.fulfill({ contentType:'audio/wav',body:wav(30) }));
+    await page.reload(); await page.waitForFunction(() => !document.getElementById('preloader')); await page.locator('#stm-launcher').click();
+    await page.getByRole('tab', {name:'曲库',exact:true}).click(); await page.getByRole('button',{name:'打开默认曲库',exact:true}).click();
+    await page.getByRole('button',{name:'歌曲详情：开发者直链测试',exact:true}).click();
+    expect(await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player.tracks.length)).toBe(0);
+    await page.getByRole('button',{name:'关闭歌曲详情',exact:true}).click();
+    await page.getByRole('button',{name:'播放歌曲：开发者直链测试',exact:true}).click();
+    await expect.poll(()=>page.locator('#stm-player audio').evaluate(audio=>audio.currentTime)).toBeGreaterThan(.5);
+    expect(await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player.playEvents.length)).toBe(1);
+});
+
+test('candidate official playback unloads on actual role exit without adding native history', async ({ page }) => {
+    const cards=[];
+    try {
+        await page.route('**/platforms/config.js',route=>route.fulfill({contentType:'text/javascript',body:'export const PLATFORM_CONFIG={embeds:{spotify:true}};'}));
+        await page.route('**/api/settings/get',async route=>{
+            const response=await route.fetch(),body=await response.json(),s=JSON.parse(body.settings);
+            s.extension_settings.riserein_music_player={tracks:[{id:'platform:spotify:ABC',kind:'platform',platform:'spotify',platformTrackId:'ABC',title:'角色官方曲目',sourceUrl:'https://open.spotify.com/track/ABC',playback:'embed'}]};
+            body.settings=JSON.stringify(s);await route.fulfill({response,json:body});
+        });
+        await page.route('https://open.spotify.com/embed/**',route=>route.fulfill({contentType:'text/html',body:'<p>Official fixture only</p>'}));
+        await page.reload();await page.waitForFunction(()=>!document.getElementById('preloader'));await page.locator('#stm-launcher').click();
+        cards.push(await createTestCard(page,'EmbedExit'));await selectCard(page,cards[0]);
+        await playerPage(page,'曲库');await page.getByRole('button',{name:'打开官方播放器：角色官方曲目',exact:true}).click();
+        await expect(page.locator('[data-role="official-player"] iframe')).toHaveCount(1);
+        await page.evaluate(async()=>{const {closeCurrentChat}=await import('/script.js');await closeCurrentChat();});
+        await expect(page.locator('[data-role="official-player"] iframe')).toHaveCount(0);
+        expect(await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player.playEvents.length)).toBe(0);
+    } finally { if(cards.length)await removeTestCards(page,cards); }
 });

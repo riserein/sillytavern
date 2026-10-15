@@ -3,11 +3,12 @@ import { PLATFORM_CONFIG } from './config.js';
 import { parseShareLink, referenceTrack } from './links.js';
 import { createMusicRequest, MusicRequestError } from './request.js';
 import { createProviders } from './providers.js';
+import { officialEmbed } from './embeds.js';
 export function createPlatformService({ config = PLATFORM_CONFIG, request = createMusicRequest() } = {}) {
     const providers = createProviders(request, config);
     return {
         platforms: () =>
-            Object.entries(PLATFORM_NAMES).map(([id, name]) => ({
+            Object.entries(PLATFORM_NAMES).filter(([id]) => id !== 'direct').map(([id, name]) => ({
                 id,
                 name,
                 capabilities: providers.get(id)?.capabilities || {
@@ -23,6 +24,11 @@ export function createPlatformService({ config = PLATFORM_CONFIG, request = crea
                     (track.kind !== 'platform' ||
                         (providers.get(track.platform)?.capabilities.playback && track.playback === 'full')),
             ),
+        canEmbed: (track) => Boolean(providers.get(track?.platform)?.capabilities.embed && track?.playback === 'embed' && officialEmbed(track)),
+        officialEmbed: (value) => {
+            const resource = officialEmbed(value);
+            return resource && config.embeds?.[resource.platform] ? resource : null;
+        },
         async search(query, { platform = 'all', signal, pages = {} } = {}) {
             query = String(query).trim();
             if (!query || query.length > 160) throw new MusicRequestError('请输入 1 至 160 个字符的关键词。', 'INPUT');
@@ -90,7 +96,7 @@ export function createPlatformService({ config = PLATFORM_CONFIG, request = crea
                 warning:
                     track.metadataStatus === 'reference'
                         ? '当前只能保存来源链接，尚未读取歌曲名称、封面和音频；添加后需前往官方平台收听。'
-                        : '',
+                        : track.playback === 'embed' ? '已读取官方歌曲信息，可在插件内打开官方播放器。完整收听或试听由平台和账号决定；不作为本插件直接音源，不接入本插件的播放统计。' : '',
             };
         },
         invalidate(track) {

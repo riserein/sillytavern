@@ -56,6 +56,8 @@ export function planImport(settings, preview, { targetId = null, newPlaylist = f
     return {
         tracks,
         added,
+        upgrades: tracks.filter((track, index) => tracks.findIndex(item => item.id === track.id) === index &&
+            track.metadataStatus !== 'reference' && settings.tracks.some(old => old.id === track.id && old.metadataStatus === 'reference')),
         targetId: existing?.id || targetId,
         newPlaylist: newPlaylist && !existing,
         name,

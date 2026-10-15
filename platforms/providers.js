@@ -14,6 +14,7 @@ export function openverseTrack(raw) {
         duration: Number(raw?.duration) / 1000,
         sourceUrl: `https://openverse.org/audio/${raw?.id}/`,
         playback: streamUrl && licenseUrl && OPEN_LICENSES.has(license) ? 'full' : 'external',
+        restriction: streamUrl && licenseUrl && OPEN_LICENSES.has(license) ? undefined : 'license',
         license: {
             code: license || '未明确',
             url: licenseUrl,
@@ -36,10 +37,33 @@ export function audiusTrack(raw) {
             ? new URL(raw.permalink, 'https://audius.co').href
             : `https://audius.co/${raw?.user?.handle || ''}/${raw?.id || ''}`,
         playback: raw?.is_streamable === false || gated ? 'external' : 'full',
+        restriction: gated ? 'authorization' : raw?.is_streamable === false ? 'unavailable' : undefined,
     });
 }
 export function createProviders(request, config) {
     const providers = new Map();
+    providers.set('direct', {
+        capabilities: { search: false, importTrack: false, importPlaylist: false, playback: true },
+        async resolve(track) {
+            const valid = normalizePlatformTrack(track);
+            if (!valid?.url || valid.playback !== 'full') throw new MusicRequestError('开发者预设音频信息不完整，请更新插件或联系维护者。', 'RIGHTS');
+            return { url: valid.url, track: valid };
+        },
+    });
+    for (const platform of ['soundcloud', 'spotify']) {
+        if (!config.embeds?.[platform]) continue;
+        providers.set(platform, {
+            capabilities: { search: false, importTrack: true, importPlaylist: false, playback: false, embed: true },
+            async importTrack(link, { signal } = {}) {
+                const url = new URL(platform === 'spotify' ? 'https://open.spotify.com/oembed' : 'https://soundcloud.com/oembed');
+                url.search = new URLSearchParams({ url: link.url, format: 'json' });
+                const metadata = await request(url.href, { signal });
+                if (!metadata.title || metadata.provider_name?.toLowerCase() !== platform) throw new MusicRequestError('未读取到官方歌曲信息，未保存。', 'RESPONSE');
+                return normalizePlatformTrack({ platform, platformTrackId: link.id, title: metadata.title,
+                    artist: metadata.author_name, cover: metadata.thumbnail_url, sourceUrl: link.url, playback: 'embed' });
+            },
+        });
+    }
     if (config.openverse?.enabled) {
         const base = config.openverse.baseUrl;
         const memo = new Map(),
@@ -70,7 +94,7 @@ export function createProviders(request, config) {
             },
             async getTrack(id, { signal, fresh = false } = {}) {
                 if (!/^[a-f\d-]{36}$/i.test(id)) throw new MusicRequestError('Openverse 音频标识无效。', 'RESPONSE');
-                const force = fresh || invalid.delete(id);
+                const invalidated = invalid.delete(id), force = fresh || invalidated;
                 const cached = memo.get(id);
                 if (!force && cached?.until > Date.now()) return cached.track;
                 return remember(
@@ -149,6 +173,7 @@ export function createProviders(request, config) {
                         throw new MusicRequestError('歌单包含无法识别的歌曲，本次不会导入。', 'INCOMPLETE');
                     tracks.push(...pageTracks);
                     onProgress?.(tracks.length);
+                    if (tracks.length > 2000) throw new MusicRequestError('歌单超过 2000 首读取保护上限，未导入。', 'INCOMPLETE');
                     if (result.data.length < 100 || (Number.isFinite(declared) && tracks.length >= declared)) {
                         complete = true;
                         break;
@@ -164,7 +189,8 @@ export function createProviders(request, config) {
                     cover: webUrl(list.artwork?.['480x480']),
                     tracks,
                     total: tracks.length,
-                    source: { platform: 'audius', id: String(list.id), url: link.url },
+                    source: { platform: 'audius', id: String(list.id), url: link.url,
+                        name: list.playlist_name, author: list.user?.name, cover: webUrl(list.artwork?.['480x480']) },
                 };
             },
             async resolve(track, { signal } = {}) {

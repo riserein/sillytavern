@@ -1,4 +1,4 @@
-import { writeFile, rename, unlink } from 'node:fs/promises';
+import { readFile, writeFile, rename, unlink } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createPlatformService } from '../platforms/service.js';
@@ -8,17 +8,44 @@ const args = process.argv.slice(2),
     sources = [];
 let title = BUILTIN_CATALOG.title,
     out = fileURLToPath(new URL('../builtin-tracks.js', import.meta.url));
+let append = false,
+    allowMetadataOnly = false,
+    dryRun = false;
 try {
     for (let i = 0; i < args.length; i++) {
         if (args[i] === '--source' && args[i + 1]) sources.push(args[++i]);
+        else if (args[i] === '--input' && args[i + 1]) {
+            const data = JSON.parse(await readFile(resolve(args[++i]), 'utf8'));
+            if (!data || !Array.isArray(data.sources)) throw new Error('输入文件需要 sources 数组。');
+            if (data.title) title = data.title;
+            sources.push(...data.sources);
+        } else if (args[i] === '--append') append = true;
+        else if (args[i] === '--allow-metadata-only') allowMetadataOnly = true;
+        else if (args[i] === '--dry-run') dryRun = true;
         else if (args[i] === '--name' && args[i + 1]) title = args[++i];
         else if (args[i] === '--out' && args[i + 1]) out = resolve(args[++i]);
         else
             throw new Error(
-                '用法：node scripts/update-builtin.mjs --source "歌曲或歌单链接" [--source "另一链接"] [--name "默认曲库"] [--out 文件路径]',
+                '用法：node scripts/update-builtin.mjs [--input 清单.json] [--source "歌曲或歌单链接"] [--append] [--allow-metadata-only] [--dry-run] [--name "默认曲库"] [--out 文件路径]',
             );
     }
-    const catalog = await buildBuiltinCatalog(createPlatformService(), sources, { title, previous: BUILTIN_CATALOG });
+    const catalog = await buildBuiltinCatalog(createPlatformService(), sources, {
+        title,
+        previous: BUILTIN_CATALOG,
+        append,
+        allowMetadataOnly,
+    });
+    const restricted = catalog.tracks.filter((track) => track.playback !== 'full');
+    for (const track of restricted)
+        console.warn(
+            `非直接完整播放：${track.title}（${track.playback === 'embed' ? '官方播放器，可能仅试听' : '仅元数据'}）`,
+        );
+    if (dryRun) {
+        console.log(
+            `检查通过，未写入文件：版本 ${catalog.version}，${catalog.tracks.length} 首，其中 ${restricted.length} 首不能直接完整播放。`,
+        );
+        process.exit(0);
+    }
     const temp = `${out}.tmp-${process.pid}`;
     let created = false;
     try {
