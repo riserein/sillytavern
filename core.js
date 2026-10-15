@@ -1,3 +1,6 @@
+import { BUILTIN_CATALOG } from './builtin-tracks.js';
+import { normalizePlatformTrack, normalizePlaylistSource } from './platforms/catalog.js';
+import { BUILTIN_ID, normalizeBuiltinCatalog, allTracks, findTrack } from './platforms/library.js';
 import { normalizeCustomColors } from './appearance.js';
 import { normalizeFonts } from './fonts.js';
 import { COVER_COUNT, MAX_LYRICS } from './media.js';
@@ -49,20 +52,26 @@ export function titleFromUrl(value) {
     return name.replace(/\.[a-z0-9]{2,5}$/i, '').slice(0, 160) || url.hostname;
 }
 
-export function normalizeSettings(raw = {}, now = Date.now()) {
+export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_CATALOG) {
     if (!raw || typeof raw !== 'object') raw = {};
+    const builtinCatalog = normalizeBuiltinCatalog(catalog);
     const ids = new Set();
     const tracks = [];
     for (const item of Array.isArray(raw.tracks) ? raw.tracks : []) {
         if (!item || typeof item.id !== 'string' || !item.id || ids.has(item.id)) continue;
-        if (!['local', 'url'].includes(item.kind)) continue;
+        if (!['local', 'url', 'platform'].includes(item.kind)) continue;
+        const platformTrack = item.kind === 'platform' ? normalizePlatformTrack(item) : null;
+        if (item.kind === 'platform' && !platformTrack) continue;
+        const stableId = platformTrack?.id || item.id;
+        if (ids.has(stableId)) continue;
         let url;
         if (item.kind === 'url') {
             try { url = normalizeUrl(item.url); } catch { continue; }
         }
-        ids.add(item.id);
+        ids.add(stableId);
         tracks.push({
-            id: item.id,
+            ...(platformTrack || {}),
+            id: stableId,
             kind: item.kind,
             title: String(item.title || '未命名音乐').slice(0, 160),
             ...(url ? { url } : {}),
@@ -74,13 +83,14 @@ export function normalizeSettings(raw = {}, now = Date.now()) {
         if (tracks.length === MAX_TRACKS) break;
     }
     const volume = typeof raw.volume === 'number' && Number.isFinite(raw.volume) ? raw.volume : 0.6;
+    const allIds = new Set([...ids, ...builtinCatalog.tracks.map(track => track.id)]);
     const playlistIds = new Set();
     const boundCharacters = new Set();
     const playlists = [];
     for (const item of Array.isArray(raw.playlists) ? raw.playlists : []) {
-        if (!item || typeof item.id !== 'string' || !item.id || playlistIds.has(item.id)) continue;
+        if (!item || typeof item.id !== 'string' || !item.id || item.id === BUILTIN_ID || playlistIds.has(item.id)) continue;
         playlistIds.add(item.id);
-        const trackIds = [...new Set(Array.isArray(item.trackIds) ? item.trackIds : [])].filter(id => ids.has(id));
+        const trackIds = [...new Set(Array.isArray(item.trackIds) ? item.trackIds : [])].filter(id => allIds.has(id));
         const characterAvatars = [...new Set(Array.isArray(item.characterAvatars) ? item.characterAvatars : [])]
             .filter(avatar => typeof avatar === 'string' && avatar && !boundCharacters.has(avatar));
         characterAvatars.forEach(avatar => boundCharacters.add(avatar));
@@ -89,20 +99,24 @@ export function normalizeSettings(raw = {}, now = Date.now()) {
             name: String(item.name || '未命名歌单').trim().slice(0, 80) || '未命名歌单',
             trackIds,
             characterAvatars,
+            ...(normalizePlaylistSource(item.source) ? { source: normalizePlaylistSource(item.source) } : {}),
             ...(typeof item.coverId === 'string' && /^cover:[a-f0-9-]{36}$/.test(item.coverId) ? { coverId: item.coverId } : {}),
             lastTrackId: trackIds.includes(item.lastTrackId) ? item.lastTrackId : (trackIds[0] ?? null),
         });
         if (playlists.length === MAX_PLAYLISTS) break;
     }
     const activePlaylist = playlists.find(playlist => playlist.id === raw.activePlaylistId);
-    const activeTracks = activePlaylist ? tracks.filter(track => activePlaylist.trackIds.includes(track.id)) : tracks;
+    const builtinHidden = raw.builtinHidden === true;
+    const activeId = activePlaylist?.id ?? (raw.activePlaylistId === BUILTIN_ID && !builtinHidden && builtinCatalog.tracks.length ? BUILTIN_ID : null);
+    const activeTracks = getQueue({ tracks, playlists, builtinCatalog }, activeId);
     const currentId = activeTracks.some(track => track.id === raw.currentId) ? raw.currentId
         : (activePlaylist?.lastTrackId ?? activeTracks[0]?.id ?? null);
     const backgroundId = typeof raw.backgroundId === 'string' && /^background:[a-f0-9-]{36}$/.test(raw.backgroundId) ? raw.backgroundId : null;
-    return {
+    const normalized = {
         tracks,
         playlists,
-        activePlaylistId: activePlaylist?.id ?? null,
+        builtinHidden,
+        activePlaylistId: activeId,
         volume: Math.min(1, Math.max(0, volume)),
         mode: PLAY_MODES.includes(raw.mode) ? raw.mode : 'list',
         currentId,
@@ -117,18 +131,21 @@ export function normalizeSettings(raw = {}, now = Date.now()) {
                 ? Math.min(1, Math.max(0, raw.maskOpacity[surface])) : null])),
         clickEffects: raw.clickEffects !== false,
         ...normalizeFonts(raw),
-        ...normalizeHistory(raw, ids, now),
+        ...normalizeHistory(raw, allIds, now),
         positions: {
             launcher: normalizePosition(raw.positions?.launcher),
             panel: normalizePosition(raw.positions?.panel),
         },
     };
+    Object.defineProperty(normalized, 'builtinCatalog', { value: builtinCatalog, enumerable: false });
+    return normalized;
 }
 
 export function getQueue(settings, playlistId = settings.activePlaylistId) {
+    if (playlistId === BUILTIN_ID) return (settings.builtinCatalog?.tracks || []).map(track => findTrack(settings, track.id));
     const playlist = settings.playlists.find(item => item.id === playlistId);
     if (!playlist) return settings.tracks;
-    const tracksById = new Map(settings.tracks.map(track => [track.id, track]));
+    const tracksById = new Map(allTracks(settings).map(track => [track.id, track]));
     return playlist.trackIds.map(id => tracksById.get(id)).filter(Boolean);
 }
 
@@ -137,6 +154,7 @@ export function createPlaylist(settings, name, id = createTrackId()) {
     if (!name || name.length > 80) throw new Error('歌单名称需要 1 至 80 个字符。');
     if (name === '总曲库' || settings.playlists.some(item => item.name === name)) throw new Error('这个歌单名称已被使用。');
     if (settings.playlists.length >= MAX_PLAYLISTS) throw new Error(`最多可以创建 ${MAX_PLAYLISTS} 个歌单。`);
+    if (id === BUILTIN_ID) throw new Error('这是默认曲库的保留标识。');
     const playlist = { id, name, trackIds: [], characterAvatars: [], lastTrackId: null };
     settings.playlists.push(playlist);
     return playlist;
@@ -144,11 +162,21 @@ export function createPlaylist(settings, name, id = createTrackId()) {
 
 export function addTrackToPlaylist(settings, playlistId, trackId) {
     const playlist = settings.playlists.find(item => item.id === playlistId);
-    if (!playlist || !settings.tracks.some(track => track.id === trackId)) return false;
+    if (!playlist || !findTrack(settings, trackId)) return false;
+    ensureLibraryTrack(settings, trackId);
     if (playlist.trackIds.includes(trackId)) return false;
     playlist.trackIds.push(trackId);
     playlist.lastTrackId ??= trackId;
     return true;
+}
+
+export function ensureLibraryTrack(settings, id) {
+    const own = settings.tracks.find(track => track.id === id);
+    if (own) return own;
+    const track = findTrack(settings, id);
+    if (!track) throw new Error('歌曲已不存在。');
+    if (settings.tracks.length >= MAX_TRACKS) throw new Error('总曲库已达 200 首，无法加入更多歌曲。');
+    const copy = structuredClone(track); settings.tracks.push(copy); return copy;
 }
 
 export function renamePlaylist(settings, playlistId, name) {
@@ -191,7 +219,7 @@ function normalizeHistory(raw, ids, now) {
 
 /** Call only after audio starts playing, once per song selection or repeat. */
 export function recordPlayback(settings, trackId, now = Date.now()) {
-    const ids = new Set(settings.tracks.map(track => track.id));
+    const ids = new Set(allTracks(settings).map(track => track.id));
     if (!ids.has(trackId)) return;
     Object.assign(settings, normalizeHistory(settings, ids, now));
     settings.recentPlays = [{ trackId, at: now }, ...settings.recentPlays.filter(item => item.trackId !== trackId)].slice(0, MAX_RECENT);
@@ -199,7 +227,7 @@ export function recordPlayback(settings, trackId, now = Date.now()) {
 }
 
 export function recentTracks(settings) {
-    const byId = new Map(settings.tracks.map(track => [track.id, track]));
+    const byId = new Map(allTracks(settings).map(track => [track.id, track]));
     return settings.recentPlays.filter(item => byId.has(item.trackId))
         .map(item => ({ track: byId.get(item.trackId), at: item.at }));
 }
@@ -213,7 +241,7 @@ export function rankedTracks(settings, now = Date.now()) {
         item.at = Math.max(item.at, at);
         counts.set(trackId, item);
     }
-    return settings.tracks.filter(track => counts.has(track.id)).map(track => ({ track, ...counts.get(track.id) }))
+    return allTracks(settings).filter(track => counts.has(track.id)).map(track => ({ track, ...counts.get(track.id) }))
         .sort((a, b) => b.count - a.count || b.at - a.at || a.track.id.localeCompare(b.track.id));
 }
 

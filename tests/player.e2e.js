@@ -1311,7 +1311,7 @@ test('my music lists library first, creates an album from a song, and saves an i
     await saved;
     const coverId = await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.playlists[0].coverId);
     await page.getByRole('tab', { name: '曲库', exact: true }).click();
-    await expect(page.locator('.stm-collection-open strong')).toHaveText(['总曲库', '我的午后']);
+    await expect(page.locator('[data-role="all-collection"] strong, [data-role="playlist-collections"] strong')).toHaveText(['总曲库', '我的午后']);
     await expect(page.locator(`[data-collection-id="${albumId}"] img`)).toHaveAttribute('src', /^blob:/);
     await page.reload(); await page.waitForFunction(() => !document.getElementById('preloader')); await page.locator('#stm-launcher').click();
     await page.getByRole('tab', { name: '曲库', exact: true }).click();
@@ -1434,4 +1434,147 @@ test('background saves leave no lingering message and the compact mini bar stays
     await expect(page.locator('.stm-status')).toHaveClass(/stm-error/);
     await page.clock.fastForward(6500); await expect(page.locator('.stm-status')).not.toBeEmpty();
     await page.clock.fastForward(1600); await expect(page.locator('.stm-status')).toBeEmpty();
+});
+
+const platformFixtureId = '12345678-1234-1234-1234-123456789abc';
+function onlineFixture(overrides={}) {
+    return {id:platformFixtureId,title:'公开许可测试音频',creator:'测试作者',url:'https://audio.example.test/platform.wav',duration:30000,license:'by',license_version:'4.0',license_url:'https://creativecommons.org/licenses/by/4.0/',foreign_landing_url:'https://example.test/recording',...overrides};
+}
+async function mockOnline(page, record=onlineFixture()) {
+    const requests=[];
+    await page.route('https://api.openverse.org/v1/audio/**', route=>{
+        requests.push(route.request().url());const url=new URL(route.request().url());
+        return route.fulfill({json:url.pathname===`/v1/audio/${platformFixtureId}/`?record:{result_count:1,next:null,results:[record]},headers:{'access-control-allow-origin':'*'}});
+    });
+    await page.route('https://audio.example.test/platform.wav',route=>route.fulfill({contentType:'audio/wav',body:wav(30)}));
+    return requests;
+}
+async function onlineMode(page,name){await playerPage(page,'导入');await page.getByRole('tab',{name,exact:true}).click();}
+
+test('online search plays real fixture audio, shows attribution, deduplicates saves and reloads without fetching on startup',async({page})=>{
+    const requests=await mockOnline(page);
+    await onlineMode(page,'在线搜索');
+    expect(await page.locator('#stm-online-platform option').allTextContents()).toEqual(['全部可用来源','Openverse']);
+    await page.locator('#stm-online-query').fill('piano');await page.locator('.stm-search-form button[type=submit]').click();
+    await expect(page.locator('.stm-online-result')).toHaveCount(1);await expect(page.locator('.stm-online-result')).toContainText('测试作者');
+    await expect(page.locator('.stm-online-result')).toContainText('BY 4.0');
+    await page.locator('.stm-online-result .stm-row-play').click();
+    await expect.poll(()=>page.locator('#stm-player audio').evaluate(audio=>audio.currentTime)).toBeGreaterThan(.1);
+    expect(await page.locator('#stm-player audio').evaluate(audio=>audio.duration)).toBe(30);
+    await expect(page.locator('.stm-online-result .stm-row-play')).toHaveAttribute('aria-pressed','true');
+    expect(requests).toHaveLength(1); // Search metadata is reused; playing does not spend an extra anonymous request.
+    await page.locator('.stm-online-result .stm-row-play').click();
+    await expect.poll(()=>page.locator('#stm-player audio').evaluate(audio=>audio.paused)).toBe(true);
+    await page.getByRole('button',{name:'加入曲库或歌单：公开许可测试音频',exact:true}).click();
+    await expect(page.locator('.stm-track')).toHaveCount(1);
+    const saved=waitForPlayerSave(page,settings=>settings.volume===.31&&settings.tracks.some(track=>track.kind==='platform'));
+    await playerPage(page,'播放');await page.locator('#stm-volume').fill('31');await saved;
+    await page.reload();await page.waitForFunction(()=>!document.getElementById('preloader'));await page.locator('#stm-launcher').click();
+    expect(requests).toHaveLength(1);await expect(page.locator('.stm-track')).toHaveCount(1);
+    await page.locator('[data-action="play"]').click();await expect.poll(()=>page.locator('#stm-player audio').evaluate(audio=>audio.currentTime)).toBeGreaterThan(.1);
+    expect(requests).toHaveLength(2);
+});
+
+test('sharing unsupported platform songs produces explicit external bookmarks while unsupported playlists never import',async({page})=>{
+    await page.setViewportSize({width:375,height:667});await onlineMode(page,'分享链接');
+    await page.locator('#stm-share-text').fill('分享歌曲 https://open.spotify.com/track/ABC?si=test。');await page.locator('.stm-share-form button[type=submit]').click();
+    await expect(page.locator('[data-online="preview-warning"]')).toContainText('只能保存来源链接');
+    await expect(page.locator('[data-online="preview-count"]')).toContainText('站内播放 0 首');
+    await page.locator('#stm-share-title').fill('我的 Spotify 收藏');await page.locator('[data-online-action=confirm]').click();
+    await expect(page.locator('.stm-track')).toHaveCount(1);
+    await playerPage(page,'曲库');await expect(page.locator('.stm-track .stm-external-source')).toHaveAttribute('href','https://open.spotify.com/track/ABC?si=test');
+    await expect(page.locator('.stm-track .stm-row-play')).toHaveCount(0);
+    await page.getByRole('button',{name:'播放：我的 Spotify 收藏',exact:true}).click();
+    await expect(page.getByRole('dialog',{name:'歌曲详情',exact:true})).toBeVisible();
+    await expect(page.locator('[data-role=platform-credit]')).toContainText('仅支持前往官方平台');
+    await expect.poll(()=>page.locator('#stm-player audio').evaluate(audio=>audio.paused)).toBe(true);
+    expect(await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player.playEvents.length)).toBe(0);
+    await onlineMode(page,'分享链接');await page.locator('#stm-share-text').fill('https://open.spotify.com/playlist/ABC');await page.locator('.stm-share-form button[type=submit]').click();
+    await expect(page.locator('[data-online=status]')).toContainText('没有导入歌曲');await expect(page.locator('.stm-share-preview')).toBeHidden();
+    expect(await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player.playlists.length)).toBe(0);
+});
+
+test('share previews are invalidated when edited, confirm target albums, and preserve local/platform mixed playback and binding',async({page})=>{
+    const cards=[];try{
+        await mockOnline(page);await importSongs(page,['本地保留']);const album=await createAlbum(page,'混合歌单');await addExisting(page,'本地保留',album);
+        await onlineMode(page,'分享链接');await chooseSelect(page,'#stm-import-playlist',album);
+        await page.locator('#stm-share-text').fill(`https://openverse.org/audio/${platformFixtureId}/`);await page.locator('.stm-share-form button[type=submit]').click();
+        await expect(page.locator('.stm-share-preview')).toBeVisible();
+        await page.locator('#stm-share-text').fill('新分享 https://open.spotify.com/track/ABC');await expect(page.locator('.stm-share-preview')).toBeHidden();
+        await page.locator('#stm-share-text').fill(`https://openverse.org/audio/${platformFixtureId}/`);await page.locator('.stm-share-form button[type=submit]').click();await page.locator('[data-online-action=confirm]').click();
+        await selectAlbum(page,album);await expect(page.locator('.stm-track')).toHaveCount(2);await playSong(page,'本地保留');
+        await page.getByRole('button',{name:'下一首',exact:true}).click();await expect(page.locator('[data-role=title]')).toHaveText('公开许可测试音频');
+        await expect.poll(()=>page.locator('#stm-player audio').evaluate(audio=>audio.currentTime)).toBeGreaterThan(.1);
+        cards.push(await createTestCard(page,'Online'));await bindCards(page,cards);await selectCard(page,cards[0]);
+        await expect(page.locator('#stm-playlist')).toHaveValue(album);await expect.poll(()=>page.locator('#stm-player audio').evaluate(audio=>audio.paused)).toBe(true);
+    }finally{if(cards.length)await removeTestCards(page,cards);}
+});
+
+test('failed and cancelled online searches leave local music usable and enforce rate-limit cooldown',async({page})=>{
+    await importSongs(page,['离线仍可用']);let requests=0;
+    await page.route('https://api.openverse.org/v1/audio/**',route=>{requests++;return route.fulfill({status:429,json:{detail:'throttled'},headers:{'Retry-After':'60','access-control-allow-origin':'*'}});});
+    await onlineMode(page,'在线搜索');await page.locator('#stm-online-query').fill('piano');await page.locator('.stm-search-form button[type=submit]').click();
+    await expect(page.locator('[data-online=status]')).toContainText('次数已达上限');
+    await page.locator('#stm-online-query').fill('rain');await page.locator('.stm-search-form button[type=submit]').click();await expect(page.locator('[data-online=status]')).toContainText('正在限流');expect(requests).toBe(1);
+    await playSong(page,'离线仍可用');await expect.poll(()=>page.locator('#stm-player audio').evaluate(audio=>audio.currentTime)).toBeGreaterThan(.1);
+});
+
+test('empty default catalog stays separate, can be hidden, and never invents preset songs',async({page})=>{
+    await page.getByRole('tab',{name:'曲库',exact:true}).click();await expect(page.getByRole('button',{name:'打开默认曲库',exact:true})).toBeVisible();
+    await page.getByRole('button',{name:'打开默认曲库',exact:true}).click();await expect(page.locator('.stm-empty')).toContainText('尚未配置默认曲目');
+    expect(await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player.tracks.length)).toBe(0);
+    await playerPage(page,'外观');const saved=waitForPlayerSave(page,s=>s.builtinHidden);await page.locator('#stm-hide-builtin').check();await saved;
+    await page.reload();await page.waitForFunction(()=>!document.getElementById('preloader'));await page.locator('#stm-launcher').click();await page.getByRole('tab',{name:'曲库',exact:true}).click();
+    await expect(page.getByRole('button',{name:'打开默认曲库',exact:true})).toBeHidden();expect(await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player.playlists.length)).toBe(0);
+});
+
+test('cancelling an online request prevents stale results from replacing a later successful search',async({page})=>{
+    let release;const gate=new Promise(resolve=>{release=resolve;});let calls=0;
+    await page.route('https://api.openverse.org/v1/audio/**',async route=>{const first=++calls===1;if(first)await gate;await route.fulfill({json:{results:[onlineFixture({title:first?'迟到的结果':'当前结果'})],next:null},headers:{'access-control-allow-origin':'*'}}).catch(()=>{});});
+    await onlineMode(page,'在线搜索');await page.locator('#stm-online-query').fill('first');await page.locator('.stm-search-form button[type=submit]').click();
+    await expect.poll(()=>calls).toBe(1);await page.locator('[data-online-action=cancel]').click();await expect(page.locator('[data-online=status]')).toContainText('已取消');
+    await page.locator('#stm-online-query').fill('second');await page.locator('.stm-search-form button[type=submit]').click();await expect(page.locator('.stm-online-result')).toContainText('当前结果');release();
+    await expect(page.locator('.stm-online-result')).toHaveCount(1);await expect(page.locator('.stm-online-result')).not.toContainText('迟到的结果');
+});
+
+test('bundled catalog updates do not fetch playlists at startup or overwrite copied songs and user memberships',async({page})=>{
+    await mockOnline(page);let version=1;
+    const one={id:`platform:openverse:${platformFixtureId}`,kind:'platform',platform:'openverse',platformTrackId:platformFixtureId,title:'开发者测试预设',sourceUrl:`https://openverse.org/audio/${platformFixtureId}/`,playback:'full'};
+    await page.route('**/builtin-tracks.js',route=>route.fulfill({contentType:'text/javascript',body:`export const BUILTIN_CATALOG = ${JSON.stringify({version,title:'测试预设',tracks:version===1?[one]:[{...one,title:'开发者更新名称'},{...one,id:undefined,platformTrackId:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',title:'新增测试曲目'}]})};`}));
+    const clean=waitForPlayerSave(page,s=>s.volume===.32&&s.tracks.length===0);await playerPage(page,'播放');await page.locator('#stm-volume').fill('32');await clean;
+    await page.reload();await page.waitForFunction(()=>!document.getElementById('preloader'));await page.locator('#stm-launcher').click();
+    const album=await createAlbum(page,'保留自己的收藏');
+    await page.getByRole('tab',{name:'曲库',exact:true}).click();await page.getByRole('button',{name:'打开默认曲库',exact:true}).click();
+    await expect(page.locator('.stm-track-title')).toHaveText('开发者测试预设');
+    await page.getByRole('button',{name:'加入歌单：开发者测试预设',exact:true}).click();await chooseSelect(page,'#stm-add-target',album);
+    const saved=waitForPlayerSave(page,s=>s.tracks.length===1&&s.playlists[0].trackIds.length===1);await page.locator('[data-action=confirm-membership]').click();await saved;
+    const renamed=waitForPlayerSave(page,s=>s.tracks[0].title==='用户自己的名称');await page.evaluate(()=>{const c=SillyTavern.getContext();c.extensionSettings.riserein_music_player.tracks[0].title='用户自己的名称';c.saveSettingsDebounced();});await renamed;
+    version=2;await page.reload();await page.waitForFunction(()=>!document.getElementById('preloader'));await page.locator('#stm-launcher').click();
+    expect(await page.evaluate(()=>{const s=SillyTavern.getContext().extensionSettings.riserein_music_player;return {own:s.tracks.map(t=>t.title),defaults:s.builtinCatalog.tracks.length,version:s.builtinCatalog.version,lists:s.playlists.length,serialized:Object.hasOwn(JSON.parse(JSON.stringify(s)),'builtinCatalog')};})).toEqual({own:['用户自己的名称'],defaults:2,version:2,lists:1,serialized:false});
+    await selectAlbum(page,album);await expect(page.locator('.stm-track-title')).toHaveText('用户自己的名称');
+});
+
+test('conditional playlist adapter previews every page, refuses overflow and reuses repeated source playlists',async({page})=>{
+    let total=205;
+    await page.route('**/platforms/config.js',route=>route.fulfill({contentType:'text/javascript',body:'export const PLATFORM_CONFIG = {audius:{apiKey:"public-fixture-key",baseUrl:"https://api.audius.co/v1/"}};'}));
+    await page.route('https://api.audius.co/v1/**',route=>{
+        const url=new URL(route.request().url());const headers={'access-control-allow-origin':'*'};
+        if(url.pathname.endsWith('/resolve'))return route.fulfill({json:{data:[{id:'fixture-list',playlist_name:'Audius 测试歌单',track_count:total}]},headers});
+        const offset=Number(url.searchParams.get('offset'));
+        return route.fulfill({json:{data:Array.from({length:Math.min(100,total-offset)},(_,n)=>({id:`fixture${n+offset}`,title:`顺序 ${n+offset}`,user:{name:'测试作者',handle:'test'},permalink:`/test/fixture${n+offset}`,is_stream_gated:n+offset===3}))},headers});
+    });
+    const clean=waitForPlayerSave(page,s=>s.volume===.33&&s.tracks.length===0);await playerPage(page,'播放');await page.locator('#stm-volume').fill('33');await clean;
+    await page.reload();await page.waitForFunction(()=>!document.getElementById('preloader'));await page.locator('#stm-launcher').click();
+    await onlineMode(page,'分享链接');await page.locator('#stm-share-text').fill('https://audius.co/test/playlist/fixture');await page.locator('.stm-share-form button[type=submit]').click();
+    await expect(page.locator('[data-online="preview-count"]')).toContainText('共 205 首');await expect(page.locator('.stm-share-tracks li')).toHaveCount(205);
+    await page.locator('[data-online-action=confirm]').click();await expect(page.locator('[data-online=status]')).toContainText('超出上限');
+    expect(await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player.tracks.length)).toBe(0);
+    total=101;await page.locator('#stm-share-text').fill('https://audius.co/test/playlist/fixture?v=2');
+    // Search responses have a short cache; a fresh service on reload proves no partial data was persisted.
+    await page.reload();await page.waitForFunction(()=>!document.getElementById('preloader'));await page.locator('#stm-launcher').click();await onlineMode(page,'分享链接');
+    await page.locator('#stm-share-text').fill('https://audius.co/test/playlist/fixture?v=2');await page.locator('.stm-share-form button[type=submit]').click();
+    await expect(page.locator('[data-online="preview-count"]')).toContainText('共 101 首');await expect(page.locator('[data-online="preview-count"]')).toContainText('站外或受限 1 首');
+    await page.locator('[data-online-action=confirm]').click();await expect(page.locator('[data-online=status]')).toContainText('新增 101 首');
+    await page.locator('[data-online-action=confirm]').click();await expect(page.locator('[data-online=status]')).toContainText('新增 0 首');
+    expect(await page.evaluate(()=>{const s=SillyTavern.getContext().extensionSettings.riserein_music_player;return {tracks:s.tracks.length,lists:s.playlists.length,last:s.tracks.at(-1).title,members:s.playlists[0].trackIds.length};})).toEqual({tracks:101,lists:1,last:'顺序 100',members:101});
 });

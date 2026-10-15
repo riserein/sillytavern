@@ -1,8 +1,12 @@
+import { createPlatformService } from './platforms/service.js';
+import { PLATFORM_NAMES } from './platforms/catalog.js';
+import { BUILTIN_ID, findTrack, planImport } from './platforms/library.js';
+import { ONLINE_MARKUP, createOnlinePanel } from './online-panel.js';
 import {
     MAX_TRACKS, PLAY_MODES, createTrackId, normalizeSettings, normalizeUrl, titleFromUrl, nextTrackId, formatTime, validateAudioFile,
     getQueue, createPlaylist, renamePlaylist, addTrackToPlaylist, removeTrackFromPlaylist, deleteTrackFromLibrary,
     deletePlaylist, bindPlaylistCharacters, currentCharacterAvatar, playlistForCharacter,
-    recordPlayback, recentTracks, rankedTracks,
+    recordPlayback, recentTracks, rankedTracks, ensureLibraryTrack,
 } from './core.js';
 import { LocalMusicStore } from './local-store.js';
 import { makeDraggable } from './floating.js';
@@ -28,6 +32,9 @@ function initialize() {
     const settings = normalizeSettings(context.extensionSettings[SETTINGS_KEY]);
     context.extensionSettings[SETTINGS_KEY] = settings;
     const store = new LocalMusicStore();
+    const platformService = createPlatformService();
+    let online = null;
+    let platformLoadController = null;
     let objectUrl = null;
     let loadSequence = 0;
     let importing = false;
@@ -127,6 +134,7 @@ function initialize() {
         </div>
         <div id="stm-library-home">
             <div class="stm-library-collections" data-role="all-collection"></div>
+            <div data-role="builtin-collection"></div>
             <section id="stm-created-playlists" hidden><div class="stm-list-heading"><h3>自建歌单</h3></div><div class="stm-library-collections" data-role="playlist-collections"></div></section>
             <p class="stm-hint">点“总曲库”查看全部歌曲；点右上角“新建歌单”整理音乐。</p>
         </div>
@@ -173,13 +181,16 @@ function initialize() {
         </div>
         </section>
         <section id="stm-page-import" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-import" data-view="import" hidden>
-            <div class="stm-page-heading"><h3>让音乐住进来</h3><span>本地音乐与音频直链</span></div>
+            <div class="stm-page-heading"><h3>让音乐住进来</h3><span>本地音乐、直链与在线收藏</span></div>
             <div class="stm-import-target"><label for="stm-import-playlist">导入到</label><select id="stm-import-playlist"><option value="">不选择 · 仅加入总曲库</option></select></div>
+            ${ONLINE_MARKUP}
+            <div id="stm-direct-import" role="tabpanel" aria-label="本地与直链">
             <button type="button" class="stm-upload-zone" data-action="import"><svg class="stm-upload-symbol" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 22V5m-6 6 6-6 6 6M6 22v5h20v-5"/></svg><strong>选择本地音乐</strong><small>MP3 / WAV / FLAC / M4A · 支持多选</small></button>
             <input type="file" data-role="files" accept="audio/*,.mp3,.wav,.ogg,.oga,.m4a,.aac,.flac,.opus,.webm" multiple hidden>
             <div class="stm-import-divider">或添加音频直链</div>
             <form class="stm-url-form"><label class="stm-sr-only" for="stm-url">音乐直链</label><input id="stm-url" type="url" placeholder="https://… / music.mp3" required autocomplete="off"><button type="submit" class="stm-secondary">添加</button></form>
-            <p class="stm-hint">需要可直接播放的音频地址。歌曲分享页暂不支持。</p>
+            <p class="stm-hint">需要可直接播放的音频文件地址。平台分享链接请使用“分享链接”入口。</p>
+            </div>
             <button type="button" class="stm-text-link" data-action="go-library">查看我的曲库 ↗</button>
         </section>
         <section id="stm-page-recent" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-recent" data-view="recent" hidden>
@@ -195,6 +206,8 @@ function initialize() {
         </section>
         <section id="stm-appearance" class="stm-page stm-appearance" role="tabpanel" aria-labelledby="stm-tab-appearance" data-view="appearance" hidden>
             <div class="stm-page-heading"><h3>配色与背景</h3><span>为音乐换一种氛围</span></div>
+            <label class="stm-check-label"><input type="checkbox" id="stm-hide-builtin">隐藏默认曲库</label>
+            <p class="stm-hint">默认歌曲由开发者随版本提供，不占自建歌单数量。</p>
             <div class="stm-scheme-control"><span>日夜外观</span><div class="stm-scheme-options" role="group" aria-label="日夜外观"><button type="button" data-scheme-choice="system">跟随系统</button><button type="button" data-scheme-choice="light">日间</button><button type="button" data-scheme-choice="dark">夜间</button></div><p class="stm-hint">保留当前配色与背景，自定义颜色优先。</p></div>
             <section class="stm-font-section">
                 <div class="stm-font-heading"><span>界面字体</span><button type="button" class="stm-secondary" data-action="import-font">＋ 导入字体</button></div>
@@ -255,6 +268,7 @@ function initialize() {
                 <div class="stm-details-content">
                     <div class="stm-details-summary"><img class="stm-details-cover" alt="歌曲封面"><div><strong data-role="details-title"></strong><small data-role="details-source"></small></div></div>
                     <p class="stm-hint">让封面和歌词，成为这首歌的一部分。</p>
+                    <div class="stm-platform-credit stm-hint" data-role="platform-credit" hidden></div>
                     <div class="stm-detail-actions">
                         <button type="button" class="stm-secondary" data-action="song-cover" aria-label="添加封面"><span>添加封面</span><small aria-hidden="true">上传喜欢的图片</small></button>
                         <button type="button" class="stm-secondary" data-action="song-lyrics" aria-label="导入歌词"><span>导入歌词</span><small aria-hidden="true">支持 LRC / TXT</small></button>
@@ -323,6 +337,7 @@ function initialize() {
     function showPage(page, focus = false) {
         if (!query(`[data-view="${page}"]`)) return;
         currentPage = page;
+        if (page !== 'import') online?.cancel();
         menus.close();
         setDetailsOpen(false);
         if (page !== 'playback') { setQueueOpen(false); setLyricsOpen(false); }
@@ -371,7 +386,7 @@ function initialize() {
         query(selector).addEventListener('keydown', event => {
             if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); }
             if (event.key === 'Tab') {
-                const buttons = [...query(selector).querySelectorAll('button:not(:disabled)')];
+                const buttons = [...query(selector).querySelectorAll('button:not(:disabled), a[href]')];
                 if (event.shiftKey && document.activeElement === buttons[0]) { event.preventDefault(); buttons.at(-1)?.focus(); }
                 else if (!event.shiftKey && document.activeElement === buttons.at(-1)) { event.preventDefault(); buttons[0]?.focus(); }
             }
@@ -500,10 +515,34 @@ function initialize() {
     const fontPicker = createFontPicker({ panel, launcher, store, settings, save, showStatus, createId: createTrackId });
     const mini = createMiniPlayer({
         panel, audio,
-        getTrack: () => settings.tracks.find(track => track.id === settings.currentId),
-        getCount: () => getQueue(settings).length,
-        loadCover: track => track.coverId ? cachedCover(track.coverId) : Promise.resolve(null),
+        getTrack: () => findTrack(settings, settings.currentId),
+        getCount: () => getQueue(settings).filter(track => platformService.canPlay(track)).length,
+        loadCover: track => track.coverId ? cachedCover(track.coverId) : Promise.resolve(track.cover || null),
         onOpen: () => showPage('playback'), onPlay: toggleCurrent, onQueue: () => setQueueOpen(true),
+    });
+    online = createOnlinePanel({
+        panel, service: platformService, menus, getTarget: () => importTarget.value || null,
+        hasTrack: id => settings.tracks.some(track => track.id === id), onState: updatePlayback, onSave: savePlatformImport,
+        showStatus, async onPlay(track) {
+            savePlatformImport({ type: 'track', complete: true, total: 1, tracks: [track], name: track.title }, { targetId: importTarget.value || null });
+            if (!getQueue(settings).some(item => item.id === track.id)) await activatePlaylist(importTarget.value || null);
+            await toggleTrack(track.id);
+        },
+    });
+    function savePlatformImport(preview, options = {}) {
+        const plan = planImport(settings, preview, options);
+        let targetId = plan.targetId;
+        if (plan.newPlaylist) { const playlist = createPlaylist(settings, plan.name); playlist.source = plan.source; targetId = playlist.id; }
+        settings.tracks.push(...plan.added);
+        if (targetId) for (const track of plan.tracks) addTrackToPlaylist(settings, targetId, track.id);
+        save(); renderPlaylists(); renderTracks();
+        return `已保存 ${plan.tracks.length} 首歌曲信息，新增 ${plan.added.length} 首，复用 ${plan.tracks.length - plan.added.length} 首${targetId ? '，已加入歌单' : ''}。`;
+    }
+    query('#stm-hide-builtin').checked = settings.builtinHidden;
+    query('#stm-hide-builtin').addEventListener('change', async event => {
+        settings.builtinHidden = event.target.checked;
+        if (settings.builtinHidden && settings.activePlaylistId === BUILTIN_ID) await activatePlaylist(null);
+        save(); renderPlaylists(); renderTracks();
     });
     function updateMini() { mini.render(currentPage === 'playback' || panel.dataset.lyricsOpen === 'true'); }
 
@@ -511,7 +550,7 @@ function initialize() {
     const coverImage = query('.stm-cover-image');
     coverImage.src = fallbackCoverUrl(0);
     coverImage.addEventListener('error', () => {
-        const track = settings.tracks.find(item => item.id === settings.currentId);
+        const track = findTrack(settings, settings.currentId);
         const fallback = fallbackCoverUrl(track?.fallbackCover ?? 0);
         if (coverImage.src !== fallback) coverImage.src = fallback;
     });
@@ -571,7 +610,7 @@ function initialize() {
         if (coverUrl) URL.revokeObjectURL(coverUrl);
         coverUrl = null;
         if (track && track.fallbackCover === undefined) { track.fallbackCover = randomCover(); save(); }
-        coverImage.src = fallbackCoverUrl(track?.fallbackCover ?? 0);
+        coverImage.src = track?.cover || fallbackCoverUrl(track?.fallbackCover ?? 0);
         coverImage.alt = track ? `歌曲封面：${track.title}` : '音乐封面';
         renderLyrics(track);
         if (track?.coverId) {
@@ -599,16 +638,26 @@ function initialize() {
         coverCache.delete(id);
     }
     function renderSongDetails() {
-        const track = settings.tracks.find(track => track.id === detailsTrackId);
+        const track = findTrack(settings, detailsTrackId);
         if (!track) return;
         query('[data-role="details-title"]').textContent = track.title;
         query('[data-role="details-source"]').textContent = track.artist || (track.kind === 'local' ? '本地音乐' : '在线音乐');
         const image = query('.stm-details-cover');
-        image.src = fallbackCoverUrl(track.fallbackCover ?? 0);
+        image.src = track.cover || fallbackCoverUrl(track.fallbackCover ?? 0);
+        const credit = query('[data-role="platform-credit"]'); credit.replaceChildren(); credit.hidden = track.kind !== 'platform';
+        if (track.kind === 'platform') {
+            const text = document.createElement('p'); text.textContent = `${PLATFORM_NAMES[track.platform]} · ${platformService.canPlay(track) ? '可尝试站内播放' : '仅支持前往官方平台收听'}`; credit.append(text);
+            if (track.license) { const notice = document.createElement('p'); notice.textContent = track.license.attribution; credit.append(notice); }
+            for (const [label, url] of [['在官方平台查看', track.sourceUrl], ['许可说明', track.license?.url]]) if (url) { const link = document.createElement('a'); link.href = url; link.textContent = label; link.target = '_blank'; link.rel = 'noopener noreferrer'; credit.append(link); }
+        }
         const coverId = track.coverId;
         if (coverId) void cachedCover(coverId).then(url => {
             if (url && detailsTrackId === track.id && track.coverId === coverId) image.src = url;
         });
+    }
+    function editableDetailsTrack(id = detailsTrackId) {
+        if (!findTrack(settings, id)) return null;
+        try { return ensureLibraryTrack(settings, id); } catch (error) { showStatus(error.message, true); return null; }
     }
     const songCoverInput = query('[data-role="song-cover-file"]');
     const lyricsInput = query('[data-role="lyrics-file"]');
@@ -617,20 +666,20 @@ function initialize() {
     songCoverInput.addEventListener('change', async () => {
         const file = songCoverInput.files[0], id = detailsTrackId;
         songCoverInput.value = '';
-        if (!file || !settings.tracks.some(track => track.id === id)) return;
+        if (!file || !findTrack(settings, id)) return;
         const key = `cover:${createTrackId()}`;
         try {
             validateImageFile(file);
             const cover = await prepareCover(file);
             await store.put(key, cover);
-            const track = settings.tracks.find(track => track.id === id);
+            const track = editableDetailsTrack(id);
             if (!track) { await store.delete(key); return; }
             const previous = track.coverId;
             track.coverId = key; save(); renderTracks();
             if (settings.currentId === id) void renderMedia(track);
             if (previous) { forgetCover(previous); await store.delete(previous).catch(() => {}); }
             showStatus('歌曲封面已更新。');
-        } catch (error) { showStatus(error.message || '封面读取失败，请换一张图片。', true); }
+        } catch (error) { await store.delete(key).catch(() => {}); showStatus(error.message || '封面读取失败，请换一张图片。', true); }
     });
     lyricsInput.addEventListener('change', async () => {
         const file = lyricsInput.files[0], id = detailsTrackId;
@@ -640,7 +689,7 @@ function initialize() {
             if (!/\.(lrc|txt)$/i.test(file.name) || !file.size || file.size > 512 * 1024) throw new Error('请选择 512 KB 以内的 LRC 或 TXT 歌词文件。');
             const text = (await file.text()).replace(/^\uFEFF/, '').trim();
             if (!text || text.length > MAX_LYRICS) throw new Error('歌词不能为空，最多支持 50000 个字符。');
-            const track = settings.tracks.find(track => track.id === id);
+            const track = editableDetailsTrack(id);
             if (!track) return;
             track.lyrics = text; save();
             if (settings.currentId === id) renderLyrics(track);
@@ -648,7 +697,7 @@ function initialize() {
         } catch (error) { showStatus(error.message || '歌词读取失败。', true); }
     });
     query('[data-action="clear-song-cover"]').addEventListener('click', async () => {
-        const track = settings.tracks.find(track => track.id === detailsTrackId);
+        const track = editableDetailsTrack();
         if (!track) return;
         const previous = track.coverId;
         delete track.coverId; track.fallbackCover = randomCover(); save(); renderTracks();
@@ -657,7 +706,7 @@ function initialize() {
         showStatus('已恢复内置封面。');
     });
     query('[data-action="clear-song-lyrics"]').addEventListener('click', () => {
-        const track = settings.tracks.find(track => track.id === detailsTrackId);
+        const track = editableDetailsTrack();
         if (!track) return;
         delete track.lyrics; save();
         if (settings.currentId === track.id) renderLyrics(track);
@@ -760,6 +809,7 @@ function initialize() {
     }
 
     const activePlaylist = () => settings.playlists.find(item => item.id === settings.activePlaylistId);
+    const collectionName = () => settings.activePlaylistId === BUILTIN_ID ? settings.builtinCatalog.title : activePlaylist()?.name || '总曲库';
     const freshContext = () => globalThis.SillyTavern.getContext();
 
     function renderRoleStatus() {
@@ -813,7 +863,7 @@ function initialize() {
         showPage('library'); renderLibraryHome();
     }
     async function browseCollection(id) {
-        const normalized = settings.playlists.some(playlist => playlist.id === id) ? id : null;
+        const normalized = id === BUILTIN_ID && !settings.builtinHidden ? BUILTIN_ID : settings.playlists.some(playlist => playlist.id === id) ? id : null;
         showPage('library');
         if (settings.activePlaylistId !== normalized && !await activatePlaylist(normalized)) return;
         libraryDetail = true;
@@ -826,17 +876,17 @@ function initialize() {
     function openCreatePlaylist(trackId = null) {
         membershipTrackId = trackId;
         showPage('library');
-        const track = settings.tracks.find(item => item.id === trackId);
+        const track = findTrack(settings, trackId);
         query('[data-role="create-title"]').textContent = track ? `新建歌单，并加入「${track.title}」` : '给新歌单起个名字';
         query('#stm-create-playlist-panel').hidden = false;
         query('#stm-page-library').scrollTop = 0;
         query('#stm-new-playlist').focus();
     }
     function collectionImage(image, playlist) {
-        const track = playlist ? settings.tracks.find(track => playlist.trackIds.includes(track.id)) : settings.tracks[0];
+        const track = playlist ? getQueue(settings, playlist.id)[0] : settings.tracks[0];
         const coverId = playlist?.coverId || track?.coverId;
         const fallback = fallbackCoverUrl(track?.fallbackCover ?? 0);
-        image.src = fallback;
+        image.src = track?.cover || fallback;
         image.addEventListener('error', () => { if (image.src !== fallback) image.src = fallback; }, { once: true });
         if (coverId) void cachedCover(coverId).then(url => { if (url && image.isConnected) image.src = url; });
     }
@@ -862,6 +912,14 @@ function initialize() {
                 }
                 target.append(row); collectionImage(image, playlist);
             }
+        }
+        const defaults = query('[data-role="builtin-collection"]'); defaults.replaceChildren(); defaults.hidden = settings.builtinHidden;
+        if (!settings.builtinHidden) {
+            const button = document.createElement('button'); button.type = 'button'; button.className = 'stm-collection-open stm-builtin-collection'; button.dataset.collectionId = BUILTIN_ID; button.setAttribute('aria-label', '打开默认曲库');
+            const image = document.createElement('img'); image.className = 'stm-collection-cover'; image.alt = ''; image.src = settings.builtinCatalog.tracks[0]?.cover || fallbackCoverUrl(1);
+            const text = document.createElement('span'); const title = document.createElement('strong'); title.textContent = settings.builtinCatalog.title;
+            const count = document.createElement('small'); count.textContent = settings.builtinCatalog.tracks.length ? `${settings.builtinCatalog.tracks.length} 首 · 开发者预设` : '开发者尚未配置正式曲目';
+            text.append(title, count); button.append(image, text); button.addEventListener('click', () => { void browseCollection(BUILTIN_ID); }); defaults.append(button);
         }
         query('#stm-created-playlists').hidden = !settings.playlists.length;
         query('#stm-library-home').hidden = libraryDetail;
@@ -908,6 +966,8 @@ function initialize() {
         for (const [select, libraryName] of [[playlistSelect, '总曲库'], [query('#stm-library-playlist'), '总曲库'], [importTarget, '不选择 · 仅加入总曲库'], [query('#stm-add-target'), null]]) {
             select.replaceChildren();
             if (libraryName) select.append(new Option(libraryName, ''));
+            if (select === playlistSelect && !settings.builtinHidden && settings.builtinCatalog.tracks.length) select.append(new Option(settings.builtinCatalog.title, BUILTIN_ID));
+            if (select === query('#stm-library-playlist') && settings.activePlaylistId === BUILTIN_ID) select.append(new Option(settings.builtinCatalog.title, BUILTIN_ID));
             for (const playlist of settings.playlists) select.append(new Option(playlist.name, playlist.id));
         }
         playlistSelect.value = settings.activePlaylistId || '';
@@ -918,7 +978,7 @@ function initialize() {
         query('.stm-playlist-editor').hidden = !selected;
         if (selected) query('#stm-playlist-name').value = selected.name;
         menus.refresh();
-        if (!settings.playlists.length || !settings.tracks.some(track => track.id === membershipTrackId)) query('.stm-membership').hidden = true;
+        if (!settings.playlists.length || !findTrack(settings, membershipTrackId)) query('.stm-membership').hidden = true;
         renderRoleStatus();
         renderRolePicker();
         renderLibraryHome();
@@ -928,7 +988,7 @@ function initialize() {
     }
 
     async function activatePlaylist(id, open = false) {
-        settings.activePlaylistId = settings.playlists.some(playlist => playlist.id === id) ? id : null;
+        settings.activePlaylistId = id === BUILTIN_ID && !settings.builtinHidden ? BUILTIN_ID : settings.playlists.some(playlist => playlist.id === id) ? id : null;
         const revision = ++viewRevision;
         pausePlayback();
         query('.stm-membership').hidden = true;
@@ -944,6 +1004,7 @@ function initialize() {
     }
 
     function pausePlayback() {
+        platformLoadController?.abort(); platformLoadController = null;
         loadSequence++;
         canAutoAdvance = false;
         audio.pause();
@@ -980,7 +1041,7 @@ function initialize() {
             row.classList.toggle('stm-active', track.id === settings.currentId);
             const thumbnail = document.createElement('img');
             thumbnail.className = 'stm-track-thumbnail'; thumbnail.alt = ''; thumbnail.loading = 'lazy';
-            thumbnail.src = fallbackCoverUrl(track.fallbackCover ?? 0);
+            thumbnail.src = track.cover || fallbackCoverUrl(track.fallbackCover ?? 0);
             if (track.coverId) void cachedCover(track.coverId).then(url => { if (url && thumbnail.isConnected) thumbnail.src = url; });
             thumbnail.addEventListener('error', () => { const fallback = fallbackCoverUrl(track.fallbackCover ?? 0); if (thumbnail.src !== fallback) thumbnail.src = fallback; });
             row.append(thumbnail);
@@ -993,7 +1054,7 @@ function initialize() {
             title.className = 'stm-track-title';
             title.textContent = track.title;
             const source = document.createElement('small');
-            source.textContent = track.artist || (track.kind === 'local' ? '本地音乐' : new URL(track.url).hostname);
+            source.textContent = track.kind === 'platform' ? `${track.artist ? track.artist + ' · ' : ''}${PLATFORM_NAMES[track.platform]} · ${platformService.canPlay(track) ? '站内播放' : '官方平台收听'}` : track.artist || (track.kind === 'local' ? '本地音乐' : new URL(track.url).hostname);
             button.append(title, source);
             button.addEventListener('click', () => void toggleTrack(track.id));
             const remove = document.createElement('button');
@@ -1009,8 +1070,7 @@ function initialize() {
             details.setAttribute('aria-label', `歌曲详情：${track.title}`);
             details.dataset.detailsId = track.id;
             details.addEventListener('click', () => {
-                detailsTrackId = track.id;
-                setDetailsOpen(true);
+                try { ensureLibraryTrack(settings, track.id); save(); detailsTrackId = track.id; setDetailsOpen(true); } catch (error) { showStatus(error.message, true); }
             });
             row.append(details);
             if (activePlaylist()) {
@@ -1040,18 +1100,19 @@ function initialize() {
                 });
                 row.append(add);
             }
-            row.append(remove, trackControl(track));
+            if (settings.activePlaylistId !== BUILTIN_ID) row.append(remove);
+            row.append(trackControl(track));
             list.append(row);
         }
-        query('[data-role="collection-title"]').textContent = activePlaylist()?.name || '总曲库';
+        query('[data-role="collection-title"]').textContent = collectionName();
         query('[data-role="count"]').textContent = String(queue.length);
         query('.stm-empty').hidden = queue.length > 0;
-        query('.stm-empty').textContent = activePlaylist() ? '此歌单还没有歌曲，请选择导入目标，或从总曲库添加。' : '曲库还是空的，导入本地音乐或添加直链开始吧。';
-        playButton.disabled = queue.length === 0;
+        query('.stm-empty').textContent = settings.activePlaylistId === BUILTIN_ID ? '开发者尚未配置默认曲目。以后更新插件会收到预设曲库，你的歌曲和歌单会保留。' : activePlaylist() ? '此歌单还没有歌曲，请选择导入目标，或从总曲库添加。' : '曲库还是空的，导入本地音乐或添加直链开始吧。';
+        playButton.disabled = !queue.some(track => platformService.canPlay(track));
         query('[data-action="previous"]').disabled = queue.length === 0;
         query('[data-action="next"]').disabled = queue.length === 0;
         if (assignedCover) save();
-        if (!settings.tracks.some(track => track.id === detailsTrackId)) setDetailsOpen(false);
+        if (!findTrack(settings, detailsTrackId)) setDetailsOpen(false);
         else if (!query('#stm-details').hidden) renderSongDetails();
         renderQueue();
         renderHistory();
@@ -1099,13 +1160,15 @@ function initialize() {
         }
         query('.stm-sheet-empty').hidden = queue.length > 0;
         query('[data-role="queue-count"]').textContent = ` · ${queue.length} 首`;
-        query('[data-role="queue-source"]').textContent = `来自：${activePlaylist()?.name || '总曲库'}`;
+        query('[data-role="queue-source"]').textContent = `来自：${collectionName()}`;
         updatePlayback();
     }
 
     async function toggleTrack(id) {
-        if (!settings.tracks.some(track => track.id === id)) return;
-        if (settings.currentId === id && audio.getAttribute('src')) {
+        const selected = findTrack(settings, id);
+        if (!selected) return;
+        if (!platformService.canPlay(selected)) { detailsTrackId = id; setDetailsOpen(true); showStatus('此歌曲仅支持前往官方平台收听。'); return; }
+        if (settings.currentId === id && audio.getAttribute('src') && !audio.error) {
             if (!audio.paused && !audio.ended) audio.pause(); else await play();
             return;
         }
@@ -1113,6 +1176,9 @@ function initialize() {
         await selectTrack(id, true);
     }
     function trackControl(track) {
+        if (!platformService.canPlay(track)) {
+            const link = document.createElement('a'); link.className = 'stm-external-source'; link.href = track.sourceUrl; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = '↗'; link.setAttribute('aria-label', `前往官方平台：${track.title}`); return link;
+        }
         const button = document.createElement('button'); button.type = 'button'; button.className = 'stm-row-play';
         button.dataset.trackToggle = track.id; button.dataset.trackTitle = track.title;
         button.addEventListener('click', () => { void toggleTrack(track.id); });
@@ -1173,6 +1239,7 @@ function initialize() {
     }
 
     function releaseSource() {
+        platformLoadController?.abort(); platformLoadController = null;
         audio.pause();
         audio.removeAttribute('src');
         audio.load();
@@ -1207,12 +1274,20 @@ function initialize() {
         save();
         renderTracks();
         query('[data-role="title"]').textContent = track?.title ?? '还没有音乐';
-        query('[data-role="source"]').textContent = track ? (track.artist || (track.kind === 'local' ? '本地音乐' : '在线音乐')) : '从导入页添加喜欢的音乐';
+        query('[data-role="source"]').textContent = track ? (track.kind === 'platform' ? [track.artist, PLATFORM_NAMES[track.platform], platformService.canPlay(track) ? '站内播放' : '官方平台收听'].filter(Boolean).join(' · ') : track.artist || (track.kind === 'local' ? '本地音乐' : '在线音乐')) : '从导入页添加喜欢的音乐';
         void renderMedia(track);
         showStatus();
         if (!track) return;
+        if (track.kind === 'platform' && !shouldPlay) return;
         try {
             let source = track.url;
+            if (track.kind === 'platform') {
+                if (!platformService.canPlay(track)) { if (shouldPlay) showStatus('此平台歌曲仅支持前往官方平台收听，可在歌曲详情中打开来源。'); return; }
+                platformLoadController = new AbortController();
+                const resolved = await platformService.resolve(track, { signal: platformLoadController.signal });
+                if (sequence !== loadSequence) return;
+                source = normalizeUrl(resolved.url);
+            }
             if (track.kind === 'local') {
                 const blob = await store.get(track.id);
                 if (sequence !== loadSequence) return;
@@ -1233,7 +1308,7 @@ function initialize() {
     }
 
     async function removeTrack(id) {
-        const track = settings.tracks.find(item => item.id === id);
+        const track = findTrack(settings, id);
         if (!track) return;
         if (!window.confirm(`从总曲库删除「${track.title}」？\n这首歌也会从所有歌单中移除。`)) return;
         try {
@@ -1243,7 +1318,7 @@ function initialize() {
             showStatus('删除本地文件失败，请检查浏览器存储权限后重试。', true);
             return;
         }
-        if (!settings.tracks.some(item => item.id === id)) return;
+        if (!findTrack(settings, id)) return;
         const liveIndex = getQueue(settings).findIndex(item => item.id === id);
         const current = settings.currentId === id;
         const wasPlaying = !audio.paused;
@@ -1332,14 +1407,16 @@ function initialize() {
         if (event.key === 'Escape') { event.stopPropagation(); setOpen(false); }
     });
     function toggleCurrent() {
+        const current = findTrack(settings, settings.currentId);
+        if (!current || !platformService.canPlay(current)) { void selectTrack(getQueue(settings).find(track => platformService.canPlay(track))?.id, true); return; }
         if (!audio.paused) audio.pause();
-        else if (!audio.getAttribute('src')) void selectTrack(settings.currentId || getQueue(settings)[0]?.id, true);
+        else if (!audio.getAttribute('src') || audio.error) void selectTrack(settings.currentId || getQueue(settings)[0]?.id, true);
         else void play();
     }
     playButton.addEventListener('click', toggleCurrent);
     for (const [action, direction] of [['previous', -1], ['next', 1]]) {
         query(`[data-action="${action}"]`).addEventListener('click', () => {
-            void selectTrack(nextTrackId(getQueue(settings), settings.currentId, settings.mode, { direction }), !audio.paused);
+            void selectTrack(nextTrackId(getQueue(settings).filter(track => platformService.canPlay(track)), settings.currentId, settings.mode, { direction }), !audio.paused);
         });
     }
     query('[data-action="import"]').addEventListener('click', () => fileInput.click());
@@ -1374,7 +1451,7 @@ function initialize() {
         try {
             const playlist = createPlaylist(settings, query('#stm-new-playlist').value);
             query('#stm-new-playlist').value = '';
-            const pending = settings.tracks.find(track => track.id === membershipTrackId);
+            const pending = findTrack(settings, membershipTrackId);
             if (pending) addTrackToPlaylist(settings, playlist.id, pending.id);
             membershipTrackId = null;
             query('#stm-create-playlist-panel').hidden = true;
@@ -1420,11 +1497,13 @@ function initialize() {
         showStatus('角色绑定已保存。进入角色只切换歌单，音乐需手动播放。');
     });
     query('[data-action="confirm-membership"]').addEventListener('click', () => {
+        try {
         const targetId = query('#stm-add-target').value;
         const added = addTrackToPlaylist(settings, targetId, membershipTrackId);
         save(); renderPlaylists(); renderTracks();
         query('.stm-membership').hidden = true;
         showStatus(added ? '已加入歌单，曲库歌曲保留不变。' : '这首歌已在所选歌单中。');
+        } catch (error) { showStatus(error.message, true); }
     });
     query('[data-action="close-membership"]').addEventListener('click', () => { query('.stm-membership').hidden = true; });
     const modeLabels = { sequence: '顺序播放', list: '列表循环', single: '单曲循环', shuffle: '随机播放' };
@@ -1478,12 +1557,13 @@ function initialize() {
     }, 60000);
     audio.addEventListener('ended', () => {
         if (!canAutoAdvance) return;
-        const nextId = nextTrackId(getQueue(settings), settings.currentId, settings.mode, { ended: true });
+        const nextId = nextTrackId(getQueue(settings).filter(track => platformService.canPlay(track)), settings.currentId, settings.mode, { ended: true });
         if (nextId) void selectTrack(nextId, true);
         else showStatus('播放列表已播放完毕。');
     });
     audio.addEventListener('error', () => {
         if (!audio.getAttribute('src')) return;
+        if (findTrack(settings, settings.currentId)?.kind === 'platform') { platformService.invalidate(findTrack(settings, settings.currentId)); showStatus('平台音源加载失败，请检查网络、原站权限或稍后重试。', true); return; }
         showStatus('音乐加载失败：链接可能失效、需要登录，或浏览器不支持此格式。可尝试下载后导入本地文件。', true);
     });
     window.addEventListener('pagehide', event => {
@@ -1493,7 +1573,7 @@ function initialize() {
             if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
             if (coverUrl) URL.revokeObjectURL(coverUrl);
             for (const id of coverCache.keys()) forgetCover(id);
-            fontPicker.dispose(); mini.dispose(); menus.dispose(); resizer.dispose(); disposeClickEffects();
+            fontPicker.dispose(); mini.dispose(); online.dispose(); platformLoadController?.abort(); menus.dispose(); resizer.dispose(); disposeClickEffects();
             systemScheme.removeEventListener('change', onSystemScheme);
             window.clearInterval(historyTimer);
             window.clearTimeout(statusTimer);
