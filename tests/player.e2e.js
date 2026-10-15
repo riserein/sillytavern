@@ -794,3 +794,97 @@ test('crop dragging, cancellation and invalid image recovery work on a small scr
     await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'true');
     await expect(page.locator('.stm-footer')).toBeInViewport();
 });
+
+test('mask transparency is independent per material, preserves clear mode, and persists across reloads', async ({ page }) => {
+    await importBackground(page);
+    await page.getByRole('button', { name: '使用此区域', exact: true }).click();
+    await expect(page.locator('.stm-crop-editor')).toBeHidden();
+    await page.getByRole('button', { name: '毛玻璃', exact: true }).click();
+    await page.getByRole('slider', { name: '遮罩透明度', exact: true }).fill('80');
+    await expect(page.locator('[data-role="mask-transparency"]')).toHaveText('80%');
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::after').opacity)).toBe('0.2');
+    await page.getByRole('button', { name: '雾面', exact: true }).click();
+    await page.getByRole('slider', { name: '遮罩透明度', exact: true }).fill('25');
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::after').opacity)).toBe('0.75');
+    await page.getByRole('button', { name: '清透', exact: true }).click();
+    await expect(page.getByRole('slider', { name: '遮罩透明度', exact: true })).toBeDisabled();
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::after').opacity)).toBe('0');
+    await page.getByRole('button', { name: '毛玻璃', exact: true }).click();
+    await expect(page.getByRole('slider', { name: '遮罩透明度', exact: true })).toHaveValue('80');
+    const saved = waitForPlayerSave(page, settings => settings.maskOpacity?.glass === .2 && settings.maskOpacity?.matte === .75);
+    await page.getByRole('button', { name: '雾面', exact: true }).click();
+    await saved;
+    await page.reload();
+    await page.waitForFunction(() => !document.getElementById('preloader'));
+    await page.locator('#stm-launcher').click();
+    await playerPage(page, '外观');
+    await expect(page.getByRole('slider', { name: '遮罩透明度', exact: true })).toHaveValue('25');
+    await page.getByRole('button', { name: '重置透明度', exact: true }).click();
+    await expect(page.getByRole('slider', { name: '遮罩透明度', exact: true })).toHaveValue('35');
+    await page.getByRole('button', { name: '移除图片', exact: true }).click();
+    await expect(page.getByRole('slider', { name: '遮罩透明度', exact: true })).toHaveValue('3');
+    await page.getByRole('slider', { name: '遮罩透明度', exact: true }).fill('50');
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgba(37, 33, 30, 0.5)');
+});
+
+test('custom accent, background and text colors update both controls, preserve music and image, and restore presets', async ({ page }) => {
+    await importSongs(page, ['自定义颜色时继续播放']);
+    await playSong(page, '自定义颜色时继续播放');
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
+    await importBackground(page);
+    await page.getByRole('button', { name: '使用此区域', exact: true }).click();
+    await expect(page.locator('.stm-crop-editor')).toBeHidden();
+    for (const [color, value] of [['accent', '#88e1c1'], ['background', '#172c38'], ['text', '#fff0dc']]) await page.locator(`[data-color="${color}"]`).fill(value);
+    await expect(page.locator('#stm-custom-colors')).toBeChecked();
+    for (const selector of ['#stm-player', '#stm-launcher']) {
+        const colors = await page.locator(selector).evaluate(element => {
+            const css = getComputedStyle(element);
+            return ['--stm-accent', '--stm-solid', '--stm-body'].map(name => css.getPropertyValue(name).trim());
+        });
+        expect(colors).toEqual(['#88e1c1', '#172c38', '#fff0dc']);
+    }
+    await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'true');
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
+    const saved = waitForPlayerSave(page, settings => settings.customColors?.enabled && settings.customColors?.text === '#fff0dc' && !settings.clickEffects);
+    await page.getByRole('checkbox', { name: '点击涟漪动效', exact: true }).uncheck();
+    await saved;
+    await page.reload();
+    await page.waitForFunction(() => !document.getElementById('preloader'));
+    await page.locator('#stm-launcher').click();
+    await playerPage(page, '外观');
+    await expect(page.locator('[data-color="accent"]')).toHaveValue('#88e1c1');
+    await expect(page.locator('[data-color="background"]')).toHaveValue('#172c38');
+    await expect(page.locator('[data-color="text"]')).toHaveValue('#fff0dc');
+    await expect(page.locator('#stm-custom-colors')).toBeChecked();
+    await expect(page.getByRole('checkbox', { name: '点击涟漪动效', exact: true })).not.toBeChecked();
+    await page.getByRole('button', { name: '配色：烟粉', exact: true }).click();
+    await expect(page.locator('#stm-custom-colors')).not.toBeChecked();
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).getPropertyValue('--stm-accent').trim())).toBe('#efadc3');
+    await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'true');
+    await page.getByRole('checkbox', { name: '自定义配色', exact: true }).check();
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).getPropertyValue('--stm-accent').trim())).toBe('#88e1c1');
+});
+
+test('click halos animate, clean up, respect reduced motion and never turn drags into clicks', async ({ page }) => {
+    await page.clock.install();
+    await playerPage(page, '最近播放');
+    await expect(page.locator('#stm-player .stm-click-wave')).toHaveCount(1);
+    const wave = await page.locator('#stm-player .stm-click-wave').evaluate(element => {
+        const animation = element.getAnimations()[0];
+        return { duration: animation.effect.getTiming().duration, pointerEvents: getComputedStyle(element).pointerEvents };
+    });
+    expect(wave.duration).toBe(480);
+    expect(wave.pointerEvents).toBe('none');
+    await expect(page.locator('#stm-player .stm-click-wave')).toHaveCount(0);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await playerPage(page, '曲库');
+    await expect(page.locator('#stm-player .stm-click-wave')).toHaveCount(0);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.getByRole('button', { name: '关闭播放器', exact: true }).click();
+    await expect(page.locator('#stm-player')).toBeHidden();
+    await dragTo(page, page.locator('#stm-launcher'), { x: 200, y: 180 });
+    await expect(page.locator('#stm-player')).toBeHidden();
+    await expect(page.locator('#stm-launcher .stm-click-wave')).toHaveCount(0);
+    await page.locator('#stm-launcher').click();
+    await expect(page.locator('#stm-player')).toBeVisible();
+});

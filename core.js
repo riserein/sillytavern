@@ -1,3 +1,5 @@
+import { normalizeCustomColors } from './appearance.js';
+
 export const MAX_TRACKS = 200;
 export const MAX_PLAYLISTS = 50;
 export const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -98,6 +100,11 @@ export function normalizeSettings(raw = {}, now = Date.now()) {
         theme: THEMES.includes(raw.theme) ? raw.theme : 'amber',
         surface: SURFACES.includes(raw.surface) && (raw.surface !== 'clear' || backgroundId) ? raw.surface : 'glass',
         backgroundId,
+        customColors: normalizeCustomColors(raw.customColors),
+        maskOpacity: Object.fromEntries(['matte', 'glass'].map(surface => [surface,
+            typeof raw.maskOpacity?.[surface] === 'number' && Number.isFinite(raw.maskOpacity[surface])
+                ? Math.min(1, Math.max(0, raw.maskOpacity[surface])) : null])),
+        clickEffects: raw.clickEffects !== false,
         ...normalizeHistory(raw, ids, now),
         positions: {
             launcher: normalizePosition(raw.positions?.launcher),

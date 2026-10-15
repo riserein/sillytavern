@@ -9,6 +9,8 @@ test('new playlists have safe playback defaults', () => {
         tracks: [], volume: 0.6, mode: 'list', currentId: null,
         playlists: [], activePlaylistId: null,
         backgroundId: null, recentPlays: [], playEvents: [],
+        customColors: { enabled: false, accent: '#dbc291', background: '#25211e', text: '#f0e9dc' },
+        maskOpacity: { matte: null, glass: null }, clickEffects: true,
         theme: 'amber', surface: 'glass', positions: { launcher: null, panel: null },
     });
     assert.equal(normalizeSettings(null).volume, 0.6);

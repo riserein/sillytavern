@@ -7,6 +7,7 @@ import {
 import { LocalMusicStore } from './local-store.js';
 import { makeDraggable } from './floating.js';
 import { createImageCropper } from './background.js';
+import { CUSTOM_PROPERTIES, customPalette, hexRgba, defaultMaskOpacity, attachClickEffects } from './appearance.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
 
@@ -167,11 +168,26 @@ function initialize() {
         <section id="stm-appearance" class="stm-page stm-appearance" role="tabpanel" aria-labelledby="stm-tab-appearance" data-view="appearance" hidden>
             <div class="stm-page-heading"><h3>配色与背景</h3><span>为音乐换一种氛围</span></div>
             <div class="stm-theme-grid" role="group" aria-label="选择配色"></div>
+            <div class="stm-custom-colors">
+                <label class="stm-check-label"><input type="checkbox" id="stm-custom-colors">自定义配色</label>
+                <div class="stm-color-inputs">
+                    <label>点缀色<input type="color" data-color="accent" aria-label="自定义点缀色"></label>
+                    <label>背景色<input type="color" data-color="background" aria-label="自定义背景色"></label>
+                    <label>文字色<input type="color" data-color="text" aria-label="自定义文字色"></label>
+                </div>
+                <p class="stm-hint">修改颜色即启用；选择上方预设即可恢复预设配色。</p>
+            </div>
             <div class="stm-surface-row" role="group" aria-label="选择质感">
                 <button type="button" class="stm-secondary" data-surface-choice="matte">雾面</button>
                 <button type="button" class="stm-secondary" data-surface-choice="glass">毛玻璃</button>
                 <button type="button" class="stm-secondary" data-surface-choice="clear" disabled title="导入背景图片后可用">清透</button>
             </div>
+            <div class="stm-mask-control">
+                <div class="stm-mask-heading"><label for="stm-mask-transparency">遮罩透明度</label><output for="stm-mask-transparency" data-role="mask-transparency"></output></div>
+                <input id="stm-mask-transparency" class="stm-range" type="range" min="0" max="100" step="1" aria-label="遮罩透明度">
+                <div class="stm-mask-caption"><span class="stm-hint">越高越通透，两种质感分别记忆</span><button type="button" class="stm-secondary" data-action="reset-mask">重置透明度</button></div>
+            </div>
+            <label class="stm-check-label stm-effects-toggle"><input type="checkbox" id="stm-click-effects">点击涟漪动效</label>
             <div class="stm-background-card">
                 <div class="stm-background-preview" aria-label="当前背景图片预览"><span>你的图片，你的氛围</span></div>
                 <div class="stm-background-actions">
@@ -224,6 +240,7 @@ function initialize() {
         getPosition: () => settings.positions.panel,
         onPositionChange: position => { settings.positions.panel = position; save(); },
     });
+    attachClickEffects(panel, launcher, () => settings.clickEffects);
     function showPage(page, focus = false) {
         if (!query(`[data-view="${page}"]`)) return;
         currentPage = page;
@@ -265,16 +282,27 @@ function initialize() {
         const label = document.createElement('span');
         label.textContent = name;
         button.append(swatch, label);
-        button.addEventListener('click', () => { settings.theme = theme; applyAppearance(); save(); });
+        button.addEventListener('click', () => { settings.theme = theme; settings.customColors.enabled = false; applyAppearance(); save(); });
         query('.stm-theme-grid').append(button);
     }
     function applyAppearance() {
         for (const element of [panel, launcher]) {
             element.dataset.theme = settings.theme;
             element.dataset.surface = settings.surface;
+            element.dataset.customColors = String(settings.customColors.enabled);
+            for (const property of CUSTOM_PROPERTIES) element.style.removeProperty(property);
+            if (settings.customColors.enabled) {
+                for (const [property, value] of Object.entries(customPalette(settings.customColors))) element.style.setProperty(property, value);
+            }
+            for (const surface of ['matte', 'glass']) {
+                if (settings.maskOpacity[surface] !== null) {
+                    const solid = getComputedStyle(element).getPropertyValue('--stm-solid').trim();
+                    element.style.setProperty(`--stm-${surface}`, hexRgba(solid, settings.maskOpacity[surface]));
+                }
+            }
         }
         for (const button of panel.querySelectorAll('[data-theme-choice]')) {
-            button.setAttribute('aria-pressed', String(button.dataset.themeChoice === settings.theme));
+            button.setAttribute('aria-pressed', String(!settings.customColors.enabled && button.dataset.themeChoice === settings.theme));
         }
         for (const button of panel.querySelectorAll('[data-surface-choice]')) {
             button.setAttribute('aria-pressed', String(button.dataset.surfaceChoice === settings.surface));
@@ -286,7 +314,37 @@ function initialize() {
         query('.stm-background-preview span').hidden = Boolean(backgroundUrl);
         query('[data-action="recrop-background"]').disabled = !backgroundUrl;
         query('[data-action="remove-background"]').disabled = !settings.backgroundId;
+        query('#stm-custom-colors').checked = settings.customColors.enabled;
+        for (const input of panel.querySelectorAll('[data-color]')) input.value = settings.customColors[input.dataset.color];
+        const opacity = settings.surface === 'clear' ? 0 : settings.maskOpacity[settings.surface]
+            ?? defaultMaskOpacity(settings.surface, Boolean(backgroundUrl), settings.theme, settings.customColors.enabled);
+        panel.style.setProperty('--stm-mask-opacity', String(opacity));
+        query('#stm-mask-transparency').value = String(Math.round((1 - opacity) * 100));
+        query('[data-role="mask-transparency"]').textContent = `${query('#stm-mask-transparency').value}%`;
+        query('#stm-mask-transparency').disabled = settings.surface === 'clear';
+        query('[data-action="reset-mask"]').disabled = settings.surface === 'clear';
+        query('#stm-click-effects').checked = settings.clickEffects;
     }
+    query('#stm-custom-colors').addEventListener('change', event => {
+        settings.customColors.enabled = event.currentTarget.checked; applyAppearance(); save();
+    });
+    for (const input of panel.querySelectorAll('[data-color]')) input.addEventListener('input', () => {
+        settings.customColors[input.dataset.color] = input.value;
+        settings.customColors.enabled = true;
+        applyAppearance(); save();
+    });
+    query('#stm-mask-transparency').addEventListener('input', event => {
+        if (settings.surface === 'clear') return;
+        settings.maskOpacity[settings.surface] = (100 - Number(event.currentTarget.value)) / 100;
+        applyAppearance(); save();
+    });
+    query('[data-action="reset-mask"]').addEventListener('click', () => {
+        if (settings.surface === 'clear') return;
+        settings.maskOpacity[settings.surface] = null; applyAppearance(); save();
+    });
+    query('#stm-click-effects').addEventListener('change', event => {
+        settings.clickEffects = event.currentTarget.checked; save();
+    });
     query('[data-action="appearance"]').addEventListener('click', () => showPage(currentPage === 'appearance' ? 'playback' : 'appearance'));
     for (const button of panel.querySelectorAll('[data-surface-choice]')) {
         button.addEventListener('click', () => {

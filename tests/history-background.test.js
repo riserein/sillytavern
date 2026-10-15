@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { normalizeSettings, recordPlayback, recentTracks, rankedTracks, deleteTrackFromLibrary, THREE_DAYS } from '../core.js';
 import { cropRectangle, validateImageFile, MAX_IMAGE_BYTES } from '../background.js';
+import { customPalette, defaultMaskOpacity } from '../appearance.js';
 
 const now = 1_800_000_000_000;
 const tracks = Array.from({ length: 120 }, (_, i) => ({ id: String(i), kind: 'local', title: `Song ${i}` }));
@@ -70,4 +71,28 @@ test('portrait crop remains in bounds for wide, tall, zoomed and off-edge images
 test('image import rejects empty, oversized, non-image and SVG input', () => {
     assert.doesNotThrow(() => validateImageFile({ type: 'image/jpeg', size: 1000 }));
     for (const file of [{ type: 'image/jpeg', size: 0 }, { type: 'image/png', size: MAX_IMAGE_BYTES + 1 }, { type: 'audio/mpeg', size: 100 }, { type: 'image/svg+xml', size: 100 }]) assert.throws(() => validateImageFile(file));
+});
+
+test('custom colors and independent material opacities restore safely without changing old presets', () => {
+    const settings = normalizeSettings({ theme: 'ocean', maskOpacity: { matte: 1.5, glass: -.5 }, customColors: { enabled: true, accent: '#AABBCC', background: 'url(https://example.com)', text: '#102030' } });
+    assert.equal(settings.theme, 'ocean');
+    assert.deepEqual(settings.maskOpacity, { matte: 1, glass: 0 });
+    assert.deepEqual(settings.customColors, { enabled: true, accent: '#aabbcc', background: '#25211e', text: '#102030' });
+    assert.deepEqual(normalizeSettings({ maskOpacity: { glass: NaN, matte: '0.5' } }).maskOpacity, { matte: null, glass: null });
+    assert.equal(normalizeSettings({ clickEffects: false }).clickEffects, false);
+    assert.equal(defaultMaskOpacity('glass', false, 'pearl'), .76);
+    assert.equal(defaultMaskOpacity('glass', true, 'pearl'), .38);
+    assert.equal(defaultMaskOpacity('matte', true, 'amber'), .65);
+    assert.equal(defaultMaskOpacity('clear', true, 'amber'), 0);
+});
+
+test('custom palettes select a contrasting play-button label and generate complete color variables', () => {
+    const light = customPalette({ accent: '#ffffff', background: '#102030', text: '#ffffff' });
+    const dark = customPalette({ accent: '#000000', background: '#eeeeee', text: '#000000' });
+    assert.equal(light['--stm-on-accent'], '#17191d');
+    assert.equal(dark['--stm-on-accent'], '#ffffff');
+    assert.equal(light['--stm-glass'], 'rgba(16, 32, 48, 0.66)');
+    assert.equal(light['--stm-body'], '#ffffff');
+    assert.match(light['--stm-image-text-shadow'], /#000/);
+    assert.match(dark['--stm-image-text-shadow'], /#fff/);
 });

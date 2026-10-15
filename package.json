@@ -1,13 +1,13 @@
 {
     "name": "sillytavern-music-player",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "private": true,
     "type": "module",
     "description": "A built-in music player extension for SillyTavern",
     "scripts": {
         "test": "node --test tests/core.test.js tests/floating.test.js tests/playlists.test.js tests/history-background.test.js",
         "test:e2e": "playwright test",
-        "check": "node --check index.js && node --check core.js && node --check local-store.js && node --check floating.js && node --check background.js"
+        "check": "node --check index.js && node --check core.js && node --check local-store.js && node --check floating.js && node --check background.js && node --check appearance.js"
     },
     "engines": {
         "node": ">=20"
