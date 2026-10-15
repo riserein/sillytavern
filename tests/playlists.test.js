@@ -111,3 +111,16 @@ test('playlist names reject empty, duplicate and reserved names while preserving
     assert.equal(playlist.name, '新名字');
     assert.deepEqual(playlist.trackIds, ['a']);
 });
+
+test('playlist covers survive normalization independently from song covers and audio', () => {
+    const coverId = 'cover:12345678-1234-1234-1234-123456789abc';
+    const settings = normalizeSettings({ tracks, playlists: [
+        { id: 'with-cover', name: '自定义封面', trackIds: ['a'], coverId },
+        { id: 'invalid', name: '错误引用', trackIds: ['a'], coverId: 'https://invalid.test/image.png' },
+    ] });
+    assert.equal(settings.playlists[0].coverId, coverId);
+    assert.equal(settings.playlists[1].coverId, undefined);
+    deletePlaylist(settings, 'with-cover');
+    assert.deepEqual(settings.tracks, tracks);
+    assert.equal(settings.playlists[0].coverId, undefined);
+});

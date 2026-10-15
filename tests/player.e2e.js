@@ -16,7 +16,12 @@ function wav(seconds = 8) {
 
 async function playerPage(page, name) {
     if (await page.locator('.stm-lyrics-view').isVisible()) await page.getByRole('button', { name: '显示封面', exact: true }).click();
+    if (await page.locator('#stm-queue').isVisible()) await page.getByRole('button', { name: '关闭播放列表', exact: true }).click();
     await page.getByRole('tab', { name, exact: true }).click();
+    if (name === '曲库') {
+        const id = await page.locator('#stm-library-playlist').inputValue();
+        await page.locator(`.stm-collection-open[data-collection-id="${id}"]`).click();
+    }
 }
 
 async function selectFont(page, id) {
@@ -42,11 +47,15 @@ async function playSong(page, name) {
     await playerPage(page, '播放');
     if (await page.locator('#stm-queue').isHidden()) await page.locator('[data-action="toggle-queue"]').click();
     await page.getByRole('button', { name: `播放队列歌曲：${name}`, exact: true }).click();
+    await page.getByRole('button', { name: '关闭播放列表', exact: true }).click();
 }
 
 async function selectAlbum(page, id) {
     await playerPage(page, '曲库');
-    await chooseSelect(page, '#stm-library-playlist', id);
+    await page.getByRole('tab', { name: '曲库', exact: true }).click();
+    await page.locator(`.stm-collection-open[data-collection-id="${id}"]`).click();
+    await expect(page.locator('#stm-library-playlist')).toHaveValue(id);
+    if (id) await page.locator('[data-action="toggle-manager"]').click();
 }
 
 async function importSongs(page, names = ['雨夜', '旅途']) {
@@ -426,7 +435,7 @@ test.describe('touch dragging', () => {
 
 async function createAlbum(page, name) {
     await playerPage(page, '曲库');
-    if (await page.locator('#stm-playlist-manager').isHidden()) await page.locator('[data-action="toggle-manager"]').click();
+    await page.locator('[data-action="new-playlist"]').click();
     await page.locator('#stm-new-playlist').fill(name);
     await page.getByRole('button', { name: '新建', exact: true }).click();
     await expect(page.locator('[data-role="collection-title"]')).toHaveText(name);
@@ -466,6 +475,7 @@ async function selectCard(page, card) {
 
 async function bindCards(page, cards) {
     await playerPage(page, '曲库');
+    if (await page.locator('#stm-playlist-manager').isHidden()) await page.locator('[data-action="toggle-manager"]').click();
     if (await page.locator('#stm-role-bindings').isHidden()) await page.getByRole('button', { name: '绑定角色', exact: true }).click();
     for (const card of cards) await page.getByRole('checkbox', { name: `${card.name}（${card.avatar}）`, exact: true }).check();
     await page.getByRole('button', { name: '保存绑定', exact: true }).click();
@@ -890,7 +900,7 @@ test('custom accent, background and text colors update both controls, preserve m
     await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'true');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
     const saved = waitForPlayerSave(page, settings => settings.customColors?.enabled && settings.customColors?.text === '#fff0dc' && !settings.clickEffects);
-    await page.getByRole('checkbox', { name: '全页面点击涟漪', exact: true }).uncheck();
+    await page.getByRole('checkbox', { name: '播放器点击涟漪', exact: true }).uncheck();
     await saved;
     await page.reload();
     await page.waitForFunction(() => !document.getElementById('preloader'));
@@ -900,7 +910,7 @@ test('custom accent, background and text colors update both controls, preserve m
     await expect(page.locator('[data-color="background"]')).toHaveValue('#172c38');
     await expect(page.locator('[data-color="text"]')).toHaveValue('#fff0dc');
     await expect(page.locator('#stm-custom-colors')).toBeChecked();
-    await expect(page.getByRole('checkbox', { name: '全页面点击涟漪', exact: true })).not.toBeChecked();
+    await expect(page.getByRole('checkbox', { name: '播放器点击涟漪', exact: true })).not.toBeChecked();
     await page.getByRole('button', { name: '配色：烟粉', exact: true }).click();
     await expect(page.locator('#stm-custom-colors')).not.toBeChecked();
     expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).getPropertyValue('--stm-accent').trim())).toBe('#a35877');
@@ -914,23 +924,23 @@ test('custom accent, background and text colors update both controls, preserve m
 test('click halos animate, clean up, respect reduced motion and never turn drags into clicks', async ({ page }) => {
     await page.clock.install();
     await playerPage(page, '最近播放');
-    await expect(page.locator('.stm-global-click-effects .stm-click-wave')).toHaveCount(1);
-    const wave = await page.locator('.stm-global-click-effects .stm-click-wave').evaluate(element => {
+    await expect(page.locator('#stm-player .stm-click-wave')).toHaveCount(1);
+    const wave = await page.locator('#stm-player .stm-click-wave').evaluate(element => {
         const animation = element.getAnimations()[0];
         return { duration: animation.effect.getTiming().duration, pointerEvents: getComputedStyle(element).pointerEvents };
     });
     expect(wave.duration).toBe(480);
     expect(wave.pointerEvents).toBe('none');
-    await expect(page.locator('.stm-global-click-effects .stm-click-wave')).toHaveCount(0);
+    await expect(page.locator('#stm-player .stm-click-wave')).toHaveCount(0);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await playerPage(page, '曲库');
-    await expect(page.locator('.stm-global-click-effects .stm-click-wave')).toHaveCount(0);
+    await expect(page.locator('#stm-player .stm-click-wave')).toHaveCount(0);
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.getByRole('button', { name: '关闭播放器', exact: true }).click();
     await expect(page.locator('#stm-player')).toBeHidden();
     await dragTo(page, page.locator('#stm-launcher'), { x: 200, y: 180 });
     await expect(page.locator('#stm-player')).toBeHidden();
-    await expect(page.locator('.stm-global-click-effects .stm-click-wave')).toHaveCount(0);
+    await expect(page.locator('#stm-player .stm-click-wave')).toHaveCount(0);
     await page.locator('#stm-launcher').click();
     await expect(page.locator('#stm-player')).toBeVisible();
 });
@@ -1035,12 +1045,15 @@ test('all seven bundled faces show their own previews, work without the font CDN
         await expect(row).toHaveAttribute('data-preview', 'ready', { timeout: 30000 });
         const sample = row.locator('.stm-font-sample');
         await expect(sample).toBeVisible();
+        expect((await row.boundingBox()).height).toBeLessThan(48);
+        await expect(sample.locator('small')).toHaveCount(0);
+        expect(await sample.evaluate(element => getComputedStyle(element).whiteSpace)).toBe('nowrap');
         expect(await sample.evaluate(element => getComputedStyle(element).fontFamily)).toContain(`stm-${id}`);
         await row.getByRole('radio').click();
         await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', id);
         await expect(row.getByRole('radio')).toHaveAttribute('aria-checked', 'true');
         expect(await page.evaluate(family => [...document.fonts].some(face => face.family === family && face.status === 'loaded'), `stm-${id}`)).toBe(true);
-        renderedSamples.push(await sample.evaluate(element => { const canvas = document.createElement('canvas'); canvas.width = 700; canvas.height = 80; const painter = canvas.getContext('2d'); painter.font = `28px ${getComputedStyle(element).fontFamily}`; painter.fillText(element.textContent, 5, 40); return canvas.toDataURL(); }));
+        renderedSamples.push(await sample.evaluate(element => { const canvas = document.createElement('canvas'); canvas.width = 700; canvas.height = 80; const painter = canvas.getContext('2d'); painter.font = `28px ${getComputedStyle(element).fontFamily}`; painter.fillText('听见故事里的风 · Music 0123456789', 5, 40); return canvas.toDataURL(); }));
         expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).fontFamily)).toContain(`stm-${id}`);
     }
     expect(new Set(renderedSamples).size).toBe(7);
@@ -1219,14 +1232,15 @@ test('system day/night changes update both controls while manual mode and custom
     await expect(page.locator('#stm-player')).toHaveAttribute('data-color-scheme', 'light');
 });
 
-test('clicks on blank areas across the tavern trigger optional ripples without intercepting input', async ({ page }) => {
+test('only player clicks and blank areas trigger small optional ripples without intercepting tavern input', async ({ page }) => {
     await page.evaluate(() => { const blank = document.createElement('div'); blank.id = 'stm-test-blank'; Object.assign(blank.style, { position: 'fixed', left: '10px', top: '200px', width: '40px', height: '40px', zIndex: '5000' }); document.body.append(blank); });
     await page.locator('#stm-test-blank').click();
-    await expect(page.locator('.stm-global-click-effects .stm-click-wave')).toHaveCount(1);
-    expect(await page.locator('.stm-global-click-effects').evaluate(element => getComputedStyle(element).pointerEvents)).toBe('none');
+    await expect(page.locator('#stm-player .stm-click-wave')).toHaveCount(0);
+    expect(await page.locator('#stm-player .stm-click-effects').evaluate(element => getComputedStyle(element).pointerEvents)).toBe('none');
     await expect(page.locator('.stm-click-wave')).toHaveCount(0);
     await playerPage(page, '外观'); await page.locator('#stm-appearance > .stm-page-heading').click();
     await expect(page.locator('.stm-click-wave')).not.toHaveCount(0);
+    expect(await page.locator('.stm-click-wave').first().evaluate(element => getComputedStyle(element).width)).toBe('30px');
     await page.locator('#stm-click-effects').uncheck();
     await expect(page.locator('.stm-click-wave')).toHaveCount(0);
     await page.locator('#stm-test-blank').click(); await expect(page.locator('.stm-click-wave')).toHaveCount(0);
@@ -1246,4 +1260,120 @@ test.describe('touch resizing', () => {
         expect(box.x).toBeGreaterThanOrEqual(8); expect(box.y).toBeGreaterThanOrEqual(8);
         expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.panelSize.width)).toBe(320);
     });
+});
+
+test('checkbox ticks remain visible and scrollbars are slim without white tracks', async ({ page }) => {
+    await playerPage(page, '外观');
+    const check = page.locator('#stm-click-effects');
+    for (const theme of ['配色：珍珠白', '配色：松绿']) {
+        await page.getByRole('button', { name: theme, exact: true }).click();
+        await check.uncheck();
+        await expect.poll(() => check.evaluate(element => getComputedStyle(element, '::before').opacity)).toBe('0');
+        await check.check();
+        await expect.poll(() => check.evaluate(element => getComputedStyle(element, '::before').opacity)).toBe('1');
+        const tick = await check.evaluate(element => {
+            const css = getComputedStyle(element, '::before');
+            return { opacity: css.opacity, border: css.borderBottomWidth, color: css.borderBottomColor, background: getComputedStyle(element).backgroundColor };
+        });
+        expect(tick.opacity).toBe('1'); expect(tick.border).toBe('2px'); expect(tick.color).not.toBe(tick.background);
+    }
+    const scroll = await page.locator('#stm-appearance').evaluate(element => ({
+        width: getComputedStyle(element, '::-webkit-scrollbar').width,
+        track: getComputedStyle(element, '::-webkit-scrollbar-track').backgroundColor,
+        arrows: getComputedStyle(element, '::-webkit-scrollbar-button').display,
+    }));
+    expect(scroll).toEqual({ width: '4px', track: 'rgba(0, 0, 0, 0)', arrows: 'none' });
+});
+
+test('my music lists library first, creates an album from a song, and saves an independent playlist cover', async ({ page }) => {
+    await importSongs(page, ['放入新歌单']);
+    await page.getByRole('tab', { name: '曲库', exact: true }).click();
+    await expect(page.locator('#stm-created-playlists')).toBeHidden();
+    await expect(page.locator('#stm-library-playlist')).toBeHidden();
+    await expect(page.locator('#stm-library-playlist-trigger')).toHaveCount(0);
+    await page.getByRole('button', { name: '打开歌单：总曲库', exact: true }).click();
+    await page.getByRole('button', { name: '加入歌单：放入新歌单', exact: true }).click();
+    await expect(page.locator('[data-role="membership-title"]')).toHaveText('将「放入新歌单」加入歌单');
+    await expect(page.locator('[data-action="confirm-membership"]')).toBeDisabled();
+    await page.locator('[data-action="create-for-song"]').click();
+    await expect(page.locator('[data-role="create-title"]')).toContainText('放入新歌单');
+    await page.locator('#stm-new-playlist').fill('我的午后');
+    await page.getByRole('button', { name: '新建', exact: true }).click();
+    await expect(page.locator('[data-role="collection-title"]')).toHaveText('我的午后');
+    await expect(page.locator('.stm-track')).toHaveCount(1);
+    const albumId = await page.locator('#stm-library-playlist').inputValue();
+    await expect(page.locator('#stm-playlist option')).toHaveText(['总曲库', '我的午后']);
+    const audioId = await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0].id);
+    await page.locator('[data-action="toggle-manager"]').click();
+    const saved = waitForPlayerSave(page, settings => settings.playlists?.some(playlist => playlist.id === albumId && playlist.coverId));
+    await page.locator('[data-role="playlist-cover-file"]').setInputFiles(await imageFixture(page));
+    await saved;
+    const coverId = await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.playlists[0].coverId);
+    await page.getByRole('tab', { name: '曲库', exact: true }).click();
+    await expect(page.locator('.stm-collection-open strong')).toHaveText(['总曲库', '我的午后']);
+    await expect(page.locator(`[data-collection-id="${albumId}"] img`)).toHaveAttribute('src', /^blob:/);
+    await page.reload(); await page.waitForFunction(() => !document.getElementById('preloader')); await page.locator('#stm-launcher').click();
+    await page.getByRole('tab', { name: '曲库', exact: true }).click();
+    await expect(page.locator(`[data-collection-id="${albumId}"] img`)).toHaveAttribute('src', /^blob:/);
+    await page.getByRole('button', { name: '管理歌单：我的午后', exact: true }).click();
+    page.once('dialog', dialog => dialog.accept());
+    await page.getByRole('button', { name: '删除歌单', exact: true }).click();
+    await expect.poll(() => page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.playlists.length)).toBe(0);
+    expect(await page.evaluate(async ({coverId, audioId}) => {
+        const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); const store = new LocalMusicStore();
+        return { cover: Boolean(await store.get(coverId)), audio: Boolean(await store.get(audioId)) };
+    }, {coverId, audioId})).toEqual({cover:false, audio:true});
+});
+
+test('recent and library song controls pause and resume in place and stay in sync with the mini player', async ({ page }) => {
+    await importSongs(page, ['原地继续']); await playSong(page, '原地继续');
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(.3);
+    await playerPage(page, '最近播放');
+    const recent = page.locator('.stm-recent-list .stm-row-play');
+    await expect(recent).toHaveAttribute('aria-label', '暂停歌曲：原地继续');
+    await recent.click();
+    await expect(recent).toHaveAttribute('aria-label', '播放歌曲：原地继续');
+    const position = await page.locator('#stm-player audio').evaluate(audio => audio.currentTime);
+    await expect(page.locator('.stm-mini-play')).toHaveAttribute('aria-label', '底栏播放');
+    await recent.click();
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(position);
+    await playerPage(page, '曲库');
+    const control = page.locator('.stm-track .stm-row-play');
+    await expect(control).toHaveAttribute('aria-label', '暂停歌曲：原地继续');
+    await control.click();
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(true);
+    await page.locator('.stm-mini-play').click();
+    await expect(control).toHaveAttribute('aria-label', '暂停歌曲：原地继续');
+    expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.playEvents.length)).toBe(1);
+    expect(await control.evaluate(element => element === element.parentElement.lastElementChild)).toBe(true);
+});
+
+test('vinyl mini bar animates only while playing and its queue uses two thirds of desktop and mobile player', async ({ page }) => {
+    const long = '月光落在你的窗前，陪你听完这个很长很长的故事，再慢慢说晚安';
+    await importSongs(page, [long, ...Array.from({length:14}, (_, index) => `排队${index}`), '下一首']); await playSong(page, long);
+    await playerPage(page, '最近播放');
+    await expect(page.locator('.stm-mini-player')).toBeVisible();
+    await expect(page.locator('.stm-mini-title')).toHaveClass(/stm-marquee/);
+    expect(await page.locator('.stm-mini-disc').evaluate(element => getComputedStyle(element).animationPlayState)).toBe('running');
+    await page.locator('.stm-mini-play').click();
+    expect(await page.locator('.stm-mini-disc').evaluate(element => getComputedStyle(element).animationPlayState)).toBe('paused');
+    for (const viewport of [{width:1280,height:900}, {width:375,height:667}]) {
+        await page.setViewportSize(viewport);
+        await page.locator('.stm-mini-queue').click();
+        await expect(page.locator('.stm-queue-track')).toHaveCount(16);
+        const panel = await page.locator('#stm-player').boundingBox(), sheet = await page.locator('.stm-queue-sheet').boundingBox();
+        expect(sheet.height).toBeLessThanOrEqual(panel.height * 2/3 + 1); expect(sheet.height).toBeGreaterThan(panel.height * .6);
+        expect(sheet.y+sheet.height).toBeLessThanOrEqual(panel.y+panel.height);
+        await page.getByRole('button', {name: '播放队列歌曲：下一首', exact:true}).click();
+        await expect(page.locator('#stm-queue')).toBeVisible();
+        await expect(page.locator('.stm-queue-track').last().locator('.stm-row-play')).toHaveAttribute('aria-pressed', 'true');
+        await expect(page.getByRole('button', {name: '播放队列歌曲：下一首', exact:true})).toBeFocused();
+        expect(await page.locator('.stm-queue-list').evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+        await page.keyboard.press('Escape');
+        await expect(page.locator('.stm-mini-queue')).toBeFocused();
+        if (!await page.locator('#stm-player audio').evaluate(audio => audio.paused)) await page.locator('.stm-mini-play').click();
+    }
+    await page.locator('.stm-mini-info').click();
+    await expect(page.getByRole('tab', {name:'播放',exact:true})).toHaveAttribute('aria-selected','true');
+    await expect(page.locator('.stm-mini-player')).toBeHidden();
 });

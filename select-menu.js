@@ -42,7 +42,7 @@ export function createSelectMenus(panel) {
         }
         position(control);
     }
-    for (const select of panel.querySelectorAll('select')) {
+    for (const select of panel.querySelectorAll('select:not([data-no-menu])')) {
         const wrapper = document.createElement('div'); wrapper.className = 'stm-select'; wrapper.id = `${select.id}-control`;
         const button = document.createElement('button'); button.type = 'button'; button.className = 'stm-select-trigger';
         button.id = `${select.id}-trigger`; button.setAttribute('role', 'combobox'); button.setAttribute('aria-haspopup', 'listbox');

@@ -46,11 +46,11 @@ export function defaultMaskOpacity(surface, hasImage, theme, custom = false) {
     return custom || theme === 'amber' ? .66 : theme === 'pearl' ? .76 : .64;
 }
 
-/** An optional page-wide halo, including blank areas, without intercepting input. */
+/** Small halos stay inside the player, including blank areas, without intercepting input. */
 export function attachClickEffects(panel, launcher, enabled) {
     const layer = document.createElement('span');
-    layer.className = 'stm-click-effects stm-global-click-effects';
-    layer.setAttribute('aria-hidden', 'true'); document.body.append(layer);
+    layer.className = 'stm-click-effects';
+    layer.setAttribute('aria-hidden', 'true'); panel.append(layer);
     let pointer = null;
     const down = event => { if (event.isPrimary) pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false }; };
     const move = event => { if (pointer?.id === event.pointerId && Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) > 6) pointer.moved = true; };
@@ -61,7 +61,7 @@ export function attachClickEffects(panel, launcher, enabled) {
         const bounds = layer.getBoundingClientRect();
         const target = event.target.getBoundingClientRect?.() || bounds;
         const wave = document.createElement('span'); wave.className = 'stm-click-wave';
-        wave.style.width = wave.style.height = '84px';
+        wave.style.width = wave.style.height = '30px';
         wave.style.left = `${(event.detail ? event.clientX : target.x + target.width / 2) - bounds.x}px`;
         wave.style.top = `${(event.detail ? event.clientY : target.y + target.height / 2) - bounds.y}px`;
         const colors = getComputedStyle(panel);
@@ -74,9 +74,9 @@ export function attachClickEffects(panel, launcher, enabled) {
         ], { duration: 480, easing: 'cubic-bezier(.16, 1, .3, 1)' });
         animation.finished.then(() => wave.remove(), () => wave.remove());
     };
-    for (const [name, callback] of [['pointerdown', down], ['pointermove', move], ['pointercancel', cancel], ['click', click]]) document.addEventListener(name, callback, true);
+    for (const [name, callback] of [['pointerdown', down], ['pointermove', move], ['pointercancel', cancel], ['click', click]]) panel.addEventListener(name, callback, true);
     return () => {
-        for (const [name, callback] of [['pointerdown', down], ['pointermove', move], ['pointercancel', cancel], ['click', click]]) document.removeEventListener(name, callback, true);
+        for (const [name, callback] of [['pointerdown', down], ['pointermove', move], ['pointercancel', cancel], ['click', click]]) panel.removeEventListener(name, callback, true);
         layer.remove();
     };
 }

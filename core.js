@@ -89,6 +89,7 @@ export function normalizeSettings(raw = {}, now = Date.now()) {
             name: String(item.name || '未命名歌单').trim().slice(0, 80) || '未命名歌单',
             trackIds,
             characterAvatars,
+            ...(typeof item.coverId === 'string' && /^cover:[a-f0-9-]{36}$/.test(item.coverId) ? { coverId: item.coverId } : {}),
             lastTrackId: trackIds.includes(item.lastTrackId) ? item.lastTrackId : (trackIds[0] ?? null),
         });
         if (playlists.length === MAX_PLAYLISTS) break;

@@ -1,4 +1,4 @@
-import { FONT_PRESETS, FONT_SAMPLE, FONT_LATIN_SAMPLE, MAX_FONTS, validateFontFile, decodeFont, loadBuiltinFont } from './fonts.js';
+import { FONT_PRESETS, MAX_FONTS, validateFontFile, decodeFont, loadBuiltinFont } from './fonts.js';
 
 /** A scoped, keyboard-accessible picker. Preview faces stay loaded while browsing. */
 export function createFontPicker({ panel, launcher, store, settings, save, showStatus, createId }) {
@@ -92,13 +92,16 @@ export function createFontPicker({ panel, launcher, store, settings, save, showS
             if (disposed || !row.isConnected) return;
             sample.style.fontFamily = fontFamily(entry);
             sample.hidden = false;
+            caption.classList.add('stm-sr-only');
             caption.textContent = entry.local ? '本地字体' : entry.file ? '内置字体' : '设备字体 · 未安装会回退';
+            row.querySelector('[role="radio"]').title = caption.textContent;
             row.dataset.preview = 'ready';
         } catch {
             if (!row.isConnected) return;
             // Never present a fallback font as this face's preview.
             sample.hidden = true;
-            caption.textContent = '预览加载失败 · 点击可重试';
+            caption.classList.remove('stm-sr-only');
+            caption.textContent = `${entry.name} · 加载失败，点选重试`;
             row.dataset.preview = 'error';
         }
     }
@@ -140,12 +143,10 @@ export function createFontPicker({ panel, launcher, store, settings, save, showS
             button.type = 'button'; button.className = 'stm-font-choice';
             button.setAttribute('role', 'radio'); button.setAttribute('aria-label', entry.name);
             button.dataset.fontChoice = entry.id;
-            const name = document.createElement('span'); name.className = 'stm-font-name'; name.textContent = entry.name;
-            const caption = document.createElement('small'); caption.className = 'stm-font-caption'; caption.textContent = '正在加载字样…';
-            const sample = document.createElement('span'); sample.className = 'stm-font-sample'; sample.hidden = true;
-            const chinese = document.createElement('span'); chinese.textContent = FONT_SAMPLE;
-            const latin = document.createElement('small'); latin.textContent = FONT_LATIN_SAMPLE;
-            sample.append(chinese, latin); button.append(name, caption, sample);
+            const caption = document.createElement('small'); caption.className = 'stm-font-caption'; caption.textContent = `${entry.name} · 加载中`;
+            const sample = document.createElement('span'); sample.className = 'stm-font-name stm-font-sample'; sample.hidden = true;
+            sample.textContent = entry.name;
+            button.append(sample, caption);
             button.addEventListener('click', () => { void preview(row); void choose(entry); });
             row.append(button);
             if (entry.local) {
