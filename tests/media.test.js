@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readEmbeddedMetadata, parseLyrics, currentLyricIndex, randomCover, COVER_COUNT } from '../media.js';
 import { normalizeSettings } from '../core.js';
-import { validateFontFile } from '../fonts.js';
+import { validateFontFile, normalizeFonts, FONT_PRESETS, MAX_FONTS } from '../fonts.js';
 
 const syncSize = size => Buffer.from([size >> 21 & 127, size >> 14 & 127, size >> 7 & 127, size & 127]);
 function frame(id, data, version) {
@@ -57,4 +57,27 @@ test('local font import only accepts bounded supported font files', () => {
     assert.throws(() => validateFontFile({ name: 'fake.css', size: 1000 }));
     assert.throws(() => validateFontFile({ name: 'large.otf', size: 21 * 1024 * 1024 }));
     assert.throws(() => validateFontFile({ name: 'empty.ttf', size: 0 }));
+});
+
+test('font library migration preserves old blob IDs, selection, stable order and valid hashes', () => {
+    const id = 'font:12cf4785-e913-4f85-b372-72312d1974d3';
+    const second = 'font:22cf4785-e913-4f85-b372-72312d1974d3';
+    const old = normalizeFonts({ fontPreset: 'custom', fontId: id, fontName: '原来的字体' });
+    assert.deepEqual(old, { fonts: [{ id, name: '原来的字体' }], fontPreset: 'custom', fontId: id, fontName: '原来的字体' });
+    const many = normalizeFonts({ ...old, fonts: [{ id: second, name: '新字体', hash: 'a'.repeat(64) }, ...old.fonts, { id, name: '重复' }, null, { id: '../bad', name: 'bad' }] });
+    assert.deepEqual(many.fonts.map(font => font.id), [second, id]);
+    assert.equal(many.fonts[0].hash, 'a'.repeat(64));
+    assert.deepEqual(normalizeFonts(many), many);
+    for (const key of ['genwan', 'poxiao', 'chill', 'ukai', 'child', 'kinghwa', 'huiwen']) {
+        assert.equal(normalizeSettings({ fontPreset: key }).fontPreset, key);
+        assert.ok(FONT_PRESETS[key].file);
+    }
+    assert.equal(normalizeFonts({ fontPreset: 'custom', fontId: 'bad' }).fontPreset, 'inherit');
+    assert.equal(normalizeFonts({ fontPreset: '__proto__' }).fontPreset, 'inherit');
+    const full = Array.from({ length: MAX_FONTS + 10 }, (_, i) => ({ id: `font:${String(i).padStart(8, '0')}-e913-4f85-b372-72312d1974d3`, name: 'x'.repeat(100), hash: 'bad' }));
+    const bounded = normalizeFonts({ fonts: full, fontPreset: 'custom', fontId: id, fontName: 'active' });
+    assert.equal(bounded.fonts.length, MAX_FONTS);
+    assert.equal(bounded.fontId, id);
+    assert.equal(bounded.fonts[0].name.length, 80);
+    assert.equal(bounded.fonts[0].hash, undefined);
 });

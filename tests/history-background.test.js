@@ -96,3 +96,18 @@ test('custom palettes select a contrasting play-button label and generate comple
     assert.match(light['--stm-image-text-shadow'], /#000/);
     assert.match(dark['--stm-image-text-shadow'], /#fff/);
 });
+
+test('day and night palettes preserve all theme hues and system/manual preferences normalize', async () => {
+    const { resolveScheme, themePalette } = await import('../scheme.js');
+    assert.equal(resolveScheme('system', true), 'dark');
+    assert.equal(resolveScheme('system', false), 'light');
+    assert.equal(resolveScheme('light', true), 'light');
+    assert.equal(resolveScheme('dark', false), 'dark');
+    assert.equal(normalizeSettings({ colorScheme: 'invalid' }).colorScheme, 'system');
+    assert.equal(normalizeSettings({ colorScheme: 'dark' }).colorScheme, 'dark');
+    for (const theme of ['amber', 'ocean', 'forest', 'rose', 'lavender', 'pearl']) {
+        const light = themePalette(theme, 'light'), dark = themePalette(theme, 'dark');
+        assert.notEqual(light['--stm-solid'], dark['--stm-solid']);
+        assert.notEqual(light['--stm-body'], dark['--stm-body']);
+    }
+});

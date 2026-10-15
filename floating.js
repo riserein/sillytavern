@@ -38,7 +38,7 @@ export function makeDraggable(element, handle, { getPosition, onPositionChange }
     }
 
     function refresh() {
-        if (element.hidden || active) return;
+        if (element.hidden || active || element.classList.contains('stm-resizing')) return;
         const saved = getPosition();
         if (saved) {
             place(positionFromRatio(saved, rect(), viewport()));

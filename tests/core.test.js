@@ -11,7 +11,8 @@ test('new playlists have safe playback defaults', () => {
         backgroundId: null, recentPlays: [], playEvents: [],
         customColors: { enabled: false, accent: '#dbc291', background: '#25211e', text: '#f0e9dc' },
         maskOpacity: { matte: null, glass: null }, clickEffects: true,
-        fontPreset: 'inherit', fontId: null, fontName: '',
+        fonts: [], fontPreset: 'inherit', fontId: null, fontName: '',
+        colorScheme: 'system', panelSize: null,
         theme: 'amber', surface: 'glass', positions: { launcher: null, panel: null },
     });
     assert.equal(normalizeSettings(null).volume, 0.6);

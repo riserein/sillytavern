@@ -1,14 +1,17 @@
 import {
-    MAX_TRACKS, createTrackId, normalizeSettings, normalizeUrl, titleFromUrl, nextTrackId, formatTime, validateAudioFile,
+    MAX_TRACKS, PLAY_MODES, createTrackId, normalizeSettings, normalizeUrl, titleFromUrl, nextTrackId, formatTime, validateAudioFile,
     getQueue, createPlaylist, renamePlaylist, addTrackToPlaylist, removeTrackFromPlaylist, deleteTrackFromLibrary,
     deletePlaylist, bindPlaylistCharacters, currentCharacterAvatar, playlistForCharacter,
     recordPlayback, recentTracks, rankedTracks,
 } from './core.js';
 import { LocalMusicStore } from './local-store.js';
 import { makeDraggable } from './floating.js';
+import { makeResizable } from './resizing.js';
+import { createSelectMenus } from './select-menu.js';
+import { resolveScheme, themePalette } from './scheme.js';
 import { createImageCropper, validateImageFile } from './background.js';
 import { fallbackCoverUrl, randomCover, readEmbeddedMetadata, prepareCover, parseLyrics, currentLyricIndex, MAX_LYRICS } from './media.js';
-import { FONT_PRESETS, validateFontFile, decodeFont, loadBuiltinFont } from './fonts.js';
+import { createFontPicker } from './font-picker.js';
 import { CUSTOM_PROPERTIES, customPalette, hexRgba, defaultMaskOpacity, attachClickEffects } from './appearance.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
@@ -22,6 +25,7 @@ function initialize() {
     }
 
     const settings = normalizeSettings(context.extensionSettings[SETTINGS_KEY]);
+    context.extensionSettings[SETTINGS_KEY] = settings;
     const store = new LocalMusicStore();
     let objectUrl = null;
     let loadSequence = 0;
@@ -41,8 +45,6 @@ function initialize() {
     let lyricData = { synced: false, lines: [] };
     let activeLyric = -1;
     let detailsTrackId = null;
-    let fontFace = null;
-    let fontRevision = 0;
     const coverCache = new Map();
 
     const launcher = document.createElement('button');
@@ -81,7 +83,6 @@ function initialize() {
         <section id="stm-page-playback" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-playback" data-view="playback">
         <button type="button" class="stm-cover-stage" data-action="toggle-lyrics" aria-label="显示歌词" aria-pressed="false">
             <img class="stm-cover-image" alt="当前歌曲封面" draggable="false">
-            <div class="stm-lyrics-view" hidden><div class="stm-lyrics-lines"></div><span class="stm-lyrics-tip">轻点返回封面</span></div>
             <span class="stm-cover-tip">轻点查看歌词</span>
         </button>
         <div class="stm-now"><div class="stm-now-info"><strong data-role="title">挑一首喜欢的歌</strong><span data-role="source">从曲库开始今天的旋律</span></div></div>
@@ -93,10 +94,7 @@ function initialize() {
             <button type="button" class="stm-primary stm-play" data-action="play" aria-label="播放" title="播放"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg></button>
             <button type="button" class="stm-icon" data-action="next" aria-label="下一首" title="下一首"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 5 10 7-10 7zM17 5h2v14h-2z"/></svg></button>
         </div>
-        <div class="stm-options">
-            <label for="stm-mode">播放模式</label>
-            <select id="stm-mode"><option value="sequence">顺序播放</option><option value="list">列表循环</option><option value="single">单曲循环</option><option value="shuffle">随机播放</option></select>
-        </div>
+        <div class="stm-options"><button type="button" id="stm-mode" class="stm-mode" aria-label="播放模式：列表循环" title="列表循环 · 点击切换播放模式"></button></div>
         <div class="stm-volume">
             <button type="button" class="stm-icon" data-action="mute" aria-label="静音" title="静音">♪</button>
             <label class="stm-sr-only" for="stm-volume">音量</label>
@@ -185,11 +183,13 @@ function initialize() {
         </section>
         <section id="stm-appearance" class="stm-page stm-appearance" role="tabpanel" aria-labelledby="stm-tab-appearance" data-view="appearance" hidden>
             <div class="stm-page-heading"><h3>配色与背景</h3><span>为音乐换一种氛围</span></div>
+            <div class="stm-scheme-control"><span>日夜外观</span><div class="stm-scheme-options" role="group" aria-label="日夜外观"><button type="button" data-scheme-choice="system">跟随系统</button><button type="button" data-scheme-choice="light">日间</button><button type="button" data-scheme-choice="dark">夜间</button></div><p class="stm-hint">保留当前配色与背景，自定义颜色优先。</p></div>
             <section class="stm-font-section">
-                <label for="stm-font">界面字体</label><select id="stm-font"></select>
-                <div class="stm-font-actions"><button type="button" class="stm-secondary" data-action="import-font">导入字体</button><button type="button" class="stm-secondary" data-action="remove-font" disabled>移除字体</button></div>
-                <input type="file" data-role="font-file" accept=".woff2,.woff,.ttf,.otf" hidden>
-                <p class="stm-hint" data-role="font-status">宋体、楷书等使用设备已有字体；京华老宋体等可导入 WOFF2 / TTF / OTF 文件。</p>
+                <div class="stm-font-heading"><span>界面字体</span><button type="button" class="stm-secondary" data-action="import-font">＋ 导入字体</button></div>
+                <button type="button" id="stm-font" aria-label="选择界面字体" aria-expanded="false" aria-controls="stm-font-gallery"><strong>跟随酒馆</strong><span>预览与选择 ⌄</span></button>
+                <div id="stm-font-gallery" class="stm-font-gallery" role="radiogroup" aria-label="字体预览与选择" hidden></div>
+                <input type="file" data-role="font-file" accept=".woff2,.woff,.ttf,.otf" multiple hidden>
+                <p class="stm-hint" data-role="font-status"></p>
             </section>
             <div class="stm-theme-grid" role="group" aria-label="选择配色"></div>
             <div class="stm-custom-colors">
@@ -211,7 +211,7 @@ function initialize() {
                 <input id="stm-mask-transparency" class="stm-range" type="range" min="0" max="100" step="1" aria-label="遮罩透明度">
                 <div class="stm-mask-caption"><span class="stm-hint">越高越通透，两种质感分别记忆</span><button type="button" class="stm-secondary" data-action="reset-mask">重置透明度</button></div>
             </div>
-            <label class="stm-check-label stm-effects-toggle"><input type="checkbox" id="stm-click-effects">点击涟漪动效</label>
+            <label class="stm-check-label stm-effects-toggle"><input type="checkbox" id="stm-click-effects">全页面点击涟漪</label>
             <div class="stm-background-card">
                 <div class="stm-background-preview" aria-label="当前背景图片预览"><span>你的图片，你的氛围</span></div>
                 <div class="stm-background-actions">
@@ -223,10 +223,12 @@ function initialize() {
                 <p class="stm-hint">支持 10 MB 以内图片，导入后可拖动、缩放裁剪。雾面与毛玻璃叠加在图片上；清透直接使用图片背景。</p>
                 <p class="stm-hint" data-role="background-status">图片仅保存在当前浏览器。</p>
             </div>
-            <button type="button" class="stm-secondary" data-action="reset-position">重置悬浮球与窗口位置</button>
+            <button type="button" class="stm-secondary" data-action="reset-position">重置窗口大小与位置</button>
         </section>
         <p class="stm-status" role="status" aria-live="polite"></p>
         <footer class="stm-footer">关闭面板，音乐继续</footer>
+        <div class="stm-lyrics-view" role="button" tabindex="0" aria-label="显示封面" hidden><div class="stm-lyrics-lines"></div><span class="stm-lyrics-tip">轻点返回封面</span></div>
+        <button type="button" class="stm-resize-handle" aria-label="调整播放器大小" title="拖动调整大小，也可用方向键微调"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 16 8-8M13 16l3-3"/></svg></button>
         <section class="stm-crop-editor" role="dialog" aria-modal="true" aria-label="裁剪背景图片" hidden>
             <div class="stm-page-heading"><h3>裁剪背景图片</h3><span>拖动图片，留下喜欢的区域</span></div>
             <canvas width="320" height="480" aria-label="背景裁剪预览"></canvas>
@@ -246,6 +248,8 @@ function initialize() {
     const seek = query('#stm-seek');
     const volume = query('#stm-volume');
     const mode = query('#stm-mode');
+    const menus = createSelectMenus(panel);
+    const systemScheme = matchMedia('(prefers-color-scheme: dark)');
     const list = query('.stm-track-list');
     const urlInput = query('#stm-url');
     const playlistSelect = query('#stm-playlist');
@@ -264,11 +268,24 @@ function initialize() {
         getPosition: () => settings.positions.panel,
         onPositionChange: position => { settings.positions.panel = position; save(); },
     });
-    attachClickEffects(panel, launcher, () => settings.clickEffects);
+    const resizer = makeResizable(panel, query('.stm-resize-handle'), {
+        getSize: () => settings.panelSize,
+        onChange: (size, position) => { settings.panelSize = size; settings.positions.panel = position; menus.close(); save(); },
+        onLayout: () => {
+            panelDrag.refresh();
+            if (panel.dataset.lyricsOpen === 'true') {
+                const view = query('.stm-lyrics-view');
+                view.style.setProperty('--stm-lyrics-half-height', `${view.clientHeight / 2}px`);
+                updateLyrics(true);
+            }
+        },
+    });
+    const disposeClickEffects = attachClickEffects(panel, launcher, () => settings.clickEffects);
     function showPage(page, focus = false) {
         if (!query(`[data-view="${page}"]`)) return;
         currentPage = page;
-        if (page !== 'playback') setQueueOpen(false);
+        menus.close();
+        if (page !== 'playback') { setQueueOpen(false); setLyricsOpen(false); }
         for (const section of panel.querySelectorAll('[data-view]')) section.hidden = section.dataset.view !== page;
         for (const button of panel.querySelectorAll('[data-page]')) {
             const selected = button.dataset.page === page;
@@ -323,14 +340,16 @@ function initialize() {
         query('.stm-theme-grid').append(button);
     }
     function applyAppearance() {
+        const scheme = resolveScheme(settings.colorScheme, systemScheme.matches);
         for (const element of [panel, launcher]) {
             element.dataset.theme = settings.theme;
+            element.dataset.colorScheme = scheme;
+            element.style.colorScheme = scheme;
             element.dataset.surface = settings.surface;
             element.dataset.customColors = String(settings.customColors.enabled);
             for (const property of CUSTOM_PROPERTIES) element.style.removeProperty(property);
-            if (settings.customColors.enabled) {
-                for (const [property, value] of Object.entries(customPalette(settings.customColors))) element.style.setProperty(property, value);
-            }
+            const palette = settings.customColors.enabled ? customPalette(settings.customColors) : themePalette(settings.theme, scheme);
+            for (const [property, value] of Object.entries(palette)) element.style.setProperty(property, value);
             for (const surface of ['matte', 'glass']) {
                 if (settings.maskOpacity[surface] !== null) {
                     const solid = getComputedStyle(element).getPropertyValue('--stm-solid').trim();
@@ -361,7 +380,11 @@ function initialize() {
         query('#stm-mask-transparency').disabled = settings.surface === 'clear';
         query('[data-action="reset-mask"]').disabled = settings.surface === 'clear';
         query('#stm-click-effects').checked = settings.clickEffects;
+        for (const button of panel.querySelectorAll('[data-scheme-choice]')) button.setAttribute('aria-pressed', String(button.dataset.schemeChoice === settings.colorScheme));
     }
+    const onSystemScheme = () => { if (settings.colorScheme === 'system') applyAppearance(); };
+    systemScheme.addEventListener('change', onSystemScheme);
+    for (const button of panel.querySelectorAll('[data-scheme-choice]')) button.addEventListener('click', () => { settings.colorScheme = button.dataset.schemeChoice; applyAppearance(); save(); });
     query('#stm-custom-colors').addEventListener('change', event => {
         settings.customColors.enabled = event.currentTarget.checked; applyAppearance(); save();
     });
@@ -391,93 +414,14 @@ function initialize() {
     }
     query('[data-action="reset-position"]').addEventListener('click', () => {
         settings.positions = { launcher: null, panel: null };
+        settings.panelSize = null; resizer.reset();
         launcherDrag.reset();
         panelDrag.reset();
         save();
     });
     applyAppearance();
 
-    const fontSelect = query('#stm-font');
-    for (const [id, preset] of Object.entries(FONT_PRESETS)) fontSelect.append(new Option(preset.name, id));
-    function renderFont() {
-        fontSelect.value = settings.fontPreset;
-        fontSelect.querySelector('option[value="custom"]').disabled = !settings.fontId;
-        fontSelect.querySelector('option[value="custom"]').textContent = settings.fontName || '导入的字体';
-        query('[data-action="remove-font"]').disabled = !settings.fontId;
-    }
-    function useFont(face = null) {
-        if (fontFace && fontFace !== face) document.fonts.delete(fontFace);
-        fontFace = face;
-        if (face) document.fonts.add(face);
-        const family = face ? `"${face.family}", serif` : FONT_PRESETS[settings.fontPreset].family;
-        for (const element of [panel, launcher]) element.style.setProperty('--stm-font-family', family);
-        renderFont();
-    }
-    async function restoreFont() {
-        const revision = ++fontRevision;
-        if (settings.fontPreset === 'genwan') {
-            query('[data-role="font-status"]').textContent = '正在加载内置源雲明體…';
-            try {
-                const face = await loadBuiltinFont();
-                if (revision !== fontRevision) return;
-                useFont(face);
-                query('[data-role="font-status"]').textContent = '源雲明體 GenWanMin2 TC R · 完整字库已内置，可离线使用。';
-            } catch {
-                if (revision !== fontRevision) return;
-                useFont();
-                query('[data-role="font-status"]').textContent = '内置字体加载失败，请检查插件是否完整下载，或重新选择字体。';
-            }
-            return;
-        }
-        if (settings.fontPreset !== 'custom') { useFont(); return; }
-        try {
-            const blob = settings.fontId && await store.get(settings.fontId);
-            if (!blob) throw new Error('字体不在当前浏览器中，请重新导入。');
-            const face = await decodeFont(blob, settings.fontId);
-            if (revision !== fontRevision) return;
-            useFont(face);
-            query('[data-role="font-status"]').textContent = `当前使用：${settings.fontName} · 字体仅保存在当前浏览器。`;
-        } catch (error) {
-            if (revision !== fontRevision) return;
-            useFont();
-            query('[data-role="font-status"]').textContent = error.message || '字体加载失败，请重新导入。';
-        }
-    }
-    fontSelect.addEventListener('change', () => { settings.fontPreset = fontSelect.value; save(); void restoreFont(); });
-    const fontInput = query('[data-role="font-file"]');
-    query('[data-action="import-font"]').addEventListener('click', () => fontInput.click());
-    fontInput.addEventListener('change', async () => {
-        const file = fontInput.files[0]; fontInput.value = '';
-        if (!file) return;
-        const revision = ++fontRevision;
-        const id = `font:${createTrackId()}`;
-        try {
-            validateFontFile(file);
-            const face = await decodeFont(file, id);
-            if (revision !== fontRevision) return;
-            await store.put(id, file);
-            if (revision !== fontRevision) { await store.delete(id); return; }
-            const previous = settings.fontId;
-            settings.fontId = id;
-            settings.fontName = file.name.replace(/\.[^.]+$/, '').slice(0, 80);
-            settings.fontPreset = 'custom';
-            useFont(face); save();
-            query('[data-role="font-status"]').textContent = `当前使用：${settings.fontName} · 字体仅保存在当前浏览器。`;
-            showStatus('字体已导入，播放器与歌词已同步使用。');
-            if (previous) await store.delete(previous).catch(() => {});
-        } catch (error) { if (revision === fontRevision) showStatus(error.message || '字体无法读取，请换一个字体文件。', true); }
-    });
-    query('[data-action="remove-font"]').addEventListener('click', async () => {
-        fontRevision++;
-        const previous = settings.fontId;
-        settings.fontId = null; settings.fontName = '';
-        if (settings.fontPreset === 'custom') settings.fontPreset = 'inherit';
-        useFont(); save();
-        query('[data-role="font-status"]').textContent = '导入的字体已移除，可以继续选择设备字体。';
-        if (previous) await store.delete(previous).catch(() => {});
-    });
-    renderFont();
-    void restoreFont();
+    const fontPicker = createFontPicker({ panel, launcher, store, settings, save, showStatus, createId: createTrackId });
 
     const coverImage = query('.stm-cover-image');
     coverImage.src = fallbackCoverUrl(0);
@@ -488,12 +432,26 @@ function initialize() {
     });
     function setLyricsOpen(open) {
         query('.stm-lyrics-view').hidden = !open;
+        panel.dataset.lyricsOpen = String(open);
+        menus.close();
         query('.stm-cover-tip').hidden = open;
         query('[data-action="toggle-lyrics"]').setAttribute('aria-pressed', String(open));
-        query('[data-action="toggle-lyrics"]').setAttribute('aria-label', open ? '显示封面' : '显示歌词');
+        if (open) {
+            const view = query('.stm-lyrics-view');
+            view.style.setProperty('--stm-lyrics-half-height', `${view.clientHeight / 2}px`);
+            view.focus({ preventScroll: true });
+        }
         if (open) updateLyrics(true);
     }
-    query('[data-action="toggle-lyrics"]').addEventListener('click', () => setLyricsOpen(query('.stm-lyrics-view').hidden));
+    query('[data-action="toggle-lyrics"]').addEventListener('click', () => setLyricsOpen(true));
+    let lyricPointer = null;
+    const lyricView = query('.stm-lyrics-view');
+    lyricView.addEventListener('pointerdown', event => { lyricPointer = { x: event.clientX, y: event.clientY, moved: false }; });
+    lyricView.addEventListener('pointermove', event => { if (lyricPointer && Math.hypot(event.clientX - lyricPointer.x, event.clientY - lyricPointer.y) > 6) lyricPointer.moved = true; });
+    lyricView.addEventListener('pointercancel', () => { if (lyricPointer) lyricPointer.moved = true; });
+    const leaveLyrics = () => { setLyricsOpen(false); query('[data-action="toggle-lyrics"]').focus({ preventScroll: true }); };
+    lyricView.addEventListener('click', event => { if (event.detail && lyricPointer?.moved) return; leaveLyrics(); });
+    lyricView.addEventListener('keydown', event => { if (['Enter', ' ', 'Escape'].includes(event.key)) { event.preventDefault(); event.stopPropagation(); leaveLyrics(); } });
     function renderLyrics(track) {
         lyricData = parseLyrics(track?.lyrics || '');
         activeLyric = -1;
@@ -520,7 +478,7 @@ function initialize() {
         if (next >= 0 && !query('.stm-lyrics-view').hidden && currentPage === 'playback' && !panel.hidden) {
             const target = lines[next];
             const container = query('.stm-lyrics-view');
-            container.scrollTop = Math.max(0, target.offsetTop - container.clientHeight / 2 + target.clientHeight / 2);
+            container.scrollTop += target.getBoundingClientRect().top - container.getBoundingClientRect().top - container.clientHeight / 2 + target.clientHeight / 2;
         }
     }
     async function renderMedia(track) {
@@ -699,8 +657,8 @@ function initialize() {
     function setOpen(open, focus = true) {
         panel.hidden = !open;
         launcher.setAttribute('aria-expanded', String(open));
-        if (open) { panelDrag.refresh(); if (focus) query('[data-action="close"]').focus(); }
-        else if (panel.contains(document.activeElement)) launcher.focus();
+        if (open) { resizer.refresh(); panelDrag.refresh(); if (focus) (panel.dataset.lyricsOpen === 'true' ? query('.stm-lyrics-view') : query('[data-action="close"]')).focus(); }
+        else { menus.close(); if (panel.contains(document.activeElement)) launcher.focus(); }
     }
 
     const activePlaylist = () => settings.playlists.find(item => item.id === settings.activePlaylistId);
@@ -763,6 +721,7 @@ function initialize() {
         const selected = activePlaylist();
         query('.stm-playlist-editor').hidden = !selected;
         if (selected) query('#stm-playlist-name').value = selected.name;
+        menus.refresh();
         if (!settings.playlists.length || !settings.tracks.some(track => track.id === membershipTrackId)) query('.stm-membership').hidden = true;
         renderRoleStatus();
         renderRolePicker();
@@ -1223,8 +1182,21 @@ function initialize() {
         showStatus(added ? '已加入歌单，曲库歌曲保留不变。' : '这首歌已在所选歌单中。');
     });
     query('[data-action="close-membership"]').addEventListener('click', () => { query('.stm-membership').hidden = true; });
-    mode.value = settings.mode;
-    mode.addEventListener('change', () => { settings.mode = mode.value; save(); });
+    const modeLabels = { sequence: '顺序播放', list: '列表循环', single: '单曲循环', shuffle: '随机播放' };
+    const modeIcons = {
+        sequence: '<path d="M4 6h16M4 12h10M4 18h10m3-9 4 3-4 3"/>',
+        list: '<path d="m17 3 4 4-4 4M3 11V9a2 2 0 0 1 2-2h16M7 21l-4-4 4-4m14 0v2a2 2 0 0 1-2 2H3"/>',
+        single: '<path d="m17 3 4 4-4 4M3 11V9a2 2 0 0 1 2-2h16M7 21l-4-4 4-4m14 0v2a2 2 0 0 1-2 2H3"/><path d="m10 11 2-1v5m-2 0h4"/>',
+        shuffle: '<path d="m18 3 3 3-3 3m0 6 3 3-3 3M3 6h3c4 0 8 12 12 12h3M3 18h3c2 0 4-3 6-6s4-6 6-6h3"/>',
+    };
+    function renderMode() {
+        mode.dataset.mode = settings.mode;
+        mode.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${modeIcons[settings.mode]}</svg>`;
+        mode.setAttribute('aria-label', `播放模式：${modeLabels[settings.mode]}`);
+        mode.title = `${modeLabels[settings.mode]} · 点击切换播放模式`;
+    }
+    mode.addEventListener('click', () => { settings.mode = PLAY_MODES[(PLAY_MODES.indexOf(settings.mode) + 1) % PLAY_MODES.length]; renderMode(); save(); showStatus(`播放模式：${modeLabels[settings.mode]}`); });
+    renderMode();
     function updateVolume() {
         volume.value = String(Math.round(audio.volume * 100));
         query('[data-role="volume"]').textContent = audio.muted ? '静音' : `${volume.value}%`;
@@ -1276,7 +1248,8 @@ function initialize() {
             if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
             if (coverUrl) URL.revokeObjectURL(coverUrl);
             for (const id of coverCache.keys()) forgetCover(id);
-            if (fontFace) document.fonts.delete(fontFace);
+            fontPicker.dispose(); menus.dispose(); resizer.dispose(); disposeClickEffects();
+            systemScheme.removeEventListener('change', onSystemScheme);
             window.clearInterval(historyTimer);
         }
     });

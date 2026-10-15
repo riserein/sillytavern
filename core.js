@@ -1,6 +1,8 @@
 import { normalizeCustomColors } from './appearance.js';
-import { FONT_PRESETS } from './fonts.js';
+import { normalizeFonts } from './fonts.js';
 import { COVER_COUNT, MAX_LYRICS } from './media.js';
+import { normalizePanelSize } from './resizing.js';
+import { SCHEMES } from './scheme.js';
 
 export const MAX_TRACKS = 200;
 export const MAX_PLAYLISTS = 50;
@@ -104,6 +106,8 @@ export function normalizeSettings(raw = {}, now = Date.now()) {
         mode: PLAY_MODES.includes(raw.mode) ? raw.mode : 'list',
         currentId,
         theme: THEMES.includes(raw.theme) ? raw.theme : 'amber',
+        colorScheme: SCHEMES.includes(raw.colorScheme) ? raw.colorScheme : 'system',
+        panelSize: normalizePanelSize(raw.panelSize),
         surface: SURFACES.includes(raw.surface) && (raw.surface !== 'clear' || backgroundId) ? raw.surface : 'glass',
         backgroundId,
         customColors: normalizeCustomColors(raw.customColors),
@@ -111,9 +115,7 @@ export function normalizeSettings(raw = {}, now = Date.now()) {
             typeof raw.maskOpacity?.[surface] === 'number' && Number.isFinite(raw.maskOpacity[surface])
                 ? Math.min(1, Math.max(0, raw.maskOpacity[surface])) : null])),
         clickEffects: raw.clickEffects !== false,
-        fontPreset: Object.hasOwn(FONT_PRESETS, raw.fontPreset) ? raw.fontPreset : 'inherit',
-        fontId: typeof raw.fontId === 'string' && /^font:[a-f0-9-]{36}$/.test(raw.fontId) ? raw.fontId : null,
-        fontName: typeof raw.fontName === 'string' ? raw.fontName.slice(0, 80) : '',
+        ...normalizeFonts(raw),
         ...normalizeHistory(raw, ids, now),
         positions: {
             launcher: normalizePosition(raw.positions?.launcher),
