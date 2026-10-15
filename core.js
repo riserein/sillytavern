@@ -1,4 +1,6 @@
 import { normalizeCustomColors } from './appearance.js';
+import { FONT_PRESETS } from './fonts.js';
+import { COVER_COUNT, MAX_LYRICS } from './media.js';
 
 export const MAX_TRACKS = 200;
 export const MAX_PLAYLISTS = 50;
@@ -62,6 +64,10 @@ export function normalizeSettings(raw = {}, now = Date.now()) {
             kind: item.kind,
             title: String(item.title || '未命名音乐').slice(0, 160),
             ...(url ? { url } : {}),
+            ...(typeof item.artist === 'string' && item.artist ? { artist: item.artist.slice(0, 120) } : {}),
+            ...(typeof item.coverId === 'string' && /^cover:[a-f0-9-]{36}$/.test(item.coverId) ? { coverId: item.coverId } : {}),
+            ...(typeof item.lyrics === 'string' && item.lyrics ? { lyrics: item.lyrics.slice(0, MAX_LYRICS) } : {}),
+            ...(Number.isInteger(item.fallbackCover) && item.fallbackCover >= 0 && item.fallbackCover < COVER_COUNT ? { fallbackCover: item.fallbackCover } : {}),
         });
         if (tracks.length === MAX_TRACKS) break;
     }
@@ -105,6 +111,9 @@ export function normalizeSettings(raw = {}, now = Date.now()) {
             typeof raw.maskOpacity?.[surface] === 'number' && Number.isFinite(raw.maskOpacity[surface])
                 ? Math.min(1, Math.max(0, raw.maskOpacity[surface])) : null])),
         clickEffects: raw.clickEffects !== false,
+        fontPreset: Object.hasOwn(FONT_PRESETS, raw.fontPreset) ? raw.fontPreset : 'inherit',
+        fontId: typeof raw.fontId === 'string' && /^font:[a-f0-9-]{36}$/.test(raw.fontId) ? raw.fontId : null,
+        fontName: typeof raw.fontName === 'string' ? raw.fontName.slice(0, 80) : '',
         ...normalizeHistory(raw, ids, now),
         positions: {
             launcher: normalizePosition(raw.positions?.launcher),

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 
 function wav(seconds = 8) {
     const rate = 8000;
@@ -19,6 +20,7 @@ async function playerPage(page, name) {
 
 async function playSong(page, name) {
     await playerPage(page, '播放');
+    if (await page.locator('#stm-queue').isHidden()) await page.locator('[data-action="toggle-queue"]').click();
     await page.getByRole('button', { name: `播放队列歌曲：${name}`, exact: true }).click();
 }
 
@@ -28,7 +30,8 @@ async function selectAlbum(page, id) {
 }
 
 async function importSongs(page, names = ['雨夜', '旅途']) {
-    await playerPage(page, '曲库');
+    await playerPage(page, '导入');
+    await playerPage(page, '导入');
     await page.locator('[data-role="files"]').setInputFiles(names.map(name => ({ name: `${name}.wav`, mimeType: 'audio/wav', buffer: wav() })));
     await expect(page.locator('.stm-track')).toHaveCount(names.length);
     await expect(page.locator('.stm-status')).toContainText(`已导入 ${names.length} 首音乐`);
@@ -45,6 +48,20 @@ async function imageFixture(page) {
         return canvas.toDataURL('image/png').split(',')[1];
     });
     return { name: '双色背景.png', mimeType: 'image/png', buffer: Buffer.from(data, 'base64') };
+}
+
+function taggedMp3(cover) {
+    const sync = size => Buffer.from([size >> 21 & 127, size >> 14 & 127, size >> 7 & 127, size & 127]);
+    const frame = (id, data) => { const header = Buffer.alloc(10); header.write(id); header.writeUInt32BE(data.length, 4); return Buffer.concat([header, data]); };
+    const text = value => Buffer.concat([Buffer.from([3]), Buffer.from(value)]);
+    const tags = Buffer.concat([
+        frame('TIT2', text('标签里的歌名')), frame('TPE1', text('内嵌歌手')),
+        frame('APIC', Buffer.concat([Buffer.from([0]), Buffer.from('image/png\0'), Buffer.from([3, 0]), cover])),
+        frame('USLT', Buffer.concat([Buffer.from([3]), Buffer.from('zho\0[00:00.00]第一句\n[00:02.00]第二句\n[00:04.00]第三句')])),
+    ]);
+    let audio = readFileSync(new URL('./fixtures/tone.mp3', import.meta.url));
+    if (audio.subarray(0, 3).toString() === 'ID3') audio = audio.subarray(10 + audio.subarray(6, 10).reduce((size, byte) => size * 128 + (byte & 127), 0));
+    return Buffer.concat([Buffer.from('ID3'), Buffer.from([3, 0, 0]), sync(tags.length), tags, audio]);
 }
 
 async function importBackground(page) {
@@ -100,7 +117,7 @@ test('local imports play actual audio, seek, adjust volume, and keep playing wit
     await importSongs(page);
     await playSong(page, '雨夜');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
-    await expect(page.locator('[data-action="play"]')).toContainText('暂停');
+    await expect(page.locator('[data-action="play"]')).toHaveAttribute('aria-label', '暂停');
     await playerPage(page, '播放');
     await page.locator('#stm-seek').fill('3');
     await page.locator('#stm-seek').dispatchEvent('input');
@@ -176,12 +193,12 @@ test('settings and IndexedDB music survive a real page reload without autoplay',
 
 test('audio URLs play and duplicate entries are rejected', async ({ page }) => {
     await page.route('https://music.example.test/theme.wav', route => route.fulfill({ contentType: 'audio/wav', body: wav() }));
-    await playerPage(page, '曲库');
+    await playerPage(page, '导入');
     await page.locator('#stm-url').fill('https://music.example.test/theme.wav');
     await page.getByRole('button', { name: '添加', exact: true }).click();
     await playSong(page, 'theme');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
-    await playerPage(page, '曲库');
+    await playerPage(page, '导入');
     await page.locator('#stm-url').fill('https://music.example.test/theme.wav');
     await page.getByRole('button', { name: '添加', exact: true }).click();
     await expect(page.locator('.stm-status')).toContainText('已经在总曲库');
@@ -189,12 +206,12 @@ test('audio URLs play and duplicate entries are rejected', async ({ page }) => {
 });
 
 test('invalid files, broken links and browser playback restrictions explain recovery', async ({ page }) => {
-    await playerPage(page, '曲库');
+    await playerPage(page, '导入');
     await page.locator('[data-role="files"]').setInputFiles({ name: 'bad.txt', mimeType: 'text/plain', buffer: Buffer.from('bad') });
     await expect(page.locator('.stm-status')).toContainText('请选择音频文件');
     await expect(page.locator('.stm-track')).toHaveCount(0);
     await page.route('https://music.example.test/missing.mp3', route => route.fulfill({ status: 404, body: 'missing' }));
-    await playerPage(page, '曲库');
+    await playerPage(page, '导入');
     await page.locator('#stm-url').fill('https://music.example.test/missing.mp3');
     await page.getByRole('button', { name: '添加', exact: true }).click();
     await expect(page.locator('.stm-status')).toContainText('音乐加载失败');
@@ -231,7 +248,8 @@ test('filenames are rendered as text, and the player fits a small screen', async
     await page.setViewportSize({ width: 375, height: 667 });
     await importSongs(page, ['<img src=x onerror=alert(1)>']);
     await expect(page.locator('.stm-track-title')).toHaveText('<img src=x onerror=alert(1)>');
-    await expect(page.locator('#stm-player img')).toHaveCount(0);
+    await expect(page.locator('#stm-player img[src="x"]')).toHaveCount(0);
+    await expect(page.locator('.stm-cover-image')).toHaveCount(1);
     const bounds = await page.locator('#stm-player').boundingBox();
     expect(bounds.x).toBeGreaterThanOrEqual(0);
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(375);
@@ -299,7 +317,7 @@ test('dragging is bounded, a smaller viewport remains usable, and positions can 
         const ball = await page.locator('#stm-launcher').boundingBox();
         return [panel, ball].every(box => box.x >= 7 && box.y >= 7 && box.x + box.width <= 368 && box.y + box.height <= 660);
     }).toBe(true);
-    await page.getByRole('button', { name: '◐ 外观', exact: true }).click();
+    await page.locator('[data-action="appearance"]').click();
     await page.getByRole('button', { name: '重置悬浮球与窗口位置', exact: true }).click();
     launcher = await page.locator('#stm-launcher').boundingBox();
     expect(launcher.x).toBeCloseTo(317, 0);
@@ -311,7 +329,7 @@ test('all six palettes and both materials apply to both controls without interru
     await importSongs(page, ['配色时继续播放']);
     await playSong(page, '配色时继续播放');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
-    await page.getByRole('button', { name: '◐ 外观', exact: true }).click();
+    await page.locator('[data-action="appearance"]').click();
     const colors = new Set();
     for (const theme of ['amber', 'ocean', 'forest', 'rose', 'lavender', 'pearl']) {
         await page.locator(`[data-theme-choice="${theme}"]`).click();
@@ -388,6 +406,7 @@ test.describe('touch dragging', () => {
 
 async function createAlbum(page, name) {
     await playerPage(page, '曲库');
+    if (await page.locator('#stm-playlist-manager').isHidden()) await page.locator('[data-action="toggle-manager"]').click();
     await page.locator('#stm-new-playlist').fill(name);
     await page.getByRole('button', { name: '新建', exact: true }).click();
     await expect(page.locator('[data-role="collection-title"]')).toHaveText(name);
@@ -451,14 +470,14 @@ async function removeTestCards(page, cards) {
 
 test('import destinations, album rename and deletion preserve music and survive reload', async ({ page }) => {
     const albumId = await createAlbum(page, '雨夜歌单');
-    await playerPage(page, '曲库');
+    await playerPage(page, '导入');
     await page.locator('#stm-import-playlist').selectOption(albumId);
     await importSongs(page, ['雨声', '炉火']);
     await expect(page.locator('#stm-playlist')).toHaveValue(albumId);
     expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.tracks.length)).toBe(2);
-    await playerPage(page, '曲库');
+    await playerPage(page, '导入');
     await page.locator('#stm-import-playlist').selectOption('');
-    await playerPage(page, '曲库');
+    await playerPage(page, '导入');
     await page.locator('[data-role="files"]').setInputFiles({ name: '独立音乐.wav', mimeType: 'audio/wav', buffer: wav() });
     await expect(page.locator('#stm-playlist')).toHaveValue('');
     await expect(page.locator('.stm-track')).toHaveCount(3);
@@ -524,12 +543,12 @@ test('one album binds multiple real cards, card changes never autoplay, and goin
         cards.push(await createTestCard(page, 'B'));
         cards.push(await createTestCard(page, 'C'));
         const first = await createAlbum(page, '两位角色的歌单');
-        await playerPage(page, '曲库');
+        await playerPage(page, '导入');
         await page.locator('#stm-import-playlist').selectOption(first);
         await importSongs(page, ['共同背景']);
         await bindCards(page, cards.slice(0, 2));
         const second = await createAlbum(page, '另一位角色的歌单');
-        await playerPage(page, '曲库');
+        await playerPage(page, '导入');
         await page.locator('#stm-import-playlist').selectOption(second);
         await importSongs(page, ['另一个背景']);
         await bindCards(page, cards.slice(2));
@@ -572,7 +591,7 @@ test('going home cancels pending local audio loads without reopening a stale rol
     try {
         cards.push(await createTestCard(page, 'Pending'));
         const album = await createAlbum(page, '慢速读取歌单');
-        await playerPage(page, '曲库');
+        await playerPage(page, '导入');
         await page.locator('#stm-import-playlist').selectOption(album);
         await importSongs(page, ['等待加载的音乐']);
         await bindCards(page, cards);
@@ -618,7 +637,7 @@ test('separate pages keep management away from playback and preserve audio acros
     await expect(page.locator('#stm-url')).toBeVisible();
     await playSong(page, '分页背景音乐');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
-    for (const name of ['最近播放', '播放排行', '外观', '曲库', '播放']) {
+    for (const name of ['最近播放', '播放排行', '外观', '导入', '曲库', '播放']) {
         await playerPage(page, name);
         await expect(page.locator('.stm-page:visible')).toHaveCount(1);
         await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
@@ -632,7 +651,7 @@ test('separate pages keep management away from playback and preserve audio acros
 });
 
 test('recent and ranking pages record successful starts once, support replay, persist and clean up deletions', async ({ page }) => {
-    await playerPage(page, '曲库');
+    await playerPage(page, '导入');
     await page.locator('[data-role="files"]').setInputFiles(['甲曲', '乙曲'].map(name => ({ name: `${name}.wav`, mimeType: 'audio/wav', buffer: wav(90) })));
     await expect(page.locator('.stm-track')).toHaveCount(2);
     const history = () => page.evaluate(() => {
@@ -729,7 +748,8 @@ test('cropping chooses the actual region, layers themes and materials, persists 
         return result;
     }, id);
     expect(pixel.width).toBe(768);
-    expect(pixel.height).toBe(1152);
+    const panelBounds = await page.locator('#stm-player').boundingBox();
+    expect(pixel.height).toBe(Math.round(768 * panelBounds.height / panelBounds.width));
     expect(pixel.pixel[2]).toBeGreaterThan(pixel.pixel[0] + 100);
     await page.getByRole('button', { name: '清透', exact: true }).click();
     await saved;
@@ -887,4 +907,88 @@ test('click halos animate, clean up, respect reduced motion and never turn drags
     await expect(page.locator('#stm-launcher .stm-click-wave')).toHaveCount(0);
     await page.locator('#stm-launcher').click();
     await expect(page.locator('#stm-player')).toBeVisible();
+});
+
+test('library and import are independent, and covers switch to synchronized embedded MP3 lyrics', async ({ page }) => {
+    await playerPage(page, '曲库');
+    await expect(page.locator('#stm-url')).toBeHidden();
+    await expect(page.locator('#stm-import-playlist')).toBeHidden();
+    await expect(page.locator('#stm-new-playlist')).toBeHidden();
+    const image = await imageFixture(page);
+    await playerPage(page, '导入');
+    await expect(page.locator('.stm-track-list')).toBeHidden();
+    await page.locator('[data-role="files"]').setInputFiles({ name: 'unknown.mp3', mimeType: 'audio/mpeg', buffer: taggedMp3(image.buffer) });
+    await expect(page.locator('.stm-status')).toContainText('已导入 1 首');
+    await playerPage(page, '曲库');
+    await expect(page.locator('.stm-track-title')).toHaveText('标签里的歌名');
+    await expect(page.locator('.stm-track-select small').first()).toHaveText('内嵌歌手');
+    await playSong(page, '标签里的歌名');
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
+    await expect(page.locator('.stm-cover-image')).toHaveAttribute('src', /^blob:/);
+    const size = await page.locator('.stm-cover-stage').boundingBox();
+    expect(size.width).toBeGreaterThan(200); expect(Math.abs(size.width - size.height)).toBeLessThan(1);
+    await page.getByRole('button', { name: '显示歌词', exact: true }).click();
+    await expect(page.locator('.stm-lyrics-lines p')).toHaveText(['第一句', '第二句', '第三句']);
+    await page.locator('#stm-seek').fill('3');
+    await expect(page.locator('.stm-current-lyric')).toHaveText('第二句');
+    await page.getByRole('button', { name: '显示封面', exact: true }).click();
+    await expect(page.locator('.stm-lyrics-view')).toBeHidden();
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
+    const saved = waitForPlayerSave(page, settings => settings.fontPreset === 'song' && settings.tracks?.[0]?.coverId);
+    await playerPage(page, '外观'); await page.locator('#stm-font').selectOption('song'); await saved;
+    await page.reload(); await page.waitForFunction(() => !document.getElementById('preloader')); await page.locator('#stm-launcher').click();
+    await expect(page.locator('.stm-cover-image')).toHaveAttribute('src', /^blob:/);
+    await page.getByRole('button', { name: '显示歌词', exact: true }).click();
+    await expect(page.locator('.stm-lyrics-lines p')).toHaveText(['第一句', '第二句', '第三句']);
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(true);
+});
+
+test('missing art uses bundled images; manual cover and LRC imports persist and delete with the song', async ({ page }) => {
+    await importSongs(page, ['没有封面的歌']);
+    await playerPage(page, '播放');
+    await expect(page.locator('.stm-cover-image')).toHaveAttribute('src', /assets\/covers\/(forest|moon|sunroom)\.png$/);
+    await page.getByRole('button', { name: '显示歌词', exact: true }).click();
+    await expect(page.locator('.stm-no-lyrics')).toHaveText('暂无歌词');
+    for (const cover of ['forest', 'moon', 'sunroom']) {
+        const ok = await page.evaluate(async name => { const image = new Image(); image.src = `/scripts/extensions/third-party/sillytavern/assets/covers/${name}.png`; await image.decode(); return image.naturalWidth > 200; }, cover);
+        expect(ok).toBe(true);
+    }
+    await playerPage(page, '曲库');
+    await page.getByRole('button', { name: '歌曲详情：没有封面的歌', exact: true }).click();
+    await page.locator('[data-role="song-cover-file"]').setInputFiles(await imageFixture(page));
+    await expect(page.locator('.stm-status')).toHaveText('歌曲封面已更新。');
+    await page.locator('[data-role="lyrics-file"]').setInputFiles({ name: '歌词.lrc', mimeType: 'text/plain', buffer: Buffer.from('[00:00]月光\n[00:02]照进窗台') });
+    await expect(page.locator('.stm-status')).toContainText('歌词已导入');
+    await playerPage(page, '播放');
+    await expect(page.locator('.stm-cover-image')).toHaveAttribute('src', /^blob:/);
+    await expect(page.locator('.stm-lyrics-lines p')).toHaveText(['月光', '照进窗台']);
+    const keys = await page.evaluate(() => { const track = SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0]; return [track.id, track.coverId]; });
+    await playerPage(page, '曲库'); page.once('dialog', dialog => dialog.accept());
+    await page.getByRole('button', { name: '删除：没有封面的歌', exact: true }).click();
+    expect(await page.evaluate(async keys => { const {LocalMusicStore} = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); const store=new LocalMusicStore(); return (await Promise.all(keys.map(key=>store.get(key)))).every(value=>!value); }, keys)).toBe(true);
+    await expect(page.locator('.stm-track')).toHaveCount(0);
+});
+
+test('the bundled GenWan font works offline, custom fonts persist, and font changes stay inside the player', async ({ page }) => {
+    const hostFont = await page.locator('body').evaluate(element => getComputedStyle(element).fontFamily);
+    await playerPage(page, '外观'); await page.locator('#stm-font').selectOption('genwan');
+    await expect(page.locator('[data-role="font-status"]')).toContainText('完整字库已内置', { timeout: 30000 });
+    expect(await page.evaluate(() => [...document.fonts].some(face => face.family === 'stm-genwan' && face.status === 'loaded'))).toBe(true);
+    expect(await page.locator('body').evaluate(element => getComputedStyle(element).fontFamily)).toBe(hostFont);
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).fontFamily)).toContain('stm-genwan');
+    await page.locator('[data-role="font-file"]').setInputFiles('assets/fonts/GenWanMin2TC-R.woff2');
+    await expect(page.locator('.stm-status')).toContainText('字体已导入', { timeout: 30000 });
+    const id = await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.fontId);
+    const saved = waitForPlayerSave(page, settings => settings.fontId === id && settings.fontPreset === 'custom' && settings.volume === .29);
+    await playerPage(page, '播放'); await page.locator('#stm-volume').fill('29'); await saved;
+    await page.reload(); await page.waitForFunction(() => !document.getElementById('preloader')); await page.locator('#stm-launcher').click();
+    await playerPage(page, '外观');
+    await expect(page.locator('#stm-font')).toHaveValue('custom');
+    await expect(page.locator('[data-role="font-status"]')).toContainText('当前使用', { timeout: 30000 });
+    await page.locator('[data-role="font-file"]').setInputFiles({ name:'broken.ttf', mimeType:'font/ttf', buffer:Buffer.from('broken') });
+    await expect(page.locator('.stm-status')).toHaveClass(/stm-error/);
+    expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.fontId)).toBe(id);
+    await page.getByRole('button', { name:'移除字体', exact:true }).click();
+    await expect(page.locator('#stm-font')).toHaveValue('inherit');
+    expect(await page.evaluate(async id => { const {LocalMusicStore} = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); return Boolean(await new LocalMusicStore().get(id)); },id)).toBe(false);
 });

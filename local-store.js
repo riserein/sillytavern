@@ -32,4 +32,12 @@ export class LocalMusicStore {
     put(id, blob) { return this.#run('readwrite', store => store.put(blob, id)); }
     get(id) { return this.#run('readonly', store => store.get(id)); }
     delete(id) { return this.#run('readwrite', store => store.delete(id)); }
+    deleteMany(ids) {
+        if (!ids.length) return Promise.resolve();
+        return this.#run('readwrite', store => {
+            let request;
+            for (const id of ids) request = store.delete(id);
+            return request;
+        });
+    }
 }

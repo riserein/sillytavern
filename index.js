@@ -6,7 +6,9 @@ import {
 } from './core.js';
 import { LocalMusicStore } from './local-store.js';
 import { makeDraggable } from './floating.js';
-import { createImageCropper } from './background.js';
+import { createImageCropper, validateImageFile } from './background.js';
+import { fallbackCoverUrl, randomCover, readEmbeddedMetadata, prepareCover, parseLyrics, currentLyricIndex, MAX_LYRICS } from './media.js';
+import { FONT_PRESETS, validateFontFile, decodeFont, loadBuiltinFont } from './fonts.js';
 import { CUSTOM_PROPERTIES, customPalette, hexRgba, defaultMaskOpacity, attachClickEffects } from './appearance.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
@@ -34,6 +36,14 @@ function initialize() {
     let countedSession = -1;
     let backgroundUrl = null;
     let backgroundRevision = 0;
+    let coverUrl = null;
+    let mediaRevision = 0;
+    let lyricData = { synced: false, lines: [] };
+    let activeLyric = -1;
+    let detailsTrackId = null;
+    let fontFace = null;
+    let fontRevision = 0;
+    const coverCache = new Map();
 
     const launcher = document.createElement('button');
     launcher.id = 'stm-launcher';
@@ -55,30 +65,33 @@ function initialize() {
         <header class="stm-header" tabindex="0" aria-label="拖动播放器窗口，可用方向键移动" title="拖动这里移动窗口">
             <span class="stm-grip" aria-hidden="true">⠿</span>
             <div class="stm-header-actions">
-                <button type="button" class="stm-secondary" data-action="appearance" aria-expanded="false" aria-controls="stm-appearance">◐ 外观</button>
+                <button type="button" class="stm-secondary" data-action="appearance" aria-expanded="false" aria-controls="stm-appearance" aria-label="外观设置" title="外观">◐</button>
                 <button type="button" class="stm-icon" data-action="close" aria-label="关闭播放器" title="关闭面板，音乐继续播放">×</button>
             </div>
         </header>
         <nav class="stm-tabs" role="tablist" aria-label="播放器页面">
             <button type="button" role="tab" id="stm-tab-playback" data-page="playback" aria-controls="stm-page-playback" aria-selected="true">播放</button>
             <button type="button" role="tab" id="stm-tab-library" data-page="library" aria-controls="stm-page-library" aria-selected="false" tabindex="-1">曲库</button>
+            <button type="button" role="tab" id="stm-tab-import" data-page="import" aria-controls="stm-page-import" aria-selected="false" tabindex="-1">导入</button>
             <button type="button" role="tab" id="stm-tab-recent" data-page="recent" aria-controls="stm-page-recent" aria-selected="false" tabindex="-1">最近播放</button>
             <button type="button" role="tab" id="stm-tab-ranking" data-page="ranking" aria-controls="stm-page-ranking" aria-selected="false" tabindex="-1">播放排行</button>
             <button type="button" role="tab" id="stm-tab-appearance" data-page="appearance" aria-controls="stm-appearance" aria-selected="false" tabindex="-1">外观</button>
         </nav>
         <audio preload="metadata"></audio>
         <section id="stm-page-playback" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-playback" data-view="playback">
-        <div class="stm-now">
-            <span class="stm-art" aria-hidden="true">♫</span>
-            <div class="stm-now-info"><strong data-role="title">还没有音乐</strong><span data-role="source">导入喜欢的音乐，为故事配上背景</span></div>
-        </div>
+        <button type="button" class="stm-cover-stage" data-action="toggle-lyrics" aria-label="显示歌词" aria-pressed="false">
+            <img class="stm-cover-image" alt="当前歌曲封面" draggable="false">
+            <div class="stm-lyrics-view" hidden><div class="stm-lyrics-lines"></div><span class="stm-lyrics-tip">轻点返回封面</span></div>
+            <span class="stm-cover-tip">轻点查看歌词</span>
+        </button>
+        <div class="stm-now"><div class="stm-now-info"><strong data-role="title">挑一首喜欢的歌</strong><span data-role="source">从曲库开始今天的旋律</span></div></div>
         <label class="stm-sr-only" for="stm-seek">播放进度</label>
         <input id="stm-seek" class="stm-range" type="range" min="0" max="0" step="0.1" value="0" disabled>
         <div class="stm-time"><span data-role="elapsed">0:00</span><span data-role="duration">0:00</span></div>
         <div class="stm-transport">
-            <button type="button" class="stm-icon" data-action="previous" aria-label="上一首" title="上一首">❮</button>
-            <button type="button" class="stm-primary stm-play" data-action="play">▶ 播放</button>
-            <button type="button" class="stm-icon" data-action="next" aria-label="下一首" title="下一首">❯</button>
+            <button type="button" class="stm-icon" data-action="previous" aria-label="上一首" title="上一首"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 5 7 12l10 7zM5 5h2v14H5z"/></svg></button>
+            <button type="button" class="stm-primary stm-play" data-action="play" aria-label="播放" title="播放"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg></button>
+            <button type="button" class="stm-icon" data-action="next" aria-label="下一首" title="下一首"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 5 10 7-10 7zM17 5h2v14h-2z"/></svg></button>
         </div>
         <div class="stm-options">
             <label for="stm-mode">播放模式</label>
@@ -94,17 +107,18 @@ function initialize() {
         <div class="stm-library-nav">
             <label class="stm-sr-only" for="stm-playlist">选择歌单</label>
             <select id="stm-playlist"><option value="">总曲库</option></select>
+            <button type="button" class="stm-secondary" data-action="toggle-queue" aria-expanded="false" aria-controls="stm-queue">播放队列</button>
             <button type="button" class="stm-secondary" data-action="manage-playlists" aria-controls="stm-page-library">歌单管理</button>
         </div>
         <p class="stm-role-status" data-role="role-status"></p>
-        <ol class="stm-queue-list" aria-label="当前歌单"></ol>
-        <p class="stm-queue-empty stm-page-empty">还没有音乐，前往「曲库」导入喜欢的歌曲。</p>
+        <div id="stm-queue" class="stm-queue-popover" hidden><ol class="stm-queue-list" aria-label="当前歌单"></ol></div>
+        <p class="stm-queue-empty stm-page-empty">前往「导入」添加音乐，或在曲库选择一首歌。</p>
         </section>
         <section id="stm-page-library" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-library" data-view="library" hidden>
-        <div class="stm-page-heading"><h3>曲库与歌单</h3><span>整理你的音乐</span></div>
+        <div class="stm-page-heading stm-heading-actions"><div><h3>我的音乐</h3><span>曲库与歌单</span></div><button type="button" class="stm-secondary" data-action="toggle-manager" aria-expanded="false" aria-controls="stm-playlist-manager">管理歌单</button></div>
         <label class="stm-sr-only" for="stm-library-playlist">管理哪个歌单</label>
         <select id="stm-library-playlist" aria-label="管理哪个歌单"><option value="">总曲库</option></select>
-        <div id="stm-playlist-manager" class="stm-playlist-manager">
+        <div id="stm-playlist-manager" class="stm-playlist-manager" hidden>
             <form class="stm-create-playlist stm-inline-form">
                 <label class="stm-sr-only" for="stm-new-playlist">新歌单名称</label>
                 <input id="stm-new-playlist" placeholder="新歌单名称" maxlength="80" required autocomplete="off">
@@ -128,20 +142,14 @@ function initialize() {
             </div>
             <p class="stm-hint">删除歌单保留全部歌曲。进入绑定角色时只切歌单，音乐需手动播放。</p>
         </div>
-        <div class="stm-import-target">
-            <label for="stm-import-playlist">导入到</label>
-            <select id="stm-import-playlist"><option value="">不选择 · 仅加入总曲库</option></select>
-        </div>
-        <div class="stm-list-heading"><h3><span data-role="collection-title">总曲库</span> <span data-role="count">0</span></h3>
-            <button type="button" class="stm-secondary" data-action="import">＋ 本地音乐</button>
-            <input type="file" data-role="files" accept="audio/*,.mp3,.wav,.ogg,.oga,.m4a,.aac,.flac,.opus,.webm" multiple hidden>
-        </div>
-        <form class="stm-url-form">
-            <label class="stm-sr-only" for="stm-url">音乐直链</label>
-            <input id="stm-url" type="url" placeholder="粘贴音乐直链（HTTP / HTTPS）" required autocomplete="off">
-            <button type="submit" class="stm-secondary">添加</button>
-        </form>
-        <p class="stm-hint">支持音频直链，不支持网易云、QQ 音乐等歌曲分享页。</p>
+        <div class="stm-list-heading"><h3><span data-role="collection-title">总曲库</span> <span data-role="count">0</span></h3><button type="button" class="stm-secondary" data-action="go-import">＋ 导入音乐</button></div>
+        <section class="stm-track-details" hidden>
+            <div class="stm-heading-actions"><strong data-role="details-title"></strong><button type="button" class="stm-icon" data-action="close-details" aria-label="关闭歌曲详情">×</button></div>
+            <p class="stm-hint">给这首歌换封面，或添加歌词。</p>
+            <div class="stm-detail-actions"><button type="button" class="stm-secondary" data-action="song-cover">添加封面</button><button type="button" class="stm-secondary" data-action="song-lyrics">导入歌词</button><button type="button" class="stm-secondary" data-action="clear-song-cover">恢复随机封面</button><button type="button" class="stm-secondary" data-action="clear-song-lyrics">清除歌词</button></div>
+            <input type="file" data-role="song-cover-file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" hidden>
+            <input type="file" data-role="lyrics-file" accept=".lrc,.txt,text/plain" hidden>
+        </section>
         <div class="stm-membership" hidden>
             <span class="stm-hint" data-role="membership-title"></span>
             <div class="stm-inline-form">
@@ -153,6 +161,16 @@ function initialize() {
         </div>
         <ol class="stm-track-list" aria-label="播放列表"></ol>
         <p class="stm-empty">列表还是空的，导入本地音乐或添加直链开始吧。</p>
+        </section>
+        <section id="stm-page-import" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-import" data-view="import" hidden>
+            <div class="stm-page-heading"><h3>让音乐住进来</h3><span>本地音乐与音频直链</span></div>
+            <div class="stm-import-target"><label for="stm-import-playlist">导入到</label><select id="stm-import-playlist"><option value="">不选择 · 仅加入总曲库</option></select></div>
+            <button type="button" class="stm-upload-zone" data-action="import"><svg class="stm-upload-symbol" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 22V5m-6 6 6-6 6 6M6 22v5h20v-5"/></svg><strong>选择本地音乐</strong><small>MP3 / WAV / FLAC / M4A · 支持多选</small></button>
+            <input type="file" data-role="files" accept="audio/*,.mp3,.wav,.ogg,.oga,.m4a,.aac,.flac,.opus,.webm" multiple hidden>
+            <div class="stm-import-divider">或添加音频直链</div>
+            <form class="stm-url-form"><label class="stm-sr-only" for="stm-url">音乐直链</label><input id="stm-url" type="url" placeholder="https://… / music.mp3" required autocomplete="off"><button type="submit" class="stm-secondary">添加</button></form>
+            <p class="stm-hint">需要可直接播放的音频地址。歌曲分享页暂不支持。</p>
+            <button type="button" class="stm-text-link" data-action="go-library">查看我的曲库 ↗</button>
         </section>
         <section id="stm-page-recent" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-recent" data-view="recent" hidden>
             <div class="stm-page-heading"><h3>最近播放</h3><span>最近听过的 100 首歌</span></div>
@@ -167,6 +185,12 @@ function initialize() {
         </section>
         <section id="stm-appearance" class="stm-page stm-appearance" role="tabpanel" aria-labelledby="stm-tab-appearance" data-view="appearance" hidden>
             <div class="stm-page-heading"><h3>配色与背景</h3><span>为音乐换一种氛围</span></div>
+            <section class="stm-font-section">
+                <label for="stm-font">界面字体</label><select id="stm-font"></select>
+                <div class="stm-font-actions"><button type="button" class="stm-secondary" data-action="import-font">导入字体</button><button type="button" class="stm-secondary" data-action="remove-font" disabled>移除字体</button></div>
+                <input type="file" data-role="font-file" accept=".woff2,.woff,.ttf,.otf" hidden>
+                <p class="stm-hint" data-role="font-status">宋体、楷书等使用设备已有字体；京华老宋体等可导入 WOFF2 / TTF / OTF 文件。</p>
+            </section>
             <div class="stm-theme-grid" role="group" aria-label="选择配色"></div>
             <div class="stm-custom-colors">
                 <label class="stm-check-label"><input type="checkbox" id="stm-custom-colors">自定义配色</label>
@@ -202,7 +226,7 @@ function initialize() {
             <button type="button" class="stm-secondary" data-action="reset-position">重置悬浮球与窗口位置</button>
         </section>
         <p class="stm-status" role="status" aria-live="polite"></p>
-        <footer class="stm-footer">本地文件保存在当前浏览器 · 关闭面板可继续播放</footer>
+        <footer class="stm-footer">关闭面板，音乐继续</footer>
         <section class="stm-crop-editor" role="dialog" aria-modal="true" aria-label="裁剪背景图片" hidden>
             <div class="stm-page-heading"><h3>裁剪背景图片</h3><span>拖动图片，留下喜欢的区域</span></div>
             <canvas width="320" height="480" aria-label="背景裁剪预览"></canvas>
@@ -244,6 +268,7 @@ function initialize() {
     function showPage(page, focus = false) {
         if (!query(`[data-view="${page}"]`)) return;
         currentPage = page;
+        if (page !== 'playback') setQueueOpen(false);
         for (const section of panel.querySelectorAll('[data-view]')) section.hidden = section.dataset.view !== page;
         for (const button of panel.querySelectorAll('[data-page]')) {
             const selected = button.dataset.page === page;
@@ -256,6 +281,18 @@ function initialize() {
         if (page === 'library') renderRolePicker();
         panelDrag.refresh();
     }
+    function setQueueOpen(open) {
+        query('#stm-queue').hidden = !open;
+        query('[data-action="toggle-queue"]').setAttribute('aria-expanded', String(open));
+    }
+    query('[data-action="toggle-queue"]').addEventListener('click', () => setQueueOpen(query('#stm-queue').hidden));
+    query('[data-action="go-import"]').addEventListener('click', () => showPage('import'));
+    query('[data-action="go-library"]').addEventListener('click', () => showPage('library'));
+    function setManagerOpen(open) {
+        query('#stm-playlist-manager').hidden = !open;
+        query('[data-action="toggle-manager"]').setAttribute('aria-expanded', String(open));
+    }
+    query('[data-action="toggle-manager"]').addEventListener('click', () => setManagerOpen(query('#stm-playlist-manager').hidden));
     const tabs = Array.from(panel.querySelectorAll('[data-page]'));
     tabs.forEach((button, index) => {
         button.addEventListener('click', () => showPage(button.dataset.page));
@@ -360,6 +397,219 @@ function initialize() {
     });
     applyAppearance();
 
+    const fontSelect = query('#stm-font');
+    for (const [id, preset] of Object.entries(FONT_PRESETS)) fontSelect.append(new Option(preset.name, id));
+    function renderFont() {
+        fontSelect.value = settings.fontPreset;
+        fontSelect.querySelector('option[value="custom"]').disabled = !settings.fontId;
+        fontSelect.querySelector('option[value="custom"]').textContent = settings.fontName || '导入的字体';
+        query('[data-action="remove-font"]').disabled = !settings.fontId;
+    }
+    function useFont(face = null) {
+        if (fontFace && fontFace !== face) document.fonts.delete(fontFace);
+        fontFace = face;
+        if (face) document.fonts.add(face);
+        const family = face ? `"${face.family}", serif` : FONT_PRESETS[settings.fontPreset].family;
+        for (const element of [panel, launcher]) element.style.setProperty('--stm-font-family', family);
+        renderFont();
+    }
+    async function restoreFont() {
+        const revision = ++fontRevision;
+        if (settings.fontPreset === 'genwan') {
+            query('[data-role="font-status"]').textContent = '正在加载内置源雲明體…';
+            try {
+                const face = await loadBuiltinFont();
+                if (revision !== fontRevision) return;
+                useFont(face);
+                query('[data-role="font-status"]').textContent = '源雲明體 GenWanMin2 TC R · 完整字库已内置，可离线使用。';
+            } catch {
+                if (revision !== fontRevision) return;
+                useFont();
+                query('[data-role="font-status"]').textContent = '内置字体加载失败，请检查插件是否完整下载，或重新选择字体。';
+            }
+            return;
+        }
+        if (settings.fontPreset !== 'custom') { useFont(); return; }
+        try {
+            const blob = settings.fontId && await store.get(settings.fontId);
+            if (!blob) throw new Error('字体不在当前浏览器中，请重新导入。');
+            const face = await decodeFont(blob, settings.fontId);
+            if (revision !== fontRevision) return;
+            useFont(face);
+            query('[data-role="font-status"]').textContent = `当前使用：${settings.fontName} · 字体仅保存在当前浏览器。`;
+        } catch (error) {
+            if (revision !== fontRevision) return;
+            useFont();
+            query('[data-role="font-status"]').textContent = error.message || '字体加载失败，请重新导入。';
+        }
+    }
+    fontSelect.addEventListener('change', () => { settings.fontPreset = fontSelect.value; save(); void restoreFont(); });
+    const fontInput = query('[data-role="font-file"]');
+    query('[data-action="import-font"]').addEventListener('click', () => fontInput.click());
+    fontInput.addEventListener('change', async () => {
+        const file = fontInput.files[0]; fontInput.value = '';
+        if (!file) return;
+        const revision = ++fontRevision;
+        const id = `font:${createTrackId()}`;
+        try {
+            validateFontFile(file);
+            const face = await decodeFont(file, id);
+            if (revision !== fontRevision) return;
+            await store.put(id, file);
+            if (revision !== fontRevision) { await store.delete(id); return; }
+            const previous = settings.fontId;
+            settings.fontId = id;
+            settings.fontName = file.name.replace(/\.[^.]+$/, '').slice(0, 80);
+            settings.fontPreset = 'custom';
+            useFont(face); save();
+            query('[data-role="font-status"]').textContent = `当前使用：${settings.fontName} · 字体仅保存在当前浏览器。`;
+            showStatus('字体已导入，播放器与歌词已同步使用。');
+            if (previous) await store.delete(previous).catch(() => {});
+        } catch (error) { if (revision === fontRevision) showStatus(error.message || '字体无法读取，请换一个字体文件。', true); }
+    });
+    query('[data-action="remove-font"]').addEventListener('click', async () => {
+        fontRevision++;
+        const previous = settings.fontId;
+        settings.fontId = null; settings.fontName = '';
+        if (settings.fontPreset === 'custom') settings.fontPreset = 'inherit';
+        useFont(); save();
+        query('[data-role="font-status"]').textContent = '导入的字体已移除，可以继续选择设备字体。';
+        if (previous) await store.delete(previous).catch(() => {});
+    });
+    renderFont();
+    void restoreFont();
+
+    const coverImage = query('.stm-cover-image');
+    coverImage.src = fallbackCoverUrl(0);
+    coverImage.addEventListener('error', () => {
+        const track = settings.tracks.find(item => item.id === settings.currentId);
+        const fallback = fallbackCoverUrl(track?.fallbackCover ?? 0);
+        if (coverImage.src !== fallback) coverImage.src = fallback;
+    });
+    function setLyricsOpen(open) {
+        query('.stm-lyrics-view').hidden = !open;
+        query('.stm-cover-tip').hidden = open;
+        query('[data-action="toggle-lyrics"]').setAttribute('aria-pressed', String(open));
+        query('[data-action="toggle-lyrics"]').setAttribute('aria-label', open ? '显示封面' : '显示歌词');
+        if (open) updateLyrics(true);
+    }
+    query('[data-action="toggle-lyrics"]').addEventListener('click', () => setLyricsOpen(query('.stm-lyrics-view').hidden));
+    function renderLyrics(track) {
+        lyricData = parseLyrics(track?.lyrics || '');
+        activeLyric = -1;
+        const target = query('.stm-lyrics-lines'); target.replaceChildren();
+        if (!track?.lyrics?.trim()) {
+            const empty = document.createElement('p'); empty.className = 'stm-no-lyrics';
+            empty.textContent = '暂无歌词';
+            const hint = document.createElement('small'); hint.textContent = '在曲库的歌曲详情中导入 LRC / TXT';
+            target.append(empty, hint); return;
+        }
+        for (const line of lyricData.lines) {
+            const paragraph = document.createElement('p'); paragraph.textContent = line.text;
+            target.append(paragraph);
+        }
+        updateLyrics(true);
+    }
+    function updateLyrics(force = false) {
+        if (!lyricData.synced) return;
+        const next = currentLyricIndex(lyricData.lines, audio.currentTime || 0);
+        if (!force && next === activeLyric) return;
+        activeLyric = next;
+        const lines = query('.stm-lyrics-lines').children;
+        Array.from(lines).forEach((line, index) => line.classList.toggle('stm-current-lyric', index === next));
+        if (next >= 0 && !query('.stm-lyrics-view').hidden && currentPage === 'playback' && !panel.hidden) {
+            const target = lines[next];
+            const container = query('.stm-lyrics-view');
+            container.scrollTop = Math.max(0, target.offsetTop - container.clientHeight / 2 + target.clientHeight / 2);
+        }
+    }
+    async function renderMedia(track) {
+        const revision = ++mediaRevision;
+        if (coverUrl) URL.revokeObjectURL(coverUrl);
+        coverUrl = null;
+        if (track && track.fallbackCover === undefined) { track.fallbackCover = randomCover(); save(); }
+        coverImage.src = fallbackCoverUrl(track?.fallbackCover ?? 0);
+        coverImage.alt = track ? `歌曲封面：${track.title}` : '音乐封面';
+        renderLyrics(track);
+        if (track?.coverId) {
+            try {
+                const blob = await store.get(track.coverId);
+                if (revision !== mediaRevision || settings.currentId !== track.id || !blob) return;
+                coverUrl = URL.createObjectURL(blob); coverImage.src = coverUrl;
+            } catch { /* Keep bundled artwork when this browser lacks the embedded cover. */ }
+        }
+    }
+    function cachedCover(id) {
+        if (!coverCache.has(id)) {
+            const entry = {};
+            entry.promise = store.get(id).then(blob => {
+                if (!blob || coverCache.get(id) !== entry) return null;
+                entry.url = URL.createObjectURL(blob); return entry.url;
+            }).catch(() => null);
+            coverCache.set(id, entry);
+        }
+        return coverCache.get(id).promise;
+    }
+    function forgetCover(id) {
+        const entry = coverCache.get(id);
+        if (entry?.url) URL.revokeObjectURL(entry.url);
+        coverCache.delete(id);
+    }
+    query('[data-action="close-details"]').addEventListener('click', () => { query('.stm-track-details').hidden = true; });
+    const songCoverInput = query('[data-role="song-cover-file"]');
+    const lyricsInput = query('[data-role="lyrics-file"]');
+    query('[data-action="song-cover"]').addEventListener('click', () => songCoverInput.click());
+    query('[data-action="song-lyrics"]').addEventListener('click', () => lyricsInput.click());
+    songCoverInput.addEventListener('change', async () => {
+        const file = songCoverInput.files[0], id = detailsTrackId;
+        songCoverInput.value = '';
+        if (!file || !settings.tracks.some(track => track.id === id)) return;
+        const key = `cover:${createTrackId()}`;
+        try {
+            validateImageFile(file);
+            const cover = await prepareCover(file);
+            await store.put(key, cover);
+            const track = settings.tracks.find(track => track.id === id);
+            if (!track) { await store.delete(key); return; }
+            const previous = track.coverId;
+            track.coverId = key; save(); renderTracks();
+            if (settings.currentId === id) void renderMedia(track);
+            if (previous) { forgetCover(previous); await store.delete(previous).catch(() => {}); }
+            showStatus('歌曲封面已更新。');
+        } catch (error) { showStatus(error.message || '封面读取失败，请换一张图片。', true); }
+    });
+    lyricsInput.addEventListener('change', async () => {
+        const file = lyricsInput.files[0], id = detailsTrackId;
+        lyricsInput.value = '';
+        if (!file) return;
+        try {
+            if (!/\.(lrc|txt)$/i.test(file.name) || !file.size || file.size > 512 * 1024) throw new Error('请选择 512 KB 以内的 LRC 或 TXT 歌词文件。');
+            const text = (await file.text()).replace(/^\uFEFF/, '').trim();
+            if (!text || text.length > MAX_LYRICS) throw new Error('歌词不能为空，最多支持 50000 个字符。');
+            const track = settings.tracks.find(track => track.id === id);
+            if (!track) return;
+            track.lyrics = text; save();
+            if (settings.currentId === id) renderLyrics(track);
+            showStatus('歌词已导入，点击播放页的封面即可查看。');
+        } catch (error) { showStatus(error.message || '歌词读取失败。', true); }
+    });
+    query('[data-action="clear-song-cover"]').addEventListener('click', async () => {
+        const track = settings.tracks.find(track => track.id === detailsTrackId);
+        if (!track) return;
+        const previous = track.coverId;
+        delete track.coverId; track.fallbackCover = randomCover(); save(); renderTracks();
+        if (settings.currentId === track.id) void renderMedia(track);
+        if (previous) { forgetCover(previous); await store.delete(previous).catch(() => {}); }
+        showStatus('已恢复内置封面。');
+    });
+    query('[data-action="clear-song-lyrics"]').addEventListener('click', () => {
+        const track = settings.tracks.find(track => track.id === detailsTrackId);
+        if (!track) return;
+        delete track.lyrics; save();
+        if (settings.currentId === track.id) renderLyrics(track);
+        showStatus('歌词已清除。');
+    });
+
     async function restoreBackground() {
         const revision = ++backgroundRevision;
         if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
@@ -382,6 +632,7 @@ function initialize() {
     }
     const cropElement = query('.stm-crop-editor');
     const cropper = createImageCropper(cropElement, {
+        getAspectRatio() { const bounds = panel.getBoundingClientRect(); return bounds.width / bounds.height; },
         async onSave({ original, cropped }) {
             const id = `background:${createTrackId()}`;
             try {
@@ -562,10 +813,18 @@ function initialize() {
     function renderTracks() {
         list.replaceChildren();
         const queue = getQueue(settings);
+        let assignedCover = false;
         for (const track of queue) {
+            if (track.fallbackCover === undefined) { track.fallbackCover = randomCover(); assignedCover = true; }
             const row = document.createElement('li');
             row.className = 'stm-track';
             row.classList.toggle('stm-active', track.id === settings.currentId);
+            const thumbnail = document.createElement('img');
+            thumbnail.className = 'stm-track-thumbnail'; thumbnail.alt = ''; thumbnail.loading = 'lazy';
+            thumbnail.src = fallbackCoverUrl(track.fallbackCover ?? 0);
+            if (track.coverId) void cachedCover(track.coverId).then(url => { if (url && thumbnail.isConnected) thumbnail.src = url; });
+            thumbnail.addEventListener('error', () => { const fallback = fallbackCoverUrl(track.fallbackCover ?? 0); if (thumbnail.src !== fallback) thumbnail.src = fallback; });
+            row.append(thumbnail);
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'stm-track-select';
@@ -575,7 +834,7 @@ function initialize() {
             title.className = 'stm-track-title';
             title.textContent = track.title;
             const source = document.createElement('small');
-            source.textContent = track.kind === 'local' ? '本地音乐' : new URL(track.url).hostname;
+            source.textContent = track.artist || (track.kind === 'local' ? '本地音乐' : new URL(track.url).hostname);
             button.append(title, source);
             button.addEventListener('click', () => void selectTrack(track.id, true));
             const remove = document.createElement('button');
@@ -586,6 +845,16 @@ function initialize() {
             remove.title = '从总曲库及所有歌单删除此音乐';
             remove.addEventListener('click', () => void removeTrack(track.id));
             row.append(button);
+            const details = document.createElement('button');
+            details.type = 'button'; details.className = 'stm-icon'; details.textContent = '⋯';
+            details.setAttribute('aria-label', `歌曲详情：${track.title}`);
+            details.addEventListener('click', () => {
+                detailsTrackId = track.id;
+                query('[data-role="details-title"]').textContent = track.title;
+                query('.stm-track-details').hidden = false;
+                query('.stm-track-details').scrollIntoView({ block: 'nearest' });
+            });
+            row.append(details);
             if (activePlaylist()) {
                 const unlink = document.createElement('button');
                 unlink.type = 'button';
@@ -621,6 +890,8 @@ function initialize() {
         playButton.disabled = queue.length === 0;
         query('[data-action="previous"]').disabled = queue.length === 0;
         query('[data-action="next"]').disabled = queue.length === 0;
+        if (assignedCover) save();
+        if (!settings.tracks.some(track => track.id === detailsTrackId)) query('.stm-track-details').hidden = true;
         renderQueue();
         renderHistory();
     }
@@ -649,7 +920,7 @@ function initialize() {
             const row = document.createElement('li');
             row.className = 'stm-queue-track';
             row.classList.toggle('stm-active', track.id === settings.currentId);
-            row.append(songButton(track, '播放队列歌曲', track.kind === 'local' ? '本地音乐' : '在线音乐', () => void selectTrack(track.id, true)));
+            row.append(songButton(track, '播放队列歌曲', track.artist || (track.kind === 'local' ? '本地音乐' : '在线音乐'), () => { setQueueOpen(false); void selectTrack(track.id, true); }));
             target.append(row);
         }
         query('.stm-queue-empty').hidden = queue.length > 0;
@@ -692,11 +963,15 @@ function initialize() {
         seek.value = String(audio.currentTime || 0);
         query('[data-role="elapsed"]').textContent = formatTime(audio.currentTime);
         query('[data-role="duration"]').textContent = formatTime(duration);
+        updateLyrics();
     }
 
     function updatePlayback() {
         const playing = !audio.paused && !audio.ended;
-        playButton.textContent = playing ? 'Ⅱ 暂停' : '▶ 播放';
+        playButton.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${playing ? 'M7 5h4v14H7zM14 5h4v14h-4z' : 'm8 5 11 7-11 7z'}"/></svg>`;
+        playButton.setAttribute('aria-label', playing ? '暂停' : '播放');
+        playButton.title = playing ? '暂停' : '播放';
+        panel.classList.toggle('stm-is-playing', playing);
         launcher.classList.toggle('stm-playing', playing);
         launcher.title = playing ? '正在播放音乐 · 点击打开，拖动可移动' : '点击打开音乐播放器，拖动可移动';
         launcher.setAttribute('aria-label', launcher.title);
@@ -737,7 +1012,8 @@ function initialize() {
         save();
         renderTracks();
         query('[data-role="title"]').textContent = track?.title ?? '还没有音乐';
-        query('[data-role="source"]').textContent = track ? (track.kind === 'local' ? '本地音乐' : '在线音乐') : '导入喜欢的音乐，为故事配上背景';
+        query('[data-role="source"]').textContent = track ? (track.artist || (track.kind === 'local' ? '本地音乐' : '在线音乐')) : '从导入页添加喜欢的音乐';
+        void renderMedia(track);
         showStatus();
         if (!track) return;
         try {
@@ -766,7 +1042,8 @@ function initialize() {
         if (!track) return;
         if (!window.confirm(`从总曲库删除「${track.title}」？\n这首歌也会从所有歌单中移除。`)) return;
         try {
-            if (track.kind === 'local') await store.delete(id);
+            const keys = [...(track.kind === 'local' ? [id] : []), ...(track.coverId ? [track.coverId] : [])];
+            if (keys.length) await store.deleteMany(keys);
         } catch {
             showStatus('删除本地文件失败，请检查浏览器存储权限后重试。', true);
             return;
@@ -776,6 +1053,7 @@ function initialize() {
         const current = settings.currentId === id;
         const wasPlaying = !audio.paused;
         deleteTrackFromLibrary(settings, id);
+        if (track.coverId) forgetCover(track.coverId);
         save();
         renderPlaylists();
         renderTracks();
@@ -823,13 +1101,20 @@ function initialize() {
             try {
                 if (settings.tracks.length >= MAX_TRACKS) throw new Error(`总曲库最多可添加 ${MAX_TRACKS} 首音乐。`);
                 validateAudioFile(file);
+                const metadata = await readEmbeddedMetadata(file).catch(() => ({}));
                 const id = createTrackId();
                 await store.put(id, file);
                 if (settings.tracks.length >= MAX_TRACKS) {
                     await store.delete(id);
                     throw new Error(`总曲库最多可添加 ${MAX_TRACKS} 首音乐。`);
                 }
-                settings.tracks.push({ id, kind: 'local', title: file.name.replace(/\.[^.]+$/, '').slice(0, 160) });
+                let coverId;
+                if (metadata.cover) {
+                    const key = `cover:${createTrackId()}`;
+                    try { await store.put(key, await prepareCover(metadata.cover)); coverId = key; } catch { /* Music remains usable with bundled artwork if storage is full. */ }
+                }
+                settings.tracks.push({ id, kind: 'local', title: metadata.title || file.name.replace(/\.[^.]+$/, '').slice(0, 160),
+                    ...(metadata.artist ? { artist: metadata.artist } : {}), ...(metadata.lyrics ? { lyrics: metadata.lyrics } : {}), ...(coverId ? { coverId } : {}) });
                 addTrackToPlaylist(settings, targetId, id);
                 added++;
                 save();
@@ -887,7 +1172,7 @@ function initialize() {
 
     playlistSelect.addEventListener('change', () => void activatePlaylist(playlistSelect.value || null));
     query('#stm-library-playlist').addEventListener('change', event => void activatePlaylist(event.currentTarget.value || null));
-    query('[data-action="manage-playlists"]').addEventListener('click', () => { showPage('library'); query('#stm-new-playlist').focus(); });
+    query('[data-action="manage-playlists"]').addEventListener('click', () => { showPage('library'); setManagerOpen(true); query('#stm-new-playlist').focus(); });
     query('.stm-create-playlist').addEventListener('submit', async event => {
         event.preventDefault();
         try {
@@ -989,6 +1274,9 @@ function initialize() {
         if (!event.persisted) {
             if (objectUrl) URL.revokeObjectURL(objectUrl);
             if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
+            if (coverUrl) URL.revokeObjectURL(coverUrl);
+            for (const id of coverCache.keys()) forgetCover(id);
+            if (fontFace) document.fonts.delete(fontFace);
             window.clearInterval(historyTimer);
         }
     });

@@ -7,9 +7,9 @@ export function validateImageFile(file) {
 }
 
 /** A portrait crop that always stays inside the source image. */
-export function cropRectangle(width, height, { zoom = 1, x = 0.5, y = 0.5 } = {}) {
+export function cropRectangle(width, height, { zoom = 1, x = 0.5, y = 0.5 } = {}, ratio = 2 / 3) {
     if (!(width > 0 && height > 0)) throw new Error('无法读取图片尺寸。');
-    const ratio = 2 / 3;
+    if (!(ratio > 0 && Number.isFinite(ratio))) ratio = 2 / 3;
     const cropWidth = Math.min(width, height * ratio) / clamp(zoom, 1, 4);
     const cropHeight = cropWidth / ratio;
     return { x: (width - cropWidth) * clamp(x, 0, 1), y: (height - cropHeight) * clamp(y, 0, 1), width: cropWidth, height: cropHeight };
@@ -26,7 +26,7 @@ async function decodeImage(blob) {
     } finally { URL.revokeObjectURL(url); }
 }
 
-export function createImageCropper(element, { onSave, onError, onClose }) {
+export function createImageCropper(element, { onSave, onError, onClose, getAspectRatio = () => 2 / 3 }) {
     const query = selector => element.querySelector(selector);
     const canvas = query('canvas');
     const zoom = query('[data-crop="zoom"]');
@@ -39,11 +39,12 @@ export function createImageCropper(element, { onSave, onError, onClose }) {
     let revision = 0;
     let dragging;
     let saving = false;
+    let ratio = 2 / 3;
 
     const position = () => ({ zoom: Number(zoom.value), x: Number(horizontal.value) / 100, y: Number(vertical.value) / 100 });
     function draw(target = canvas) {
         if (!source) return;
-        const rect = cropRectangle(source.width, source.height, position());
+        const rect = cropRectangle(source.width, source.height, position(), ratio);
         const painter = target.getContext('2d');
         painter.clearRect(0, 0, target.width, target.height);
         painter.drawImage(source, rect.x, rect.y, rect.width, rect.height, 0, 0, target.width, target.height);
@@ -64,7 +65,7 @@ export function createImageCropper(element, { onSave, onError, onClose }) {
     });
     canvas.addEventListener('pointermove', event => {
         if (!dragging || dragging.id !== event.pointerId || !source) return;
-        const rect = cropRectangle(source.width, source.height, position());
+        const rect = cropRectangle(source.width, source.height, position(), ratio);
         const box = canvas.getBoundingClientRect();
         if (source.width > rect.width) horizontal.value = String(clamp(Number(horizontal.value) - (event.clientX - dragging.x) * rect.width / box.width / (source.width - rect.width) * 100, 0, 100));
         if (source.height > rect.height) vertical.value = String(clamp(Number(vertical.value) - (event.clientY - dragging.y) * rect.height / box.height / (source.height - rect.height) * 100, 0, 100));
@@ -90,7 +91,7 @@ export function createImageCropper(element, { onSave, onError, onClose }) {
         try {
             const output = document.createElement('canvas');
             output.width = 768;
-            output.height = 1152;
+            output.height = Math.round(output.width / ratio);
             draw(output);
             const cropped = await new Promise((resolve, reject) => output.toBlob(blob => blob ? resolve(blob) : reject(new Error('图片裁剪失败，请重试。')), 'image/webp', 0.9));
             await onSave({ original, cropped });
@@ -112,6 +113,10 @@ export function createImageCropper(element, { onSave, onError, onClose }) {
                 source?.close?.();
                 source = decoded;
                 original = blob;
+                ratio = getAspectRatio();
+                if (!(ratio > 0 && Number.isFinite(ratio))) ratio = 2 / 3;
+                canvas.height = Math.round(canvas.width / ratio);
+                canvas.style.aspectRatio = String(ratio);
                 zoom.value = '1';
                 horizontal.value = vertical.value = '50';
                 element.hidden = false;
