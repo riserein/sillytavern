@@ -1,4 +1,4 @@
-/** Audio stays in this browser; only playlist metadata is saved to SillyTavern. */
+/** Audio and background images stay in this browser; only metadata is saved to SillyTavern. */
 export class LocalMusicStore {
     #database;
 

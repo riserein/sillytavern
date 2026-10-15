@@ -2,9 +2,11 @@ import {
     MAX_TRACKS, createTrackId, normalizeSettings, normalizeUrl, titleFromUrl, nextTrackId, formatTime, validateAudioFile,
     getQueue, createPlaylist, renamePlaylist, addTrackToPlaylist, removeTrackFromPlaylist, deleteTrackFromLibrary,
     deletePlaylist, bindPlaylistCharacters, currentCharacterAvatar, playlistForCharacter,
+    recordPlayback, recentTracks, rankedTracks,
 } from './core.js';
 import { LocalMusicStore } from './local-store.js';
 import { makeDraggable } from './floating.js';
+import { createImageCropper } from './background.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
 
@@ -26,6 +28,11 @@ function initialize() {
     let roleRevision = 0;
     let canAutoAdvance = true;
     let membershipTrackId = null;
+    let currentPage = 'playback';
+    let playSession = 0;
+    let countedSession = -1;
+    let backgroundUrl = null;
+    let backgroundRevision = 0;
 
     const launcher = document.createElement('button');
     launcher.id = 'stm-launcher';
@@ -47,23 +54,23 @@ function initialize() {
         <header class="stm-header" tabindex="0" aria-label="拖动播放器窗口，可用方向键移动" title="拖动这里移动窗口">
             <span class="stm-grip" aria-hidden="true">⠿</span>
             <div class="stm-header-actions">
-                <button type="button" class="stm-secondary" data-action="appearance" aria-expanded="false" aria-controls="stm-appearance">◐ 配色</button>
+                <button type="button" class="stm-secondary" data-action="appearance" aria-expanded="false" aria-controls="stm-appearance">◐ 外观</button>
                 <button type="button" class="stm-icon" data-action="close" aria-label="关闭播放器" title="关闭面板，音乐继续播放">×</button>
             </div>
         </header>
-        <div id="stm-appearance" class="stm-appearance" hidden>
-            <div class="stm-theme-grid" role="group" aria-label="选择配色"></div>
-            <div class="stm-surface-row" role="group" aria-label="选择质感">
-                <button type="button" class="stm-secondary" data-surface-choice="matte">雾面</button>
-                <button type="button" class="stm-secondary" data-surface-choice="glass">毛玻璃</button>
-                <button type="button" class="stm-secondary stm-reset-position" data-action="reset-position">重置位置</button>
-            </div>
-        </div>
+        <nav class="stm-tabs" role="tablist" aria-label="播放器页面">
+            <button type="button" role="tab" id="stm-tab-playback" data-page="playback" aria-controls="stm-page-playback" aria-selected="true">播放</button>
+            <button type="button" role="tab" id="stm-tab-library" data-page="library" aria-controls="stm-page-library" aria-selected="false" tabindex="-1">曲库</button>
+            <button type="button" role="tab" id="stm-tab-recent" data-page="recent" aria-controls="stm-page-recent" aria-selected="false" tabindex="-1">最近播放</button>
+            <button type="button" role="tab" id="stm-tab-ranking" data-page="ranking" aria-controls="stm-page-ranking" aria-selected="false" tabindex="-1">播放排行</button>
+            <button type="button" role="tab" id="stm-tab-appearance" data-page="appearance" aria-controls="stm-appearance" aria-selected="false" tabindex="-1">外观</button>
+        </nav>
+        <audio preload="metadata"></audio>
+        <section id="stm-page-playback" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-playback" data-view="playback">
         <div class="stm-now">
             <span class="stm-art" aria-hidden="true">♫</span>
             <div class="stm-now-info"><strong data-role="title">还没有音乐</strong><span data-role="source">导入喜欢的音乐，为故事配上背景</span></div>
         </div>
-        <audio preload="metadata"></audio>
         <label class="stm-sr-only" for="stm-seek">播放进度</label>
         <input id="stm-seek" class="stm-range" type="range" min="0" max="0" step="0.1" value="0" disabled>
         <div class="stm-time"><span data-role="elapsed">0:00</span><span data-role="duration">0:00</span></div>
@@ -86,10 +93,17 @@ function initialize() {
         <div class="stm-library-nav">
             <label class="stm-sr-only" for="stm-playlist">选择歌单</label>
             <select id="stm-playlist"><option value="">总曲库</option></select>
-            <button type="button" class="stm-secondary" data-action="manage-playlists" aria-expanded="false" aria-controls="stm-playlist-manager">歌单管理</button>
+            <button type="button" class="stm-secondary" data-action="manage-playlists" aria-controls="stm-page-library">歌单管理</button>
         </div>
         <p class="stm-role-status" data-role="role-status"></p>
-        <div id="stm-playlist-manager" class="stm-playlist-manager" hidden>
+        <ol class="stm-queue-list" aria-label="当前歌单"></ol>
+        <p class="stm-queue-empty stm-page-empty">还没有音乐，前往「曲库」导入喜欢的歌曲。</p>
+        </section>
+        <section id="stm-page-library" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-library" data-view="library" hidden>
+        <div class="stm-page-heading"><h3>曲库与歌单</h3><span>整理你的音乐</span></div>
+        <label class="stm-sr-only" for="stm-library-playlist">管理哪个歌单</label>
+        <select id="stm-library-playlist" aria-label="管理哪个歌单"><option value="">总曲库</option></select>
+        <div id="stm-playlist-manager" class="stm-playlist-manager">
             <form class="stm-create-playlist stm-inline-form">
                 <label class="stm-sr-only" for="stm-new-playlist">新歌单名称</label>
                 <input id="stm-new-playlist" placeholder="新歌单名称" maxlength="80" required autocomplete="off">
@@ -138,8 +152,50 @@ function initialize() {
         </div>
         <ol class="stm-track-list" aria-label="播放列表"></ol>
         <p class="stm-empty">列表还是空的，导入本地音乐或添加直链开始吧。</p>
+        </section>
+        <section id="stm-page-recent" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-recent" data-view="recent" hidden>
+            <div class="stm-page-heading"><h3>最近播放</h3><span>最近听过的 100 首歌</span></div>
+            <ol class="stm-recent-list stm-history-list" aria-label="最近播放"></ol>
+            <p class="stm-recent-empty stm-page-empty">还没有播放记录，播放一首喜欢的歌吧。</p>
+        </section>
+        <section id="stm-page-ranking" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-ranking" data-view="ranking" hidden>
+            <div class="stm-page-heading"><h3>播放次数排行</h3><span>最近 72 小时 · 从高到低</span></div>
+            <p class="stm-hint">歌曲开始播放计 1 次，暂停后继续不重复计数。</p>
+            <ol class="stm-ranking-list stm-history-list" aria-label="近三天播放排行"></ol>
+            <p class="stm-ranking-empty stm-page-empty">近三天还没有播放记录。</p>
+        </section>
+        <section id="stm-appearance" class="stm-page stm-appearance" role="tabpanel" aria-labelledby="stm-tab-appearance" data-view="appearance" hidden>
+            <div class="stm-page-heading"><h3>配色与背景</h3><span>为音乐换一种氛围</span></div>
+            <div class="stm-theme-grid" role="group" aria-label="选择配色"></div>
+            <div class="stm-surface-row" role="group" aria-label="选择质感">
+                <button type="button" class="stm-secondary" data-surface-choice="matte">雾面</button>
+                <button type="button" class="stm-secondary" data-surface-choice="glass">毛玻璃</button>
+                <button type="button" class="stm-secondary" data-surface-choice="clear" disabled title="导入背景图片后可用">清透</button>
+            </div>
+            <div class="stm-background-card">
+                <div class="stm-background-preview" aria-label="当前背景图片预览"><span>你的图片，你的氛围</span></div>
+                <div class="stm-background-actions">
+                    <button type="button" class="stm-secondary" data-action="import-background">导入背景图片</button>
+                    <button type="button" class="stm-secondary" data-action="recrop-background" disabled>重新裁剪</button>
+                    <button type="button" class="stm-secondary" data-action="remove-background" disabled>移除图片</button>
+                </div>
+                <input type="file" data-role="background-file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" hidden>
+                <p class="stm-hint">支持 10 MB 以内图片，导入后可拖动、缩放裁剪。雾面与毛玻璃叠加在图片上；清透直接使用图片背景。</p>
+                <p class="stm-hint" data-role="background-status">图片仅保存在当前浏览器。</p>
+            </div>
+            <button type="button" class="stm-secondary" data-action="reset-position">重置悬浮球与窗口位置</button>
+        </section>
         <p class="stm-status" role="status" aria-live="polite"></p>
-        <footer class="stm-footer">本地文件保存在当前浏览器 · 关闭面板可继续播放</footer>`;
+        <footer class="stm-footer">本地文件保存在当前浏览器 · 关闭面板可继续播放</footer>
+        <section class="stm-crop-editor" role="dialog" aria-modal="true" aria-label="裁剪背景图片" hidden>
+            <div class="stm-page-heading"><h3>裁剪背景图片</h3><span>拖动图片，留下喜欢的区域</span></div>
+            <canvas width="320" height="480" aria-label="背景裁剪预览"></canvas>
+            <label>缩放<input class="stm-range" type="range" data-crop="zoom" aria-label="裁剪缩放" min="1" max="4" step="0.01" value="1"></label>
+            <label>左右<input class="stm-range" type="range" data-crop="x" aria-label="裁剪左右位置" min="0" max="100" step="0.1" value="50"></label>
+            <label>上下<input class="stm-range" type="range" data-crop="y" aria-label="裁剪上下位置" min="0" max="100" step="0.1" value="50"></label>
+            <div class="stm-crop-actions"><button type="button" class="stm-secondary" data-crop-action="cancel">取消</button><button type="button" class="stm-primary" data-crop-action="save">使用此区域</button></div>
+            <p class="stm-crop-error stm-hint" role="status"></p>
+        </section>`;
     document.body.append(launcher, panel);
 
     const query = selector => panel.querySelector(selector);
@@ -168,6 +224,33 @@ function initialize() {
         getPosition: () => settings.positions.panel,
         onPositionChange: position => { settings.positions.panel = position; save(); },
     });
+    function showPage(page, focus = false) {
+        if (!query(`[data-view="${page}"]`)) return;
+        currentPage = page;
+        for (const section of panel.querySelectorAll('[data-view]')) section.hidden = section.dataset.view !== page;
+        for (const button of panel.querySelectorAll('[data-page]')) {
+            const selected = button.dataset.page === page;
+            button.setAttribute('aria-selected', String(selected));
+            button.tabIndex = selected ? 0 : -1;
+            if (selected && focus) button.focus();
+        }
+        query('[data-action="appearance"]').setAttribute('aria-expanded', String(page === 'appearance'));
+        if (page === 'recent' || page === 'ranking') renderHistory();
+        if (page === 'library') renderRolePicker();
+        panelDrag.refresh();
+    }
+    const tabs = Array.from(panel.querySelectorAll('[data-page]'));
+    tabs.forEach((button, index) => {
+        button.addEventListener('click', () => showPage(button.dataset.page));
+        button.addEventListener('keydown', event => {
+            const offset = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+            if (offset || event.key === 'Home' || event.key === 'End') {
+                event.preventDefault();
+                const next = event.key === 'Home' ? tabs[0] : event.key === 'End' ? tabs.at(-1) : tabs[(index + offset + tabs.length) % tabs.length];
+                showPage(next.dataset.page, true);
+            }
+        });
+    });
     const themes = { amber: '暖砂', ocean: '雾蓝', forest: '松绿', rose: '烟粉', lavender: '月紫', pearl: '珍珠白' };
     for (const [theme, name] of Object.entries(themes)) {
         const button = document.createElement('button');
@@ -195,16 +278,21 @@ function initialize() {
         }
         for (const button of panel.querySelectorAll('[data-surface-choice]')) {
             button.setAttribute('aria-pressed', String(button.dataset.surfaceChoice === settings.surface));
+            if (button.dataset.surfaceChoice === 'clear') button.disabled = !backgroundUrl;
         }
+        panel.dataset.hasBackground = String(Boolean(backgroundUrl));
+        panel.style.setProperty('--stm-background-image', backgroundUrl ? `url("${backgroundUrl}")` : 'none');
+        query('.stm-background-preview').style.backgroundImage = backgroundUrl ? `url("${backgroundUrl}")` : '';
+        query('.stm-background-preview span').hidden = Boolean(backgroundUrl);
+        query('[data-action="recrop-background"]').disabled = !backgroundUrl;
+        query('[data-action="remove-background"]').disabled = !settings.backgroundId;
     }
-    query('[data-action="appearance"]').addEventListener('click', event => {
-        const options = query('#stm-appearance');
-        options.hidden = !options.hidden;
-        event.currentTarget.setAttribute('aria-expanded', String(!options.hidden));
-        panelDrag.refresh();
-    });
+    query('[data-action="appearance"]').addEventListener('click', () => showPage(currentPage === 'appearance' ? 'playback' : 'appearance'));
     for (const button of panel.querySelectorAll('[data-surface-choice]')) {
-        button.addEventListener('click', () => { settings.surface = button.dataset.surfaceChoice; applyAppearance(); save(); });
+        button.addEventListener('click', () => {
+            if (button.dataset.surfaceChoice === 'clear' && !backgroundUrl) return;
+            settings.surface = button.dataset.surfaceChoice; applyAppearance(); save();
+        });
     }
     query('[data-action="reset-position"]').addEventListener('click', () => {
         settings.positions = { launcher: null, panel: null };
@@ -213,6 +301,86 @@ function initialize() {
         save();
     });
     applyAppearance();
+
+    async function restoreBackground() {
+        const revision = ++backgroundRevision;
+        if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
+        backgroundUrl = null;
+        if (settings.backgroundId) {
+            try {
+                const blob = await store.get(settings.backgroundId);
+                if (revision !== backgroundRevision) return;
+                if (blob) backgroundUrl = URL.createObjectURL(blob);
+                else query('[data-role="background-status"]').textContent = '图片不在当前浏览器中，请重新导入。';
+            } catch { query('[data-role="background-status"]').textContent = '读取背景失败，请检查浏览器存储权限后重新导入。'; }
+        }
+        if (revision !== backgroundRevision) return;
+        if (!backgroundUrl && settings.surface === 'clear') { settings.surface = 'glass'; save(); }
+        applyAppearance();
+    }
+    async function deleteBackgroundFiles(id) {
+        if (!id) return;
+        await Promise.all([store.delete(id), store.delete(`${id}:original`)]);
+    }
+    const cropElement = query('.stm-crop-editor');
+    const cropper = createImageCropper(cropElement, {
+        async onSave({ original, cropped }) {
+            const id = `background:${createTrackId()}`;
+            try {
+                await store.put(`${id}:original`, original);
+                await store.put(id, cropped);
+            } catch (error) {
+                await deleteBackgroundFiles(id).catch(() => {});
+                throw error;
+            }
+            const previous = settings.backgroundId;
+            settings.backgroundId = id;
+            save();
+            await restoreBackground();
+            query('[data-role="background-status"]').textContent = '背景已保存，可重新裁剪；图片仅保存在当前浏览器。';
+            showStatus('裁剪后的图片已设为背景，可以继续选择配色与质感。');
+            await deleteBackgroundFiles(previous).catch(() => {});
+        },
+        onError(error) {
+            const message = error.name === 'QuotaExceededError' ? '浏览器存储空间不足，请释放空间后重试。' : error.message || '图片处理失败，请换一张图片。';
+            query('.stm-crop-error').textContent = message;
+            showStatus(message, true);
+        },
+        onClose() {
+            for (const element of panel.querySelectorAll(':scope > :not(.stm-crop-editor)')) element.inert = false;
+            query('[data-action="import-background"]').focus();
+        },
+    });
+    async function openCropper(blob) {
+        query('.stm-crop-error').textContent = '';
+        await cropper.open(blob);
+        if (!cropElement.hidden) for (const element of panel.querySelectorAll(':scope > :not(.stm-crop-editor)')) element.inert = true;
+    }
+    const backgroundInput = query('[data-role="background-file"]');
+    query('[data-action="import-background"]').addEventListener('click', () => backgroundInput.click());
+    backgroundInput.addEventListener('change', () => {
+        const file = backgroundInput.files[0];
+        backgroundInput.value = '';
+        if (file) void openCropper(file);
+    });
+    query('[data-action="recrop-background"]').addEventListener('click', async () => {
+        try {
+            const original = await store.get(`${settings.backgroundId}:original`);
+            if (!original) throw new Error('原图不在当前浏览器中，请重新导入。');
+            await openCropper(original);
+        } catch (error) { showStatus(error.message, true); }
+    });
+    query('[data-action="remove-background"]').addEventListener('click', async () => {
+        const previous = settings.backgroundId;
+        settings.backgroundId = null;
+        if (settings.surface === 'clear') settings.surface = 'glass';
+        save();
+        await restoreBackground();
+        query('[data-role="background-status"]').textContent = '图片仅保存在当前浏览器。';
+        showStatus('背景图片已移除，已恢复原有配色。');
+        await deleteBackgroundFiles(previous).catch(() => {});
+    });
+    void restoreBackground();
 
     function showStatus(message = '', error = false) {
         status.textContent = message;
@@ -274,12 +442,13 @@ function initialize() {
     function renderPlaylists() {
         const importId = importTarget.value;
         const membershipId = query('#stm-add-target').value;
-        for (const [select, libraryName] of [[playlistSelect, '总曲库'], [importTarget, '不选择 · 仅加入总曲库'], [query('#stm-add-target'), null]]) {
+        for (const [select, libraryName] of [[playlistSelect, '总曲库'], [query('#stm-library-playlist'), '总曲库'], [importTarget, '不选择 · 仅加入总曲库'], [query('#stm-add-target'), null]]) {
             select.replaceChildren();
             if (libraryName) select.append(new Option(libraryName, ''));
             for (const playlist of settings.playlists) select.append(new Option(`${playlist.name}（${playlist.trackIds.length}）`, playlist.id));
         }
         playlistSelect.value = settings.activePlaylistId || '';
+        query('#stm-library-playlist').value = settings.activePlaylistId || '';
         importTarget.value = settings.playlists.some(item => item.id === importId) ? importId : '';
         if (settings.playlists.some(item => item.id === membershipId)) query('#stm-add-target').value = membershipId;
         const selected = activePlaylist();
@@ -296,7 +465,7 @@ function initialize() {
         pausePlayback();
         query('.stm-membership').hidden = true;
         renderPlaylists();
-        if (open) setOpen(true, false);
+        if (open) { showPage('playback'); setOpen(true, false); }
         const queue = getQueue(settings);
         const selected = activePlaylist();
         const track = queue.find(item => item.id === settings.currentId)
@@ -394,6 +563,68 @@ function initialize() {
         playButton.disabled = queue.length === 0;
         query('[data-action="previous"]').disabled = queue.length === 0;
         query('[data-action="next"]').disabled = queue.length === 0;
+        renderQueue();
+        renderHistory();
+    }
+
+    function songButton(track, label, detail, playTrack) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'stm-track-select';
+        button.setAttribute('aria-label', `${label}：${track.title}`);
+        button.setAttribute('aria-current', String(track.id === settings.currentId));
+        const title = document.createElement('span');
+        title.className = 'stm-song-title';
+        title.textContent = track.title;
+        const subtitle = document.createElement('small');
+        subtitle.textContent = detail;
+        button.append(title, subtitle);
+        button.addEventListener('click', playTrack);
+        return button;
+    }
+
+    function renderQueue() {
+        const queue = getQueue(settings);
+        const target = query('.stm-queue-list');
+        target.replaceChildren();
+        for (const track of queue) {
+            const row = document.createElement('li');
+            row.className = 'stm-queue-track';
+            row.classList.toggle('stm-active', track.id === settings.currentId);
+            row.append(songButton(track, '播放队列歌曲', track.kind === 'local' ? '本地音乐' : '在线音乐', () => void selectTrack(track.id, true)));
+            target.append(row);
+        }
+        query('.stm-queue-empty').hidden = queue.length > 0;
+    }
+
+    async function playHistoryTrack(id) {
+        if (!getQueue(settings).some(track => track.id === id)) {
+            const activated = await activatePlaylist(null);
+            if (!activated) return;
+        }
+        if (!settings.tracks.some(track => track.id === id)) return;
+        await selectTrack(id, true);
+    }
+
+    function renderHistory() {
+        const recent = recentTracks(settings);
+        const ranking = rankedTracks(settings);
+        for (const [selector, entries, ranked] of [['.stm-recent-list', recent, false], ['.stm-ranking-list', ranking, true]]) {
+            const target = query(selector);
+            target.replaceChildren();
+            entries.forEach((entry, index) => {
+                const row = document.createElement('li');
+                row.className = 'stm-history-track';
+                const number = document.createElement('span');
+                number.className = 'stm-rank-number';
+                number.textContent = String(index + 1).padStart(2, '0');
+                const detail = ranked ? `${entry.count} 次播放` : new Date(entry.at).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+                row.append(number, songButton(entry.track, ranked ? '播放排行歌曲' : '播放最近歌曲', detail, () => void playHistoryTrack(entry.track.id)));
+                target.append(row);
+            });
+        }
+        query('.stm-recent-empty').hidden = recent.length > 0;
+        query('.stm-ranking-empty').hidden = ranking.length > 0;
     }
 
     function updateProgress() {
@@ -438,6 +669,7 @@ function initialize() {
 
     async function selectTrack(id, shouldPlay = false) {
         const sequence = ++loadSequence;
+        playSession++;
         canAutoAdvance = true;
         releaseSource();
         const track = getQueue(settings).find(item => item.id === id);
@@ -596,12 +828,8 @@ function initialize() {
     });
 
     playlistSelect.addEventListener('change', () => void activatePlaylist(playlistSelect.value || null));
-    query('[data-action="manage-playlists"]').addEventListener('click', event => {
-        const manager = query('#stm-playlist-manager');
-        manager.hidden = !manager.hidden;
-        event.currentTarget.setAttribute('aria-expanded', String(!manager.hidden));
-        renderRolePicker();
-    });
+    query('#stm-library-playlist').addEventListener('change', event => void activatePlaylist(event.currentTarget.value || null));
+    query('[data-action="manage-playlists"]').addEventListener('click', () => { showPage('library'); query('#stm-new-playlist').focus(); });
     query('.stm-create-playlist').addEventListener('submit', async event => {
         event.preventDefault();
         try {
@@ -677,6 +905,17 @@ function initialize() {
     });
     for (const event of ['timeupdate', 'loadedmetadata', 'durationchange', 'emptied']) audio.addEventListener(event, updateProgress);
     for (const event of ['play', 'pause', 'ended']) audio.addEventListener(event, updatePlayback);
+    audio.addEventListener('playing', () => {
+        if (audio.paused || !settings.currentId || countedSession === playSession) return;
+        countedSession = playSession;
+        recordPlayback(settings, settings.currentId);
+        save();
+        renderHistory();
+    });
+    // Rankings expire even if the player remains open for several days.
+    const historyTimer = window.setInterval(() => {
+        if (!panel.hidden && (currentPage === 'ranking' || currentPage === 'recent')) renderHistory();
+    }, 60000);
     audio.addEventListener('ended', () => {
         if (!canAutoAdvance) return;
         const nextId = nextTrackId(getQueue(settings), settings.currentId, settings.mode, { ended: true });
@@ -689,7 +928,11 @@ function initialize() {
     });
     window.addEventListener('pagehide', event => {
         // Do not interrupt pages being kept in the browser back/forward cache.
-        if (!event.persisted && objectUrl) URL.revokeObjectURL(objectUrl);
+        if (!event.persisted) {
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+            if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
+            window.clearInterval(historyTimer);
+        }
     });
 
     const settingsArea = document.querySelector('#extensions_settings2') || document.querySelector('#extensions_settings');

@@ -105,3 +105,56 @@
 .stm-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 @media (max-width: 600px) { .stm-launcher { right: 12px; top: calc(var(--doc-height, 100dvh) - 132px); } .stm-player { right: 12px; top: calc(var(--doc-height, 100dvh) - 142px); width: 350px; padding: 16px; max-height: calc(var(--doc-height, 100dvh) - 154px); } }
 @media (prefers-reduced-motion: reduce) { .stm-player button { transition: none; } }
+
+/* Each page scrolls on its own; navigation and the window handle stay reachable. */
+.stm-player { display: flex; flex-direction: column; width: 390px; height: 585px; max-height: calc(var(--doc-height, 100dvh) - 32px); overflow: hidden; padding: 16px; }
+.stm-header, .stm-tabs, .stm-status, .stm-footer { flex-shrink: 0; }
+.stm-tabs { display: grid; grid-template-columns: .8fr .8fr 1.2fr 1.2fr .8fr; gap: 3px; padding: 8px 0 10px; border-bottom: 1px solid var(--stm-line); }
+.stm-player .stm-tabs button { min-width: 0; padding: 7px 2px; border: 0; border-radius: 8px; background: transparent; color: var(--stm-muted); font-size: 11px; white-space: nowrap; }
+.stm-player .stm-tabs button[aria-selected="true"] { background: var(--stm-active); color: var(--stm-accent); box-shadow: inset 0 -2px var(--stm-accent); }
+.stm-player .stm-tabs button:hover { background: var(--stm-hover); }
+.stm-page { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: thin; padding: 12px 4px 6px 0; }
+.stm-player .stm-appearance { margin: 0; border: 0; border-radius: 0; background: transparent; }
+.stm-page-heading { display: flex; flex-direction: column; gap: 3px; margin-bottom: 16px; }
+.stm-page-heading h3 { font-size: 17px; font-weight: 600; color: var(--stm-body); }
+.stm-page-heading > span { color: var(--stm-muted); font-size: 11px; }
+.stm-player #stm-library-playlist { width: 100%; margin-bottom: 4px; }
+.stm-player .stm-track-list { max-height: none; overflow: visible; }
+.stm-now { margin-top: 8px; }
+.stm-player .stm-queue-list, .stm-player .stm-history-list { list-style: none; padding: 0; margin: 8px 0 0; }
+.stm-queue-track, .stm-history-track { display: flex; align-items: center; gap: 6px; border-radius: 9px; margin-bottom: 4px; border: 1px solid transparent; }
+.stm-queue-track:hover, .stm-history-track:hover { background: var(--stm-hover); }
+.stm-queue-track.stm-active { background: var(--stm-active); border-color: var(--stm-line); }
+.stm-song-title { display: block; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.stm-queue-track.stm-active .stm-song-title { color: var(--stm-accent); }
+.stm-rank-number { flex: 0 0 26px; padding-left: 5px; font-size: 12px; color: var(--stm-muted); font-variant-numeric: tabular-nums; }
+.stm-ranking-list li:nth-child(-n+3) .stm-rank-number { color: var(--stm-accent); font-weight: 700; }
+.stm-player .stm-page-empty { padding: 28px 10px; color: var(--stm-muted); font-size: 12px; text-align: center; }
+.stm-player .stm-status { max-height: 42px; overflow-y: auto; flex-shrink: 0; }
+.stm-footer { padding-top: 8px; font-size: 9px; }
+.stm-background-card { padding: 12px; margin: 18px 0; border: 1px solid var(--stm-line); border-radius: 12px; background: var(--stm-subtle); }
+.stm-background-preview { display: grid; place-items: center; height: 100px; border: 1px solid var(--stm-line); border-radius: 8px; background: linear-gradient(135deg, var(--stm-active), transparent); background-size: cover; background-position: center; color: var(--stm-muted); font-size: 12px; }
+.stm-background-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.stm-player[data-has-background="true"] { background: var(--stm-solid); backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.stm-player[data-has-background="true"]::before, .stm-player[data-has-background="true"]::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; }
+.stm-player[data-has-background="true"]::before { z-index: -2; background-image: var(--stm-background-image); background-size: cover; background-position: center; }
+.stm-player[data-has-background="true"]::after { z-index: -1; background: var(--stm-solid); opacity: .58; }
+.stm-player[data-has-background="true"][data-surface="glass"]::before { filter: blur(12px) saturate(1.15); transform: scale(1.08); }
+.stm-player[data-has-background="true"][data-surface="glass"]::after { opacity: .38; background: linear-gradient(135deg, #ffffff24, transparent), var(--stm-solid); }
+.stm-player[data-has-background="true"][data-surface="matte"]::before { filter: blur(1px) saturate(.8); }
+.stm-player[data-has-background="true"][data-surface="matte"]::after { background: radial-gradient(#ffffff30 .6px, transparent .8px), var(--stm-solid); background-size: 3px 3px; opacity: .65; }
+.stm-player[data-has-background="true"][data-surface="clear"]::after { opacity: 0; }
+.stm-player[data-surface="clear"] { --stm-image-text-shadow: 0 1px 2px #000d, 0 0 5px #0009; }
+.stm-player[data-surface="clear"][data-theme="pearl"] { --stm-image-text-shadow: 0 1px 2px #fffd, 0 0 5px #fff9; }
+/* Keep text legible over photos even when the host's FastUI disables shadows. */
+.stm-player[data-surface="clear"] :is(button, span, p, label, strong, h3, small, output) { text-shadow: var(--stm-image-text-shadow) !important; }
+.stm-player[data-surface="clear"] .stm-primary { text-shadow: none !important; }
+.stm-launcher[data-surface="clear"] { background: var(--stm-glass); backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; }
+.stm-crop-editor { position: absolute; inset: 0; z-index: 5; overflow-y: auto; padding: 18px; background: var(--stm-solid); border-radius: inherit; }
+.stm-crop-editor .stm-page-heading { margin-bottom: 10px; }
+.stm-crop-editor canvas { display: block; width: 166px; max-width: 100%; height: auto; aspect-ratio: 2 / 3; margin: 0 auto 12px; border: 1px solid var(--stm-line); border-radius: 8px; touch-action: none; cursor: grab; background: repeating-conic-gradient(#8882 0% 25%, #8884 0% 50%) 50% / 12px 12px; }
+.stm-crop-editor canvas:active { cursor: grabbing; }
+.stm-crop-editor > label { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-size: 11px; color: var(--stm-muted); }
+.stm-crop-editor > label .stm-range { flex: 1; min-width: 0; }
+.stm-crop-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+@media (max-width: 600px) { .stm-player { width: 350px; height: 525px; max-height: calc(var(--doc-height, 100dvh) - 32px); padding: 12px; } .stm-crop-editor { padding: 14px; } .stm-crop-editor canvas { width: 140px; } }

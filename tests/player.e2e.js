@@ -13,10 +13,44 @@ function wav(seconds = 8) {
     return buffer;
 }
 
+async function playerPage(page, name) {
+    await page.getByRole('tab', { name, exact: true }).click();
+}
+
+async function playSong(page, name) {
+    await playerPage(page, '播放');
+    await page.getByRole('button', { name: `播放队列歌曲：${name}`, exact: true }).click();
+}
+
+async function selectAlbum(page, id) {
+    await playerPage(page, '曲库');
+    await page.locator('#stm-library-playlist').selectOption(id);
+}
+
 async function importSongs(page, names = ['雨夜', '旅途']) {
-    await page.locator('#stm-player input[type="file"]').setInputFiles(names.map(name => ({ name: `${name}.wav`, mimeType: 'audio/wav', buffer: wav() })));
+    await playerPage(page, '曲库');
+    await page.locator('[data-role="files"]').setInputFiles(names.map(name => ({ name: `${name}.wav`, mimeType: 'audio/wav', buffer: wav() })));
     await expect(page.locator('.stm-track')).toHaveCount(names.length);
     await expect(page.locator('.stm-status')).toContainText(`已导入 ${names.length} 首音乐`);
+}
+
+async function imageFixture(page) {
+    const data = await page.evaluate(() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 900;
+        canvas.height = 600;
+        const painter = canvas.getContext('2d');
+        painter.fillStyle = '#ed3a48'; painter.fillRect(0, 0, 450, 600);
+        painter.fillStyle = '#2572e6'; painter.fillRect(450, 0, 450, 600);
+        return canvas.toDataURL('image/png').split(',')[1];
+    });
+    return { name: '双色背景.png', mimeType: 'image/png', buffer: Buffer.from(data, 'base64') };
+}
+
+async function importBackground(page) {
+    await playerPage(page, '外观');
+    await page.locator('[data-role="background-file"]').setInputFiles(await imageFixture(page));
+    await expect(page.getByRole('dialog', { name: '裁剪背景图片', exact: true })).toBeVisible();
 }
 
 function waitForPlayerSave(page, predicate) {
@@ -52,7 +86,7 @@ test.beforeEach(async ({ page }) => {
 
 test('SillyTavern loads the extension and the empty player is usable', async ({ page }) => {
     await expect(page.locator('[data-action="play"]')).toBeDisabled();
-    await expect(page.locator('.stm-empty')).toBeVisible();
+    await expect(page.locator('.stm-queue-empty')).toBeVisible();
     await expect(page.locator('.stm-settings-entry')).toHaveCount(1);
     await page.getByRole('button', { name: '关闭播放器', exact: true }).click();
     await expect(page.locator('#stm-player')).toBeHidden();
@@ -64,41 +98,52 @@ test('SillyTavern loads the extension and the empty player is usable', async ({ 
 
 test('local imports play actual audio, seek, adjust volume, and keep playing with panel closed', async ({ page }) => {
     await importSongs(page);
-    await page.getByRole('button', { name: '播放：雨夜', exact: true }).click();
+    await playSong(page, '雨夜');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
     await expect(page.locator('[data-action="play"]')).toContainText('暂停');
+    await playerPage(page, '播放');
     await page.locator('#stm-seek').fill('3');
     await page.locator('#stm-seek').dispatchEvent('input');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThanOrEqual(3);
+    await playerPage(page, '播放');
     await page.locator('#stm-volume').fill('25');
     await page.locator('#stm-volume').dispatchEvent('input');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.volume)).toBe(0.25);
+    await playerPage(page, '播放');
     await page.getByRole('button', { name: '静音', exact: true }).click();
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.muted)).toBe(true);
+    await playerPage(page, '播放');
     await page.getByRole('button', { name: '取消静音', exact: true }).click();
     await page.getByRole('button', { name: '关闭播放器', exact: true }).click();
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
     await page.locator('#stm-launcher').click();
+    await playerPage(page, '播放');
     await page.locator('[data-action="play"]').click();
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(true);
 });
 
 test('manual switching and all four completion modes behave correctly', async ({ page }) => {
     await importSongs(page);
+    await playerPage(page, '播放');
     await page.getByRole('button', { name: '下一首', exact: true }).click();
     await expect(page.locator('[data-role="title"]')).toHaveText('旅途');
+    await playerPage(page, '播放');
     await page.getByRole('button', { name: '上一首', exact: true }).click();
     await expect(page.locator('[data-role="title"]')).toHaveText('雨夜');
+    await playerPage(page, '播放');
     await page.locator('#stm-mode').selectOption('single');
     await page.locator('#stm-player audio').evaluate(audio => audio.dispatchEvent(new Event('ended')));
     await expect(page.locator('[data-role="title"]')).toHaveText('雨夜');
+    await playerPage(page, '播放');
     await page.locator('#stm-mode').selectOption('shuffle');
     await page.locator('#stm-player audio').evaluate(audio => audio.dispatchEvent(new Event('ended')));
     await expect(page.locator('[data-role="title"]')).toHaveText('旅途');
+    await playerPage(page, '播放');
     await page.locator('#stm-mode').selectOption('list');
     await page.locator('#stm-player audio').evaluate(audio => audio.dispatchEvent(new Event('ended')));
     await expect(page.locator('[data-role="title"]')).toHaveText('雨夜');
-    await page.getByRole('button', { name: '播放：旅途', exact: true }).click();
+    await playSong(page, '旅途');
+    await playerPage(page, '播放');
     await page.locator('#stm-mode').selectOption('sequence');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.readyState)).toBeGreaterThanOrEqual(2);
     // Move to the real end, rather than merely checking that a method was called.
@@ -109,8 +154,10 @@ test('manual switching and all four completion modes behave correctly', async ({
 
 test('settings and IndexedDB music survive a real page reload without autoplay', async ({ page }) => {
     await importSongs(page, ['记住这首歌']);
+    await playerPage(page, '播放');
     await page.locator('#stm-mode').selectOption('single');
     const saved = waitForPlayerSave(page, player => player.volume === 0.35);
+    await playerPage(page, '播放');
     await page.locator('#stm-volume').fill('35');
     await page.locator('#stm-volume').dispatchEvent('input');
     await saved;
@@ -122,16 +169,19 @@ test('settings and IndexedDB music survive a real page reload without autoplay',
     await expect(page.locator('#stm-mode')).toHaveValue('single');
     await expect(page.locator('#stm-volume')).toHaveValue('35');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(true);
+    await playerPage(page, '播放');
     await page.locator('[data-action="play"]').click();
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
 });
 
 test('audio URLs play and duplicate entries are rejected', async ({ page }) => {
     await page.route('https://music.example.test/theme.wav', route => route.fulfill({ contentType: 'audio/wav', body: wav() }));
+    await playerPage(page, '曲库');
     await page.locator('#stm-url').fill('https://music.example.test/theme.wav');
     await page.getByRole('button', { name: '添加', exact: true }).click();
-    await page.getByRole('button', { name: '播放：theme', exact: true }).click();
+    await playSong(page, 'theme');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
+    await playerPage(page, '曲库');
     await page.locator('#stm-url').fill('https://music.example.test/theme.wav');
     await page.getByRole('button', { name: '添加', exact: true }).click();
     await expect(page.locator('.stm-status')).toContainText('已经在总曲库');
@@ -139,17 +189,21 @@ test('audio URLs play and duplicate entries are rejected', async ({ page }) => {
 });
 
 test('invalid files, broken links and browser playback restrictions explain recovery', async ({ page }) => {
-    await page.locator('#stm-player input[type="file"]').setInputFiles({ name: 'bad.txt', mimeType: 'text/plain', buffer: Buffer.from('bad') });
+    await playerPage(page, '曲库');
+    await page.locator('[data-role="files"]').setInputFiles({ name: 'bad.txt', mimeType: 'text/plain', buffer: Buffer.from('bad') });
     await expect(page.locator('.stm-status')).toContainText('请选择音频文件');
     await expect(page.locator('.stm-track')).toHaveCount(0);
     await page.route('https://music.example.test/missing.mp3', route => route.fulfill({ status: 404, body: 'missing' }));
+    await playerPage(page, '曲库');
     await page.locator('#stm-url').fill('https://music.example.test/missing.mp3');
     await page.getByRole('button', { name: '添加', exact: true }).click();
     await expect(page.locator('.stm-status')).toContainText('音乐加载失败');
     page.once('dialog', dialog => dialog.accept());
+    await playerPage(page, '曲库');
     await page.getByRole('button', { name: '删除：missing', exact: true }).click();
     await importSongs(page, ['需要点击播放']);
     await page.locator('#stm-player audio').evaluate(audio => { audio.play = () => Promise.reject(new DOMException('blocked', 'NotAllowedError')); });
+    await playerPage(page, '播放');
     await page.locator('[data-action="play"]').click();
     await expect(page.locator('.stm-status')).toContainText('浏览器阻止了自动播放');
 });
@@ -157,9 +211,11 @@ test('invalid files, broken links and browser playback restrictions explain reco
 test('deleting a selected local track clears playback and its stored audio', async ({ page }) => {
     await importSongs(page, ['要删除的音乐']);
     const id = await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.currentId);
+    await playerPage(page, '播放');
     await page.locator('[data-action="play"]').click();
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
     page.once('dialog', dialog => dialog.accept());
+    await playerPage(page, '曲库');
     await page.getByRole('button', { name: '删除：要删除的音乐', exact: true }).click();
     await expect(page.locator('.stm-track')).toHaveCount(0);
     await expect(page.locator('[data-action="play"]')).toBeDisabled();
@@ -243,8 +299,8 @@ test('dragging is bounded, a smaller viewport remains usable, and positions can 
         const ball = await page.locator('#stm-launcher').boundingBox();
         return [panel, ball].every(box => box.x >= 7 && box.y >= 7 && box.x + box.width <= 368 && box.y + box.height <= 660);
     }).toBe(true);
-    await page.getByRole('button', { name: '◐ 配色', exact: true }).click();
-    await page.getByRole('button', { name: '重置位置', exact: true }).click();
+    await page.getByRole('button', { name: '◐ 外观', exact: true }).click();
+    await page.getByRole('button', { name: '重置悬浮球与窗口位置', exact: true }).click();
     launcher = await page.locator('#stm-launcher').boundingBox();
     expect(launcher.x).toBeCloseTo(317, 0);
     expect(launcher.y).toBeCloseTo(535, 0);
@@ -253,9 +309,9 @@ test('dragging is bounded, a smaller viewport remains usable, and positions can 
 
 test('all six palettes and both materials apply to both controls without interrupting music, and persist', async ({ page }) => {
     await importSongs(page, ['配色时继续播放']);
-    await page.getByRole('button', { name: '播放：配色时继续播放', exact: true }).click();
+    await playSong(page, '配色时继续播放');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
-    await page.getByRole('button', { name: '◐ 配色', exact: true }).click();
+    await page.getByRole('button', { name: '◐ 外观', exact: true }).click();
     const colors = new Set();
     for (const theme of ['amber', 'ocean', 'forest', 'rose', 'lavender', 'pearl']) {
         await page.locator(`[data-theme-choice="${theme}"]`).click();
@@ -313,10 +369,25 @@ test.describe('touch dragging', () => {
         await expect(page.locator('#stm-player')).toBeVisible();
         await client.detach();
     });
+    test('touch drags the background crop and saves the selected area', async ({ page }) => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await importBackground(page);
+        const box = await page.locator('.stm-crop-editor canvas').boundingBox();
+        const client = await page.context().newCDPSession(page);
+        const x = box.x + box.width / 2, y = box.y + box.height / 2;
+        await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y, id: 7 }] });
+        await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - 35, y, id: 7 }] });
+        await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        expect(Number(await page.getByRole('slider', { name: '裁剪左右位置', exact: true }).inputValue())).toBeGreaterThan(50);
+        await page.getByRole('button', { name: '使用此区域', exact: true }).click();
+        await expect(page.locator('.stm-crop-editor')).toBeHidden();
+        await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'true');
+        await client.detach();
+    });
 });
 
 async function createAlbum(page, name) {
-    if (await page.locator('#stm-playlist-manager').isHidden()) await page.getByRole('button', { name: '歌单管理', exact: true }).click();
+    await playerPage(page, '曲库');
     await page.locator('#stm-new-playlist').fill(name);
     await page.getByRole('button', { name: '新建', exact: true }).click();
     await expect(page.locator('[data-role="collection-title"]')).toHaveText(name);
@@ -324,7 +395,7 @@ async function createAlbum(page, name) {
 }
 
 async function addExisting(page, song, playlistId) {
-    await page.locator('#stm-playlist').selectOption('');
+    await selectAlbum(page, '');
     await page.getByRole('button', { name: `加入歌单：${song}`, exact: true }).click();
     await page.locator('#stm-add-target').selectOption(playlistId);
     await page.getByRole('button', { name: '加入歌单', exact: true }).click();
@@ -355,6 +426,7 @@ async function selectCard(page, card) {
 }
 
 async function bindCards(page, cards) {
+    await playerPage(page, '曲库');
     if (await page.locator('#stm-role-bindings').isHidden()) await page.getByRole('button', { name: '绑定角色', exact: true }).click();
     for (const card of cards) await page.getByRole('checkbox', { name: `${card.name}（${card.avatar}）`, exact: true }).check();
     await page.getByRole('button', { name: '保存绑定', exact: true }).click();
@@ -379,15 +451,18 @@ async function removeTestCards(page, cards) {
 
 test('import destinations, album rename and deletion preserve music and survive reload', async ({ page }) => {
     const albumId = await createAlbum(page, '雨夜歌单');
+    await playerPage(page, '曲库');
     await page.locator('#stm-import-playlist').selectOption(albumId);
     await importSongs(page, ['雨声', '炉火']);
     await expect(page.locator('#stm-playlist')).toHaveValue(albumId);
     expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.tracks.length)).toBe(2);
+    await playerPage(page, '曲库');
     await page.locator('#stm-import-playlist').selectOption('');
-    await page.locator('#stm-player input[type="file"]').setInputFiles({ name: '独立音乐.wav', mimeType: 'audio/wav', buffer: wav() });
+    await playerPage(page, '曲库');
+    await page.locator('[data-role="files"]').setInputFiles({ name: '独立音乐.wav', mimeType: 'audio/wav', buffer: wav() });
     await expect(page.locator('#stm-playlist')).toHaveValue('');
     await expect(page.locator('.stm-track')).toHaveCount(3);
-    await page.locator('#stm-playlist').selectOption(albumId);
+    await selectAlbum(page, albumId);
     await expect(page.locator('.stm-track')).toHaveCount(2);
     const saved = waitForPlayerSave(page, player => player.playlists?.some(playlist => playlist.id === albumId && playlist.name === '新的雨夜'));
     await page.locator('#stm-playlist-name').fill('新的雨夜');
@@ -407,7 +482,7 @@ test('import destinations, album rename and deletion preserve music and survive 
         const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
         return Boolean(await new LocalMusicStore().get(id));
     }, id)).toBe(true);
-    await page.getByRole('button', { name: '播放：雨声', exact: true }).click();
+    await playSong(page, '雨声');
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
 });
 
@@ -418,22 +493,26 @@ test('shared songs, album-only removal and confirmed global deletion have distin
     await addExisting(page, '共有曲', first);
     await addExisting(page, '共有曲', second);
     await expect(page.locator('.stm-track')).toHaveCount(2);
-    await page.locator('#stm-playlist').selectOption(first);
+    await selectAlbum(page, first);
     await expect(page.locator('.stm-track')).toHaveCount(1);
-    await page.getByRole('button', { name: '播放：共有曲', exact: true }).click();
+    await playSong(page, '共有曲');
+    await playerPage(page, '播放');
     await page.getByRole('button', { name: '下一首', exact: true }).click();
     await expect(page.locator('[data-role="title"]')).toHaveText('共有曲');
+    await playerPage(page, '曲库');
     await page.getByRole('button', { name: '从歌单移除：共有曲', exact: true }).click();
     await expect(page.locator('.stm-track')).toHaveCount(0);
-    await page.locator('#stm-playlist').selectOption(second);
+    await selectAlbum(page, second);
     await expect(page.locator('.stm-track')).toHaveCount(1);
     page.once('dialog', dialog => dialog.dismiss());
+    await playerPage(page, '曲库');
     await page.getByRole('button', { name: '删除：共有曲', exact: true }).click();
     await expect(page.locator('.stm-track')).toHaveCount(1);
     page.once('dialog', dialog => dialog.accept());
+    await playerPage(page, '曲库');
     await page.getByRole('button', { name: '删除：共有曲', exact: true }).click();
     await expect(page.locator('.stm-track')).toHaveCount(0);
-    await page.locator('#stm-playlist').selectOption('');
+    await selectAlbum(page, '');
     await expect(page.locator('.stm-track')).toHaveCount(1);
     await expect(page.locator('.stm-track-title')).toHaveText('其他曲');
 });
@@ -445,14 +524,17 @@ test('one album binds multiple real cards, card changes never autoplay, and goin
         cards.push(await createTestCard(page, 'B'));
         cards.push(await createTestCard(page, 'C'));
         const first = await createAlbum(page, '两位角色的歌单');
+        await playerPage(page, '曲库');
         await page.locator('#stm-import-playlist').selectOption(first);
         await importSongs(page, ['共同背景']);
         await bindCards(page, cards.slice(0, 2));
         const second = await createAlbum(page, '另一位角色的歌单');
+        await playerPage(page, '曲库');
         await page.locator('#stm-import-playlist').selectOption(second);
         await importSongs(page, ['另一个背景']);
         await bindCards(page, cards.slice(2));
         const saved = waitForPlayerSave(page, player => player.volume === 0.45 && player.playlists?.some(playlist => playlist.characterAvatars.length === 2));
+        await playerPage(page, '播放');
         await page.locator('#stm-volume').fill('45');
         await page.locator('#stm-volume').dispatchEvent('input');
         await saved;
@@ -462,6 +544,7 @@ test('one album binds multiple real cards, card changes never autoplay, and goin
         await expect(page.locator('#stm-player')).toBeVisible();
         await expect(page.locator('#stm-playlist')).toHaveValue(first);
         await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(true);
+        await playerPage(page, '播放');
         await page.locator('[data-action="play"]').click();
         await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
         await page.evaluate(async () => { const ctx = SillyTavern.getContext(); await ctx.eventSource.emit(ctx.eventTypes.CHAT_CHANGED, ctx.chatId); });
@@ -473,6 +556,7 @@ test('one album binds multiple real cards, card changes never autoplay, and goin
         await expect(page.locator('#stm-playlist')).toHaveValue(second);
         await expect(page.locator('.stm-track-title')).toHaveText('另一个背景');
         await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(true);
+        await playerPage(page, '播放');
         await page.locator('[data-action="play"]').click();
         await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
         await page.evaluate(async () => { const { closeCurrentChat } = await import('/script.js'); await closeCurrentChat(); });
@@ -488,10 +572,11 @@ test('going home cancels pending local audio loads without reopening a stale rol
     try {
         cards.push(await createTestCard(page, 'Pending'));
         const album = await createAlbum(page, '慢速读取歌单');
+        await playerPage(page, '曲库');
         await page.locator('#stm-import-playlist').selectOption(album);
         await importSongs(page, ['等待加载的音乐']);
         await bindCards(page, cards);
-        await page.locator('#stm-playlist').selectOption('');
+        await selectAlbum(page, '');
         await page.evaluate(async avatar => {
             const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
             const { selectCharacterById } = await import('/script.js');
@@ -522,4 +607,190 @@ test('going home cancels pending local audio loads without reopening a stale rol
         });
         await removeTestCards(page, cards);
     }
+});
+
+test('separate pages keep management away from playback and preserve audio across tabs', async ({ page }) => {
+    await expect(page.locator('#stm-page-playback')).toBeVisible();
+    await expect(page.locator('#stm-new-playlist')).toBeHidden();
+    await expect(page.locator('#stm-url')).toBeHidden();
+    await importSongs(page, ['分页背景音乐']);
+    await expect(page.locator('#stm-page-playback')).toBeHidden();
+    await expect(page.locator('#stm-url')).toBeVisible();
+    await playSong(page, '分页背景音乐');
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
+    for (const name of ['最近播放', '播放排行', '外观', '曲库', '播放']) {
+        await playerPage(page, name);
+        await expect(page.locator('.stm-page:visible')).toHaveCount(1);
+        await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
+    }
+    await page.getByRole('tab', { name: '播放', exact: true }).focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByRole('tab', { name: '曲库', exact: true })).toBeFocused();
+    await expect(page.locator('#stm-page-library')).toBeVisible();
+    await page.keyboard.press('End');
+    await expect(page.locator('#stm-appearance')).toBeVisible();
+});
+
+test('recent and ranking pages record successful starts once, support replay, persist and clean up deletions', async ({ page }) => {
+    await playerPage(page, '曲库');
+    await page.locator('[data-role="files"]').setInputFiles(['甲曲', '乙曲'].map(name => ({ name: `${name}.wav`, mimeType: 'audio/wav', buffer: wav(90) })));
+    await expect(page.locator('.stm-track')).toHaveCount(2);
+    const history = () => page.evaluate(() => {
+        const settings = SillyTavern.getContext().extensionSettings.riserein_music_player;
+        return settings.playEvents.length;
+    });
+    expect(await history()).toBe(0);
+    await playSong(page, '甲曲');
+    await expect.poll(history).toBe(1);
+    await page.locator('[data-action="play"]').click();
+    await page.locator('[data-action="play"]').click();
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
+    expect(await history()).toBe(1);
+    await playSong(page, '乙曲');
+    await expect.poll(history).toBe(2);
+    await playSong(page, '甲曲');
+    await expect.poll(history).toBe(3);
+    await playerPage(page, '最近播放');
+    await expect(page.locator('.stm-recent-list .stm-song-title')).toHaveText(['甲曲', '乙曲']);
+    await playerPage(page, '播放排行');
+    await expect(page.locator('.stm-ranking-list .stm-song-title')).toHaveText(['甲曲', '乙曲']);
+    await expect(page.locator('.stm-ranking-list small')).toHaveText(['2 次播放', '1 次播放']);
+    const saved = waitForPlayerSave(page, settings => settings.playEvents?.length === 4);
+    await page.getByRole('button', { name: '播放排行歌曲：乙曲', exact: true }).click();
+    await expect.poll(history).toBe(4);
+    await saved;
+    await page.reload();
+    await page.waitForFunction(() => !document.getElementById('preloader'));
+    await page.locator('#stm-launcher').click();
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(true);
+    await playerPage(page, '最近播放');
+    await expect(page.locator('.stm-recent-list .stm-song-title')).toHaveText(['乙曲', '甲曲']);
+    await playerPage(page, '曲库');
+    page.once('dialog', dialog => dialog.accept());
+    await page.getByRole('button', { name: '删除：甲曲', exact: true }).click();
+    await playerPage(page, '播放排行');
+    await expect(page.locator('.stm-ranking-list .stm-song-title')).toHaveText(['乙曲']);
+    await playerPage(page, '最近播放');
+    await expect(page.locator('.stm-recent-list .stm-song-title')).toHaveText(['乙曲']);
+});
+
+test('recent page shows only 100 songs and rolling rankings drop expired plays', async ({ page }) => {
+    // Install the clock before the app creates its refresh interval.
+    await page.clock.install();
+    await page.route('**/api/settings/get', async route => {
+        const response = await route.fetch();
+        const body = await response.json();
+        const settings = JSON.parse(body.settings);
+        const now = Date.now();
+        settings.extension_settings.riserein_music_player = {
+            tracks: Array.from({ length: 110 }, (_, i) => ({ id: `history-${i}`, kind: 'local', title: `历史歌曲 ${i}` })),
+            recentPlays: Array.from({ length: 110 }, (_, i) => ({ trackId: `history-${i}`, at: now - i * 1000 })),
+            playEvents: [{ trackId: 'history-0', at: now - 72 * 3600000 - 1 }, { trackId: 'history-1', at: now - 1000 }],
+        };
+        body.settings = JSON.stringify(settings);
+        await route.fulfill({ response, json: body });
+    });
+    await page.reload();
+    await page.waitForFunction(() => !document.getElementById('preloader'));
+    await page.locator('#stm-launcher').click();
+    await playerPage(page, '最近播放');
+    await expect(page.locator('.stm-recent-list li')).toHaveCount(100);
+    await expect(page.locator('.stm-recent-list .stm-song-title').first()).toHaveText('历史歌曲 0');
+    await expect(page.locator('.stm-recent-list .stm-song-title').last()).toHaveText('历史歌曲 99');
+    await playerPage(page, '播放排行');
+    await expect(page.locator('.stm-ranking-list .stm-song-title')).toHaveText(['历史歌曲 1']);
+    await page.clock.fastForward(72 * 3600000 + 60000);
+    await expect(page.locator('.stm-ranking-list li')).toHaveCount(0);
+    await expect(page.locator('.stm-ranking-empty')).toBeVisible();
+});
+
+test('cropping chooses the actual region, layers themes and materials, persists and removes stored images', async ({ page }) => {
+    await importSongs(page, ['换背景时继续播放']);
+    await playSong(page, '换背景时继续播放');
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
+    await playerPage(page, '外观');
+    await expect(page.getByRole('button', { name: '清透', exact: true })).toBeDisabled();
+    await importBackground(page);
+    await page.getByRole('slider', { name: '裁剪左右位置', exact: true }).fill('100');
+    await page.getByRole('slider', { name: '裁剪缩放', exact: true }).fill('1.3');
+    const saved = waitForPlayerSave(page, settings => settings.backgroundId && settings.surface === 'clear');
+    await page.getByRole('button', { name: '使用此区域', exact: true }).click();
+    await expect(page.locator('.stm-crop-editor')).toBeHidden();
+    await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'true');
+    const id = await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.backgroundId);
+    const pixel = await page.evaluate(async id => {
+        const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
+        const bitmap = await createImageBitmap(await new LocalMusicStore().get(id));
+        const canvas = document.createElement('canvas'); canvas.width = bitmap.width; canvas.height = bitmap.height;
+        canvas.getContext('2d').drawImage(bitmap, 0, 0);
+        const pixel = [...canvas.getContext('2d').getImageData(384, 576, 1, 1).data];
+        const result = { width: bitmap.width, height: bitmap.height, pixel };
+        bitmap.close();
+        return result;
+    }, id);
+    expect(pixel.width).toBe(768);
+    expect(pixel.height).toBe(1152);
+    expect(pixel.pixel[2]).toBeGreaterThan(pixel.pixel[0] + 100);
+    await page.getByRole('button', { name: '清透', exact: true }).click();
+    await saved;
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::before').filter)).toBe('none');
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::after').opacity)).toBe('0');
+    const filters = [];
+    for (const surface of ['matte', 'glass']) {
+        await page.locator(`[data-surface-choice="${surface}"]`).click();
+        filters.push(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::before').filter));
+    }
+    expect(filters[0]).not.toBe(filters[1]);
+    for (const theme of ['amber', 'ocean', 'forest', 'rose', 'lavender', 'pearl']) {
+        await page.locator(`[data-theme-choice="${theme}"]`).click();
+        await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'true');
+        await expect(page.locator('#stm-player')).toHaveAttribute('data-theme', theme);
+    }
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
+    const lastSave = waitForPlayerSave(page, settings => settings.backgroundId === id && settings.surface === 'clear' && settings.theme === 'pearl');
+    await page.getByRole('button', { name: '清透', exact: true }).click();
+    await lastSave;
+    await page.reload();
+    await page.waitForFunction(() => !document.getElementById('preloader'));
+    await page.locator('#stm-launcher').click();
+    await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'true');
+    await expect(page.locator('#stm-player')).toHaveAttribute('data-surface', 'clear');
+    await playerPage(page, '外观');
+    await page.getByRole('button', { name: '重新裁剪', exact: true }).click();
+    await expect(page.locator('.stm-crop-editor')).toBeVisible();
+    await page.getByRole('button', { name: '取消', exact: true }).click();
+    expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.backgroundId)).toBe(id);
+    await page.getByRole('button', { name: '移除图片', exact: true }).click();
+    await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'false');
+    await expect(page.getByRole('button', { name: '清透', exact: true })).toBeDisabled();
+    await expect(page.locator('#stm-player')).toHaveAttribute('data-surface', 'glass');
+    expect(await page.evaluate(async id => {
+        const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
+        const store = new LocalMusicStore();
+        return Boolean(await store.get(id) || await store.get(`${id}:original`));
+    }, id)).toBe(false);
+});
+
+test('crop dragging, cancellation and invalid image recovery work on a small screen', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await importBackground(page);
+    const canvas = page.locator('.stm-crop-editor canvas');
+    const box = await canvas.boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2 - 30, box.y + box.height / 2);
+    await page.mouse.up();
+    expect(Number(await page.getByRole('slider', { name: '裁剪左右位置', exact: true }).inputValue())).toBeGreaterThan(50);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.stm-crop-editor')).toBeHidden();
+    await expect(page.locator('#stm-player')).toBeVisible();
+    await expect(page.getByRole('button', { name: '导入背景图片', exact: true })).toBeFocused();
+    await page.locator('[data-role="background-file"]').setInputFiles({ name: 'broken.png', mimeType: 'image/png', buffer: Buffer.from('not an image') });
+    await expect(page.locator('.stm-status')).toHaveClass(/stm-error/);
+    await expect(page.locator('.stm-crop-editor')).toBeHidden();
+    await importBackground(page);
+    await page.getByRole('button', { name: '使用此区域', exact: true }).click();
+    await expect(page.locator('.stm-crop-editor')).toBeHidden();
+    await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'true');
+    await expect(page.locator('.stm-footer')).toBeInViewport();
 });

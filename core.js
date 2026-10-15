@@ -3,7 +3,9 @@ export const MAX_PLAYLISTS = 50;
 export const MAX_FILE_BYTES = 100 * 1024 * 1024;
 export const PLAY_MODES = ['sequence', 'list', 'single', 'shuffle'];
 export const THEMES = ['amber', 'ocean', 'forest', 'rose', 'lavender', 'pearl'];
-export const SURFACES = ['matte', 'glass'];
+export const SURFACES = ['matte', 'glass', 'clear'];
+export const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
+export const MAX_RECENT = 100;
 
 function normalizePosition(position) {
     if (!Number.isFinite(position?.x) || !Number.isFinite(position?.y)) return null;
@@ -41,7 +43,7 @@ export function titleFromUrl(value) {
     return name.replace(/\.[a-z0-9]{2,5}$/i, '').slice(0, 160) || url.hostname;
 }
 
-export function normalizeSettings(raw = {}) {
+export function normalizeSettings(raw = {}, now = Date.now()) {
     if (!raw || typeof raw !== 'object') raw = {};
     const ids = new Set();
     const tracks = [];
@@ -85,6 +87,7 @@ export function normalizeSettings(raw = {}) {
     const activeTracks = activePlaylist ? tracks.filter(track => activePlaylist.trackIds.includes(track.id)) : tracks;
     const currentId = activeTracks.some(track => track.id === raw.currentId) ? raw.currentId
         : (activePlaylist?.lastTrackId ?? activeTracks[0]?.id ?? null);
+    const backgroundId = typeof raw.backgroundId === 'string' && /^background:[a-f0-9-]{36}$/.test(raw.backgroundId) ? raw.backgroundId : null;
     return {
         tracks,
         playlists,
@@ -93,7 +96,9 @@ export function normalizeSettings(raw = {}) {
         mode: PLAY_MODES.includes(raw.mode) ? raw.mode : 'list',
         currentId,
         theme: THEMES.includes(raw.theme) ? raw.theme : 'amber',
-        surface: SURFACES.includes(raw.surface) ? raw.surface : 'glass',
+        surface: SURFACES.includes(raw.surface) && (raw.surface !== 'clear' || backgroundId) ? raw.surface : 'glass',
+        backgroundId,
+        ...normalizeHistory(raw, ids, now),
         positions: {
             launcher: normalizePosition(raw.positions?.launcher),
             panel: normalizePosition(raw.positions?.panel),
@@ -147,6 +152,50 @@ export function deleteTrackFromLibrary(settings, trackId) {
     settings.tracks = settings.tracks.filter(track => track.id !== trackId);
     for (const playlist of settings.playlists) removeTrackFromPlaylist(settings, playlist.id, trackId);
     if (settings.currentId === trackId) settings.currentId = null;
+    settings.recentPlays = settings.recentPlays.filter(item => item.trackId !== trackId);
+    settings.playEvents = settings.playEvents.filter(item => item.trackId !== trackId);
+}
+
+function normalizeHistory(raw, ids, now) {
+    const valid = item => item && ids.has(item.trackId) && Number.isFinite(item.at) && item.at > 0 && item.at <= now;
+    const seen = new Set();
+    const recentPlays = (Array.isArray(raw.recentPlays) ? raw.recentPlays : []).filter(valid)
+        .sort((a, b) => b.at - a.at).filter(item => {
+            if (seen.has(item.trackId)) return false;
+            seen.add(item.trackId);
+            return true;
+        }).slice(0, MAX_RECENT).map(({ trackId, at }) => ({ trackId, at }));
+    const playEvents = (Array.isArray(raw.playEvents) ? raw.playEvents : []).filter(item => valid(item) && item.at > now - THREE_DAYS)
+        .map(({ trackId, at }) => ({ trackId, at }));
+    return { recentPlays, playEvents };
+}
+
+/** Call only after audio starts playing, once per song selection or repeat. */
+export function recordPlayback(settings, trackId, now = Date.now()) {
+    const ids = new Set(settings.tracks.map(track => track.id));
+    if (!ids.has(trackId)) return;
+    Object.assign(settings, normalizeHistory(settings, ids, now));
+    settings.recentPlays = [{ trackId, at: now }, ...settings.recentPlays.filter(item => item.trackId !== trackId)].slice(0, MAX_RECENT);
+    settings.playEvents.push({ trackId, at: now });
+}
+
+export function recentTracks(settings) {
+    const byId = new Map(settings.tracks.map(track => [track.id, track]));
+    return settings.recentPlays.filter(item => byId.has(item.trackId))
+        .map(item => ({ track: byId.get(item.trackId), at: item.at }));
+}
+
+export function rankedTracks(settings, now = Date.now()) {
+    const counts = new Map();
+    for (const { trackId, at } of settings.playEvents) {
+        if (at <= now - THREE_DAYS || at > now) continue;
+        const item = counts.get(trackId) || { count: 0, at: 0 };
+        item.count++;
+        item.at = Math.max(item.at, at);
+        counts.set(trackId, item);
+    }
+    return settings.tracks.filter(track => counts.has(track.id)).map(track => ({ track, ...counts.get(track.id) }))
+        .sort((a, b) => b.count - a.count || b.at - a.at || a.track.id.localeCompare(b.track.id));
 }
 
 export function deletePlaylist(settings, playlistId) {
