@@ -37,7 +37,8 @@ function initialize() {
     let canAutoAdvance = true;
     let membershipTrackId = null;
     let libraryDetail = false;
-    let queueReturnFocus = null;
+    const sheetReturnFocus = new Map();
+    let statusTimer;
     let currentPage = 'playback';
     let playSession = 0;
     let countedSession = -1;
@@ -156,13 +157,6 @@ function initialize() {
             </div>
             <p class="stm-hint">删除歌单保留全部歌曲。进入绑定角色时只切歌单，音乐需手动播放。</p>
         </div>
-        <section class="stm-track-details" hidden>
-            <div class="stm-heading-actions"><strong data-role="details-title"></strong><button type="button" class="stm-icon" data-action="close-details" aria-label="关闭歌曲详情">×</button></div>
-            <p class="stm-hint">给这首歌换封面，或添加歌词。</p>
-            <div class="stm-detail-actions"><button type="button" class="stm-secondary" data-action="song-cover">添加封面</button><button type="button" class="stm-secondary" data-action="song-lyrics">导入歌词</button><button type="button" class="stm-secondary" data-action="clear-song-cover">恢复随机封面</button><button type="button" class="stm-secondary" data-action="clear-song-lyrics">清除歌词</button></div>
-            <input type="file" data-role="song-cover-file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" hidden>
-            <input type="file" data-role="lyrics-file" accept=".lrc,.txt,text/plain" hidden>
-        </section>
         <div class="stm-membership" hidden>
             <strong data-role="membership-title"></strong>
             <p class="stm-hint">选择目标歌单，再点“加入歌单”。原曲仍保留在总曲库。</p>
@@ -253,6 +247,25 @@ function initialize() {
                 <ol class="stm-queue-list" aria-label="当前歌单"></ol><p class="stm-sheet-empty stm-hint">播放列表还是空的。</p>
             </section>
         </div>
+        <div id="stm-details" class="stm-queue-overlay stm-details-overlay" hidden>
+            <div class="stm-queue-scrim" data-action="close-details" aria-hidden="true"></div>
+            <section class="stm-queue-sheet stm-track-details" role="dialog" aria-modal="true" aria-label="歌曲详情">
+                <span class="stm-sheet-grip" aria-hidden="true"></span>
+                <header><strong>歌曲详情</strong><button type="button" class="stm-icon" data-action="close-details" aria-label="关闭歌曲详情">×</button></header>
+                <div class="stm-details-content">
+                    <div class="stm-details-summary"><img class="stm-details-cover" alt="歌曲封面"><div><strong data-role="details-title"></strong><small data-role="details-source"></small></div></div>
+                    <p class="stm-hint">让封面和歌词，成为这首歌的一部分。</p>
+                    <div class="stm-detail-actions">
+                        <button type="button" class="stm-secondary" data-action="song-cover" aria-label="添加封面"><span>添加封面</span><small aria-hidden="true">上传喜欢的图片</small></button>
+                        <button type="button" class="stm-secondary" data-action="song-lyrics" aria-label="导入歌词"><span>导入歌词</span><small aria-hidden="true">支持 LRC / TXT</small></button>
+                        <button type="button" class="stm-secondary" data-action="clear-song-cover" aria-label="恢复随机封面"><span>恢复随机封面</span><small aria-hidden="true">使用内置插画</small></button>
+                        <button type="button" class="stm-secondary" data-action="clear-song-lyrics" aria-label="清除歌词"><span>清除歌词</span><small aria-hidden="true">移除当前歌曲的歌词</small></button>
+                    </div>
+                    <input type="file" data-role="song-cover-file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" hidden>
+                    <input type="file" data-role="lyrics-file" accept=".lrc,.txt,text/plain" hidden>
+                </div>
+            </section>
+        </div>
         <div class="stm-lyrics-view" role="button" tabindex="0" aria-label="显示封面" hidden><div class="stm-lyrics-lines"></div><span class="stm-lyrics-tip">轻点返回封面</span></div>
         <button type="button" class="stm-resize-handle" aria-label="调整播放器大小" title="拖动调整大小，也可用方向键微调"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 16 8-8M13 16l3-3"/></svg></button>
         <section class="stm-crop-editor" role="dialog" aria-modal="true" aria-label="裁剪背景图片" hidden>
@@ -311,6 +324,7 @@ function initialize() {
         if (!query(`[data-view="${page}"]`)) return;
         currentPage = page;
         menus.close();
+        setDetailsOpen(false);
         if (page !== 'playback') { setQueueOpen(false); setLyricsOpen(false); }
         for (const section of panel.querySelectorAll('[data-view]')) section.hidden = section.dataset.view !== page;
         for (const button of panel.querySelectorAll('[data-page]')) {
@@ -325,24 +339,44 @@ function initialize() {
         updateMini();
         panelDrag.refresh();
     }
-    function setQueueOpen(open, focus = false) {
-        const overlay = query('#stm-queue');
-        if (open) { queueReturnFocus = document.activeElement; menus.close(); renderQueue(); }
-        overlay.hidden = !open;
-        for (const child of panel.children) if (child !== overlay && !child.classList.contains('stm-click-effects')) child.inert = open;
-        for (const button of panel.querySelectorAll('[data-action="toggle-queue"], .stm-mini-queue')) button.setAttribute('aria-expanded', String(open));
-        if (open) overlay.querySelector('button').focus({ preventScroll: true });
-        else if (focus && queueReturnFocus?.isConnected) queueReturnFocus.focus({ preventScroll: true });
-    }
-    for (const element of panel.querySelectorAll('[data-action="close-queue"]')) element.addEventListener('click', () => setQueueOpen(false, true));
-    query('#stm-queue').addEventListener('keydown', event => {
-        if (event.key === 'Escape') { event.stopPropagation(); setQueueOpen(false, true); }
-        if (event.key === 'Tab') {
-            const buttons = [...query('#stm-queue').querySelectorAll('button:not(:disabled)')];
-            if (event.shiftKey && document.activeElement === buttons[0]) { event.preventDefault(); buttons.at(-1)?.focus(); }
-            else if (!event.shiftKey && document.activeElement === buttons.at(-1)) { event.preventDefault(); buttons[0]?.focus(); }
+    function setSheetOpen(selector, open, restoreFocus = false) {
+        const overlay = query(selector);
+        if (open) {
+            sheetReturnFocus.set(selector, document.activeElement);
+            menus.close();
+            for (const other of panel.querySelectorAll(':scope > .stm-queue-overlay')) if (other !== overlay) other.hidden = true;
         }
-    });
+        overlay.hidden = !open;
+        const active = [...panel.querySelectorAll(':scope > .stm-queue-overlay')].find(sheet => !sheet.hidden);
+        for (const child of panel.children) if (child !== status && !child.classList.contains('stm-click-effects')) child.inert = Boolean(active && child !== active);
+        for (const button of panel.querySelectorAll('[data-action="toggle-queue"], .stm-mini-queue')) button.setAttribute('aria-expanded', String(!query('#stm-queue').hidden));
+        if (open) overlay.querySelector('button').focus({ preventScroll: true });
+        else if (restoreFocus) {
+            const previous = sheetReturnFocus.get(selector);
+            const fallback = selector === '#stm-details' ? [...panel.querySelectorAll('[data-details-id]')].find(button => button.dataset.detailsId === detailsTrackId) : null;
+            (previous?.isConnected ? previous : fallback || query('[data-action="close"]')).focus({ preventScroll: true });
+        }
+    }
+    function setQueueOpen(open, focus = false) {
+        if (open) renderQueue();
+        setSheetOpen('#stm-queue', open, focus);
+    }
+    function setDetailsOpen(open, focus = false) {
+        if (open) renderSongDetails();
+        setSheetOpen('#stm-details', open, focus);
+    }
+    for (const [selector, action] of [['#stm-queue', 'close-queue'], ['#stm-details', 'close-details']]) {
+        const close = () => setSheetOpen(selector, false, true);
+        for (const element of query(selector).querySelectorAll(`[data-action="${action}"]`)) element.addEventListener('click', close);
+        query(selector).addEventListener('keydown', event => {
+            if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); }
+            if (event.key === 'Tab') {
+                const buttons = [...query(selector).querySelectorAll('button:not(:disabled)')];
+                if (event.shiftKey && document.activeElement === buttons[0]) { event.preventDefault(); buttons.at(-1)?.focus(); }
+                else if (!event.shiftKey && document.activeElement === buttons.at(-1)) { event.preventDefault(); buttons[0]?.focus(); }
+            }
+        });
+    }
     query('[data-action="toggle-queue"]').addEventListener('click', () => setQueueOpen(query('#stm-queue').hidden));
     query('[data-action="go-import"]').addEventListener('click', () => { importTarget.value = settings.activePlaylistId || ''; menus.refresh(); showPage('import'); });
     query('[data-action="go-library"]').addEventListener('click', showLibraryHome);
@@ -564,7 +598,18 @@ function initialize() {
         if (entry?.url) URL.revokeObjectURL(entry.url);
         coverCache.delete(id);
     }
-    query('[data-action="close-details"]').addEventListener('click', () => { query('.stm-track-details').hidden = true; });
+    function renderSongDetails() {
+        const track = settings.tracks.find(track => track.id === detailsTrackId);
+        if (!track) return;
+        query('[data-role="details-title"]').textContent = track.title;
+        query('[data-role="details-source"]').textContent = track.artist || (track.kind === 'local' ? '本地音乐' : '在线音乐');
+        const image = query('.stm-details-cover');
+        image.src = fallbackCoverUrl(track.fallbackCover ?? 0);
+        const coverId = track.coverId;
+        if (coverId) void cachedCover(coverId).then(url => {
+            if (url && detailsTrackId === track.id && track.coverId === coverId) image.src = url;
+        });
+    }
     const songCoverInput = query('[data-role="song-cover-file"]');
     const lyricsInput = query('[data-role="lyrics-file"]');
     query('[data-action="song-cover"]').addEventListener('click', () => songCoverInput.click());
@@ -656,7 +701,7 @@ function initialize() {
             save();
             await restoreBackground();
             query('[data-role="background-status"]').textContent = '背景已保存，可重新裁剪；图片仅保存在当前浏览器。';
-            showStatus('裁剪后的图片已设为背景，可以继续选择配色与质感。');
+            showStatus();
             await deleteBackgroundFiles(previous).catch(() => {});
         },
         onError(error) {
@@ -701,15 +746,17 @@ function initialize() {
     void restoreBackground();
 
     function showStatus(message = '', error = false) {
+        window.clearTimeout(statusTimer);
         status.textContent = message;
         status.classList.toggle('stm-error', error);
+        if (message) statusTimer = window.setTimeout(() => { status.textContent = ''; status.classList.remove('stm-error'); }, error ? 8000 : 4000);
     }
 
     function setOpen(open, focus = true) {
         panel.hidden = !open;
         launcher.setAttribute('aria-expanded', String(open));
         if (open) { resizer.refresh(); panelDrag.refresh(); if (focus) (panel.dataset.lyricsOpen === 'true' ? query('.stm-lyrics-view') : query('[data-action="close"]')).focus(); }
-        else { menus.close(); setQueueOpen(false); if (panel.contains(document.activeElement)) launcher.focus(); }
+        else { menus.close(); setQueueOpen(false); setDetailsOpen(false); if (panel.contains(document.activeElement)) launcher.focus(); }
     }
 
     const activePlaylist = () => settings.playlists.find(item => item.id === settings.activePlaylistId);
@@ -960,11 +1007,10 @@ function initialize() {
             const details = document.createElement('button');
             details.type = 'button'; details.className = 'stm-icon'; details.textContent = '⋯';
             details.setAttribute('aria-label', `歌曲详情：${track.title}`);
+            details.dataset.detailsId = track.id;
             details.addEventListener('click', () => {
                 detailsTrackId = track.id;
-                query('[data-role="details-title"]').textContent = track.title;
-                query('.stm-track-details').hidden = false;
-                query('.stm-track-details').scrollIntoView({ block: 'nearest' });
+                setDetailsOpen(true);
             });
             row.append(details);
             if (activePlaylist()) {
@@ -1005,7 +1051,8 @@ function initialize() {
         query('[data-action="previous"]').disabled = queue.length === 0;
         query('[data-action="next"]').disabled = queue.length === 0;
         if (assignedCover) save();
-        if (!settings.tracks.some(track => track.id === detailsTrackId)) query('.stm-track-details').hidden = true;
+        if (!settings.tracks.some(track => track.id === detailsTrackId)) setDetailsOpen(false);
+        else if (!query('#stm-details').hidden) renderSongDetails();
         renderQueue();
         renderHistory();
         updatePlayback();
@@ -1449,6 +1496,7 @@ function initialize() {
             fontPicker.dispose(); mini.dispose(); menus.dispose(); resizer.dispose(); disposeClickEffects();
             systemScheme.removeEventListener('change', onSystemScheme);
             window.clearInterval(historyTimer);
+            window.clearTimeout(statusTimer);
         }
     });
 

@@ -17,6 +17,7 @@ function wav(seconds = 8) {
 async function playerPage(page, name) {
     if (await page.locator('.stm-lyrics-view').isVisible()) await page.getByRole('button', { name: '显示封面', exact: true }).click();
     if (await page.locator('#stm-queue').isVisible()) await page.getByRole('button', { name: '关闭播放列表', exact: true }).click();
+    if (await page.locator('#stm-details').isVisible()) await page.getByRole('button', { name: '关闭歌曲详情', exact: true }).click();
     await page.getByRole('tab', { name, exact: true }).click();
     if (name === '曲库') {
         const id = await page.locator('#stm-library-playlist').inputValue();
@@ -284,7 +285,7 @@ test('filenames are rendered as text, and the player fits a small screen', async
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(375);
     expect(bounds.y).toBeGreaterThanOrEqual(0);
     await page.locator('#stm-player').evaluate(panel => { panel.scrollTop = panel.scrollHeight; });
-    await expect(page.locator('.stm-footer')).toBeInViewport();
+    await expect(page.locator('.stm-mini-player')).toBeInViewport();
 });
 
 async function dragTo(page, element, target) {
@@ -842,7 +843,7 @@ test('crop dragging, cancellation and invalid image recovery work on a small scr
     await page.getByRole('button', { name: '使用此区域', exact: true }).click();
     await expect(page.locator('.stm-crop-editor')).toBeHidden();
     await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'true');
-    await expect(page.locator('.stm-footer')).toBeInViewport();
+    await expect(page.locator('.stm-mini-player')).toBeInViewport();
 });
 
 test('mask transparency is independent per material, preserves clear mode, and persists across reloads', async ({ page }) => {
@@ -1361,7 +1362,7 @@ test('vinyl mini bar animates only while playing and its queue uses two thirds o
         await page.setViewportSize(viewport);
         await page.locator('.stm-mini-queue').click();
         await expect(page.locator('.stm-queue-track')).toHaveCount(16);
-        const panel = await page.locator('#stm-player').boundingBox(), sheet = await page.locator('.stm-queue-sheet').boundingBox();
+        const panel = await page.locator('#stm-player').boundingBox(), sheet = await page.locator('#stm-queue .stm-queue-sheet').boundingBox();
         expect(sheet.height).toBeLessThanOrEqual(panel.height * 2/3 + 1); expect(sheet.height).toBeGreaterThan(panel.height * .6);
         expect(sheet.y+sheet.height).toBeLessThanOrEqual(panel.y+panel.height);
         await page.getByRole('button', {name: '播放队列歌曲：下一首', exact:true}).click();
@@ -1376,4 +1377,61 @@ test('vinyl mini bar animates only while playing and its queue uses two thirds o
     await page.locator('.stm-mini-info').click();
     await expect(page.getByRole('tab', {name:'播放',exact:true})).toHaveAttribute('aria-selected','true');
     await expect(page.locator('.stm-mini-player')).toBeHidden();
+});
+
+test('song details open as a two thirds bottom sheet and retain controls, focus and playback after cover edits', async ({ page }) => {
+    await importSongs(page, ['我的封面与歌词']); await playSong(page, '我的封面与歌词');
+    await playerPage(page, '曲库');
+    const opener = page.getByRole('button', {name:'歌曲详情：我的封面与歌词', exact:true});
+    for (const viewport of [{width:1280,height:900}, {width:375,height:667}]) {
+        await page.setViewportSize(viewport); await opener.click();
+        const sheet = page.getByRole('dialog', {name:'歌曲详情', exact:true});
+        await expect(sheet).toBeVisible();
+        const panel = await page.locator('#stm-player').boundingBox(), box = await sheet.boundingBox();
+        expect(box.height).toBeLessThanOrEqual(panel.height*2/3+1);
+        expect(box.y).toBeGreaterThanOrEqual(panel.y+panel.height/3-1);
+        expect(box.y+box.height).toBeLessThanOrEqual(panel.y+panel.height);
+        await expect(page.locator('[data-role="details-title"]')).toHaveText('我的封面与歌词');
+        await expect(page.getByRole('button', {name:'关闭歌曲详情',exact:true})).toBeFocused();
+        await page.keyboard.press('Shift+Tab');
+        await expect(page.getByRole('button', {name:'清除歌词',exact:true})).toBeFocused();
+        await page.locator('[data-role="song-cover-file"]').setInputFiles(await imageFixture(page));
+        await expect(page.locator('.stm-details-cover')).toHaveAttribute('src', /^blob:/);
+        await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
+        await page.keyboard.press('Escape');
+        await expect(sheet).toBeHidden(); await expect(opener).toBeFocused();
+        await opener.click();
+        const scrim = page.locator('#stm-details > .stm-queue-scrim');
+        await scrim.click({position:{x:(await scrim.boundingBox()).width/2,y:70}});
+        await expect(sheet).toBeHidden(); await expect(opener).toBeFocused();
+    }
+});
+
+test('background saves leave no lingering message and the compact mini bar stays at the bottom in both color schemes', async ({ page }) => {
+    await importBackground(page); await page.getByRole('button', {name:'使用此区域',exact:true}).click();
+    await expect(page.locator('.stm-crop-editor')).toBeHidden();
+    await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background','true');
+    await expect(page.locator('.stm-status')).toBeEmpty();
+    await page.addStyleTag({content:'#stm-player h3 { color: hotpink !important; }'});
+    for (const [viewport, colorScheme] of [[{width:1280,height:900},'light'],[{width:375,height:667},'dark']]) {
+        await page.setViewportSize(viewport); await page.emulateMedia({colorScheme});
+        const heading = page.getByRole('heading', {name:'配色与背景',exact:true});
+        const colors = await heading.evaluate(element => ({heading:getComputedStyle(element).color, body:getComputedStyle(document.getElementById('stm-player')).color}));
+        expect(colors.heading).toBe(colors.body); expect(colors.heading).not.toBe('rgb(255, 105, 180)');
+        const panel = await page.locator('#stm-player').boundingBox(), mini = await page.locator('.stm-mini-player').boundingBox();
+        expect(mini.height).toBeLessThanOrEqual(46);
+        expect(panel.y+panel.height-mini.y-mini.height).toBeGreaterThanOrEqual(4);
+        expect(panel.y+panel.height-mini.y-mini.height).toBeLessThanOrEqual(8);
+        await expect(page.locator('.stm-footer')).toBeHidden();
+    }
+    await playerPage(page,'播放'); await page.clock.install(); await page.locator('#stm-mode').click();
+    await expect(page.locator('.stm-status')).toContainText('播放模式：');
+    await playerPage(page,'外观');
+    const panel = await page.locator('#stm-player').boundingBox(), mini = await page.locator('.stm-mini-player').boundingBox();
+    expect(panel.y+panel.height-mini.y-mini.height).toBeLessThanOrEqual(8);
+    await page.clock.fastForward(4100); await expect(page.locator('.stm-status')).toBeEmpty();
+    await page.locator('[data-role="files"]').setInputFiles({name:'bad.txt',mimeType:'text/plain',buffer:Buffer.from('bad')});
+    await expect(page.locator('.stm-status')).toHaveClass(/stm-error/);
+    await page.clock.fastForward(6500); await expect(page.locator('.stm-status')).not.toBeEmpty();
+    await page.clock.fastForward(1600); await expect(page.locator('.stm-status')).toBeEmpty();
 });

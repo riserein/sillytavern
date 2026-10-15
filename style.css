@@ -296,3 +296,24 @@
 
 .stm-player .stm-add-song { flex-shrink: 0; font-size: 10px; padding: 5px 3px; white-space: nowrap; }
 .stm-mini-queue svg { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Keep page titles readable even when the host styles h3 with its accent. */
+#stm-player .stm-page-heading h3 { color: var(--stm-body) !important; }
+.stm-player .stm-track-details { margin: 0; }
+.stm-details-content { flex: 1; min-height: 0; overflow-y: auto; padding-top: 5px; }
+.stm-details-summary { display: flex; align-items: center; gap: 14px; margin: 8px 0 18px; }
+.stm-details-cover { flex-shrink: 0; width: 72px; height: 72px; object-fit: cover; border-radius: 12px; }
+.stm-details-summary > div { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.stm-details-summary strong { font-size: 17px; font-weight: 500; overflow-wrap: anywhere; }
+.stm-details-summary small { font-size: 11px; color: var(--stm-muted); }
+.stm-player .stm-track-details .stm-detail-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 15px; margin-top: 14px; }
+.stm-player .stm-track-details .stm-detail-actions button { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 5px; min-height: 65px; padding: 8px 4px; border-bottom: 1px solid var(--stm-line); border-radius: 0; white-space: normal; text-align: left; }
+.stm-detail-actions button > span { font-size: 13px; }
+.stm-detail-actions button > small { font-size: 9px; color: var(--stm-muted); }
+.stm-player .stm-status { position: absolute; z-index: 80; left: 18px; right: 18px; bottom: 60px; max-height: 72px; margin: 0; padding: 9px 12px; border: 1px solid var(--stm-line); border-radius: 10px; color: var(--stm-body); background: color-mix(in srgb, var(--stm-solid) 95%, transparent); box-shadow: 0 4px 20px #0002; backdrop-filter: blur(18px) !important; -webkit-backdrop-filter: blur(18px) !important; }
+.stm-player .stm-status:empty { display: none; }
+.stm-player[data-mini-visible="true"] { padding-bottom: 6px; }
+.stm-player[data-mini-visible="true"] > .stm-footer { display: none; }
+.stm-player .stm-mini-player { height: 44px; min-height: 44px; padding: 4px 8px; margin-top: 6px; }
+.stm-player .stm-mini-disc { width: 34px; height: 34px; flex-basis: 34px; }
+.stm-player .stm-status.stm-error { color: var(--stm-error); }

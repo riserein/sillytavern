@@ -6,7 +6,7 @@ export function createMiniPlayer({ panel, audio, getTrack, getCount, loadCover, 
     const element = document.createElement('section');
     element.className = 'stm-mini-player'; element.setAttribute('aria-label', '当前播放'); element.hidden = true;
     element.innerHTML = `<button type="button" class="stm-mini-info" aria-label="返回播放界面"><span class="stm-mini-disc"><img alt="当前歌曲封面"></span><span class="stm-mini-title-clip"><span class="stm-mini-title"></span></span></button><button type="button" class="stm-mini-play" aria-label="底栏播放"></button><button type="button" class="stm-mini-queue" aria-label="打开当前播放列表" aria-controls="stm-queue" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h12M9 12h12M9 19h12M3 4l3 1-3 2zM3 11h2v2H3zM3 18h2v2H3z"/></svg></button>`;
-    panel.querySelector('.stm-status').before(element);
+    panel.querySelector('.stm-footer').before(element);
     const title = element.querySelector('.stm-mini-title');
     const clip = element.querySelector('.stm-mini-title-clip');
     const image = element.querySelector('img');
@@ -26,6 +26,7 @@ export function createMiniPlayer({ panel, audio, getTrack, getCount, loadCover, 
     return {
         render(hidden) {
             element.hidden = hidden;
+            panel.dataset.miniVisible = String(!hidden);
             const track = getTrack();
             const playing = Boolean(track && !audio.paused && !audio.ended);
             const text = track?.title || '还没有选择歌曲';
