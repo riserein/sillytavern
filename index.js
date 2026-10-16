@@ -1,3 +1,4 @@
+import { createCardMaker } from './card-maker.js';
 import { createPlatformService } from './platforms/service.js';
 import { PLATFORM_NAMES } from './platforms/catalog.js';
 import { BUILTIN_ID, findTrack, planImport } from './platforms/library.js';
@@ -131,6 +132,7 @@ function initialize() {
         </section>
         <section id="stm-page-library" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-library" data-view="library" hidden>
         <div class="stm-page-heading stm-heading-actions"><div><h3>我的音乐</h3><span>你的收藏，每一段旋律</span></div><button type="button" class="stm-secondary" data-action="new-playlist">＋ 新建歌单</button></div>
+        <button type="button" class="stm-secondary stm-maker-entry" data-action="card-maker">角色卡播放器制作 ↗</button>
         <div id="stm-create-playlist-panel" hidden>
             <form class="stm-create-playlist">
                 <label for="stm-new-playlist" data-role="create-title">给新歌单起个名字</label>
@@ -1767,6 +1769,9 @@ function initialize() {
             });
         }
     }
+    const cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback});
+    query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
+    window.addEventListener('pagehide',()=>cardMaker.close(),{once:true});
     renderPlaylists();
     renderTracks();
     if (settings.currentId) void selectTrack(settings.currentId);

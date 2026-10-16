@@ -1248,9 +1248,22 @@ test('only player clicks and blank areas trigger small optional ripples without 
     await expect(page.locator('#stm-player .stm-click-wave')).toHaveCount(0);
     expect(await page.locator('#stm-player .stm-click-effects').evaluate(element => getComputedStyle(element).pointerEvents)).toBe('none');
     await expect(page.locator('.stm-click-wave')).toHaveCount(0);
-    await playerPage(page, '外观'); await page.locator('#stm-appearance > .stm-page-heading').click();
-    await expect(page.locator('.stm-click-wave')).not.toHaveCount(0);
-    expect(await page.locator('.stm-click-wave').first().evaluate(element => getComputedStyle(element).width)).toBe('30px');
+    await playerPage(page, '外观');
+    // Measure connected nodes when they appear; the real 480 ms animation may finish between tool round trips.
+    await page.evaluate(() => {
+        window.__stmObservedWaveWidths = [];
+        window.__stmWaveObserver = new MutationObserver(records => {
+            for (const record of records) for (const node of record.addedNodes) {
+                if (node.nodeType === Node.ELEMENT_NODE && node.matches('.stm-click-wave') && node.isConnected) {
+                    window.__stmObservedWaveWidths.push(getComputedStyle(node).width);
+                }
+            }
+        });
+        window.__stmWaveObserver.observe(document.querySelector('#stm-player .stm-click-effects'), { childList: true });
+    });
+    await page.locator('#stm-appearance > .stm-page-heading').click();
+    await expect.poll(() => page.evaluate(() => window.__stmObservedWaveWidths)).toContain('30px');
+    await page.evaluate(() => window.__stmWaveObserver.disconnect());
     await page.locator('#stm-click-effects').uncheck();
     await expect(page.locator('.stm-click-wave')).toHaveCount(0);
     await page.locator('#stm-test-blank').click(); await expect(page.locator('.stm-click-wave')).toHaveCount(0);

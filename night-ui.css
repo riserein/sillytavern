@@ -200,3 +200,22 @@
 /* Only the active page/side rail may scroll; focusing a low control must not scroll the whole shell. */
 .stm-player.stm-night-ui { overflow: clip; }
 .stm-player.stm-night-ui .stm-lyrics-lines p,.stm-player.stm-night-ui .stm-lyrics-lines .stm-current-lyric { font-weight: 500; }
+
+/* The authoring sheet is opt-in; regular player layout and stored data stay unchanged. */
+.stm-player.stm-night-ui .stm-maker-entry { display:block; margin:0 0 18px; padding:9px 0; }
+.stm-player.stm-night-ui .stm-card-maker { position:absolute; inset:0; z-index:40; overflow:clip; padding:0; background:var(--ui-bg); color:var(--ui-text); border-radius:inherit; }
+.stm-card-maker .stm-maker-header { display:flex; gap:8px; align-items:flex-start; justify-content:space-between; }
+.stm-card-maker h3 { font-size:20px; margin:0; }.stm-card-maker h4 { font-size:15px; margin:26px 0 12px; }
+.stm-card-maker label { display:block; margin:10px 0 4px; font-size:12px; }.stm-card-maker .stm-check-label { display:flex; }
+.stm-card-maker input:not([type=checkbox],[type=color]),.stm-card-maker textarea { width:100%; }.stm-card-maker textarea { resize:vertical; }
+.stm-card-maker .stm-select { width:100%; }.stm-card-maker .stm-select-menu { z-index:45; }
+.stm-maker-tracks { list-style:none; padding:0; margin:14px 0; }.stm-maker-tracks>li { padding:14px 0; border-bottom:1px solid var(--ui-divider); }
+.stm-maker-fields { display:grid; grid-template-columns:3fr 2fr; gap:10px; }.stm-maker-tracks small { display:block; font-size:11px; color:var(--ui-text-secondary); margin-top:6px; }
+.stm-maker-tracks summary { cursor:pointer; padding:10px 0; font-size:12px; color:var(--ui-accent); }.stm-maker-tracks details .stm-secondary { min-height:38px; margin-right:10px; }
+.stm-maker-colors { display:flex; gap:16px; }.stm-maker-colors input[type=color] { display:block; width:68px; height:32px; padding:2px; }
+.stm-card-maker .stm-maker-status { white-space:pre-wrap; overflow-wrap:anywhere; font-size:12px; }
+.stm-maker-preview { display:block; width:100%; height:690px; max-height:80dvh; border:1px solid var(--ui-border); border-radius:14px; margin:16px 0; }
+.stm-maker-downloads { display:flex; flex-wrap:wrap; gap:10px; }.stm-maker-downloads>p { flex-basis:100%; }.stm-maker-downloads>.stm-primary { flex-basis:100%; }
+.stm-maker-busy .stm-maker-tracks { opacity:.6; }.stm-card-maker input[type=checkbox] { appearance:auto; accent-color:var(--ui-accent); }
+
+.stm-card-maker .stm-maker-scroll { height:100%; overflow:auto; overscroll-behavior:contain; padding:18px 22px 28px; }

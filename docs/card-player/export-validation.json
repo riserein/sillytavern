@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "version": "1.11.0",
+  "runtimeSha256": "21e68ec32a33e88aa76a3a8b89c1d11b474fc3824da585ae70acec0e17e60cd2",
+  "verifiedAt": "2026-10-16T04:35:40.686Z",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientMusicDatabase": false,
+  "recipientPluginAssetsBlocked": true,
+  "audio": "real browser decoding/playback of original synthetic MP3, not music API mocks",
+  "mobile": "Chromium viewport/touch emulation, not physical hardware",
+  "results": [
+    {
+      "name": "maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "resource failures and edits prevent stale or partial exports without changing the original library",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ]
+}

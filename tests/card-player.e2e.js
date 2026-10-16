@@ -57,6 +57,8 @@ test.afterAll(async()=>{await mkdir('docs/card-player',{recursive:true});await w
 
 test('real character script keeps its host audio across greetings, messages, AI swipes, edits, regeneration and chats',async({page})=>{
  const a=await createCard(page,'A'),b=await createCard(page,'B',false);await selectCard(page,a);await acceptEnable(page);for(const title of ['测试曲一 · 低音','测试曲二 · 中音','测试曲三 · 高音']){await page.getByRole('button',{name:`选择测试曲：${title}`,exact:true}).click();await expect.poll(()=>page.locator(rootSelector+' audio').evaluate(audio=>audio.currentTime)).toBeGreaterThan(.1);}await page.getByRole('button',{name:'暂停角色音乐',exact:true}).click();const initial=await start(page);
+ // Collapse the floating panel before using chat controls underneath; music must keep its identity.
+ await page.getByRole('button',{name:'收起角色播放器',exact:true}).click();await continuous(page,initial.time);
  await page.evaluate(async()=>{const {swipe_right}=await import('/script.js');await swipe_right();});await expect(page.locator('#chat .mes_text').last()).toContainText('Fixture opening two');await continuous(page,initial.time);
  await page.evaluate(async()=>{await TavernHelper.createChatMessages([{role:'user',message:'Lifecycle user fixture.'},{role:'assistant',message:'AI reply variant one.'}]);});await continuous(page,initial.time);
  await page.evaluate(async()=>{const context=SillyTavern.getContext();const id=context.chat.length-1;await TavernHelper.setChatMessages([{message_id:id,swipe_id:0,swipes:['AI reply variant one.','AI reply variant two.']}]);const {swipe_right}=await import('/script.js');await swipe_right();});await expect(page.locator('#chat .mes_text').last()).toContainText('AI reply variant two');await continuous(page,initial.time);
@@ -68,7 +70,7 @@ test('real character script keeps its host audio across greetings, messages, AI 
  const firstChat=await page.evaluate(()=>SillyTavern.getContext().chatId);expect(firstChat).toBeTruthy();
  await page.evaluate(async()=>{const {saveChat,openCharacterChat}=await import('/script.js');await saveChat({force:true});await openCharacterChat('RSCP_Test_Second_'+crypto.randomUUID());});expect(await page.evaluate(()=>SillyTavern.getContext().chatId)).not.toBe(firstChat);await continuous(page,initial.time);
  await page.evaluate(async file=>{const {openCharacterChat}=await import('/script.js');await openCharacterChat(file);},firstChat);expect(await page.evaluate(()=>SillyTavern.getContext().chatId)).toBe(firstChat);await expect(page.locator('#chat .mes_text').last()).toContainText('Regenerated lifecycle response');await continuous(page,initial.time);
- await shot(page,'desktop');await selectCard(page,b);await gone(page);
+ await page.getByRole('button',{name:'展开角色音乐播放器',exact:true}).click();await continuous(page,initial.time);await shot(page,'desktop');await selectCard(page,b);await gone(page);
  await selectCard(page,a);await expect(page.locator(rootSelector)).toHaveCount(1);expect(await page.locator(rootSelector).evaluate(root=>root.__risereinPlayer.audio!==window.__cardOriginal.audio&&root.__risereinPlayer.audio.paused)).toBe(true);
  const baseline=await page.evaluate(()=>SillyTavern.getContext().eventSource.events.chat_id_changed.length); // A's one live lifecycle listener.
  for(let i=0;i<4;i++){await remember(page);await selectCard(page,b);await gone(page);await selectCard(page,a);await expect(page.locator(rootSelector)).toHaveCount(1);expect(await page.evaluate(()=>SillyTavern.getContext().eventSource.events.chat_id_changed.length)).toBe(baseline);}
