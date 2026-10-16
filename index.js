@@ -22,12 +22,15 @@ import { createMiniPlayer, playSymbol } from './player-components.js';
 import { CUSTOM_PROPERTIES, customPalette, hexRgba, defaultMaskOpacity, attachClickEffects } from './appearance.js';
 import { createPlayerUI } from './player-ui.js';
 import { createPlaybackQueue } from './playback-queue.js';
+import { createNativeCardExport } from './card-player/native-export.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
+// Keep the build-time guard explicit at author-only branches: esbuild can then
+// eliminate storage, platform search and the maker from the independent target.
 
-function initialize() {
+export function initialize(options = {}) {
     if (document.getElementById('stm-player')) return;
-    const context = globalThis.SillyTavern?.getContext();
+    const context = options.context || globalThis.SillyTavern?.getContext();
     if (!context?.extensionSettings || !context.saveSettingsDebounced) {
         console.error('[音乐播放器] 无法获取酒馆扩展接口，请更新 SillyTavern。');
         return;
@@ -35,8 +38,9 @@ function initialize() {
 
     const settings = normalizeSettings(context.extensionSettings[SETTINGS_KEY] ?? { theme: 'night', colorScheme: 'dark', surface: 'matte', panelSize: { width: 640, height: 700 } });
     context.extensionSettings[SETTINGS_KEY] = settings;
-    const store = new LocalMusicStore();
-    const platformService = createPlatformService();
+    if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) window.__risereinFullMusicPlayer = true;
+    const store = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? options.store : new LocalMusicStore();
+    const platformService = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? { canPlay: track => Boolean(track), canEmbed: () => false } : createPlatformService();
     let online = null;
     let platformLoadController = null;
     let objectUrl = null;
@@ -170,7 +174,7 @@ function initialize() {
                     <button type="button" class="stm-secondary stm-danger" data-action="delete-playlist">删除歌单</button>
                 </div>
                 <form id="stm-role-bindings" hidden>
-                    <p class="stm-hint">可勾选多个角色。角色已有绑定时，保存后会改用这个歌单。</p>
+                    <p class="stm-hint">可勾选多个角色。保存后，音乐和播放器会一起写入角色卡；用酒馆自己的按钮导出 PNG / JSON，即可分享给装有酒馆助手的朋友。角色已有绑定时会改用这个歌单。</p>
                     <div class="stm-role-picker"></div>
                     <button type="submit" class="stm-secondary">保存绑定</button>
                 </form>
@@ -427,7 +431,7 @@ function initialize() {
         query('[data-action="toggle-manager"]').setAttribute('aria-expanded', String(open));
     }
     query('[data-action="toggle-manager"]').addEventListener('click', () => setManagerOpen(query('#stm-playlist-manager').hidden));
-    const tabs = Array.from(panel.querySelectorAll('[data-page]'));
+    const tabs = Array.from(panel.querySelectorAll('[data-page]')).filter(button => !(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) || button.dataset.page !== 'import');
     tabs.forEach((button, index) => {
         button.addEventListener('click', () => { if (button.dataset.page === 'library') showLibraryHome(); else showPage(button.dataset.page); });
         button.addEventListener('keydown', event => {
@@ -539,7 +543,7 @@ function initialize() {
     });
     applyAppearance();
 
-    const fontPicker = createFontPicker({ panel, launcher, store, settings, save, showStatus, createId: createTrackId });
+    const fontPicker = createFontPicker({ panel, launcher, store, settings, save, showStatus, createId: createTrackId, availableFonts: options.availableFonts });
     const mini = createMiniPlayer({
         panel, audio,
         getTrack: () => findTrack(settings, settings.currentId),
@@ -547,7 +551,7 @@ function initialize() {
         loadCover: track => track.coverId ? cachedCover(track.coverId) : Promise.resolve(track.cover || null),
         onOpen: () => showPage('playback'), onPlay: toggleCurrent, onQueue: () => setQueueOpen(true),
     });
-    online = createOnlinePanel({
+    online = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : createOnlinePanel({
         panel, service: platformService, menus, getTarget: () => importTarget.value || null,
         getCapacity: () => MAX_TRACKS - settings.tracks.length,
         hasTrack: id => settings.tracks.some(track => track.id === id), onState: updatePlayback, onSave: savePlatformImport,
@@ -867,7 +871,7 @@ function initialize() {
     const activePlaylist = () => settings.playlists.find(item => item.id === settings.activePlaylistId);
     const browsedPlaylist = () => settings.playlists.find(item => item.id === browsedPlaylistId);
     const collectionName = (id = settings.activePlaylistId) => id === BUILTIN_ID ? settings.builtinCatalog.title : settings.playlists.find(item => item.id === id)?.name || '总曲库';
-    const freshContext = () => globalThis.SillyTavern.getContext();
+    const freshContext = () => options.context || globalThis.SillyTavern.getContext();
 
     function libraryTracks(tracks = getQueue(settings, browsedPlaylistId)) {
         const term = query('#stm-library-search').value.trim().toLocaleLowerCase();
@@ -958,6 +962,7 @@ function initialize() {
     }
 
     function renderRolePicker() {
+        if ((typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) return;
         const selected = browsedPlaylist();
         const picker = query('.stm-role-picker');
         picker.replaceChildren();
@@ -1652,7 +1657,11 @@ function initialize() {
         bindPlaylistCharacters(settings, browsedPlaylistId, Array.from(panel.querySelectorAll('.stm-role-picker input:checked'), input => input.dataset.avatar));
         save(); renderPlaylists();
         await syncRole(true);
-        showStatus('角色绑定已保存。进入角色只切换歌单，音乐需手动播放。');
+        if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
+            showStatus('角色绑定已保存，正在把音乐和播放器写入角色卡，请稍候…');
+            try { await nativeExport.syncBindings(); showStatus('角色绑定已保存。音乐已随卡保存。现在用酒馆自己的导出按钮，导出 PNG 或 JSON 即可。朋友需启用酒馆助手角色脚本。'); }
+            catch (error) { showStatus(`角色绑定已保存，但随卡播放器未更新：${error.message}。请处理后重新保存绑定；原生导出前也会重新检查。`, true); }
+        }
     });
     query('[data-action="confirm-membership"]').addEventListener('click', () => {
         try {
@@ -1729,22 +1738,22 @@ function initialize() {
     function audioFailure() {
         return ({ 1: '播放已中断，可重新点播放。', 2: '音源网络连接失败；请检查网络，重试会重新获取地址。', 3: '浏览器无法解码此音频，请尝试其他歌曲或浏览器。', 4: '音源无法加载：可能已失效、受访问限制，或格式不受浏览器支持。重试会重新获取地址。' })[audio.error?.code] || '平台音源加载失败，请检查网络或原站权限后重试。';
     }
-    window.addEventListener('pagehide', event => {
-        // Do not interrupt pages being kept in the browser back/forward cache.
-        if (!event.persisted) {
-            if (objectUrl) URL.revokeObjectURL(objectUrl);
-            if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
-            if (coverUrl) URL.revokeObjectURL(coverUrl);
-            for (const id of coverCache.keys()) forgetCover(id);
-            fontPicker.dispose(); mini.dispose(); playerUI.dispose(); online.dispose(); platformLoadController?.abort(); menus.dispose(); resizer.dispose(); disposeClickEffects();
-            clearTimeout(playbackTimer); officialPlayer.close(); officialList.close();
-            systemScheme.removeEventListener('change', onSystemScheme);
-            window.clearInterval(historyTimer);
-            window.clearTimeout(statusTimer);
-        }
-    });
+    function dispose() {
+        pausePlayback(); ++mediaRevision; ++backgroundRevision; ++roleRevision;
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
+        if (coverUrl) URL.revokeObjectURL(coverUrl);
+        for (const id of coverCache.keys()) forgetCover(id);
+        fontPicker.dispose(); mini.dispose(); playerUI.dispose(); online?.dispose(); platformLoadController?.abort(); menus.dispose(); resizer.dispose(); disposeClickEffects();
+        clearTimeout(playbackTimer); officialPlayer.close(); officialList.close();
+        systemScheme.removeEventListener('change', onSystemScheme);
+        window.clearInterval(historyTimer);
+        window.clearTimeout(statusTimer);
+    }
+    // Do not interrupt pages being kept in the browser back/forward cache.
+    window.addEventListener('pagehide', event => { if (!event.persisted) dispose(); });
 
-    const settingsArea = document.querySelector('#extensions_settings2') || document.querySelector('#extensions_settings');
+    const settingsArea = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : document.querySelector('#extensions_settings2') || document.querySelector('#extensions_settings');
     if (settingsArea) {
         const entry = document.createElement('div');
         entry.className = 'stm-settings-entry';
@@ -1769,14 +1778,25 @@ function initialize() {
             });
         }
     }
-    const cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback});
-    query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
-    window.addEventListener('pagehide',()=>cardMaker.close(),{once:true});
+    const nativeExport = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : createNativeCardExport({ settings, store, getContext: freshContext, showStatus });
+    if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
+        const cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback});
+        query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
+        window.addEventListener('pagehide',()=>{ cardMaker.close(); nativeExport.dispose(); },{once:true});
+    } else {
+        panel.style.setProperty('--stm-nav-count', '5');
+        // Initialize the shared components, then remove every music-import entry.
+        for (const element of panel.querySelectorAll('[data-page="import"], #stm-page-import, [data-action="go-import"], [data-action="card-maker"], [data-action="bind-roles"], #stm-role-bindings')) element.remove();
+        query('.stm-queue-empty').textContent = '在曲库选择一首歌开始听歌。';
+    }
     renderPlaylists();
     renderTracks();
     if (settings.currentId) void selectTrack(settings.currentId);
     if (!document.getElementById('preloader')) void syncRole(true);
+    return { panel, launcher, audio, settings, dispose, setOpen };
 }
 
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize, { once: true });
-else initialize();
+if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => initialize(), { once: true });
+    else initialize();
+}

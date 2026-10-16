@@ -1,7 +1,7 @@
 import { FONT_PRESETS, MAX_FONTS, validateFontFile, decodeFont, loadBuiltinFont } from './fonts.js';
 
 /** A scoped, keyboard-accessible picker. Preview faces stay loaded while browsing. */
-export function createFontPicker({ panel, launcher, store, settings, save, showStatus, createId }) {
+export function createFontPicker({ panel, launcher, store, settings, save, showStatus, createId, availableFonts }) {
     const query = selector => panel.querySelector(selector);
     const toggle = query('#stm-font');
     const gallery = query('#stm-font-gallery');
@@ -15,7 +15,7 @@ export function createFontPicker({ panel, launcher, store, settings, save, showS
     let disposed = false;
     const selectedKey = () => settings.fontPreset === 'custom' ? settings.fontId : settings.fontPreset;
     const entries = () => [
-        ...Object.entries(FONT_PRESETS).filter(([id]) => id !== 'custom').map(([id, preset]) => ({ id, ...preset })),
+        ...Object.entries(FONT_PRESETS).filter(([id, preset]) => id !== 'custom' && (!preset.file || !availableFonts || availableFonts.includes(preset.file))).map(([id, preset]) => ({ id, ...preset })),
         ...settings.fonts.map(font => ({ ...font, local: true })),
     ];
     const entryFor = id => entries().find(entry => entry.id === id);

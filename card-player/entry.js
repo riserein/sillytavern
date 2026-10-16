@@ -1,6 +1,6 @@
 import { mountCardPlayer } from './runtime.js';
 
-export function startCharacterPlayer(config) {
+export function createCharacterScope() {
     // These are verified Tavern Helper iframe APIs, not guessed globals on the main page.
     if (
         typeof getScriptId !== 'function' ||
@@ -62,8 +62,10 @@ export function startCharacterPlayer(config) {
             return () => observer.disconnect();
         },
     };
-    return mountCardPlayer(config, scope);
+    return scope;
 }
+
+export function startCharacterPlayer(config) { return mountCardPlayer(config, createCharacterScope()); }
 
 /** Separate preview entry, never used to claim role-card lifecycle validation. */
 export function startPreview(config) {

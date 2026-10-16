@@ -17,7 +17,7 @@ export function normalizePanelSize(raw) {
 export function makeResizable(panel, handle, { getSize, onChange, onLayout }) {
     let active = null;
     let suppressClick = false;
-    const viewport = () => ({ width: innerWidth, height: innerHeight });
+    const viewport = () => ({ width: window.innerWidth, height: window.innerHeight });
     function place(size, origin) {
         const value = clampPanelSize(size, viewport());
         panel.style.width = `${value.width}px`; panel.style.height = `${value.height}px`;

@@ -19,7 +19,7 @@
 .stm-drag-caption { margin-right: auto; pointer-events: none; font-size: 10px; color: var(--ui-text-quiet); letter-spacing: .08em; }
 .stm-player.stm-night-ui .stm-header-actions { gap: 4px; border-left: 1px solid var(--ui-divider); padding-left: 9px; }
 .stm-player.stm-night-ui .stm-header-actions button { width: 34px; height: 34px; }
-.stm-player.stm-night-ui .stm-tabs { padding: 7px 0 12px; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 3px; }
+.stm-player.stm-night-ui .stm-tabs { padding: 7px 0 12px; grid-template-columns: repeat(var(--stm-nav-count,6),minmax(0,1fr)); gap: 3px; }
 .stm-player.stm-night-ui .stm-tabs button { display: flex; gap: 5px; align-items: center; justify-content: center; min-height: 42px; padding: 7px 2px; border-radius: 8px; font-size: 11px; color: var(--ui-text-secondary); }
 .stm-player.stm-night-ui .stm-tabs button[aria-selected=true] { color: var(--ui-accent); background: var(--ui-selected); }
 .stm-player.stm-night-ui .stm-tabs button::after { content: none; }

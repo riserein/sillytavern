@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "version": "1.12.0",
+  "verifiedAt": "2026-10-16T07:47:37.498Z",
+  "runtimeSha256": "e83765ac709672379e1be87e124304b60f0763ad2d87dd724c5617b833052a9f",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "native PNG and JSON carry the shared player to a clean desktop recipient",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean phone recipient",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ]
+}
