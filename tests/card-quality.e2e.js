@@ -552,21 +552,89 @@ test('draft audio, cover and background remain usable after their original libra
     await expect(page.locator('.stm-maker-status')).toContainText('容量分析完成');
     await expect(page.locator('[data-maker=analysis]')).toContainText('背景');
 });
-test('leaving during image decoding closes the late bitmap and never restores the cropper or its resources', async ({ page }) => {
+test('leaving during image decoding closes the late bitmap and never restores the cropper or its resources', async ({
+    page,
+}) => {
     await runtime(page);
     await page.evaluate(() => {
         window.__originalBitmap = window.createImageBitmap;
         window.__closedBitmaps = 0;
-        window.createImageBitmap = () => new Promise(resolve => { window.__lateBitmap = () => resolve({ width: 100, height: 100, close() { __closedBitmaps++; } }); });
+        window.createImageBitmap = () =>
+            new Promise((resolve) => {
+                window.__lateBitmap = () =>
+                    resolve({
+                        width: 100,
+                        height: 100,
+                        close() {
+                            __closedBitmaps++;
+                        },
+                    });
+            });
     });
-    await page.locator('[data-role=background-file]').setInputFiles({ name: 'background.png', mimeType: 'image/png', buffer: Buffer.from([137,80,78,71,13,10,26,10]) });
+    await page
+        .locator('[data-role=background-file]')
+        .setInputFiles({
+            name: 'background.png',
+            mimeType: 'image/png',
+            buffer: Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+        });
     await page.waitForFunction(() => typeof __lateBitmap === 'function');
     const result = await page.evaluate(async () => {
-        const api = players.at(-1); hooks.dispatchEvent(new Event('exit')); __lateBitmap();
-        await new Promise(resolve => setTimeout(resolve,20)); window.createImageBitmap = __originalBitmap;
-        return { closed: __closedBitmaps, detached: !document.querySelector('[data-riserein-card-player]'), clean: Object.values(api.resourceCounts).every(value => value === 0) };
+        const api = players.at(-1);
+        hooks.dispatchEvent(new Event('exit'));
+        __lateBitmap();
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        window.createImageBitmap = __originalBitmap;
+        return {
+            closed: __closedBitmaps,
+            detached: !document.querySelector('[data-riserein-card-player]'),
+            clean: Object.values(api.resourceCounts).every((value) => value === 0),
+        };
     });
     expect(result).toEqual({ closed: 1, detached: true, clean: true });
+});
+test('independent maker runtime isolates scripts, replaces old audio and defers to the full plugin', async ({
+    page,
+}) => {
+    await runtime(page);
+    const result = await page.evaluate(async (prefix) => {
+        hooks.dispatchEvent(new Event('exit'));
+        const { mountCardPlayer } = await import(prefix + 'card-player/runtime.js');
+        const subscribe = (type) => (callback) => {
+            hooks.addEventListener(type, callback);
+            return () => hooks.removeEventListener(type, callback);
+        };
+        const start = (scriptId) =>
+            mountCardPlayer(payload.config, {
+                hostDocument: document,
+                hostWindow: window,
+                roleId: 'A',
+                scriptId,
+                currentRole: () => 'A',
+                onRoleChange: subscribe('role'),
+                onScriptExit: subscribe('exit'),
+                onHostExit: subscribe('host'),
+                onFrameRemoved: subscribe('frame'),
+            });
+        const a = start('maker-one');
+        const reused = start('maker-one') === a;
+        const slider = a.root.shadowRoot.querySelector('.volume input');
+        slider.value = '17';
+        slider.dispatchEvent(new Event('input'));
+        const b = start('maker-two');
+        const isolated =
+            b !== a && a.disposed && a.audio.paused && !a.audio.getAttribute('src') && b.audio.volume === 0.1;
+        const restored = start('maker-one');
+        const retained = restored.audio.volume === 0.17;
+        restored.dispose();
+        window.__risereinFullMusicPlayer = true;
+        const suppressed =
+            start('maker-three') === null &&
+            document.querySelectorAll('[data-riserein-card-player]').length === 0;
+        delete window.__risereinFullMusicPlayer;
+        return { reused, isolated, retained, suppressed };
+    }, prefix);
+    expect(result).toEqual({ reused: true, isolated: true, retained: true, suppressed: true });
 });
 test.afterEach(async ({}, info) => {
     results.push({

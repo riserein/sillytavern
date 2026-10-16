@@ -9,12 +9,14 @@ import { normalizeCardConfig, normalizeAppearance } from './config.js';
 export function mountCardPlayer(input, scope) {
     const { hostDocument: doc, hostWindow: win, roleId } = scope;
     if (!roleId || scope.currentRole() !== roleId) throw new Error('角色作用域已改变，取消创建播放器。');
+    if (roleId !== 'preview' && win.__risereinFullMusicPlayer) return null;
     const config = normalizeCardConfig(input);
     const existing = [...doc.querySelectorAll('[data-riserein-card-player]')].find(
         (node) => node.dataset.risereinCardPlayer === config.id && node.dataset.roleId === roleId,
     );
-    if (existing?.__risereinPlayer && !existing.__risereinPlayer.disposed) return existing.__risereinPlayer;
-    if (existing) throw new Error('发现未知的同名播放器节点，请刷新后重试。');
+    if (existing?.__risereinPlayer?.scriptId === scope.scriptId && !existing.__risereinPlayer.disposed) return existing.__risereinPlayer;
+    if (existing && !existing.__risereinPlayer) throw new Error('发现未知的同名播放器节点，请刷新后重试。');
+    for (const node of doc.querySelectorAll('[data-riserein-card-player]')) node.__risereinPlayer?.dispose();
     const root = doc.createElement('section');
     root.dataset.risereinCardPlayer = config.id;
     root.dataset.roleId = roleId;
@@ -32,7 +34,8 @@ export function mountCardPlayer(input, scope) {
     shadow.append(audio);
     const query = (selector) => shadow.querySelector(selector);
     const abort = new win.AbortController();
-    const namespace = `riserein:card-player:v1:${encodeURIComponent(config.id)}:${encodeURIComponent(roleId)}`;
+    const legacyNamespace = `riserein:card-player:v1:${encodeURIComponent(config.id)}:${encodeURIComponent(roleId)}`;
+    const namespace = `riserein:card-player:v2:${encodeURIComponent(config.id)}:${encodeURIComponent(roleId)}:${encodeURIComponent(scope.scriptId)}`;
     let selected = 0,
         disposed = false,
         live = false,
@@ -50,7 +53,10 @@ export function mountCardPlayer(input, scope) {
     let drag = null,
         suppressClick = false;
     try {
-        const saved = JSON.parse(win.localStorage.getItem(namespace) || '{}');
+        const current = win.localStorage.getItem(namespace);
+        const legacy = current ? null : win.localStorage.getItem(legacyNamespace);
+        const saved = JSON.parse(current || legacy || '{}');
+        if (!current && legacy) win.localStorage.setItem(namespace, JSON.stringify(saved));
         audio.volume = Number.isFinite(saved.volume) ? Math.min(1, Math.max(0, saved.volume)) : config.volume;
     } catch {
         audio.volume = config.volume;
