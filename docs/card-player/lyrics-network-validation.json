@@ -1,0 +1,11 @@
+{
+  "status": "blocked",
+  "date": "2026-10-16",
+  "endpoint": "https://lrclib.net/api/search",
+  "request": "track_name=Yesterday&artist_name=The Beatles",
+  "result": "curl CONNECT tunnel failed, response 403; HTTP 000",
+  "officialSourceInspected": "https://github.com/tranxuanthang/lrclib/tree/04369d3f7c6e8cba1790629f26f866547a9b8f88/server/src",
+  "schemaVerifiedFromSource": true,
+  "liveResultsVerified": false,
+  "note": "Unit and browser lyric fixtures prove lookup/confirmation/save/export plumbing only; no claim of successful live lyric lookup. No TLS verification bypass."
+}

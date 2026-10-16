@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-16T12:42:57.387Z",
+  "apiMocks": false,
+  "audioMocks": false,
+  "results": [
+    {
+      "source": "Openverse",
+      "search": false,
+      "playback": false,
+      "error": "无法连接音乐来源，请检查网络；该来源也可能不允许跨域访问。"
+    },
+    {
+      "source": "Audius",
+      "status": "未配置维护者公开 Key；正式适配器关闭"
+    },
+    {
+      "source": "soundcloud",
+      "metadata": false,
+      "playback": false,
+      "mode": "external",
+      "note": "默认关闭，仅识别链接"
+    },
+    {
+      "source": "spotify",
+      "metadata": false,
+      "playback": false,
+      "mode": "external",
+      "note": "默认关闭，仅识别链接"
+    }
+  ],
+  "browserErrors": [],
+  "failedRequests": [
+    {
+      "host": "api.openverse.org",
+      "error": "net::ERR_CERT_AUTHORITY_INVALID"
+    }
+  ],
+  "fullPlaybackVerified": false
+}

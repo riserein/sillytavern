@@ -1,0 +1,15 @@
+{
+  "testedAt": "2026-10-16T12:32:57.314Z",
+  "source": "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3",
+  "audioMocks": false,
+  "metadataMocks": false,
+  "host": "media element at SillyTavern origin; this is not a full Tavern Helper acceptance test",
+  "errors": [
+    {
+      "host": "interactive-examples.mdn.mozilla.net",
+      "reason": "net::ERR_TUNNEL_CONNECTION_FAILED"
+    }
+  ],
+  "status": "blocked-or-failed",
+  "reason": "page.evaluate: Error: 音频实际加载失败（浏览器错误 4），未通过播放检查。\n    at HTMLAudioElement.observe (http://127.0.0.1:8000/scripts/extensions/third-party/sillytavern/platforms/diagnostics.js:18:24)"
+}

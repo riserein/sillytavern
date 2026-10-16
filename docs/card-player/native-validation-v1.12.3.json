@@ -1,0 +1,54 @@
+{
+  "status": "passed",
+  "version": "1.12.3",
+  "verifiedAt": "2026-10-16T10:05:27.287Z",
+  "runtimeSha256": "ffeedacee795d5a74010cdc51bb55e3b496bc26f926337942b8fce7ae7aaba30",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "compact selected font stays fixed after native export and changes only on a new author export",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean desktop recipient",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean phone recipient",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "format": "json",
+      "bytes": 3069405,
+      "milliseconds": 2980
+    },
+    {
+      "format": "png",
+      "bytes": 4167688,
+      "milliseconds": 3372
+    },
+    {
+      "rawPngBytes": 8258757,
+      "compactPngBytes": 4167688,
+      "packagedFontReadsAcrossBindingAndTwoExports": 1
+    }
+  ]
+}

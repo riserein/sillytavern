@@ -1,0 +1,147 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [
+          "**/card-*.e2e.js"
+        ],
+        "testMatch": [
+          "*.e2e.js"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "player.e2e.js",
+      "file": "player.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "missing lyrics can be searched, previewed and confirmed without interrupting playback, then survive reload",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 19897,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stm-lyrics-lines')\nExpected substring: \u001b[32m\"\u001b[7m真实界面确认\u001b[27m歌词\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7m暂无歌词可在歌曲详情中查找歌词，或导入 LRC / TXT。查找这首歌的\u001b[27m歌词\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-lyrics-lines')\u001b[22m\n\u001b[2m    9 × locator resolved to <div class=\"stm-lyrics-lines\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"暂无歌词可在歌曲详情中查找歌词，或导入 LRC / TXT。查找这首歌的歌词\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stm-lyrics-lines')\nExpected substring: \u001b[32m\"\u001b[7m真实界面确认\u001b[27m歌词\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7m暂无歌词可在歌曲详情中查找歌词，或导入 LRC / TXT。查找这首歌的\u001b[27m歌词\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-lyrics-lines')\u001b[22m\n\u001b[2m    9 × locator resolved to <div class=\"stm-lyrics-lines\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"暂无歌词可在歌曲详情中查找歌词，或导入 LRC / TXT。查找这首歌的歌词\"\u001b[22m\n\n    at /workspace/sillytavern/tests/player.e2e.js:1772:53",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/player.e2e.js",
+                      "column": 53,
+                      "line": 1772
+                    },
+                    "snippet": "  1770 |     await page.reload(); await page.locator('#stm-launcher').click();\n  1771 |     await page.locator('[data-action=toggle-lyrics]').click();\n> 1772 |     await expect(page.locator('.stm-lyrics-lines')).toContainText('真实界面确认歌词');\n       |                                                     ^\n  1773 | });\n  1774 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/player.e2e.js",
+                        "column": 53,
+                        "line": 1772
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stm-lyrics-lines')\nExpected substring: \u001b[32m\"\u001b[7m真实界面确认\u001b[27m歌词\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7m暂无歌词可在歌曲详情中查找歌词，或导入 LRC / TXT。查找这首歌的\u001b[27m歌词\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-lyrics-lines')\u001b[22m\n\u001b[2m    9 × locator resolved to <div class=\"stm-lyrics-lines\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"暂无歌词可在歌曲详情中查找歌词，或导入 LRC / TXT。查找这首歌的歌词\"\u001b[22m\n\n\n  1770 |     await page.reload(); await page.locator('#stm-launcher').click();\n  1771 |     await page.locator('[data-action=toggle-lyrics]').click();\n> 1772 |     await expect(page.locator('.stm-lyrics-lines')).toContainText('真实界面确认歌词');\n       |                                                     ^\n  1773 | });\n  1774 |\n    at /workspace/sillytavern/tests/player.e2e.js:1772:53"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T12:51:00.026Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-missing-lyri-b5f46-layback-then-survive-reload/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-missing-lyri-b5f46-layback-then-survive-reload/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-missing-lyri-b5f46-layback-then-survive-reload/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/player.e2e.js",
+                    "column": 53,
+                    "line": 1772
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-db10fe989f07d6a7c195",
+          "file": "player.e2e.js",
+          "line": 3157,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-16T12:50:58.870Z",
+    "duration": 22279.093,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

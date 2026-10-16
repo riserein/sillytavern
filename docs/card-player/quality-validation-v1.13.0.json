@@ -1,0 +1,399 @@
+{
+  "version": "1.13.0",
+  "reviewBaseline": "328d75b40565b5903983ecbca4bc8953d8d96596",
+  "sourceCommit": "94c0a6f0b93cb900dbb910bd75a30eac938f1cfb",
+  "generatedAt": "2026-10-16T13:23:27.472263+00:00",
+  "status": "local-and-fixture-validation-passed; real-external-network-and-physical-devices-not-verified",
+  "unit": {
+    "passed": 100,
+    "failed": 0,
+    "skipped": 0,
+    "syntaxCheck": "passed",
+    "adaptersAndErrorScenariosIncludeMocks": true
+  },
+  "browsers": {
+    "engine": "Linux Chromium",
+    "physicalDevices": false,
+    "firefox": "not installed / not tested",
+    "webkit": "not installed / not tested",
+    "uniqueFinalPassedCases": 77,
+    "note": "Combined distinct cases, not a claim of 77 cases passing in one invocation; raw initial failures are preserved.",
+    "fullPlugin": {
+      "uniquePassedCases": 59,
+      "initialFullRun": {
+        "startTime": "2026-10-16T12:37:18.308Z",
+        "duration": 767244.768,
+        "expected": 58,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "lyricsRetest": {
+        "startTime": "2026-10-16T12:52:17.300Z",
+        "duration": 16608.8,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "postCleanupTargetedRun": {
+        "startTime": "2026-10-16T13:00:45.281Z",
+        "duration": 69864.905,
+        "expected": 5,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "finalCases": {
+        "SillyTavern loads the extension and the empty player is usable": "passed",
+        "local imports play actual audio, seek, adjust volume, and keep playing with panel closed": "passed",
+        "manual switching and all four completion modes behave correctly": "passed",
+        "settings and IndexedDB music survive a real page reload without autoplay": "passed",
+        "audio URLs play and duplicate entries are rejected": "passed",
+        "invalid files, broken links and browser playback restrictions explain recovery": "passed",
+        "deleting a selected local track clears playback and its stored audio": "passed",
+        "filenames are rendered as text, and the player fits a small screen": "passed",
+        "the launcher and window drag independently, preserve their positions and do not toggle on drag": "passed",
+        "dragging is bounded, a smaller viewport remains usable, and positions can be reset": "passed",
+        "all six palettes and both materials apply to both controls without interrupting music, and persist": "passed",
+        "import destinations, album rename and deletion preserve music and survive reload": "passed",
+        "shared songs, album-only removal and confirmed global deletion have distinct effects": "passed",
+        "one album binds multiple real cards, card changes never autoplay, and going home pauses music": "passed",
+        "going home cancels pending local audio loads without reopening a stale role playlist": "passed",
+        "separate pages keep management away from playback and preserve audio across tabs": "passed",
+        "recent and ranking pages record successful starts once, support replay, persist and clean up deletions": "passed",
+        "recent page shows only 100 songs and rolling rankings drop expired plays": "passed",
+        "cropping chooses the actual region, layers themes and materials, persists and removes stored images": "passed",
+        "crop dragging, cancellation and invalid image recovery work on a small screen": "passed",
+        "mask transparency is independent per material, preserves clear mode, and persists across reloads": "passed",
+        "custom accent, background and text colors update both controls, preserve music and image, and restore presets": "passed",
+        "click halos animate, clean up, respect reduced motion and never turn drags into clicks": "passed",
+        "library and import are independent, and covers switch to synchronized embedded MP3 lyrics": "passed",
+        "missing art uses bundled images; manual cover and LRC imports persist and delete with the song": "passed",
+        "retired font selections fall back after reload without fetching removed files or losing local songs": "passed",
+        "the bundled Poxiao font works offline, custom fonts persist, and font changes stay inside the player": "passed",
+        "both compact bundled faces show their own previews, work without the font CDN, and support keyboard selection": "passed",
+        "batch font imports preserve both files, reject duplicates and invalid files, and delete independently after reload": "passed",
+        "a legacy single custom font survives upgrading to the preview library": "passed",
+        "font previews fit mobile and failed bundled downloads keep the current font until a successful retry": "passed",
+        "lyrics occupy the transparent full panel, preserve playback, and return with a click or Escape": "passed",
+        "frosted playlist menus are readable, keyboard accessible, and stay inside a phone-sized panel": "passed",
+        "resizing clamps the panel, saves size and position, preserves audio and recovers after viewport changes": "passed",
+        "system day/night changes update both controls while manual mode and custom colors remain saved": "passed",
+        "only player clicks and blank areas trigger small optional ripples without intercepting tavern input": "passed",
+        "checkbox ticks remain visible and scrollbars are slim without white tracks": "passed",
+        "my music lists library first, creates an album from a song, and saves an independent playlist cover": "passed",
+        "recent and library song controls pause and resume in place and stay in sync with the mini player": "passed",
+        "vinyl mini bar animates only while playing and its queue uses two thirds of desktop and mobile player": "passed",
+        "song details open as a two thirds bottom sheet and retain controls, focus and playback after cover edits": "passed",
+        "background saves leave no lingering message and the compact mini bar stays at the bottom in both color schemes": "passed",
+        "online search plays real fixture audio, shows attribution, deduplicates saves and reloads without fetching on startup": "passed",
+        "sharing unsupported platform songs produces explicit external bookmarks while unsupported playlists never import": "passed",
+        "share previews are invalidated when edited, confirm target albums, and preserve local/platform mixed playback and binding": "passed",
+        "failed and cancelled online searches leave local music usable and enforce rate-limit cooldown": "passed",
+        "empty default catalog stays separate, can be hidden, and never invents preset songs": "passed",
+        "cancelling an online request prevents stale results from replacing a later successful search": "passed",
+        "bundled catalog updates do not fetch playlists at startup or overwrite copied songs and user memberships": "passed",
+        "conditional playlist adapter previews every page, refuses overflow and reuses repeated source playlists": "passed",
+        "official music embeds preserve metadata, pause native playback, stop on dismissal and never fabricate history": "passed",
+        "expired platform audio is refreshed on manual retry and the real playback check requires advancing audio": "passed",
+        "a large playlist can be explicitly selected to fit capacity without silently discarding tracks or source artwork": "passed",
+        "a licensed permanent direct default plays through the real native player and viewing details does not copy it": "passed",
+        "candidate official playback unloads on actual role exit without adding native history": "passed",
+        "missing lyrics can be searched, previewed and confirmed without interrupting playback, then survive reload": "passed",
+        "touch moves the ball and header, and a cancelled gesture does not break the next click": "passed",
+        "touch drags the background crop and saves the selected area": "passed",
+        "the resize grip works with touch and keeps all edges visible": "passed"
+      },
+      "helper": "disabled in disposable profile for original full-plugin suite; restored afterward"
+    },
+    "controlledFixture": {
+      "passed": 11,
+      "report": "quality-browser-validation.json",
+      "claimsRealHelperAcceptance": false,
+      "simulatedScenarios": [
+        "stream response body cancellation",
+        "font completion after exit",
+        "image bitmap completion after exit",
+        "storage quota failure",
+        "async font decompression abort"
+      ],
+      "realBrowserOperations": [
+        "audio playback events and advancing time",
+        "IndexedDB save/restore/rollback/version conflict",
+        "file metadata parsing",
+        "project resource copy and script download"
+      ]
+    },
+    "nativeCards": {
+      "passed": 4,
+      "report": "native-validation.json",
+      "sillyTavern": "1.19.0",
+      "tavernHelper": "4.11.3",
+      "syntheticMp3Played": true,
+      "httpsDirectAudio": "routed fixture; not external provider success",
+      "llmRegeneration": "actual ST flow with fixture LLM/tokenizer responses",
+      "mobile": "viewport/touch emulation only",
+      "recipientFullPluginBlocked": true,
+      "recipientMusicDatabaseCreated": false
+    },
+    "independentMaker": {
+      "passed": 3,
+      "report": "export-validation.json",
+      "realTavernHelper": true,
+      "mobile": "Chromium emulation, not a physical phone"
+    }
+  },
+  "build": {
+    "nativeRuntimeBytes": 225411,
+    "nativeSha256": "472be6033d4c2d91d285f57dbd60c1feda00189d7111248317c83dccdd6eb572",
+    "standaloneRuntimeBytes": 24732,
+    "standaloneSha256": "9db73d1899c0489d0d99086b936c9a662ef4f6fc061fc79676296ef3a91181ba",
+    "reproducibleBuild": {
+      "status": "passed",
+      "before": {
+        "native-runtime.js": "472be6033d4c2d91d285f57dbd60c1feda00189d7111248317c83dccdd6eb572",
+        "shared-ui.js": "f1fc643942bc8f27779b1217e276c04f761a115b7d19c3f8b7c21c6d3ecb8d3f",
+        "runtime.js": "9db73d1899c0489d0d99086b936c9a662ef4f6fc061fc79676296ef3a91181ba",
+        "demo.js": "3ff7be86f36bed56b5ec565298e7c4fb73c64222e8726d102d6ec5d179a78bfb",
+        "demo.tavern-helper.json": "e9b2102a085edb6252a4f02f9c99bea92a10d84e0fce9f18cb001973508ee75f"
+      },
+      "after": {
+        "native-runtime.js": "472be6033d4c2d91d285f57dbd60c1feda00189d7111248317c83dccdd6eb572",
+        "shared-ui.js": "f1fc643942bc8f27779b1217e276c04f761a115b7d19c3f8b7c21c6d3ecb8d3f",
+        "runtime.js": "9db73d1899c0489d0d99086b936c9a662ef4f6fc061fc79676296ef3a91181ba",
+        "demo.js": "3ff7be86f36bed56b5ec565298e7c4fb73c64222e8726d102d6ec5d179a78bfb",
+        "demo.tavern-helper.json": "e9b2102a085edb6252a4f02f9c99bea92a10d84e0fce9f18cb001973508ee75f"
+      }
+    }
+  },
+  "capacity": {
+    "binaryPackageLimitBytes": 31457280,
+    "singleAudioLimitBytes": 20971520,
+    "scriptLimitBytes": 47185920,
+    "makerJsonLimitBytes": 62914560,
+    "staticReadLimitBytes": 167772160,
+    "sample": "one original synthetic MP3 + Child Fun Sans + bundled covers; no background or lyrics in this size sample",
+    "resourceBreakdown": {
+      "format": "resource-breakdown",
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "Selected font tone",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Selected font tone · 封面",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "font",
+          "name": "游趣体",
+          "bytes": 1531668,
+          "encodedBytes": 2042261,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 2094974,
+      "payloadBytes": 2799320,
+      "scriptBytes": 3036891,
+      "problems": [],
+      "jsonPlayerBytes": 3036891,
+      "pngPlayerBytes": 4049188,
+      "pngUncompactedPlayerBytes": 8098376,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    "actualExportMetrics": [
+      {
+        "format": "json",
+        "bytes": 3039227,
+        "milliseconds": 2858
+      },
+      {
+        "format": "resource-breakdown",
+        "rows": [
+          {
+            "kind": "audio",
+            "name": "Selected font tone",
+            "bytes": 240162,
+            "encodedBytes": 320239,
+            "external": false
+          },
+          {
+            "kind": "cover",
+            "name": "Selected font tone · 封面",
+            "bytes": 68286,
+            "encodedBytes": 91071,
+            "external": false
+          },
+          {
+            "kind": "font",
+            "name": "游趣体",
+            "bytes": 1531668,
+            "encodedBytes": 2042261,
+            "external": false
+          },
+          {
+            "kind": "fallback",
+            "name": "assets/covers/forest.png",
+            "bytes": 92776,
+            "encodedBytes": 123727,
+            "external": false
+          },
+          {
+            "kind": "fallback",
+            "name": "assets/covers/moon.png",
+            "bytes": 68286,
+            "encodedBytes": 91071,
+            "external": false
+          },
+          {
+            "kind": "fallback",
+            "name": "assets/covers/sunroom.png",
+            "bytes": 93796,
+            "encodedBytes": 125087,
+            "external": false
+          }
+        ],
+        "embeddedBytes": 2094974,
+        "payloadBytes": 2799320,
+        "scriptBytes": 3036891,
+        "problems": [],
+        "jsonPlayerBytes": 3036891,
+        "pngPlayerBytes": 4049188,
+        "pngUncompactedPlayerBytes": 8098376,
+        "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+        "static": "passed",
+        "browser": "not-tested",
+        "tavern": "not-tested"
+      },
+      {
+        "format": "png",
+        "bytes": 4127404,
+        "milliseconds": 3334
+      },
+      {
+        "rawPngBytes": 8178189,
+        "compactPngBytes": 4127404,
+        "packagedFontReadsAcrossBindingAndTwoExports": 1
+      }
+    ]
+  },
+  "network": {
+    "publicAudio": {
+      "testedAt": "2026-10-16T12:32:57.314Z",
+      "source": "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3",
+      "audioMocks": false,
+      "metadataMocks": false,
+      "host": "media element at SillyTavern origin; this is not a full Tavern Helper acceptance test",
+      "errors": [
+        {
+          "host": "interactive-examples.mdn.mozilla.net",
+          "reason": "net::ERR_TUNNEL_CONNECTION_FAILED"
+        }
+      ],
+      "status": "blocked-or-failed",
+      "reason": "page.evaluate: Error: 音频实际加载失败（浏览器错误 4），未通过播放检查。\n    at HTMLAudioElement.observe (http://127.0.0.1:8000/scripts/extensions/third-party/sillytavern/platforms/diagnostics.js:18:24)"
+    },
+    "lyrics": {
+      "status": "blocked",
+      "date": "2026-10-16",
+      "endpoint": "https://lrclib.net/api/search",
+      "request": "track_name=Yesterday&artist_name=The Beatles",
+      "result": "curl CONNECT tunnel failed, response 403; HTTP 000",
+      "officialSourceInspected": "https://github.com/tranxuanthang/lrclib/tree/04369d3f7c6e8cba1790629f26f866547a9b8f88/server/src",
+      "schemaVerifiedFromSource": true,
+      "liveResultsVerified": false,
+      "note": "Unit and browser lyric fixtures prove lookup/confirmation/save/export plumbing only; no claim of successful live lyric lookup. No TLS verification bypass."
+    },
+    "onlineProviders": {
+      "date": "2026-10-16T12:42:57.387Z",
+      "apiMocks": false,
+      "audioMocks": false,
+      "results": [
+        {
+          "source": "Openverse",
+          "search": false,
+          "playback": false,
+          "error": "无法连接音乐来源，请检查网络；该来源也可能不允许跨域访问。"
+        },
+        {
+          "source": "Audius",
+          "status": "未配置维护者公开 Key；正式适配器关闭"
+        },
+        {
+          "source": "soundcloud",
+          "metadata": false,
+          "playback": false,
+          "mode": "external",
+          "note": "默认关闭，仅识别链接"
+        },
+        {
+          "source": "spotify",
+          "metadata": false,
+          "playback": false,
+          "mode": "external",
+          "note": "默认关闭，仅识别链接"
+        }
+      ],
+      "browserErrors": [],
+      "failedRequests": [
+        {
+          "host": "api.openverse.org",
+          "error": "net::ERR_CERT_AUTHORITY_INVALID"
+        }
+      ],
+      "fullPlaybackVerified": false
+    },
+    "tlsVerificationDisabled": false
+  },
+  "dataSafety": {
+    "originalMusicDatabaseVersionChanged": false,
+    "separateDraftDatabase": "riserein-card-player-projects",
+    "serverPrivateDataTemporarilyRewrittenForExport": false,
+    "physicalQuotaExhaustionTested": false,
+    "storageFailureTest": "simulated exception plus actual IDB transaction rollback; old draft retained",
+    "multiClientServerAtomicity": "not implemented; avoid simultaneous edits of the same card on different clients"
+  },
+  "testHistoryNotes": [
+    "Full-plugin lyric test first matched a hidden maker control; scoped selectors corrected.",
+    "Lyric reload test now waits for the actual host settings save response, consistent with existing reload tests.",
+    "Native source consistency guard corrected to ignore automatically assigned fallback art and playback cursor changes, while retaining an in-flight title-change rejection case.",
+    "Old maker missing-file test updated: a saved draft must retain its bytes after original library deletion; a new project with genuinely missing resources must fail.",
+    "One early concurrent test run reused Playwright output paths; it was stopped and affected host suites rerun serially."
+  ],
+  "documentation": [
+    "quality-review-v1.13.0.md",
+    "quality-user-guide.md",
+    "compatibility-plan-v1.13.0.md"
+  ]
+}
