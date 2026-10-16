@@ -1,3 +1,4 @@
+import { readScriptPayload, analyzePayload } from '../card-player/quality.js';
 import { test, expect } from '@playwright/test';
 import { readFile, mkdir, writeFile, mkdtemp, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -66,7 +67,12 @@ test('compact selected font stays fixed after native export and changes only on 
         exportMetrics.push({ format, bytes: bytes.length, milliseconds: Date.now() - started });
         if (format === 'json') {
             const card = JSON.parse(bytes.toString());
-            const content = card.data.extensions.tavern_helper.scripts[0].content;
+            const exportedScript = card.data.extensions.tavern_helper.scripts[0];
+            const content = exportedScript.content;
+            exportMetrics.push({
+                format: 'resource-breakdown',
+                ...analyzePayload(readScriptPayload(content), exportedScript),
+            });
             expect(content).toContain('"fontEncoding":""');
             expect(content).toContain('"fontOriginalBytes":1531668');
             const font = content.match(/"font":"data:application\/octet-stream;base64,([A-Za-z0-9+/=]+)"/);
@@ -378,7 +384,7 @@ test.afterAll(async () => {
                     results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
                         ? 'passed'
                         : 'incomplete-or-failed',
-                version: '1.12.3',
+                version: '1.13.0',
                 verifiedAt: new Date().toISOString(),
                 runtimeSha256: createHash('sha256').update(runtime).digest('hex'),
                 sillyTavern: '1.19.0',
@@ -758,6 +764,45 @@ for (const mobile of [false, true])
             await expect(recipient.locator('[data-view=recent] li')).toHaveCount(3);
             await selectCard(recipient, blank);
             await expect(recipient.locator(root)).toHaveCount(0);
+            if (!mobile && file.format === 'json') {
+                for (let i = 0; i < 3; i++) {
+                    await selectCard(recipient, avatar);
+                    await expect(recipient.locator(root)).toHaveCount(1);
+                    await recipient.locator(root).evaluate((node) => {
+                        window.__stress = node.__risereinPlayer;
+                    });
+                    await selectCard(recipient, blank);
+                    await expect(recipient.locator(root)).toHaveCount(0);
+                    expect(
+                        await recipient.evaluate(
+                            () =>
+                                __stress.audio.paused &&
+                                Object.values(__stress.resourceCounts).every((value) => value === 0),
+                        ),
+                    ).toBe(true);
+                }
+                await selectCard(recipient, avatar);
+                await recipient.evaluate(() => {
+                    const scripts = TavernHelper.getScriptTrees({ type: 'character' });
+                    const marked =
+                        SillyTavern.getContext().characters[SillyTavern.getContext().characterId].data
+                            .extensions.riserein_card_player.scriptId;
+                    scripts.find((script) => script.id === marked).enabled = false;
+                    TavernHelper.replaceScriptTrees(scripts, { type: 'character' });
+                });
+                await expect(recipient.locator(root)).toHaveCount(0);
+                await recipient.evaluate(() => {
+                    const scripts = TavernHelper.getScriptTrees({ type: 'character' });
+                    const marked =
+                        SillyTavern.getContext().characters[SillyTavern.getContext().characterId].data
+                            .extensions.riserein_card_player.scriptId;
+                    scripts.find((script) => script.id === marked).enabled = true;
+                    TavernHelper.replaceScriptTrees(scripts, { type: 'character' });
+                });
+                await expect(recipient.locator(root)).toHaveCount(1);
+                await selectCard(recipient, blank);
+                await expect(recipient.locator(root)).toHaveCount(0);
+            }
         }
         expect(
             await recipient.evaluate(
@@ -861,11 +906,36 @@ test('native export blocks missing resources, preserves the previous card, refre
     await page.unroute('**/card-player/dist/native-runtime.js');
     expect(await page.evaluate(() => TavernHelper.getScriptTrees({ type: 'character' }))).toEqual([]);
     await selectCard(page, avatar);
-    expect(ready.status).toBe(200);
+    expect(ready.status, ready.text).toBe(200);
     const before = JSON.parse(ready.text),
         marker = before.data.extensions.riserein_card_player;
     expect(marker.mode).toBe('native');
     expect(before.data.extensions.tavern_helper.scripts).toHaveLength(2);
+    await page.evaluate(async () => {
+        const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
+        window.__savedGet = LocalMusicStore.prototype.get;
+        window.__heldRead = false;
+        window.__releaseRead = null;
+        const gate = new Promise(resolve => { window.__releaseRead = resolve; });
+        LocalMusicStore.prototype.get = async function(id) {
+            const blob = await __savedGet.call(this, id);
+            if (id === __nativeFixtureTrack.id && !__heldRead) { __heldRead = true; await gate; }
+            return blob;
+        };
+    });
+    const staleExport = exportCard();
+    await expect.poll(() => page.evaluate(() => __heldRead)).toBe(true);
+    await page.evaluate(() => {
+        const track = SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0];
+        window.__oldTitle = track.title; track.title = 'Edited while resource read was pending'; __releaseRead();
+    });
+    const staleResult = await staleExport;
+    expect(staleResult.status).toBe(422); expect(staleResult.text).toContain('已改变');
+    await page.evaluate(async () => {
+        const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
+        LocalMusicStore.prototype.get = __savedGet;
+        SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0].title = __oldTitle;
+    });
     await page.evaluate(() => {
         SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0].title =
             'Changed before failed save';
@@ -888,6 +958,16 @@ test('native export blocks missing resources, preserves the previous card, refre
         before.data.extensions.tavern_helper.scripts.find((script) => script.id === marker.scriptId).content,
     );
     await page.unroute('**/api/characters/merge-attributes');
+    const persisted = await page.evaluate(async (avatar) => {
+        const { readCardFile } = await import(
+            '/scripts/extensions/third-party/sillytavern/card-player/quality.js'
+        );
+        const response = await fetch('/characters/' + encodeURIComponent(avatar), { cache: 'no-store' });
+        return (await readCardFile(await response.blob(), 'png')).data.extensions.tavern_helper.scripts;
+    }, avatar);
+    expect(persisted.find((script) => script.id === marker.scriptId).content).toBe(
+        before.data.extensions.tavern_helper.scripts.find((script) => script.id === marker.scriptId).content,
+    );
     await page.evaluate(async () => {
         const { LocalMusicStore } = await import(
             '/scripts/extensions/third-party/sillytavern/local-store.js'

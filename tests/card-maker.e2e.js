@@ -245,7 +245,7 @@ test.afterAll(async () => {
                     results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
                         ? 'passed'
                         : 'incomplete-or-failed',
-                version: '1.11.0',
+                version: '1.13.0',
                 runtimeSha256,
                 verifiedAt: new Date().toISOString(),
                 sillyTavern: '1.19.0',

@@ -58,14 +58,19 @@ export function createCharacterScope() {
             const observer = new hostWindow.MutationObserver(() => {
                 if (!frame.isConnected) handler();
             });
-            observer.observe(frame.parentNode, { childList: true });
+            observer.observe(hostDocument.documentElement, {
+                childList: true,
+                subtree: true,
+            });
             return () => observer.disconnect();
         },
     };
     return scope;
 }
 
-export function startCharacterPlayer(config) { return mountCardPlayer(config, createCharacterScope()); }
+export function startCharacterPlayer(config) {
+    return mountCardPlayer(config, createCharacterScope());
+}
 
 /** Separate preview entry, never used to claim role-card lifecycle validation. */
 export function startPreview(config) {

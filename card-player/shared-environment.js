@@ -7,7 +7,8 @@ export function sharedEnvironment(root, assets, win) {
         urls = new Set(),
         observers = new Set(),
         requests = new Set(),
-        faces = new Set();
+        faces = new Set(),
+        lifetimeAbort = new win.AbortController();
     let disposed = false;
     function listen(target, type, callback, options) {
         target.addEventListener(type, callback, options);
@@ -76,6 +77,11 @@ export function sharedEnvironment(root, assets, win) {
                 });
                 observers.add(this);
             }
+            observe(...args) {
+                if (disposed) return;
+                observers.add(this);
+                return super.observe(...args);
+            }
             disconnect() {
                 super.disconnect();
                 observers.delete(this);
@@ -86,14 +92,32 @@ export function sharedEnvironment(root, assets, win) {
         const control = new win.AbortController();
         requests.add(control);
         try {
-            return await win.fetch(input, {
+            const response = await win.fetch(input, {
                 ...options,
-                signal: options.signal
-                    ? win.AbortSignal.any([options.signal, control.signal])
-                    : control.signal,
+                signal: win.AbortSignal.any([
+                    lifetimeAbort.signal,
+                    control.signal,
+                    ...(options.signal ? [options.signal] : []),
+                ]),
             });
-        } finally {
+            return proxy(
+                response,
+                Object.fromEntries(
+                    ['arrayBuffer', 'blob', 'text', 'json', 'formData'].map((method) => [
+                        method,
+                        async (...args) => {
+                            try {
+                                return await response[method](...args);
+                            } finally {
+                                requests.delete(control);
+                            }
+                        },
+                    ]),
+                ),
+            );
+        } catch (error) {
             requests.delete(control);
+            throw error;
         }
     };
     const scopedWindow = proxy(win, {
@@ -132,7 +156,7 @@ export function sharedEnvironment(root, assets, win) {
         environment: {
             document: scopedDocument,
             window: scopedWindow,
-            globalThis: win,
+            globalThis: scopedWindow,
             URL: ScopedURL,
             ResizeObserver: observe(win.ResizeObserver),
             MutationObserver: observe(win.MutationObserver),
@@ -163,7 +187,15 @@ export function sharedEnvironment(root, assets, win) {
         dispose() {
             if (disposed) return;
             disposed = true;
-            for (const stop of stops.splice(0)) stop();
+            // Fetch resolves at headers; this signal also aborts bodies still being consumed.
+            lifetimeAbort.abort();
+            for (const stop of stops.splice(0)) {
+                try {
+                    stop();
+                } catch {
+                    /* Continue cleanup. */
+                }
+            }
             for (const id of timers.keys()) clear(id);
             for (const id of frames) cancel(id);
             for (const observer of [...observers]) observer.disconnect();

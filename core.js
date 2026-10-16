@@ -78,6 +78,7 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
             ...(typeof item.artist === 'string' && item.artist ? { artist: item.artist.slice(0, 120) } : {}),
             ...(typeof item.coverId === 'string' && /^cover:[a-f0-9-]{36}$/.test(item.coverId) ? { coverId: item.coverId } : {}),
             ...(typeof item.lyrics === 'string' && item.lyrics ? { lyrics: item.lyrics.slice(0, MAX_LYRICS) } : {}),
+            ...(typeof item.lyricsSource === 'string' && /^https:\/\/lrclib\.net\/api\/get\/\d+$/.test(item.lyricsSource) ? { lyricsSource: item.lyricsSource } : {}),
             ...(Number.isInteger(item.fallbackCover) && item.fallbackCover >= 0 && item.fallbackCover < COVER_COUNT ? { fallbackCover: item.fallbackCover } : {}),
         });
         if (tracks.length === MAX_TRACKS) break;

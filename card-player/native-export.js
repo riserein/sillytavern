@@ -1,3 +1,11 @@
+import {
+    PLAYER_BUILD,
+    analyzePayload,
+    assertCapacity,
+    payloadLiteral,
+    verifyCardFile,
+    transformCardFile,
+} from './quality.js';
 import { getQueue, playlistForCharacter, createTrackId } from '../core.js';
 import { FONT_PRESETS } from '../fonts.js';
 import { fallbackCoverUrl, prepareCover } from '../media.js';
@@ -46,7 +54,7 @@ export function nativeCardScript(payload, runtime, scriptId) {
         enabled: true,
         id: scriptId,
         name: `角色音乐 · ${payload.config.title}`,
-        content: `/* Riserein shared-UI card player. MIT. */\n(()=>{\n${runtime}\nRisereinNativePlayer.startNativeCharacterPlayer(${jsonForScript(payload)});\n})();`,
+        content: `/* Riserein shared-UI card player. MIT. */\n(()=>{\n${runtime}\nRisereinNativePlayer.startNativeCharacterPlayer(${payloadLiteral(payload)});\n})();`,
         info: '由 Riserein 音乐播放器制作。原生 PNG/JSON 随卡播放器；共享完整版界面，无音乐导入功能。不依赖完整版插件，需要酒馆助手。',
         button: { enabled: false, buttons: [] },
         data: {},
@@ -54,6 +62,7 @@ export function nativeCardScript(payload, runtime, scriptId) {
     };
     if (new TextEncoder().encode(JSON.stringify(script)).length > 45 * 1024 * 1024)
         throw new Error('随卡播放器超过 45 MB，请减少内嵌资源或改用稳定公开音频直链。');
+    assertCapacity(analyzePayload(payload, script));
     return script;
 }
 
@@ -65,7 +74,8 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         cachedFont;
     const fixedImages = new Map(),
         licenses = new Map(),
-        encoded = new WeakMap();
+        encoded = new WeakMap(),
+        signatures = new WeakMap();
     const memo = (map, key, load) => {
         if (!map.has(key))
             map.set(
@@ -92,26 +102,56 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
     const read = (url) => fetchBlob(url, abort.signal);
     const fallback = (index) =>
         memo(fixedImages, index, () => read(fallbackCoverUrl(index)).then(prepareCover));
+    const sourceSnapshot = (playlist) => ({
+        playlist: structuredClone(playlist),
+        tracks: structuredClone(getQueue(settings, playlist.id)),
+        ui: Object.fromEntries(UI_KEYS.map((key) => [key, structuredClone(settings[key])])),
+        fontPreset: settings.fontPreset,
+        backgroundId: settings.backgroundId,
+        volume: settings.volume,
+        mode: settings.mode,
+        surface: settings.surface,
+        maskOpacity: structuredClone(settings.maskOpacity),
+    });
+    const sourceSignature = (value) =>
+        // Playback cursors and automatically assigned fallback art are view state;
+        // role navigation can update them without an author editing the project.
+        JSON.stringify(value, (key, entry) => (['lastTrackId', 'fallbackCover'].includes(key) ? undefined : entry));
+    const checkSource = (payload) => {
+        const previous = signatures.get(payload);
+        const playlist = settings.playlists.find((item) => item.id === previous?.id);
+        if (!previous || !playlist) throw new Error('检查期间歌单已改变，请重新导出；未替换旧随卡配置');
+        const current = sourceSignature(sourceSnapshot(playlist));
+        if (current !== previous.signature) {
+            const before = JSON.parse(previous.signature), after = JSON.parse(current);
+            const fields = Object.keys(before).filter(key => JSON.stringify(before[key]) !== JSON.stringify(after[key]));
+            const labels = { playlist: '歌单', tracks: '歌曲信息', ui: '界面', fontPreset: '字体', backgroundId: '背景', volume: '音量', mode: '模式', surface: '质感', maskOpacity: '遮罩' };
+            throw new Error(`检查期间${fields.map(key => labels[key] || key).join('、')}已改变，请重新导出；未替换旧随卡配置`);
+        }
+    };
     async function packagePlaylist(playlist) {
-        const preset = FONT_PRESETS[settings.fontPreset];
+        const author = sourceSnapshot(playlist),
+            signature = sourceSignature(author);
+        playlist = author.playlist;
+        const preset = FONT_PRESETS[author.fontPreset];
         let fontEncoding = '',
             fontOriginalBytes = 0;
-        if (settings.fontPreset === 'custom')
+        if (author.fontPreset === 'custom')
             throw new Error('当前自定义字体没有随卡授权记录。请先选择内置字体或设备字体，再导出');
         const { config, embeddedBytes } = await prepareCardPackage(
             {
                 id: `native:${playlist.id}`,
                 title: playlist.name,
-                tracks: getQueue(settings, playlist.id),
+                tracks: author.tracks,
                 appearance: {
-                    imageId: settings.backgroundId,
+                    imageId: author.backgroundId,
                     fontFile: preset?.file,
                     fontName: preset?.name,
-                    surface: settings.surface,
-                    opacity: settings.maskOpacity[settings.surface] ?? 0.94,
+                    surface: author.surface,
+                    opacity: author.maskOpacity[author.surface] ?? 0.94,
                 },
-                volume: settings.volume,
-                mode: settings.mode,
+                volume: author.volume,
+                mode: author.mode,
                 startCollapsed: false,
             },
             {
@@ -167,9 +207,10 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         const cover = playlist.coverId ? await store.get(playlist.coverId) : null;
         if (playlist.coverId && !cover) throw new Error('歌单封面不在当前浏览器中，请重新选择封面');
         const playlistCover = cover ? await blobData(await prepareCover(cover)) : '';
-        const ui = Object.fromEntries(UI_KEYS.map((key) => [key, structuredClone(settings[key])]));
-        return {
+        const ui = author.ui;
+        const payload = {
             version: 1,
+            runtimeVersion: PLAYER_BUILD,
             config,
             ui,
             fontFile: preset?.file || '',
@@ -184,6 +225,14 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
             assets,
             embeddedBytes,
         };
+        const analysis = assertCapacity(analyzePayload(payload));
+        payload.embeddedBytes = analysis.embeddedBytes;
+        showStatus(
+            `资源 ${(analysis.embeddedBytes / 1048576).toFixed(2)} MB（含歌曲、封面、背景和字体），正在构建随卡播放器…`,
+        );
+        signatures.set(payload, { id: playlist.id, signature });
+        checkSource(payload);
+        return payload;
     }
     async function syncAvatar(avatar, prepared) {
         abort.signal.throwIfAborted();
@@ -221,6 +270,13 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                     throw error;
                 });
             const script = nativeCardScript(payload, await runtimePromise, old?.scriptId || createTrackId());
+            checkSource(payload);
+            // Preserve edits made to unrelated scripts while audio/font reads were in flight.
+            card.data.extensions.tavern_helper = structuredClone(
+                character.data.extensions?.tavern_helper || {},
+            );
+            if (current() && helper?.getScriptTrees)
+                card.data.extensions.tavern_helper.scripts = helper.getScriptTrees({ type: 'character' });
             const findScript = (trees) => {
                 for (const tree of trees || []) {
                     if (tree.type === 'folder') {
@@ -287,28 +343,48 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                 }
             }
         };
-        // The helper saves the ENTIRE card from memory when its script tree changes.
-        // Publish both fields to memory first, so its watcher cannot write an old marker
-        // over our checked save (especially when unbinding). The stored helper field
-        // also matches its updated store, avoiding a redundant whole-card write.
-        writeMemory(extensions);
+        // Commit using ST's checked endpoint before publishing a new Helper tree.
+        // A rejected server write cannot trigger Helper autosave of an uncommitted script.
+        const response = await window.fetch('/api/characters/merge-attributes', {
+            method: 'POST',
+            headers: context.getRequestHeaders(),
+            body: JSON.stringify({ avatar, data: { extensions } }),
+            signal: abort.signal,
+        });
+        if (!response.ok) throw new Error(`酒馆保存角色音乐失败（${response.status}），原随卡配置未替换`);
         try {
+            // Publish BOTH fields before Helper's whole-card autosave watcher runs.
+            writeMemory(extensions);
             if (current() && helper?.replaceScriptTrees)
-                helper.replaceScriptTrees(extensions.tavern_helper.scripts, { type: 'character' });
-            const response = await window.fetch('/api/characters/merge-attributes', {
-                method: 'POST',
-                headers: context.getRequestHeaders(),
-                body: JSON.stringify({ avatar, data: { extensions } }),
-                signal: abort.signal,
-            });
-            if (!response.ok) throw new Error(`酒馆保存角色音乐失败（${response.status}），未完成随卡更新`);
+                helper.replaceScriptTrees(extensions.tavern_helper.scripts, {
+                    type: 'character',
+                });
         } catch (error) {
             writeMemory(previous);
             if (current() && helper?.replaceScriptTrees)
-                helper.replaceScriptTrees(previous.tavern_helper?.scripts || [], { type: 'character' });
+                helper.replaceScriptTrees(previous.tavern_helper?.scripts || [], {
+                    type: 'character',
+                });
+            const rollback = await window.fetch('/api/characters/merge-attributes', {
+                method: 'POST',
+                headers: context.getRequestHeaders(),
+                body: JSON.stringify({
+                    avatar,
+                    data: {
+                        extensions: Object.fromEntries(
+                            Object.entries(previous).map(([key, value]) => [key, value ?? null]),
+                        ),
+                    },
+                }),
+            });
+            if (!rollback.ok)
+                throw new Error(
+                    `播放器更新失败且服务器回退未确认（${rollback.status}），请保留原始角色卡备份并重试：${error.message}`,
+                );
             throw error;
         }
     }
+    let lastReport = null;
     const previousFetch = window.fetch;
     async function wrappedFetch(input, init) {
         const url = typeof input === 'string' ? input : input?.url || String(input);
@@ -336,26 +412,81 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                             ?.tavern_helper;
                     const original = structuredClone(liveSettings());
                     const filtered = helperExportSettings(original);
-                    const exportCurrent = async () =>
-                        compactNativeResponse(await previousFetch.call(this, input, init), body.format);
-                    if (JSON.stringify(filtered) === JSON.stringify(original)) return exportCurrent();
-                    const write = async (value) => {
-                        const saved = await previousFetch.call(window, '/api/characters/merge-attributes', {
-                            method: 'POST',
-                            headers: getContext().getRequestHeaders(),
-                            body: JSON.stringify({ avatar, data: { extensions: { tavern_helper: value } } }),
-                        });
-                        if (!saved.ok) throw new Error(`酒馆保存角色脚本导出设置失败（${saved.status}）`);
+                    const exportCurrent = async () => {
+                        const response = await previousFetch.call(this, input, init);
+                        if (!response.ok) throw new Error(`酒馆导出失败（${response.status}）`);
+                        let publicResponse = response;
+                        if (JSON.stringify(filtered) !== JSON.stringify(original)) {
+                            const publicFile = await transformCardFile(
+                                await response.blob(),
+                                body.format,
+                                (card) => {
+                                    if (card.data.extensions?.tavern_helper)
+                                        card.data.extensions.tavern_helper = helperExportSettings(
+                                            card.data.extensions.tavern_helper,
+                                        );
+                                    return card;
+                                },
+                            );
+                            const headers = new Headers(response.headers);
+                            for (const key of ['Content-Encoding', 'ETag', 'Digest', 'Content-MD5'])
+                                headers.delete(key);
+                            headers.set('Content-Length', String(publicFile.size));
+                            publicResponse = new Response(publicFile, {
+                                status: response.status,
+                                statusText: response.statusText,
+                                headers,
+                            });
+                        }
+                        const compact = await compactNativeResponse(publicResponse, body.format);
+                        const character = getContext().characters.find((card) => card.avatar === avatar);
+                        const expectedData = structuredClone(character.data);
+                        expectedData.extensions.tavern_helper = filtered;
+                        const marker = expectedData.extensions.riserein_card_player;
+                        // Unbinding exports a normal card; no player integrity record applies.
+                        if (marker?.mode === 'native') {
+                            const flatten = (trees) =>
+                                (trees || []).flatMap((tree) =>
+                                    tree.type === 'folder' ? flatten(tree.scripts) : [tree],
+                                );
+                            const script = flatten(filtered.scripts).find(
+                                (item) => item.id === marker.scriptId,
+                            );
+                            const blob = await compact.clone().blob();
+                            // ST normalizes its own envelope; compare authored character fields separately.
+                            const characterData = Object.fromEntries(
+                                [
+                                    'name',
+                                    'description',
+                                    'personality',
+                                    'scenario',
+                                    'first_mes',
+                                    'mes_example',
+                                    'alternate_greetings',
+                                    'character_book',
+                                    'extensions',
+                                    'creator_notes',
+                                    'system_prompt',
+                                    'post_history_instructions',
+                                    'tags',
+                                    'creator',
+                                    'character_version',
+                                    'group_only_greetings',
+                                ]
+                                    .filter((key) => key in expectedData)
+                                    .map((key) => [key, expectedData[key]]),
+                            );
+                            lastReport = await verifyCardFile(blob, body.format, {
+                                script,
+                                characterData,
+                            });
+                            showStatus(
+                                `导出静态核对通过：${lastReport.tracks} 首，文件 ${(blob.size / 1048576).toFixed(2)} MB。浏览器试听与接收端酒馆验收需分别完成。`,
+                            );
+                        }
+                        return compact;
                     };
-                    // Refreshing our script must not undo the Helper's private-data
-                    // export filtering. Keep author memory intact and restore the
-                    // latest live settings after the native response is generated.
-                    await write(filtered);
-                    try {
-                        return await exportCurrent();
-                    } finally {
-                        await write(liveSettings() || original);
-                    }
+                    return exportCurrent();
                 });
             } catch (error) {
                 const message = `角色卡未导出：${error.message}`;
@@ -372,6 +503,10 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
     }
     window.fetch = wrappedFetch;
     return {
+        get lastReport() {
+            return lastReport;
+        },
+        rebuild: (avatar) => enqueue(() => syncAvatar(avatar)),
         syncBindings: () =>
             enqueue(async () => {
                 const prepared = new Map();

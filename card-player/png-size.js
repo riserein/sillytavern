@@ -104,7 +104,7 @@ export async function compactNativeResponse(response, format) {
     const blob = await response.blob();
     const compact = await compactNativePng(blob);
     const headers = new Headers(response.headers);
-    headers.delete('Content-Encoding');
+    for (const key of ['Content-Encoding','ETag','Digest','Content-MD5']) headers.delete(key);
     headers.set('Content-Length', String(compact.size));
     return new Response(compact, { status: response.status, statusText: response.statusText, headers });
 }

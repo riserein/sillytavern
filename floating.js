@@ -18,6 +18,7 @@ export function positionFromRatio(position, size, viewport) {
 
 /** Use pointer capture so dragging keeps working outside the handle, with both mouse and touch. */
 export function makeDraggable(element, handle, { getPosition, onPositionChange }) {
+    const events = new AbortController();
     let active = null;
     let suppressClick = false;
     let frame = null;
@@ -64,7 +65,8 @@ export function makeDraggable(element, handle, { getPosition, onPositionChange }
         if (wasMoved) commit();
     }
 
-    handle.addEventListener('pointerdown', event => {
+    const on = (target, type, callback, capture = false) => target.addEventListener(type, callback, { capture, signal: events.signal });
+    on(handle, 'pointerdown', event => {
         if (!event.isPrimary || event.button !== 0 || active) return;
         suppressClick = false;
         const control = event.target.closest?.('button, input, select, textarea, a');
@@ -73,7 +75,7 @@ export function makeDraggable(element, handle, { getPosition, onPositionChange }
         active = { id: event.pointerId, x: event.clientX, y: event.clientY, left: bounds.x, top: bounds.y, moved: false };
         handle.setPointerCapture(event.pointerId);
     });
-    handle.addEventListener('pointermove', event => {
+    on(handle, 'pointermove', event => {
         if (!active || event.pointerId !== active.id) return;
         const dx = event.clientX - active.x;
         const dy = event.clientY - active.y;
@@ -84,14 +86,14 @@ export function makeDraggable(element, handle, { getPosition, onPositionChange }
         place(clampPosition({ x: active.left + dx, y: active.top + dy }, rect(), viewport()));
         event.preventDefault();
     });
-    for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) handle.addEventListener(event, finish);
-    handle.addEventListener('click', event => {
+    for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) on(handle, event, finish);
+    on(handle, 'click', event => {
         if (!suppressClick) return;
         suppressClick = false;
         event.preventDefault();
         event.stopImmediatePropagation();
     }, true);
-    handle.addEventListener('keydown', event => {
+    on(handle, 'keydown', event => {
         if (event.target !== handle) return;
         const direction = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[event.key];
         if (!direction) return;
@@ -102,12 +104,12 @@ export function makeDraggable(element, handle, { getPosition, onPositionChange }
         event.preventDefault();
         event.stopPropagation();
     });
-    window.addEventListener('resize', () => {
+    on(window, 'resize', () => {
         if (frame !== null) cancelAnimationFrame(frame);
         frame = requestAnimationFrame(() => { frame = null; refresh(); });
     });
     const observer = new ResizeObserver(refresh);
     observer.observe(element);
     refresh();
-    return { refresh, reset: () => { clearPosition(); refresh(); } };
+    return { dispose() { events.abort(); observer.disconnect(); if (frame !== null) cancelAnimationFrame(frame); active = null; }, refresh, reset: () => { clearPosition(); refresh(); } };
 }

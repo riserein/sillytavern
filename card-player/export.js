@@ -1,3 +1,4 @@
+import { PLAYER_BUILD, PAYLOAD_FORMAT, analyzePayload, assertCapacity, payloadLiteral } from './quality.js';
 import {
     normalizeCardConfig,
     jsonForScript,
@@ -46,7 +47,9 @@ export async function blobData(blob, mime = blob.type) {
 }
 function checkedImage(blob) {
     if (!blob?.size || blob.size > 2 * 1024 * 1024 || !/^image\/(?:png|jpeg|webp|gif|avif)$/.test(blob.type))
-        throw new Error('封面或背景需要是 2 MB 以内的 PNG、JPEG、WebP、GIF 或 AVIF 图片。');
+        throw new Error(
+            `图片为 ${((blob?.size || 0) / 1048576).toFixed(2)} MB（${blob?.type || '未知格式'}），封面或背景需要是 2 MB 以内的 PNG、JPEG、WebP、GIF 或 AVIF 图片。`,
+        );
     return blob;
 }
 /** Reads copies only. No writes to the library, playlist or IndexedDB. */
@@ -61,6 +64,7 @@ export async function prepareCardPackage(
         probeAudio,
         signal,
         onProgress = () => {},
+        onResource = () => {},
         maxFontBytes = 20 * 1024 * 1024,
         encodeBlob = blobData,
     },
@@ -70,10 +74,13 @@ export async function prepareCardPackage(
     let total = 0;
     const ready = [],
         errors = [];
-    const add = (blob) => {
+    const add = (blob, kind, name) => {
+        onResource({ kind, name, bytes: blob.size });
         total += blob.size;
         if (total > MAX_PACKAGE_BYTES)
-            throw new Error('内嵌资源合计不能超过 30 MB，请减少歌曲或改用稳定公开直链。');
+            throw new Error(
+                `内嵌资源累计 ${(total / 1048576).toFixed(2)} MB，合计不能超过 30 MB，请减少歌曲或改用稳定公开直链。`,
+            );
         return blob;
     };
     for (const [index, track] of tracks.entries()) {
@@ -88,11 +95,15 @@ export async function prepareCardPackage(
             } else if (track.kind === 'local') {
                 const blob = track.exportBlob || (await getBlob(track.id));
                 if (!blob?.size) throw new Error('本地音频不在当前浏览器中，请重新导入。');
-                if (blob.size > MAX_AUDIO_BYTES)
-                    throw new Error('单首内嵌音频不能超过 20 MB，请压缩音频或使用公开直链。');
+                if (blob.size > MAX_AUDIO_BYTES) {
+                    onResource({ kind: 'audio', name: track.title, bytes: blob.size });
+                    throw new Error(
+                        `单首内嵌音频 ${(blob.size / 1048576).toFixed(2)} MB，不能超过 20 MB，请压缩音频或使用公开直链。`,
+                    );
+                }
                 const mime = audioMime(blob, track.fileName || blob.name || track.title);
                 if (!mime) throw new Error('无法确认音频格式，请重新导入 MP3、WAV、OGG 等音频文件。');
-                src = await encodeBlob(add(blob), mime);
+                src = await encodeBlob(add(blob, 'audio', track.title), mime);
             } else if (
                 track.kind === 'url' ||
                 (track.kind === 'platform' && track.platform === 'direct' && track.playback === 'full')
@@ -108,7 +119,7 @@ export async function prepareCardPackage(
             else if (track.cover) image = await readPublicImage(track.cover, signal);
             else image = await readFallback(track.fallbackCover || 0, signal);
             if (!image) throw new Error('封面文件丢失，请重新导入封面或恢复内置封面。');
-            const cover = await encodeBlob(add(checkedImage(image)));
+            const cover = await encodeBlob(add(checkedImage(image), 'cover', track.title));
             ready.push({
                 id: track.id,
                 title: track.title,
@@ -116,6 +127,7 @@ export async function prepareCardPackage(
                 src,
                 cover,
                 lyrics: track.lyrics,
+                lyricsSource: track.lyricsSource,
                 sourceUrl: track.sourceUrl || '',
                 attribution: track.license?.attribution || '',
             });
@@ -130,16 +142,21 @@ export async function prepareCardPackage(
     if (theme.imageBlob || theme.imageId) {
         const image = theme.imageBlob || (await getBlob(theme.imageId));
         if (!image) throw new Error('背景图片不在当前浏览器中，请重新导入或取消携带背景。');
-        theme.image = await encodeBlob(add(checkedImage(image)));
+        theme.image = await encodeBlob(add(checkedImage(image), 'background', '背景'));
     }
-    if (theme.fontId || theme.fontFile) {
-        const font = theme.fontId ? await getBlob(theme.fontId) : await readFont(theme.fontFile, signal);
+    if (theme.fontBlob || theme.fontId || theme.fontFile) {
+        const font =
+            theme.fontBlob ||
+            (theme.fontId ? await getBlob(theme.fontId) : await readFont(theme.fontFile, signal));
         if (!font?.size) throw new Error('字体文件没有读到，请更新插件并刷新后重试。');
         if (font.size > maxFontBytes)
             throw new Error(
                 `携带的字体资源为 ${(font.size / 1024 / 1024).toFixed(1)} MB，超过本次导出的 ${Math.round(maxFontBytes / 1024 / 1024)} MB 上限。`,
             );
-        theme.font = await encodeBlob(add(font), 'application/octet-stream');
+        theme.font = await encodeBlob(
+            add(font, 'font', theme.fontName || '字体'),
+            'application/octet-stream',
+        );
         if (theme.fontFile) theme.fontLicense = await readFontLicense(theme.fontFile, signal);
         if (!theme.fontLicense?.trim()) throw new Error('请填写自定义字体的授权及署名说明，或取消携带字体。');
     }
@@ -156,6 +173,7 @@ export async function prepareCardPackage(
     return {
         config,
         embeddedBytes: total,
+        analysis: assertCapacity(analyzePayload(config)),
         linkedTracks: ready.filter((track) => track.src.startsWith('https:')).length,
     };
 }
@@ -163,7 +181,8 @@ export function buildCardExports(config, runtime, scriptId) {
     config = normalizeCardConfig(config);
     if (!runtime.includes('startCharacterPlayer') || runtime.includes('//# sourceMappingURL'))
         throw new Error('独立播放器文件不完整，请更新插件后刷新。');
-    const encoded = jsonForScript(config);
+    config.runtimeVersion = PLAYER_BUILD;
+    const encoded = payloadLiteral(config);
     const javascript = `/* Riserein standalone character player. MIT runtime. */\n(()=>{\n${runtime}\nRisereinCardPlayer.startCharacterPlayer(${encoded});\n})();\n`;
     const script = {
         type: 'script',
@@ -178,9 +197,13 @@ export function buildCardExports(config, runtime, scriptId) {
     };
     const preview = `<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>角色播放器预览</title><style>html,body{margin:0;background:#222b28;min-height:100%;font-family:system-ui}h1{color:#c8d4cb;font-size:13px;padding:16px;font-weight:400}</style><h1>角色播放器预览 · 点击播放试听</h1><script>(()=>{\n${runtime}\nRisereinCardPlayer.startPreview(${encoded});\n})();</script></html>`;
     const songs = {
+        runtimeVersion: PLAYER_BUILD,
         title: config.title,
         projectId: config.id,
-        font: { name: config.appearance.fontName, license: config.appearance.fontLicense },
+        font: {
+            name: config.appearance.fontName,
+            license: config.appearance.fontLicense,
+        },
         tracks: config.tracks.map(({ src, cover, ...track }) => ({
             ...track,
             resource: src.startsWith('data:') ? 'embedded audio bytes' : src,
@@ -189,7 +212,14 @@ export function buildCardExports(config, runtime, scriptId) {
     };
     const bytes = new TextEncoder().encode(JSON.stringify(script)).length;
     if (bytes > 45 * 1024 * 1024) throw new Error('导出脚本超过 45 MB，请减少内嵌歌曲、图片或字体。');
-    return { javascript, script, preview, songs, bytes };
+    return {
+        javascript,
+        script,
+        preview,
+        songs,
+        bytes,
+        analysis: assertCapacity(analyzePayload(config, script)),
+    };
 }
 /** Preserve unknown card fields and other authors' scripts. Replace only our marked export. */
 export function attachPlayerToCard(input, script, projectId) {
@@ -227,6 +257,12 @@ export function attachPlayerToCard(input, script, projectId) {
         );
     helper.scripts = [...remove(helper.scripts), structuredClone(script)];
     helper.variables ||= {};
-    ext.riserein_card_player = { version: 1, projectId, scriptId: script.id };
+    ext.riserein_card_player = {
+        version: 1,
+        projectId,
+        scriptId: script.id,
+        runtimeVersion: PLAYER_BUILD,
+        payloadFormat: PAYLOAD_FORMAT,
+    };
     return card;
 }

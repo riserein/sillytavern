@@ -1747,3 +1747,29 @@ test('candidate official playback unloads on actual role exit without adding nat
         expect(await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player.playEvents.length)).toBe(0);
     } finally { if(cards.length)await removeTestCards(page,cards); }
 });
+
+test('missing lyrics can be searched, previewed and confirmed without interrupting playback, then survive reload', async ({ page }) => {
+    await importSongs(page, ['查找歌词测试']);
+    await playSong(page, '查找歌词测试');
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0.1);
+    await page.route('https://lrclib.net/api/search?**', route => route.fulfill({ json: [{ id: 234, trackName: '查找歌词测试', artistName: '测试歌手', syncedLyrics: '[00:00]真实界面确认歌词\n[00:02]第二句' }], headers: { 'Access-Control-Allow-Origin': '*' } }));
+    await page.locator('[data-action=toggle-lyrics]').click();
+    await page.getByRole('button', { name: '查找这首歌的歌词', exact: true }).click();
+    await expect(page.locator('[data-role=lyrics-lookup]')).toBeVisible();
+    await page.locator('[data-role=lyrics-lookup] input[name=artist]').fill('测试歌手');
+    await page.locator('[data-role=lyrics-lookup]').getByRole('button', { name: '搜索歌词', exact: true }).click();
+    await expect(page.locator('[data-role=lyrics-lookup] [data-lyrics=status]')).toContainText('找到 1 份');
+    expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0].lyrics || '')).toBe('');
+    await page.locator('[data-role=lyrics-lookup] [data-lyrics=results] button').click();
+    await expect(page.locator('[data-role=lyrics-lookup] [data-lyrics=preview]')).toContainText('真实界面确认歌词');
+    const savedLyrics = waitForPlayerSave(page, player => player.tracks[0]?.lyrics?.includes('真实界面确认歌词'));
+    await page.locator('[data-role=lyrics-lookup]').getByRole('button', { name: '确认使用这份歌词', exact: true }).click();
+    await savedLyrics;
+    await page.getByRole('button', { name: '关闭歌曲详情', exact: true }).click();
+    await page.locator('[data-action=toggle-lyrics]').click();
+    await expect(page.locator('.stm-lyrics-lines')).toContainText('真实界面确认歌词');
+    expect(await page.locator('#stm-player audio').evaluate(audio => !audio.paused)).toBe(true);
+    await page.reload(); await page.locator('#stm-launcher').click();
+    await page.locator('[data-action=toggle-lyrics]').click();
+    await expect(page.locator('.stm-lyrics-lines')).toContainText('真实界面确认歌词');
+});

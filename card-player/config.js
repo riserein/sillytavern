@@ -91,6 +91,7 @@ export function normalizeCardConfig(raw) {
             src,
             cover: portableImage(track.cover) || '',
             lyrics: String(track.lyrics || '').slice(0, 50000),
+            ...(publicResource(track.lyricsSource) ? { lyricsSource: publicResource(track.lyricsSource) } : {}),
             sourceUrl: publicResource(track.sourceUrl) || '',
             attribution: String(track.attribution || '').slice(0, 1000),
         };

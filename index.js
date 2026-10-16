@@ -1,3 +1,4 @@
+import { createLyricsLookup } from './lyrics.js';
 import { createCardMaker } from './card-maker.js';
 import { createPlatformService } from './platforms/service.js';
 import { PLATFORM_NAMES } from './platforms/catalog.js';
@@ -29,7 +30,7 @@ const SETTINGS_KEY = 'riserein_music_player';
 // eliminate storage, platform search and the maker from the independent target.
 
 export function initialize(options = {}) {
-    if (document.getElementById('stm-player')) return;
+    if (document.querySelector('#stm-player:not([data-portable])')) return;
     const context = options.context || globalThis.SillyTavern?.getContext();
     if (!context?.extensionSettings || !context.saveSettingsDebounced) {
         console.error('[音乐播放器] 无法获取酒馆扩展接口，请更新 SillyTavern。');
@@ -38,9 +39,14 @@ export function initialize(options = {}) {
 
     const settings = normalizeSettings(context.extensionSettings[SETTINGS_KEY] ?? { theme: 'night', colorScheme: 'dark', surface: 'matte', panelSize: { width: 640, height: 700 } });
     context.extensionSettings[SETTINGS_KEY] = settings;
-    if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) window.__risereinFullMusicPlayer = true;
+    if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
+        window.__risereinFullMusicPlayer = true;
+        window.dispatchEvent(new Event('riserein:full-player-start'));
+        document.querySelector('[data-riserein-card-player]')?.__risereinPlayer?.dispose();
+    }
     const store = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? options.store : new LocalMusicStore();
     const platformService = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? { canPlay: track => Boolean(track), canEmbed: () => false } : createPlatformService();
+    let disposed = false;
     let online = null;
     let platformLoadController = null;
     let objectUrl = null;
@@ -136,7 +142,7 @@ export function initialize(options = {}) {
         </section>
         <section id="stm-page-library" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-library" data-view="library" hidden>
         <div class="stm-page-heading stm-heading-actions"><div><h3>我的音乐</h3><span>你的收藏，每一段旋律</span></div><button type="button" class="stm-secondary" data-action="new-playlist">＋ 新建歌单</button></div>
-        <button type="button" class="stm-secondary stm-maker-entry" data-action="card-maker">角色卡播放器制作 ↗</button>
+        <button type="button" class="stm-secondary stm-maker-entry" data-action="card-maker">角色卡播放器制作 ↗</button><button type="button" class="stm-secondary" data-action="rebuild-native">检查 / 重建当前角色的随卡播放器</button>
         <div id="stm-create-playlist-panel" hidden>
             <form class="stm-create-playlist">
                 <label for="stm-new-playlist" data-role="create-title">给新歌单起个名字</label>
@@ -298,10 +304,11 @@ export function initialize(options = {}) {
                     <div class="stm-official-player" data-role="official-player" hidden></div>
                     <div class="stm-detail-actions">
                         <button type="button" class="stm-secondary" data-action="song-cover" aria-label="添加封面"><span>添加封面</span><small aria-hidden="true">上传喜欢的图片</small></button>
-                        <button type="button" class="stm-secondary" data-action="song-lyrics" aria-label="导入歌词"><span>导入歌词</span><small aria-hidden="true">支持 LRC / TXT</small></button>
+                        <button type="button" class="stm-secondary" data-action="find-song-lyrics"><span>查找歌词</span><small aria-hidden="true">搜索并预览歌词</small></button><button type="button" class="stm-secondary" data-action="song-lyrics" aria-label="导入歌词"><span>导入歌词</span><small aria-hidden="true">支持 LRC / TXT</small></button>
                         <button type="button" class="stm-secondary" data-action="clear-song-cover" aria-label="恢复随机封面"><span>恢复随机封面</span><small aria-hidden="true">使用内置插画</small></button>
                         <button type="button" class="stm-secondary" data-action="clear-song-lyrics" aria-label="清除歌词"><span>清除歌词</span><small aria-hidden="true">移除当前歌曲的歌词</small></button>
                     </div>
+                    <section data-role="lyrics-lookup" hidden></section>
                     <input type="file" data-role="song-cover-file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" hidden>
                     <input type="file" data-role="lyrics-file" accept=".lrc,.txt,text/plain" hidden>
                 </div>
@@ -408,16 +415,17 @@ export function initialize(options = {}) {
         setSheetOpen('#stm-queue', open, focus);
     }
     function setDetailsOpen(open, focus = false) {
+        lyricsLookup?.close();
         if (open) renderSongDetails();
         setSheetOpen('#stm-details', open, focus);
     }
     for (const [selector, action] of [['#stm-queue', 'close-queue'], ['#stm-details', 'close-details']]) {
-        const close = () => setSheetOpen(selector, false, true);
+        const close = () => { if (selector === '#stm-details') lyricsLookup?.close(); setSheetOpen(selector, false, true); };
         for (const element of query(selector).querySelectorAll(`[data-action="${action}"]`)) element.addEventListener('click', close);
         query(selector).addEventListener('keydown', event => {
             if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); }
             if (event.key === 'Tab') {
-                const buttons = [...query(selector).querySelectorAll('button:not(:disabled), a[href]')].filter(element => element.getClientRects().length);
+                const buttons = [...query(selector).querySelectorAll('button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), select:not(:disabled)')].filter(element => element.getClientRects().length);
                 if (event.shiftKey && document.activeElement === buttons[0]) { event.preventDefault(); buttons.at(-1)?.focus(); }
                 else if (!event.shiftKey && document.activeElement === buttons.at(-1)) { event.preventDefault(); buttons[0]?.focus(); }
             }
@@ -629,8 +637,15 @@ export function initialize(options = {}) {
         if (!track?.lyrics?.trim()) {
             const empty = document.createElement('p'); empty.className = 'stm-no-lyrics';
             empty.textContent = '暂无歌词';
-            const hint = document.createElement('small'); hint.textContent = '在曲库的歌曲详情中导入 LRC / TXT';
-            target.append(empty, hint); return;
+            const hint = document.createElement('small');
+            hint.textContent = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? '此角色卡未附带歌词，请由制作端补充后重新导出。' : '可在歌曲详情中查找歌词，或导入 LRC / TXT。';
+            target.append(empty, hint);
+            if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) && track) {
+                const button = document.createElement('button'); button.type = 'button'; button.className = 'stm-secondary'; button.textContent = '查找这首歌的歌词';
+                button.addEventListener('click', event => { event.stopPropagation(); setLyricsOpen(false); detailsTrackId = track.id; setDetailsOpen(true); lyricsLookup.open({ ...track, duration: audio.duration }); });
+                button.addEventListener('keydown', event => event.stopPropagation()); target.append(button);
+            }
+            return;
         }
         for (const line of lyricData.lines) {
             const paragraph = document.createElement('p'); paragraph.textContent = line.text;
@@ -725,6 +740,18 @@ export function initialize(options = {}) {
     const lyricsInput = query('[data-role="lyrics-file"]');
     query('[data-action="song-cover"]').addEventListener('click', () => songCoverInput.click());
     query('[data-action="song-lyrics"]').addEventListener('click', () => lyricsInput.click());
+    const lyricsLookup = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : createLyricsLookup(query('[data-role="lyrics-lookup"]'), {
+        onApply(original, result) {
+            const track = editableDetailsTrack(original.id); if (!track) return;
+            track.lyrics = result.lyrics; track.lyricsSource = result.source; save();
+            if (settings.currentId === track.id) renderLyrics(track);
+            showStatus('歌词已保存，绑定歌单后重新导出即可随卡携带。');
+        },
+    });
+    if (lyricsLookup) query('[data-action="find-song-lyrics"]').addEventListener('click', () => {
+        const track = findTrack(settings, detailsTrackId); if (track) lyricsLookup.open({ ...track, duration: track.id === settings.currentId ? audio.duration : undefined });
+    });
+    else query('[data-action="find-song-lyrics"]').remove();
     songCoverInput.addEventListener('change', async () => {
         const file = songCoverInput.files[0], id = detailsTrackId;
         songCoverInput.value = '';
@@ -753,7 +780,7 @@ export function initialize(options = {}) {
             if (!text || text.length > MAX_LYRICS) throw new Error('歌词不能为空，最多支持 50000 个字符。');
             const track = editableDetailsTrack(id);
             if (!track) return;
-            track.lyrics = text; save();
+            track.lyrics = text; delete track.lyricsSource; save();
             if (settings.currentId === id) renderLyrics(track);
             showStatus('歌词已导入，点击播放页的封面即可查看。');
         } catch (error) { showStatus(error.message || '歌词读取失败。', true); }
@@ -770,7 +797,7 @@ export function initialize(options = {}) {
     query('[data-action="clear-song-lyrics"]').addEventListener('click', () => {
         const track = editableDetailsTrack();
         if (!track) return;
-        delete track.lyrics; save();
+        delete track.lyrics; delete track.lyricsSource; save();
         if (settings.currentId === track.id) renderLyrics(track);
         showStatus('歌词已清除。');
     });
@@ -803,6 +830,7 @@ export function initialize(options = {}) {
             try {
                 await store.put(`${id}:original`, original);
                 await store.put(id, cropped);
+                if (disposed) { await deleteBackgroundFiles(id).catch(() => {}); return; }
             } catch (error) {
                 await deleteBackgroundFiles(id).catch(() => {});
                 throw error;
@@ -1740,8 +1768,18 @@ export function initialize(options = {}) {
     function audioFailure() {
         return ({ 1: '播放已中断，可重新点播放。', 2: '音源网络连接失败；请检查网络，重试会重新获取地址。', 3: '浏览器无法解码此音频，请尝试其他歌曲或浏览器。', 4: '音源无法加载：可能已失效、受访问限制，或格式不受浏览器支持。重试会重新获取地址。' })[audio.error?.code] || '平台音源加载失败，请检查网络或原站权限后重试。';
     }
+    let cardMaker;
+    const hostStops = [];
     function dispose() {
-        pausePlayback(); ++mediaRevision; ++backgroundRevision; ++roleRevision;
+        if (disposed) return;
+        disposed = true;
+        cardMaker?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose();
+        ++loadSequence;
+        pausePlayback(); audio.removeAttribute('src'); audio.load();
+        for (const stop of hostStops.splice(0)) stop();
+        launcherDrag.dispose(); panelDrag.dispose();
+        if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) delete window.__risereinFullMusicPlayer;
+        ++mediaRevision; ++backgroundRevision; ++roleRevision;
         if (objectUrl) URL.revokeObjectURL(objectUrl);
         if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
         if (coverUrl) URL.revokeObjectURL(coverUrl);
@@ -1751,9 +1789,12 @@ export function initialize(options = {}) {
         systemScheme.removeEventListener('change', onSystemScheme);
         window.clearInterval(historyTimer);
         window.clearTimeout(statusTimer);
+        panel.remove(); launcher.remove();
     }
     // Do not interrupt pages being kept in the browser back/forward cache.
-    window.addEventListener('pagehide', event => { if (!event.persisted) dispose(); });
+    const onPageHide = event => { if (!event.persisted) dispose(); };
+    window.addEventListener('pagehide', onPageHide);
+    hostStops.push(() => window.removeEventListener('pagehide', onPageHide));
 
     const settingsArea = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : document.querySelector('#extensions_settings2') || document.querySelector('#extensions_settings');
     if (settingsArea) {
@@ -1766,13 +1807,21 @@ export function initialize(options = {}) {
         button.addEventListener('click', () => setOpen(true));
         entry.append(button);
         settingsArea.append(entry);
+        hostStops.push(() => entry.remove());
     }
     if (context.eventSource && context.eventTypes) {
         // Music file reads must not delay the host's chat navigation.
-        context.eventSource.on(context.eventTypes.CHAT_CHANGED, () => { void syncRole(); });
-        context.eventSource.on(context.eventTypes.APP_READY, () => { void syncRole(true); });
+        const onHost = (type, callback) => {
+            context.eventSource.on(type, callback);
+            hostStops.push(() => {
+                const remove = context.eventSource.removeListener || context.eventSource.off;
+                remove?.call(context.eventSource, type, callback);
+            });
+        };
+        onHost(context.eventTypes.CHAT_CHANGED, () => { if (!disposed) void syncRole(); });
+        onHost(context.eventTypes.APP_READY, () => { if (!disposed) void syncRole(true); });
         if (context.eventTypes.CHARACTER_RENAMED) {
-            context.eventSource.on(context.eventTypes.CHARACTER_RENAMED, (oldAvatar, newAvatar) => {
+            onHost(context.eventTypes.CHARACTER_RENAMED, (oldAvatar, newAvatar) => {
                 if (typeof oldAvatar !== 'string' || typeof newAvatar !== 'string') return;
                 for (const playlist of settings.playlists) playlist.characterAvatars = playlist.characterAvatars.map(avatar => avatar === oldAvatar ? newAvatar : avatar);
                 if (lastRoleAvatar === oldAvatar) lastRoleAvatar = newAvatar;
@@ -1782,13 +1831,19 @@ export function initialize(options = {}) {
     }
     const nativeExport = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : createNativeCardExport({ settings, store, getContext: freshContext, showStatus });
     if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
-        const cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback});
+        cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback});
         query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
-        window.addEventListener('pagehide',()=>{ cardMaker.close(); nativeExport.dispose(); },{once:true});
+        query('[data-action="rebuild-native"]').addEventListener('click', async () => {
+            const latest = freshContext(), avatar = latest.characters[latest.characterId]?.avatar;
+            if (latest.groupId || !avatar || !playlistForCharacter(settings, avatar)) { showStatus('请先打开已绑定歌单的单人角色卡。', true); return; }
+            try { await nativeExport.rebuild(avatar); showStatus('随卡播放器已按当前版本重建；歌曲和外观配置保留。请重新从酒馆导出 PNG / JSON。'); }
+            catch (error) { showStatus(`重建未完成：${error.message}`, true); }
+        });
+
     } else {
         panel.style.setProperty('--stm-nav-count', '5');
         // Initialize the shared components, then remove every music-import entry.
-        for (const element of panel.querySelectorAll('[data-page="import"], #stm-page-import, [data-action="go-import"], [data-action="card-maker"], [data-action="bind-roles"], #stm-role-bindings')) element.remove();
+        for (const element of panel.querySelectorAll('[data-page="import"], #stm-page-import, [data-action="go-import"], [data-action="card-maker"], [data-action="rebuild-native"], [data-action="bind-roles"], #stm-role-bindings')) element.remove();
         query('.stm-queue-empty').textContent = '在曲库选择一首歌开始听歌。';
     }
     renderPlaylists();

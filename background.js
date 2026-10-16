@@ -39,6 +39,7 @@ export function createImageCropper(element, { onSave, onError, onClose, getAspec
     let revision = 0;
     let dragging;
     let saving = false;
+    let disposed = false;
     let ratio = 2 / 3;
 
     const position = () => ({ zoom: Number(zoom.value), x: Number(horizontal.value) / 100, y: Number(vertical.value) / 100 });
@@ -87,6 +88,7 @@ export function createImageCropper(element, { onSave, onError, onClose, getAspec
     save.addEventListener('click', async () => {
         if (!source || saving) return;
         saving = true;
+        const sequence = revision;
         for (const input of [save, cancel, zoom, horizontal, vertical]) input.disabled = true;
         try {
             const output = document.createElement('canvas');
@@ -94,16 +96,19 @@ export function createImageCropper(element, { onSave, onError, onClose, getAspec
             output.height = Math.round(output.width / ratio);
             draw(output);
             const cropped = await new Promise((resolve, reject) => output.toBlob(blob => blob ? resolve(blob) : reject(new Error('图片裁剪失败，请重试。')), 'image/webp', 0.9));
+            if (disposed || sequence !== revision) return;
             await onSave({ original, cropped });
-            close();
-        } catch (error) { onError(error); }
+            if (!disposed) close();
+        } catch (error) { if (!disposed) onError(error); }
         finally {
             saving = false;
             for (const input of [save, cancel, zoom, horizontal, vertical]) input.disabled = false;
         }
     });
     return {
+        dispose() { disposed = true; revision++; source?.close?.(); source = original = dragging = undefined; canvas.width = canvas.height = 1; element.hidden = true; },
         async open(blob) {
+            if (disposed) return;
             const sequence = ++revision;
             try {
                 validateImageFile(blob);
