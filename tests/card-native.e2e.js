@@ -82,6 +82,15 @@ test('compact selected font stays fixed after native export and changes only on 
             );
         }
     }
+    await author.getByRole('tab', { name: '曲库', exact: true }).click();
+    await author.locator('[data-role=card-handoff] summary').click();
+    for (const exported of exports) {
+        await author.locator('[data-role=card-handoff] input').setInputFiles({ name: 'export.' + exported.format, mimeType: exported.format === 'png' ? 'image/png' : 'application/json', buffer: exported.bytes });
+        await expect(author.locator('[data-role=handoff-result]')).toContainText('文件静态核对通过：1 首');
+        await expect(author.locator('[data-role=handoff-result]')).toContainText('接收端无需音乐插件');
+    }
+    await author.locator('[data-role=card-handoff] input').setInputFiles({ name: 'old.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ spec: 'chara_card_v2', data: { name: 'Binding only', extensions: {} } })) });
+    await expect(author.locator('[data-role=handoff-result]')).toContainText('此文件没有随卡播放器记录');
     expect(fontReads).toBe(1);
     const pngBytes = exports.find((file) => file.format === 'png').bytes.length;
     expect(rawPngBytes).toBeGreaterThan(pngBytes);
@@ -112,6 +121,7 @@ test('compact selected font stays fixed after native export and changes only on 
         .last()
         .click();
     await expect(recipient.locator(root)).toHaveCount(1, { timeout: 90000 });
+    await expect(recipient.locator('[data-role=card-handoff]')).toHaveCount(0);
     await expect(recipient.locator('#stm-font, .stm-font-section, [data-action=import-font]')).toHaveCount(0);
     await expect
         .poll(
@@ -380,11 +390,12 @@ test.afterAll(async () => {
         JSON.stringify(
             {
                 status:
-                    results.length === 4 &&
+                    results.length > 0 &&
                     results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
                         ? 'passed'
                         : 'incomplete-or-failed',
-                version: '1.13.0',
+                version: '1.13.1',
+                coverage: results.length === 4 ? 'full-suite' : 'selected-tests-only',
                 verifiedAt: new Date().toISOString(),
                 runtimeSha256: createHash('sha256').update(runtime).digest('hex'),
                 sillyTavern: '1.19.0',

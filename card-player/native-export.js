@@ -54,7 +54,7 @@ export function nativeCardScript(payload, runtime, scriptId) {
         enabled: true,
         id: scriptId,
         name: `角色音乐 · ${payload.config.title}`,
-        content: `/* Riserein shared-UI card player. MIT. */\n(()=>{\n${runtime}\nRisereinNativePlayer.startNativeCharacterPlayer(${payloadLiteral(payload)});\n})();`,
+        content: `/* Riserein shared-UI card player. MIT. */\n(()=>{\n${runtime}\nconst reportStartupError=(error)=>{console.error('[Riserein card player]',error);const message='随卡播放器启动失败（${PLAYER_BUILD}）：'+(error?.message||String(error))+'。请保留此提示，联系角色卡制作端检查并重新导出。';try{const host=window.parent;if(host.toastr?.error)host.toastr.error(message,'角色音乐播放器',{timeOut:0,extendedTimeOut:0,closeButton:true,escapeHtml:true});else host.alert(message);}catch{console.error(message);}};\ntry{Promise.resolve(RisereinNativePlayer.startNativeCharacterPlayer(${payloadLiteral(payload)})).catch(reportStartupError);}catch(error){reportStartupError(error);}\n})();`,
         info: '由 Riserein 音乐播放器制作。原生 PNG/JSON 随卡播放器；共享完整版界面，无音乐导入功能。不依赖完整版插件，需要酒馆助手。',
         button: { enabled: false, buttons: [] },
         data: {},

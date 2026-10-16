@@ -127,7 +127,7 @@
     },
     "nativeCards": {
       "passed": 4,
-      "report": "native-validation.json",
+      "report": "native-validation-v1.13.0.json",
       "sillyTavern": "1.19.0",
       "tavernHelper": "4.11.3",
       "syntheticMp3Played": true,

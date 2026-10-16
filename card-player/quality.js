@@ -1,6 +1,6 @@
 import { MAX_PACKAGE_BYTES, MAX_AUDIO_BYTES, jsonForScript, normalizeCardConfig } from './config.js';
 
-export const PLAYER_BUILD = '1.13.0';
+export const PLAYER_BUILD = '1.13.1';
 export const PAYLOAD_FORMAT = 1;
 export const byteSize = (value) =>
     new TextEncoder().encode(typeof value === 'string' ? value : JSON.stringify(value)).length;
@@ -128,13 +128,21 @@ export function verifyCardObject(card, { script, characterData } = {}) {
     if (!['chara_card_v2', 'chara_card_v3'].includes(card?.spec) || typeof card.data?.name !== 'string')
         throw new Error('不是 V2/V3 角色卡。');
     const marker = card.data.extensions?.riserein_card_player;
-    const flat = (trees) =>
-        (trees || []).flatMap((tree) => (tree.type === 'folder' ? flat(tree.scripts) : [tree]));
+    if (!marker?.scriptId)
+        throw new Error('此文件没有随卡播放器记录。请在制作端重新保存歌单绑定，确认“音乐已随卡保存”，再从酒馆重新导出 PNG / JSON；发送原文件或只保存本机绑定不会更新已导出的卡。');
+    const flat = (trees, parentEnabled = true) =>
+        (trees || []).flatMap((tree) =>
+            tree.type === 'folder'
+                ? flat(tree.scripts, parentEnabled && tree.enabled === true)
+                : [{ script: tree, enabled: parentEnabled && tree.enabled === true }],
+        );
     const matches = flat(card.data.extensions?.tavern_helper?.scripts).filter(
-        (item) => item.id === marker?.scriptId,
+        (item) => item.script.id === marker.scriptId,
     );
     if (matches.length !== 1) throw new Error('随卡播放器脚本缺失或重复。');
-    const actual = matches[0];
+    if (!matches[0].enabled)
+        throw new Error('随卡播放器脚本或所在脚本文件夹已停用，请在制作端启用后重新导出；接收端仍须单独允许该角色的脚本运行。');
+    const actual = matches[0].script;
     if (script && !sameData(actual, script)) throw new Error('导出前后的播放器脚本不一致，已阻止下载。');
     const payload = readScriptPayload(actual.content);
     if ((payload.config || payload).id !== marker.projectId)

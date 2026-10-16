@@ -119,6 +119,20 @@ test('export round-trip detects changed audio/lyrics/cover/background/font/UI an
     malformed.config.appearance.image = 'blob:missing';
     assert.throws(() => readScriptPayload(payloadLiteral(malformed)), /资源损坏/);
 });
+test('distribution check rejects missing player records and disabled scripts or parent folders', () => {
+    const { card } = envelope();
+    const missing = structuredClone(card);
+    delete missing.data.extensions.riserein_card_player;
+    assert.throws(() => verifyCardObject(missing), /没有随卡播放器记录/);
+    const disabled = structuredClone(card);
+    disabled.data.extensions.tavern_helper.scripts[0].enabled = false;
+    assert.throws(() => verifyCardObject(disabled), /已停用/);
+    const nested = structuredClone(card);
+    nested.data.extensions.tavern_helper.scripts = [{ type: 'folder', enabled: false, scripts: nested.data.extensions.tavern_helper.scripts }];
+    assert.throws(() => verifyCardObject(nested), /已停用/);
+    nested.data.extensions.tavern_helper.scripts[0].enabled = true;
+    assert.equal(verifyCardObject(nested).static, 'passed');
+});
 function chunk(card) {
     const value = Buffer.from('chara\0' + Buffer.from(JSON.stringify(card)).toString('base64'));
     const chunk = Buffer.alloc(value.length + 12);

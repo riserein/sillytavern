@@ -71,3 +71,20 @@ test('native export refuses an incomplete runtime and an oversized script instea
         /45 MB/,
     );
 });
+
+test('recipient sees startup errors from both synchronous and asynchronous initialization', async () => {
+    for (const asyncFailure of [false, true]) {
+        const reports = [];
+        const runtime = `const RisereinNativePlayer={${asyncFailure ? 'async ' : ''}startNativeCharacterPlayer(){throw new Error('fixture startup error')}};`;
+        const script = nativeCardScript({ config: { title: '启动失败测试', tracks: [] } }, runtime, 'broken');
+        vm.runInNewContext(script.content, {
+            console: { error() {} },
+            window: { parent: { toastr: { error: (...args) => reports.push(args) } } },
+        });
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(reports.length, 1);
+        assert.match(reports[0][0], /fixture startup error/);
+        assert.equal(reports[0][2].escapeHtml, true);
+        assert.equal(reports[0][2].timeOut, 0);
+    }
+});

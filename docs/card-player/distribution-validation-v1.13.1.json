@@ -1,0 +1,144 @@
+{
+  "version": "1.13.1",
+  "baselineCommit": "eee7c3637f4000bc51f9d933a15c5e7aeabdc0f6",
+  "status": "four-distinct-browser-cases-passed-across-two-runs",
+  "unitTests": {
+    "passed": 102,
+    "failed": 0,
+    "note": "Startup failures are simulated synchronously/asynchronously; this does not establish the cause on the reported recipient."
+  },
+  "browser": {
+    "sillyTavern": "1.19.0",
+    "tavernHelper": "4.11.3",
+    "browser": "Chromium",
+    "fullMusicPluginInRecipient": false,
+    "musicPluginResourcesBlocked": true,
+    "recipientMusicDatabase": false,
+    "initialRun": {
+      "passed": 3,
+      "failed": 1,
+      "reason": "New diagnostic test attempted to click a hidden library section before switching to the library tab; its failure-path cleanup also timed out waiting for settings save. Report records the other three successful cases; runner exit failed.",
+      "report": "native-initial-v1.13.1.json"
+    },
+    "targetedRetry": {
+      "passed": 1,
+      "failed": 0,
+      "change": "Switch to library tab before interacting with the new file checker.",
+      "report": "native-validation.json"
+    },
+    "results": [
+      {
+        "name": "native PNG and JSON carry the shared player to a clean desktop recipient",
+        "status": "passed",
+        "cleanup": "passed"
+      },
+      {
+        "name": "native PNG and JSON carry the shared player to a clean phone recipient",
+        "status": "passed",
+        "cleanup": "passed"
+      },
+      {
+        "name": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
+        "status": "passed",
+        "cleanup": "passed"
+      },
+      {
+        "name": "compact selected font stays fixed after native export and changes only on a new author export",
+        "status": "passed",
+        "cleanup": "passed"
+      }
+    ]
+  },
+  "runtimeSha256": "7f8a7ef801f474c15d19b06027c84d5e6092f2865b94a44e08e389ddd7b341f8",
+  "exportMetrics": [
+    {
+      "format": "json",
+      "bytes": 3075546,
+      "milliseconds": 2683
+    },
+    {
+      "format": "resource-breakdown",
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "Selected font tone",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Selected font tone · 封面",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        },
+        {
+          "kind": "font",
+          "name": "游趣体",
+          "bytes": 1531668,
+          "encodedBytes": 2042261,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 2120484,
+      "payloadBytes": 2833336,
+      "scriptBytes": 3073210,
+      "problems": [],
+      "jsonPlayerBytes": 3073210,
+      "pngPlayerBytes": 4097616,
+      "pngUncompactedPlayerBytes": 8195232,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "format": "png",
+      "bytes": 4175828,
+      "milliseconds": 3889
+    },
+    {
+      "rawPngBytes": 8275037,
+      "compactPngBytes": 4175828,
+      "packagedFontReadsAcrossBindingAndTwoExports": 1
+    }
+  ],
+  "reportedRecipientFailure": {
+    "status": "not-yet-diagnosed",
+    "missingEvidence": [
+      "actual distributed PNG or JSON",
+      "recipient SillyTavern and Tavern Helper versions"
+    ],
+    "userConfirmed": "Tavern Helper installed and character scripts enabled; do not attribute the failure to missing Helper."
+  },
+  "notVerified": [
+    "reported recipient file/device",
+    "physical Android Chrome",
+    "physical iOS Safari",
+    "Firefox/WebKit",
+    "real external music host playback"
+  ],
+  "buildReproducible": true
+}

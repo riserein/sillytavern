@@ -24,6 +24,7 @@ import { CUSTOM_PROPERTIES, customPalette, hexRgba, defaultMaskOpacity, attachCl
 import { createPlayerUI } from './player-ui.js';
 import { createPlaybackQueue } from './playback-queue.js';
 import { createNativeCardExport } from './card-player/native-export.js';
+import { createCardHandoff } from './card-player/handoff.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
 // Keep the build-time guard explicit at author-only branches: esbuild can then
@@ -143,6 +144,7 @@ export function initialize(options = {}) {
         <section id="stm-page-library" class="stm-page" role="tabpanel" aria-labelledby="stm-tab-library" data-view="library" hidden>
         <div class="stm-page-heading stm-heading-actions"><div><h3>我的音乐</h3><span>你的收藏，每一段旋律</span></div><button type="button" class="stm-secondary" data-action="new-playlist">＋ 新建歌单</button></div>
         <button type="button" class="stm-secondary stm-maker-entry" data-action="card-maker">角色卡播放器制作 ↗</button><button type="button" class="stm-secondary" data-action="rebuild-native">检查 / 重建当前角色的随卡播放器</button>
+        <details class="stm-hint" data-role="card-handoff"><summary>随卡分发：接收端没有播放器？</summary><p>确认“音乐已随卡保存”后，从酒馆原生菜单重新导出 PNG / JSON，再发送新文件。旧文件不会自动更新。</p><p>接收端无需安装音乐插件，但必须安装并启用酒馆助手，在打开角色卡时确认启用嵌入式脚本。若曾取消，请到“酒馆助手 → 脚本库 → 角色脚本”手动启用。未安装酒馆助手的原生酒馆无法执行随卡脚本。</p><button type="button" class="stm-secondary">检查要分发的 PNG / JSON</button><input type="file" accept=".png,.json" hidden><p data-role="handoff-result" aria-live="polite">选择实际要发送的文件，检查播放器、音乐和外观是否已经写入。只读取文件，不执行脚本、不改角色卡。</p></details>
         <div id="stm-create-playlist-panel" hidden>
             <form class="stm-create-playlist">
                 <label for="stm-new-playlist" data-role="create-title">给新歌单起个名字</label>
@@ -1773,7 +1775,7 @@ export function initialize(options = {}) {
     function dispose() {
         if (disposed) return;
         disposed = true;
-        cardMaker?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose();
+        cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose();
         ++loadSequence;
         pausePlayback(); audio.removeAttribute('src'); audio.load();
         for (const stop of hostStops.splice(0)) stop();
@@ -1830,6 +1832,7 @@ export function initialize(options = {}) {
         }
     }
     const nativeExport = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : createNativeCardExport({ settings, store, getContext: freshContext, showStatus });
+    const handoff = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : createCardHandoff(panel);
     if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
         cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback});
         query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
@@ -1843,7 +1846,7 @@ export function initialize(options = {}) {
     } else {
         panel.style.setProperty('--stm-nav-count', '5');
         // Initialize the shared components, then remove every music-import entry.
-        for (const element of panel.querySelectorAll('[data-page="import"], #stm-page-import, [data-action="go-import"], [data-action="card-maker"], [data-action="rebuild-native"], [data-action="bind-roles"], #stm-role-bindings')) element.remove();
+        for (const element of panel.querySelectorAll('[data-page="import"], #stm-page-import, [data-action="go-import"], [data-action="card-maker"], [data-action="rebuild-native"], [data-role="card-handoff"], [data-action="bind-roles"], #stm-role-bindings')) element.remove();
         query('.stm-queue-empty').textContent = '在曲库选择一首歌开始听歌。';
     }
     renderPlaylists();

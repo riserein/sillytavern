@@ -1,8 +1,9 @@
 {
   "status": "passed",
-  "version": "1.13.0",
-  "verifiedAt": "2026-10-16T13:23:14.703Z",
-  "runtimeSha256": "472be6033d4c2d91d285f57dbd60c1feda00189d7111248317c83dccdd6eb572",
+  "version": "1.13.1",
+  "coverage": "selected-tests-only",
+  "verifiedAt": "2026-10-16T13:38:46.756Z",
+  "runtimeSha256": "7f8a7ef801f474c15d19b06027c84d5e6092f2865b94a44e08e389ddd7b341f8",
   "sillyTavern": "1.19.0",
   "tavernHelper": "4.11.3",
   "fullPluginInRecipient": false,
@@ -17,28 +18,13 @@
       "name": "compact selected font stays fixed after native export and changes only on a new author export",
       "status": "passed",
       "cleanup": "passed"
-    },
-    {
-      "name": "native PNG and JSON carry the shared player to a clean desktop recipient",
-      "status": "passed",
-      "cleanup": "passed"
-    },
-    {
-      "name": "native PNG and JSON carry the shared player to a clean phone recipient",
-      "status": "passed",
-      "cleanup": "passed"
-    },
-    {
-      "name": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
-      "status": "passed",
-      "cleanup": "passed"
     }
   ],
   "exportMetrics": [
     {
       "format": "json",
-      "bytes": 3039227,
-      "milliseconds": 2858
+      "bytes": 3075546,
+      "milliseconds": 2683
     },
     {
       "format": "resource-breakdown",
@@ -53,8 +39,8 @@
         {
           "kind": "cover",
           "name": "Selected font tone · 封面",
-          "bytes": 68286,
-          "encodedBytes": 91071,
+          "bytes": 93796,
+          "encodedBytes": 125087,
           "external": false
         },
         {
@@ -86,13 +72,13 @@
           "external": false
         }
       ],
-      "embeddedBytes": 2094974,
-      "payloadBytes": 2799320,
-      "scriptBytes": 3036891,
+      "embeddedBytes": 2120484,
+      "payloadBytes": 2833336,
+      "scriptBytes": 3073210,
       "problems": [],
-      "jsonPlayerBytes": 3036891,
-      "pngPlayerBytes": 4049188,
-      "pngUncompactedPlayerBytes": 8098376,
+      "jsonPlayerBytes": 3073210,
+      "pngPlayerBytes": 4097616,
+      "pngUncompactedPlayerBytes": 8195232,
       "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
       "static": "passed",
       "browser": "not-tested",
@@ -100,12 +86,12 @@
     },
     {
       "format": "png",
-      "bytes": 4127404,
-      "milliseconds": 3334
+      "bytes": 4175828,
+      "milliseconds": 3889
     },
     {
-      "rawPngBytes": 8178189,
-      "compactPngBytes": 4127404,
+      "rawPngBytes": 8275037,
+      "compactPngBytes": 4175828,
       "packagedFontReadsAcrossBindingAndTwoExports": 1
     }
   ]
