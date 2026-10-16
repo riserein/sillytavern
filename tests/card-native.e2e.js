@@ -6,6 +6,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 const results = [];
 const exportMetrics = [];
+const helperVersion = process.env.ST_HELPER_VERSION || '4.11.3';
+const reportPath = process.env.ST_NATIVE_REPORT || 'docs/card-player/native-validation.json';
 test('compact selected font stays fixed after native export and changes only on a new author export', async ({
     browser,
 }) => {
@@ -157,10 +159,12 @@ test('compact selected font stays fixed after native export and changes only on 
     ).toBe(true);
     const switchedAvatar = await importCard(recipient, switched, 'json');
     await selectCard(recipient, switchedAvatar);
-    await recipient
-        .getByText(/^(确认|Confirm)$/, { exact: true })
-        .last()
-        .click();
+    // Helper 4.9.5 remembers character permission by name; importing a second
+    // export of the same card can run without a second confirmation popup.
+    // Require either the real prompt or the actual player, never skip a missing player.
+    const confirmation = recipient.getByText(/^(确认|Confirm)$/, { exact: true }).last();
+    await expect.poll(async () => await confirmation.isVisible() || await recipient.locator(root).count() === 1, { timeout: 90000 }).toBe(true);
+    if (await confirmation.isVisible()) await confirmation.click();
     await expect(recipient.locator(root)).toHaveCount(1);
     await expect(recipient.locator('#stm-font, .stm-font-section, [data-action=import-font]')).toHaveCount(0);
     await expect
@@ -180,7 +184,7 @@ test('compact selected font stays fixed after native export and changes only on 
 test.beforeAll(async () => {
     await mkdir('docs/card-player', { recursive: true });
     await writeFile(
-        'docs/card-player/native-validation.json',
+        reportPath,
         JSON.stringify({ status: 'running', results: [] }) + '\n',
     );
 });
@@ -277,7 +281,7 @@ async function session(browser, { portable = false, mobile = false } = {}) {
     await page.waitForFunction(() => !document.getElementById('preloader'));
     await page.unroute('**/api/settings/get');
     await home(page);
-    expect(await page.evaluate(() => TavernHelper.getTavernHelperVersion())).toBe('4.11.3');
+    expect(await page.evaluate(() => TavernHelper.getTavernHelperVersion())).toBe(helperVersion);
     if (portable) {
         await expect(page.locator('#stm-player')).toHaveCount(0);
         expect(
@@ -386,7 +390,7 @@ test.afterEach(async ({}, info) => {
 test.afterAll(async () => {
     const runtime = await readFile(new URL('../card-player/dist/native-runtime.js', import.meta.url));
     await writeFile(
-        'docs/card-player/native-validation.json',
+        reportPath,
         JSON.stringify(
             {
                 status:
@@ -399,7 +403,7 @@ test.afterAll(async () => {
                 verifiedAt: new Date().toISOString(),
                 runtimeSha256: createHash('sha256').update(runtime).digest('hex'),
                 sillyTavern: '1.19.0',
-                tavernHelper: '4.11.3',
+                tavernHelper: helperVersion,
                 fullPluginInRecipient: false,
                 recipientPluginAssetsBlocked: true,
                 recipientMusicDatabase: false,

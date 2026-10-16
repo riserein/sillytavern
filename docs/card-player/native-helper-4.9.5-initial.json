@@ -1,0 +1,98 @@
+{
+  "status": "incomplete-or-failed",
+  "version": "1.13.1",
+  "coverage": "selected-tests-only",
+  "verifiedAt": "2026-10-16T14:30:07.570Z",
+  "runtimeSha256": "7f8a7ef801f474c15d19b06027c84d5e6092f2865b94a44e08e389ddd7b341f8",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.9.5",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "compact selected font stays fixed after native export and changes only on a new author export",
+      "status": "failed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "format": "json",
+      "bytes": 3074186,
+      "milliseconds": 2961
+    },
+    {
+      "format": "resource-breakdown",
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "Selected font tone",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Selected font tone · 封面",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "font",
+          "name": "游趣体",
+          "bytes": 1531668,
+          "encodedBytes": 2042261,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 2119464,
+      "payloadBytes": 2831976,
+      "scriptBytes": 3071850,
+      "problems": [],
+      "jsonPlayerBytes": 3071850,
+      "pngPlayerBytes": 4095800,
+      "pngUncompactedPlayerBytes": 8191600,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "format": "png",
+      "bytes": 4174016,
+      "milliseconds": 3627
+    },
+    {
+      "rawPngBytes": 8271413,
+      "compactPngBytes": 4174016,
+      "packagedFontReadsAcrossBindingAndTwoExports": 1
+    }
+  ]
+}
