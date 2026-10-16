@@ -1,0 +1,54 @@
+{
+  "status": "passed",
+  "version": "1.12.2",
+  "verifiedAt": "2026-10-16T08:48:42.207Z",
+  "runtimeSha256": "0a4133a244594d73e0bb1824edb3bbfbb4a3ecc271d50501078d331b7ca4c1c1",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "large original KingHwa font binds and exports without conversion, then loads independently from PNG",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean desktop recipient",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean phone recipient",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "format": "json",
+      "bytes": 30753975,
+      "milliseconds": 24746
+    },
+    {
+      "format": "png",
+      "bytes": 41080448,
+      "milliseconds": 33587
+    },
+    {
+      "rawPngBytes": 82084277,
+      "compactPngBytes": 41080448,
+      "packagedFontReadsAcrossBindingAndTwoExports": 1
+    }
+  ]
+}

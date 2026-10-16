@@ -15,7 +15,9 @@ let sessions = [],
 async function selectCard(page, avatar) {
     await page.evaluate(async (avatar) => {
         const { selectCharacterById } = await import('/script.js');
-        await selectCharacterById(SillyTavern.getContext().characters.findIndex((card) => card.avatar === avatar));
+        await selectCharacterById(
+            SillyTavern.getContext().characters.findIndex((card) => card.avatar === avatar),
+        );
     }, avatar);
 }
 async function home(page) {
@@ -69,7 +71,10 @@ async function session(browser, { portable = false, mobile = false } = {}) {
             panelSize: { width: 640, height: 760 },
         };
         data.extension_settings.tavern_helper = {
-            optimize: { disable_incompatible_option: false, force_recommended_worldbook_global_settings: false },
+            optimize: {
+                disable_incompatible_option: false,
+                force_recommended_worldbook_global_settings: false,
+            },
             script: {
                 enabled: { global: false, characters: [], presets: [] },
                 popuped: { characters: [], presets: [] },
@@ -92,7 +97,8 @@ async function session(browser, { portable = false, mobile = false } = {}) {
         await expect(page.locator('#stm-player')).toHaveCount(0);
         expect(
             await page.evaluate(
-                async () => !(await indexedDB.databases()).some((db) => db.name === 'riserein-sillytavern-music'),
+                async () =>
+                    !(await indexedDB.databases()).some((db) => db.name === 'riserein-sillytavern-music'),
             ),
         ).toBe(true);
     } else {
@@ -104,8 +110,18 @@ async function session(browser, { portable = false, mobile = false } = {}) {
 async function menu(page, id, value) {
     const text = await page
         .locator(id)
-        .evaluate((select, value) => [...select.options].find((option) => option.value === value).textContent, value);
-    await page.locator(id + '-trigger').click();
+        .evaluate(
+            (select, value) => [...select.options].find((option) => option.value === value).textContent,
+            value,
+        );
+    const trigger = page.locator(id + '-trigger');
+    await trigger.scrollIntoViewIfNeeded();
+    // Menus intentionally close on ancestor scrolling. Let the scroll events
+    // finish before opening, as when a user scrolls to a control then clicks.
+    await page.evaluate(
+        () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+    );
+    await trigger.click();
     await page
         .locator(id + '-menu')
         .getByRole('option', { name: text, exact: true })
@@ -120,7 +136,10 @@ async function download(page, button) {
 async function importCard(page, bytes) {
     const avatar = await page.evaluate(async (bytes) => {
         const form = new FormData();
-        form.append('avatar', new File([new Uint8Array(bytes)], 'RSCP_Test_Import.json', { type: 'application/json' }));
+        form.append(
+            'avatar',
+            new File([new Uint8Array(bytes)], 'RSCP_Test_Import.json', { type: 'application/json' }),
+        );
         form.append('file_type', 'json');
         const headers = SillyTavern.getContext().getRequestHeaders();
         delete headers['Content-Type'];
@@ -253,7 +272,7 @@ for (const mobile of [false, true])
         await selectCard(author, a);
         await author.getByRole('tab', { name: '曲库', exact: true }).click();
         await author.locator('[data-action=new-playlist]').click();
-        await author.locator('#stm-new-playlist').fill('朋友的专属歌单');
+        await author.locator('#stm-new-playlist').fill('导出测试歌单');
         await author.getByRole('button', { name: '新建', exact: true }).click();
         const playlist = await author.locator('#stm-library-playlist').inputValue();
         await author.getByRole('tab', { name: '导入', exact: true }).click();
@@ -261,12 +280,18 @@ for (const mobile of [false, true])
         await author
             .locator('[data-role=files]')
             .setInputFiles(
-                ['雨声', '夜航', '晨光'].map((name) => ({ name: name + '.mp3', mimeType: 'audio/mpeg', buffer: tone })),
+                ['雨声', '夜航', '晨光'].map((name) => ({
+                    name: name + '.mp3',
+                    mimeType: 'audio/mpeg',
+                    buffer: tone,
+                })),
             );
         await expect(author.locator('.stm-status')).toContainText('已导入 3 首音乐');
         // Real stored background/font fixture; authoring export reads their bytes from IDB/repository.
         await author.evaluate(async (bytes) => {
-            const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
+            const { LocalMusicStore } = await import(
+                '/scripts/extensions/third-party/sillytavern/local-store.js'
+            );
             const { prepareCover } = await import('/scripts/extensions/third-party/sillytavern/media.js');
             const settings = SillyTavern.getContext().extensionSettings.riserein_music_player;
             const id = 'background:' + crypto.randomUUID();
@@ -283,7 +308,7 @@ for (const mobile of [false, true])
         await expect(maker).toBeVisible();
         await expect(author.locator('.stm-maker-tracks>li')).toHaveCount(3);
         await expect(author.locator('#stm-maker-collection')).toHaveValue(playlist);
-        await author.getByRole('textbox', { name: '第1首歌名', exact: true }).fill('朋友的第一首');
+        await author.getByRole('textbox', { name: '第1首歌名', exact: true }).fill('第一首测试音乐');
         await author.getByRole('textbox', { name: '第1首歌手', exact: true }).fill('制作者');
         const first = author.locator('.stm-maker-tracks>li').first();
         await first.locator('summary').click();
@@ -328,7 +353,9 @@ for (const mobile of [false, true])
         ).toBe('雨声');
         expect(
             await author.evaluate(
-                () => SillyTavern.getContext().extensionSettings.riserein_music_player.playlists[0].trackIds.length,
+                () =>
+                    SillyTavern.getContext().extensionSettings.riserein_music_player.playlists[0].trackIds
+                        .length,
             ),
         ).toBe(3);
         const exported = await download(author, author.locator('[data-maker=export-current]'));
@@ -347,7 +374,7 @@ for (const mobile of [false, true])
         expect(JSON.parse(songsFile.bytes.toString()).font.license).toContain('SIL OPEN FONT LICENSE');
         expect(JSON.parse(songsFile.bytes.toString()).tracks.map((track) => track.title)).toEqual([
             '夜航',
-            '朋友的第一首',
+            '第一首测试音乐',
             '晨光',
         ]);
         // Also exercise selecting an existing V3 card JSON, preserving an unrelated disabled script.
@@ -415,9 +442,9 @@ for (const mobile of [false, true])
         await selectCard(recipient, imported);
         await enable(recipient);
         await expect(recipient.locator(root + ' ol li')).toHaveCount(3);
-        expect(await recipient.locator(root).evaluate((node) => node.style.getPropertyValue('--accent'))).toBe(
-            '#d3aa63',
-        );
+        expect(
+            await recipient.locator(root).evaluate((node) => node.style.getPropertyValue('--accent')),
+        ).toBe('#d3aa63');
         await expect
             .poll(() => recipient.locator(root + ' .cover img').evaluate((img) => img.naturalWidth))
             .toBeGreaterThan(0);
@@ -443,10 +470,11 @@ for (const mobile of [false, true])
         ).toBe(true);
         expect(
             await recipient.evaluate(
-                async () => !(await indexedDB.databases()).some((db) => db.name === 'riserein-sillytavern-music'),
+                async () =>
+                    !(await indexedDB.databases()).some((db) => db.name === 'riserein-sillytavern-music'),
             ),
         ).toBe(true);
-        await recipient.getByRole('button', { name: '选择角色歌曲：朋友的第一首', exact: true }).click();
+        await recipient.getByRole('button', { name: '选择角色歌曲：第一首测试音乐', exact: true }).click();
         await expect
             .poll(() => recipient.locator(root + ' audio').evaluate((audio) => audio.currentTime))
             .toBeGreaterThan(0.1);
@@ -464,10 +492,13 @@ for (const mobile of [false, true])
         await recipient.getByRole('button', { name: '角色音乐下一首', exact: true }).click();
         await expect(recipient.locator(root + ' .title')).toHaveText('晨光');
         await recipient.getByRole('button', { name: '角色音乐上一首', exact: true }).click();
-        await expect(recipient.locator(root + ' .title')).toHaveText('朋友的第一首');
+        await expect(recipient.locator(root + ' .title')).toHaveText('第一首测试音乐');
         for (const name of ['单曲循环', '随机播放', '顺序播放', '列表循环']) {
             await recipient.locator(root + ' .mode').click();
-            await expect(recipient.locator(root + ' .mode')).toHaveAttribute('aria-label', '角色播放模式：' + name);
+            await expect(recipient.locator(root + ' .mode')).toHaveAttribute(
+                'aria-label',
+                '角色播放模式：' + name,
+            );
         }
         await recipient.getByRole('button', { name: '角色音乐下一首', exact: true }).click();
         await recipient.locator(root + ' .seek').fill('119.8');
@@ -479,7 +510,7 @@ for (const mobile of [false, true])
         await recipient.locator(root + ' .volume input').fill('77');
         await recipient.locator(root + ' .volume input').dispatchEvent('input');
         expect(await recipient.locator(root + ' audio').evaluate((audio) => audio.volume)).toBe(0.77);
-        await recipient.getByRole('button', { name: '选择角色歌曲：朋友的第一首', exact: true }).click();
+        await recipient.getByRole('button', { name: '选择角色歌曲：第一首测试音乐', exact: true }).click();
         await recipient.locator(root + ' .seek').fill('9');
         await recipient.locator(root + ' .seek').dispatchEvent('input');
         await remember(recipient);
@@ -503,7 +534,8 @@ for (const mobile of [false, true])
         if (mobile) await ball.tap();
         else await ball.click();
         await continuous(recipient, 9);
-        if (mobile) expect((await recipient.locator(root + ' .volume').boundingBox()).height).toBeLessThanOrEqual(30);
+        if (mobile)
+            expect((await recipient.locator(root + ' .volume').boundingBox()).height).toBeLessThanOrEqual(30);
         await recipient.screenshot({ path: `docs/card-player/json-${mobile ? 'mobile' : 'desktop'}.png` });
         const b = await createCard(recipient, 'B');
         await selectCard(recipient, b);
@@ -551,7 +583,9 @@ test('resource failures and edits prevent stale or partial exports without chang
     await expect(page.locator('.stm-status')).toContainText('已导入 1 首音乐');
     await page.getByRole('tab', { name: '曲库', exact: true }).click();
     await page.locator('[data-action=card-maker]').click();
-    await page.getByRole('textbox', { name: '第1首导出直链', exact: true }).fill('https://localhost/private.mp3');
+    await page
+        .getByRole('textbox', { name: '第1首导出直链', exact: true })
+        .fill('https://localhost/private.mp3');
     await page.locator('[data-maker=prepare]').click();
     await expect(page.locator('.stm-maker-status')).toContainText('不能使用本机');
     await expect(page.locator('.stm-maker-downloads')).toBeHidden();
@@ -561,11 +595,15 @@ test('resource failures and edits prevent stale or partial exports without chang
     await page.getByRole('textbox', { name: '第1首歌名', exact: true }).fill('仅修改导出副本');
     await expect(page.locator('.stm-maker-downloads')).toBeHidden();
     expect(
-        await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0].title),
+        await page.evaluate(
+            () => SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0].title,
+        ),
     ).toBe('不会丢失');
     // Delete only the fixture audio to simulate a browser missing the creator's original file.
     await page.evaluate(async () => {
-        const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
+        const { LocalMusicStore } = await import(
+            '/scripts/extensions/third-party/sillytavern/local-store.js'
+        );
         await new LocalMusicStore().delete(
             SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0].id,
         );

@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 const results = [];
 const exportMetrics = [];
-test('large original KingHwa font binds and exports without conversion, then loads independently from PNG', async ({
+test('compact selected font stays fixed after native export and changes only on a new author export', async ({
     browser,
 }) => {
     test.setTimeout(360000);
@@ -15,7 +15,7 @@ test('large original KingHwa font binds and exports without conversion, then loa
     author.on('request', (request) => {
         if (
             request.resourceType() === 'fetch' &&
-            request.url().split('?')[0].endsWith('/assets/fonts/KingHwaOldSong.ttf')
+            request.url().split('?')[0].endsWith('/assets/fonts/ChildFunSans.woff2')
         )
             fontReads++;
     });
@@ -26,27 +26,27 @@ test('large original KingHwa font binds and exports without conversion, then loa
         )
             rawPngBytes = Number(await response.headerValue('content-length'));
     });
-    const avatar = await createCard(author, 'KingHwaOriginal');
+    const avatar = await createCard(author, 'CompactFont');
     await selectCard(author, avatar);
     await author.getByRole('tab', { name: '曲库', exact: true }).click();
     await author.locator('[data-action=new-playlist]').click();
-    await author.locator('#stm-new-playlist').fill('Large font playlist');
+    await author.locator('#stm-new-playlist').fill('Compact font playlist');
     await author.getByRole('button', { name: '新建', exact: true }).click();
     const playlist = await author.locator('#stm-library-playlist').inputValue();
     await author.getByRole('tab', { name: '导入', exact: true }).click();
     await menu(author, '#stm-import-playlist', playlist);
     await author
         .locator('[data-role=files]')
-        .setInputFiles({ name: 'Original font tone.mp3', mimeType: 'audio/mpeg', buffer: tone });
+        .setInputFiles({ name: 'Selected font tone.mp3', mimeType: 'audio/mpeg', buffer: tone });
     await expect(author.locator('.stm-status')).toContainText('已导入 1 首音乐');
     await author.getByRole('tab', { name: '外观', exact: true }).click();
     await author.locator('#stm-font').click();
-    await author.locator('[role=radio][data-font-choice=kinghwa]').click();
-    await expect(author.locator('#stm-font')).toHaveAttribute('data-font-choice', 'kinghwa', {
+    await author.locator('[role=radio][data-font-choice=child]').click();
+    await expect(author.locator('#stm-font')).toHaveAttribute('data-font-choice', 'child', {
         timeout: 60000,
     });
     await author.getByRole('tab', { name: '曲库', exact: true }).click();
-    await author.getByRole('button', { name: '打开歌单：Large font playlist', exact: true }).click();
+    await author.getByRole('button', { name: '打开歌单：Compact font playlist', exact: true }).click();
     await author.locator('[data-action=toggle-manager]').click();
     await author.locator('[data-action=bind-roles]').click();
     await author.locator('.stm-role-picker input').evaluateAll((inputs, avatar) => {
@@ -67,8 +67,13 @@ test('large original KingHwa font binds and exports without conversion, then loa
         if (format === 'json') {
             const card = JSON.parse(bytes.toString());
             const content = card.data.extensions.tavern_helper.scripts[0].content;
-            expect(content).toContain('"fontEncoding":"gzip"');
-            expect(content).toContain('"fontOriginalBytes":33259644');
+            expect(content).toContain('"fontEncoding":""');
+            expect(content).toContain('"fontOriginalBytes":1531668');
+            const font = content.match(/"font":"data:application\/octet-stream;base64,([A-Za-z0-9+/=]+)"/);
+            expect(font).not.toBeNull();
+            expect(createHash('sha256').update(Buffer.from(font[1], 'base64')).digest('hex')).toBe(
+                'a6c57b9ab19d0cee83c9c1144661e2a10cc4a93d9a38c3249f9d5d6ac92bce8e',
+            );
         }
     }
     expect(fontReads).toBe(1);
@@ -94,13 +99,6 @@ test('large original KingHwa font binds and exports without conversion, then loa
     expect(switched.length).toBeLessThan(5 * 1024 * 1024);
     await authorContext.close();
     const { page: recipient } = await session(browser, { portable: true });
-    await recipient.evaluate(() => {
-        const original = URL.createObjectURL;
-        URL.createObjectURL = function (blob) {
-            if (blob.size === 33259644) window.__restoredFontBlob = blob;
-            return original.call(this, blob);
-        };
-    });
     const imported = await importCard(recipient, exports.find((file) => file.format === 'png').bytes, 'png');
     await selectCard(recipient, imported);
     await recipient
@@ -114,21 +112,12 @@ test('large original KingHwa font binds and exports without conversion, then loa
             () =>
                 recipient.evaluate(() =>
                     [...document.fonts].some(
-                        (face) => face.family === 'stm-kinghwa' && face.status === 'loaded',
+                        (face) => face.family === 'stm-child' && face.status === 'loaded',
                     ),
                 ),
             { timeout: 90000 },
         )
         .toBe(true);
-    const digest = await recipient.evaluate(async () =>
-        Array.from(
-            new Uint8Array(
-                await crypto.subtle.digest('SHA-256', await window.__restoredFontBlob.arrayBuffer()),
-            ),
-            (byte) => byte.toString(16).padStart(2, '0'),
-        ).join(''),
-    );
-    expect(digest).toBe('f7fef9fc413e9e2343f0bb432c51cca41c44b8fe37f071dc86b050896ae9f9e2');
     await recipient.locator('[data-action=play]').click();
     await expect
         .poll(() => recipient.locator(root + ' audio').evaluate((audio) => audio.currentTime))
@@ -389,7 +378,7 @@ test.afterAll(async () => {
                     results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
                         ? 'passed'
                         : 'incomplete-or-failed',
-                version: '1.12.2',
+                version: '1.12.3',
                 verifiedAt: new Date().toISOString(),
                 runtimeSha256: createHash('sha256').update(runtime).digest('hex'),
                 sillyTavern: '1.19.0',

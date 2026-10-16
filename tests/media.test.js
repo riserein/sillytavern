@@ -4,6 +4,23 @@ import { readEmbeddedMetadata, parseLyrics, currentLyricIndex, randomCover, COVE
 import { normalizeSettings } from '../core.js';
 import { validateFontFile, normalizeFonts, FONT_PRESETS, MAX_FONTS } from '../fonts.js';
 
+test('retired bundled selections fall back without losing songs, playlists or role bindings', () => {
+    for (const fontPreset of ['genwan', 'chill', 'ukai', 'kinghwa', 'huiwen']) {
+        const settings = normalizeSettings({ fontPreset,
+            tracks: [{ id: 'keep', kind: 'local', title: '保留音乐' }],
+            playlists: [{ id: 'list', name: '保留歌单', trackIds: ['keep'], characterAvatars: ['Role.png'] }],
+            theme: 'rose', volume: 0.4,
+        });
+        assert.equal(settings.fontPreset, 'inherit');
+        assert.equal(Object.hasOwn(FONT_PRESETS, fontPreset), false);
+        assert.equal(settings.tracks[0].id, 'keep');
+        assert.deepEqual(settings.playlists[0].characterAvatars, ['Role.png']);
+        assert.deepEqual(settings.playlists[0].trackIds, ['keep']);
+        assert.equal(settings.theme, 'rose');
+        assert.equal(settings.volume, 0.4);
+    }
+});
+
 const syncSize = size => Buffer.from([size >> 21 & 127, size >> 14 & 127, size >> 7 & 127, size & 127]);
 function frame(id, data, version) {
     const header = Buffer.alloc(10); header.write(id);
@@ -45,9 +62,9 @@ test('LRC multi-stamps, millisecond precision, offsets and active-line lookup wo
     assert.equal(parseLyrics('普通歌词\n第二行').lines[1].text, '第二行');
 });
 test('media metadata migrates safely while preserving existing audio identifiers', () => {
-    const settings = normalizeSettings({ tracks: [{ id: 'original', kind: 'local', title: 'old', artist: '歌手', lyrics: '歌词', coverId: 'cover:12cf4785-e913-4f85-b372-72312d1974d3', fallbackCover: 1 }], fontPreset: 'genwan' });
+    const settings = normalizeSettings({ tracks: [{ id: 'original', kind: 'local', title: 'old', artist: '歌手', lyrics: '歌词', coverId: 'cover:12cf4785-e913-4f85-b372-72312d1974d3', fallbackCover: 1 }], fontPreset: 'child' });
     assert.equal(settings.tracks[0].id, 'original'); assert.equal(settings.tracks[0].artist, '歌手');
-    assert.equal(settings.tracks[0].fallbackCover, 1); assert.equal(settings.fontPreset, 'genwan');
+    assert.equal(settings.tracks[0].fallbackCover, 1); assert.equal(settings.fontPreset, 'child');
     assert.equal(normalizeSettings({ fontPreset: 'toString' }).fontPreset, 'inherit');
     assert.equal(randomCover(() => .999), COVER_COUNT - 1);
     assert.equal(randomCover(() => 0), 0);
@@ -68,7 +85,7 @@ test('font library migration preserves old blob IDs, selection, stable order and
     assert.deepEqual(many.fonts.map(font => font.id), [second, id]);
     assert.equal(many.fonts[0].hash, 'a'.repeat(64));
     assert.deepEqual(normalizeFonts(many), many);
-    for (const key of ['genwan', 'poxiao', 'chill', 'ukai', 'child', 'kinghwa', 'huiwen']) {
+    for (const key of ['poxiao', 'child']) {
         assert.equal(normalizeSettings({ fontPreset: key }).fontPreset, key);
         assert.ok(FONT_PRESETS[key].file);
     }

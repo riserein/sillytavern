@@ -1,0 +1,57 @@
+{
+  "version": "1.12.3",
+  "status": "passed",
+  "verifiedAt": "2026-10-16T10:11:03.318720+00:00",
+  "unitTests": {
+    "total": 87,
+    "passed": 87,
+    "failed": 0
+  },
+  "fontBrowserTests": [
+    {
+      "name": "retired font selections fall back after reload without fetching removed files or losing local songs",
+      "status": "passed"
+    },
+    {
+      "name": "the bundled Poxiao font works offline, custom fonts persist, and font changes stay inside the player",
+      "status": "passed"
+    },
+    {
+      "name": "both compact bundled faces show their own previews, work without the font CDN, and support keyboard selection",
+      "status": "passed"
+    },
+    {
+      "name": "batch font imports preserve both files, reject duplicates and invalid files, and delete independently after reload",
+      "status": "passed"
+    },
+    {
+      "name": "a legacy single custom font survives upgrading to the preview library",
+      "status": "passed"
+    },
+    {
+      "name": "font previews fit mobile and failed bundled downloads keep the current font until a successful retry",
+      "status": "passed"
+    }
+  ],
+  "bundledFonts": [
+    {
+      "file": "ChildFunSans.woff2",
+      "bytes": 1531668,
+      "sha256": "a6c57b9ab19d0cee83c9c1144661e2a10cc4a93d9a38c3249f9d5d6ac92bce8e"
+    },
+    {
+      "file": "PoxiaoPixel.woff2",
+      "bytes": 1266972,
+      "sha256": "211a8f304db981699e6312c2f93bd3fd13ef76ac53e633033189d3aa7e035133"
+    }
+  ],
+  "totalBundledFontBytes": 2798640,
+  "removedFontBytes": 75924824,
+  "mobile": "Chromium viewport emulation, not physical hardware",
+  "makerDesktopRegression": {
+    "status": "passed",
+    "name": "maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser",
+    "scope": "one selected desktop case, not the full legacy maker suite",
+    "harnessNote": "The first run timed out when scroll events closed a menu. The helper now scrolls into view and waits two animation frames before clicking; product menu behavior was not modified."
+  }
+}

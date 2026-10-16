@@ -16,7 +16,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
     element.setAttribute('role', 'dialog');
     element.setAttribute('aria-modal', 'true');
     element.setAttribute('aria-label', '角色卡播放器制作');
-    element.innerHTML = `<header class="stm-maker-header"><div><h3>角色卡播放器制作</h3><p class="stm-hint">把歌单、封面和外观装进角色卡，朋友只需酒馆助手。</p></div><button type="button" class="stm-icon" data-maker="close" aria-label="关闭角色卡播放器制作">×</button></header>
+    element.innerHTML = `<header class="stm-maker-header"><div><h3>角色卡播放器制作</h3><p class="stm-hint">配置歌单、封面与外观，导出独立运行的角色卡播放器。</p></div><button type="button" class="stm-icon" data-maker="close" aria-label="关闭角色卡播放器制作">×</button></header>
     <label for="stm-maker-collection">1 · 选择要携带的歌单</label><select id="stm-maker-collection"><option value="">总曲库</option></select>
     <label for="stm-maker-title">播放器名称</label><input id="stm-maker-title" maxlength="80" value="我的音乐">
     <p class="stm-hint">下方修改只影响导出副本。可编辑歌名、歌手、歌词与顺序，或替换音频、封面。</p>
@@ -37,7 +37,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
     <h4>3 · 检查资源并导出</h4><p class="stm-hint">本地音频会随脚本内嵌，单首最多 20 MB，内嵌资源合计最多 30 MB。公开直链需要长期可访问。请仅分发你有权使用的资源。</p>
     <button type="button" class="stm-primary" data-maker="prepare">检查资源并生成预览</button><p class="stm-maker-status stm-hint" role="status" aria-live="polite"></p>
     <iframe class="stm-maker-preview" title="角色播放器独立预览" sandbox="allow-scripts" hidden></iframe>
-    <div class="stm-maker-downloads" hidden><p class="stm-hint">资源已装入导出副本。继续修改歌曲后需重新检查；配色可实时预览。</p><button type="button" class="stm-primary" data-maker="export-current">导出当前角色卡 JSON（含播放器）</button><button type="button" class="stm-secondary" data-maker="export-file">选择角色卡 JSON 并装入播放器</button><input type="file" data-maker-file="card" accept=".json,application/json" hidden><button type="button" class="stm-secondary" data-maker="script-json">下载酒馆助手脚本 JSON</button><button type="button" class="stm-secondary" data-maker="javascript">下载独立 JavaScript</button><button type="button" class="stm-secondary" data-maker="preview">下载独立预览 HTML</button><button type="button" class="stm-secondary" data-maker="songs">下载歌曲清单</button><p class="stm-hint">导出生成新文件，不修改原角色卡。请把这里导出的角色卡 JSON 发给朋友；普通“绑定角色”不会打包歌曲。JSON 不携带角色头像图片。</p></div>`;
+    <div class="stm-maker-downloads" hidden><p class="stm-hint">资源已装入导出副本。继续修改歌曲后需重新检查；配色可实时预览。</p><button type="button" class="stm-primary" data-maker="export-current">导出当前角色卡 JSON（含播放器）</button><button type="button" class="stm-secondary" data-maker="export-file">选择角色卡 JSON 并装入播放器</button><input type="file" data-maker-file="card" accept=".json,application/json" hidden><button type="button" class="stm-secondary" data-maker="script-json">下载酒馆助手脚本 JSON</button><button type="button" class="stm-secondary" data-maker="javascript">下载独立 JavaScript</button><button type="button" class="stm-secondary" data-maker="preview">下载独立预览 HTML</button><button type="button" class="stm-secondary" data-maker="songs">下载歌曲清单</button><p class="stm-hint">导出生成新文件，不修改原角色卡。此处导出的是制作页中的配置副本；歌单绑定也支持从酒馆原生按钮导出随卡播放器。JSON 不携带角色头像图片。</p></div>`;
     const scroll = document.createElement('div');
     scroll.className = 'stm-maker-scroll';
     while (element.firstChild) scroll.append(element.firstChild);
@@ -89,7 +89,8 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                   };
               })();
     function chooseColors(colors) {
-        for (const key of ['accent', 'background', 'text']) q(`[data-maker-color=${key}]`).value = colors[key];
+        for (const key of ['accent', 'background', 'text'])
+            q(`[data-maker-color=${key}]`).value = colors[key];
     }
     function appearance() {
         const colors = Object.fromEntries(
@@ -121,7 +122,14 @@ export function createCardMaker({ panel, settings, store, context, getCollection
     function applyColors() {
         if (!prepared) return;
         const { accent, background, text, surface, opacity } = appearance();
-        prepared.config.appearance = { ...prepared.config.appearance, accent, background, text, surface, opacity };
+        prepared.config.appearance = {
+            ...prepared.config.appearance,
+            accent,
+            background,
+            text,
+            surface,
+            opacity,
+        };
         q('.stm-maker-preview').contentWindow?.postMessage(
             { type: 'rscp-appearance', appearance: prepared.config.appearance },
             '*',
@@ -280,10 +288,13 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         q('[data-maker=background]').disabled = !settings.backgroundId;
         q('[data-maker=font]').checked = Boolean(settings.fontId || FONT_PRESETS[settings.fontPreset]?.file);
         q('[data-maker=font-credit-label]').hidden = settings.fontPreset !== 'custom';
-        q('[data-maker=opacity]').value = String(Math.round((settings.maskOpacity[settings.surface] ?? 0.65) * 100));
+        q('[data-maker=opacity]').value = String(
+            Math.round((settings.maskOpacity[settings.surface] ?? 0.65) * 100),
+        );
         const select = q('#stm-maker-collection');
         select.replaceChildren(new Option('总曲库', ''));
-        if (settings.builtinCatalog.tracks.length) select.append(new Option(settings.builtinCatalog.title, BUILTIN_ID));
+        if (settings.builtinCatalog.tracks.length)
+            select.append(new Option(settings.builtinCatalog.title, BUILTIN_ID));
         for (const list of settings.playlists) select.append(new Option(list.name, list.id));
         select.value = getCollectionId() || '';
         chooseCollection();
@@ -326,9 +337,9 @@ export function createCardMaker({ panel, settings, store, context, getCollection
             close();
         }
         if (event.key === 'Tab') {
-            const controls = [...element.querySelectorAll('button,input,select,textarea,summary,iframe')].filter(
-                (node) => !node.disabled && node.getClientRects().length,
-            );
+            const controls = [
+                ...element.querySelectorAll('button,input,select,textarea,summary,iframe'),
+            ].filter((node) => !node.disabled && node.getClientRects().length);
             const at = controls.indexOf(document.activeElement);
             if (event.shiftKey && at <= 0) {
                 event.preventDefault();
@@ -362,7 +373,9 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         chooseColors(event.target.value === 'current' ? palette() : CARD_THEMES[event.target.value]);
         applyColors();
     });
-    for (const control of element.querySelectorAll('[data-maker-color],[data-maker=opacity],#stm-maker-surface'))
+    for (const control of element.querySelectorAll(
+        '[data-maker-color],[data-maker=opacity],#stm-maker-surface',
+    ))
         control.addEventListener('input', applyColors);
     for (const name of ['background', 'font', 'collapsed', 'font-credit'])
         q(`[data-maker=${name}]`).addEventListener('change', edits);
@@ -421,16 +434,12 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                         if (!safe) throw new Error('封面地址不能公开分发，请替换封面或使用内置封面。');
                         return fetchBlob(safe, signal).then(prepareCover);
                     },
-                    readFont: (file, signal) => fetchBlob(new URL(`./assets/fonts/${file}`, import.meta.url), signal),
+                    readFont: (file, signal) =>
+                        fetchBlob(new URL(`./assets/fonts/${file}`, import.meta.url), signal),
                     readFontLicense: async (file, signal) => {
                         const licenses = {
-                            'GenWanMin2TC-R.woff2': ['OFL-GenWanMin.txt'],
                             'PoxiaoPixel.woff2': ['OFL-PoxiaoPixel.txt'],
-                            'ChillHuoSong_F.woff2': ['OFL-ChillMovableType.txt'],
-                            'AR-PL-UKai-CN.woff2': ['ARPHICPL.TXT', 'UKai-copyright.txt'],
                             'ChildFunSans.woff2': ['OFL-ChildFunSans.txt'],
-                            'KingHwaOldSong.ttf': ['LICENSE-TerryWang.txt'],
-                            'Huiwen-mincho.woff2': ['CC0-Huiwen.txt'],
                         };
                         if (!licenses[file]) throw new Error('字体许可记录缺失，未导出字体。');
                         return (
@@ -505,7 +514,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         if (new Blob([text]).size > 60 * 1024 * 1024)
             throw new Error('角色卡合计超过 60 MB，请减少原有资源或本次内嵌歌曲。');
         download((output.data.name || baseName()).replace(/[\\/:*?"<>|]/g, '_') + '.含音乐.json', text);
-        message('已导出含播放器的角色卡 JSON。朋友导入该文件后，在酒馆助手允许并启用角色脚本即可播放。');
+        message('已导出含播放器的角色卡 JSON。导入该文件后，在酒馆助手中允许并启用角色脚本即可播放。');
     }
     action('export-current', async () => {
         files();
@@ -529,7 +538,8 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         try {
             const file = event.target.files[0];
             if (!file) return;
-            if (file.size > 60 * 1024 * 1024) throw new Error('角色卡 JSON 超过 60 MB，请先减少原有内嵌资源。');
+            if (file.size > 60 * 1024 * 1024)
+                throw new Error('角色卡 JSON 超过 60 MB，请先减少原有内嵌资源。');
             const json = JSON.parse(await file.text());
             exportCard(json);
         } catch (error) {

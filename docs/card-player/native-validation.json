@@ -1,8 +1,8 @@
 {
   "status": "passed",
-  "version": "1.12.2",
-  "verifiedAt": "2026-10-16T08:48:42.207Z",
-  "runtimeSha256": "0a4133a244594d73e0bb1824edb3bbfbb4a3ecc271d50501078d331b7ca4c1c1",
+  "version": "1.12.3",
+  "verifiedAt": "2026-10-16T10:05:27.287Z",
+  "runtimeSha256": "ffeedacee795d5a74010cdc51bb55e3b496bc26f926337942b8fce7ae7aaba30",
   "sillyTavern": "1.19.0",
   "tavernHelper": "4.11.3",
   "fullPluginInRecipient": false,
@@ -14,7 +14,7 @@
   "mobile": "Chromium viewport and touch emulation, not physical devices",
   "results": [
     {
-      "name": "large original KingHwa font binds and exports without conversion, then loads independently from PNG",
+      "name": "compact selected font stays fixed after native export and changes only on a new author export",
       "status": "passed",
       "cleanup": "passed"
     },
@@ -37,17 +37,17 @@
   "exportMetrics": [
     {
       "format": "json",
-      "bytes": 30753975,
-      "milliseconds": 24746
+      "bytes": 3069405,
+      "milliseconds": 2980
     },
     {
       "format": "png",
-      "bytes": 41080448,
-      "milliseconds": 33587
+      "bytes": 4167688,
+      "milliseconds": 3372
     },
     {
-      "rawPngBytes": 82084277,
-      "compactPngBytes": 41080448,
+      "rawPngBytes": 8258757,
+      "compactPngBytes": 4167688,
       "packagedFontReadsAcrossBindingAndTwoExports": 1
     }
   ]

@@ -174,7 +174,7 @@ export function initialize(options = {}) {
                     <button type="button" class="stm-secondary stm-danger" data-action="delete-playlist">删除歌单</button>
                 </div>
                 <form id="stm-role-bindings" hidden>
-                    <p class="stm-hint">可勾选多个角色。保存后，音乐和播放器会一起写入角色卡；用酒馆自己的按钮导出 PNG / JSON，即可分享给装有酒馆助手的朋友。角色已有绑定时会改用这个歌单。</p>
+                    <p class="stm-hint">可绑定多个角色。保存后，将音乐与播放器写入角色卡，支持使用酒馆原生按钮导出 PNG / JSON。已有绑定会更新为当前歌单；接收端需启用酒馆助手角色脚本。</p>
                     <div class="stm-role-picker"></div>
                     <button type="submit" class="stm-secondary">保存绑定</button>
                 </form>
@@ -1661,7 +1661,7 @@ export function initialize(options = {}) {
         await syncRole(true);
         if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
             showStatus('角色绑定已保存，正在把音乐和播放器写入角色卡，请稍候…');
-            try { await nativeExport.syncBindings(); showStatus('角色绑定已保存。音乐已随卡保存。现在用酒馆自己的导出按钮，导出 PNG 或 JSON 即可。朋友需启用酒馆助手角色脚本。'); }
+            try { await nativeExport.syncBindings(); showStatus('角色绑定已保存。音乐已随卡保存，可通过酒馆原生按钮导出 PNG / JSON。接收端需启用酒馆助手角色脚本。'); }
             catch (error) { showStatus(`角色绑定已保存，但随卡播放器未更新：${error.message}。请处理后重新保存绑定；原生导出前也会重新检查。`, true); }
         }
     });

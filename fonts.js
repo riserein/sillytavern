@@ -4,13 +4,8 @@ export const FONT_PRESETS = {
     song: { name: '典雅宋体', family: '"Noto Serif SC", "Songti SC", SimSun, serif' },
     kai: { name: '温润楷书', family: 'KaiTi, STKaiti, "Kaiti SC", serif' },
     fang: { name: '书卷仿宋', family: 'FangSong, STFangsong, serif' },
-    genwan: { name: '源雲明體 · 内置', family: '"stm-genwan", "Noto Serif SC", SimSun, serif', file: 'GenWanMin2TC-R.woff2', original: 'GenWanMin2 TC R' },
     poxiao: { name: '破晓像素', family: '"stm-poxiao", sans-serif', file: 'PoxiaoPixel.woff2', original: 'PoxiaoPixel' },
-    chill: { name: '寒蝉活宋', family: '"stm-chill", serif', file: 'ChillHuoSong_F.woff2', original: 'ChillHuoSong_F' },
-    ukai: { name: '文鼎楷体', family: '"stm-ukai", serif', file: 'AR-PL-UKai-CN.woff2', original: 'AR PL UKai CN' },
     child: { name: '游趣体', family: '"stm-child", sans-serif', file: 'ChildFunSans.woff2', original: 'Child Fun Sans' },
-    kinghwa: { name: '京华老宋体', family: '"stm-kinghwa", serif', file: 'KingHwaOldSong.ttf', original: 'KingHwaOldSong' },
-    huiwen: { name: '汇文明朝', family: '"stm-huiwen", serif', file: 'Huiwen-mincho.woff2', original: 'Huiwen-mincho · 符号修正版' },
     custom: { name: '导入的字体', family: 'inherit' },
 };
 export const MAX_FONTS = 20;
@@ -40,7 +35,7 @@ export function normalizeFonts(raw) {
     return { fonts, fontPreset, fontId: selected?.id ?? null, fontName: selected?.name ?? '' };
 }
 
-export async function loadBuiltinFont(id = 'genwan') {
+export async function loadBuiltinFont(id = 'poxiao') {
     const preset = FONT_PRESETS[id];
     if (!preset?.file) throw new Error('这款字体没有内置文件。');
     const url = new URL(`./assets/fonts/${preset.file}`, import.meta.url).href;

@@ -2015,13 +2015,8 @@ window.fetch = async () => { throw new Error('设计原型不联网，真实平�
     song: { name: "\u5178\u96C5\u5B8B\u4F53", family: '"Noto Serif SC", "Songti SC", SimSun, serif' },
     kai: { name: "\u6E29\u6DA6\u6977\u4E66", family: 'KaiTi, STKaiti, "Kaiti SC", serif' },
     fang: { name: "\u4E66\u5377\u4EFF\u5B8B", family: "FangSong, STFangsong, serif" },
-    genwan: { name: "\u6E90\u96F2\u660E\u9AD4 \xB7 \u5185\u7F6E", family: '"stm-genwan", "Noto Serif SC", SimSun, serif', file: "GenWanMin2TC-R.woff2", original: "GenWanMin2 TC R" },
     poxiao: { name: "\u7834\u6653\u50CF\u7D20", family: '"stm-poxiao", sans-serif', file: "PoxiaoPixel.woff2", original: "PoxiaoPixel" },
-    chill: { name: "\u5BD2\u8749\u6D3B\u5B8B", family: '"stm-chill", serif', file: "ChillHuoSong_F.woff2", original: "ChillHuoSong_F" },
-    ukai: { name: "\u6587\u9F0E\u6977\u4F53", family: '"stm-ukai", serif', file: "AR-PL-UKai-CN.woff2", original: "AR PL UKai CN" },
     child: { name: "\u6E38\u8DA3\u4F53", family: '"stm-child", sans-serif', file: "ChildFunSans.woff2", original: "Child Fun Sans" },
-    kinghwa: { name: "\u4EAC\u534E\u8001\u5B8B\u4F53", family: '"stm-kinghwa", serif', file: "KingHwaOldSong.ttf", original: "KingHwaOldSong" },
-    huiwen: { name: "\u6C47\u6587\u660E\u671D", family: '"stm-huiwen", serif', file: "Huiwen-mincho.woff2", original: "Huiwen-mincho \xB7 \u7B26\u53F7\u4FEE\u6B63\u7248" },
     custom: { name: "\u5BFC\u5165\u7684\u5B57\u4F53", family: "inherit" }
   };
   var MAX_FONTS = 20;
@@ -2045,7 +2040,7 @@ window.fetch = async () => { throw new Error('设计原型不联网，真实平�
     const fontPreset = Object.hasOwn(FONT_PRESETS, raw.fontPreset) && (raw.fontPreset !== "custom" || selected) ? raw.fontPreset : "inherit";
     return { fonts, fontPreset, fontId: selected?.id ?? null, fontName: selected?.name ?? "" };
   }
-  async function loadBuiltinFont(id = "genwan") {
+  async function loadBuiltinFont(id = "poxiao") {
     const preset = FONT_PRESETS[id];
     if (!preset?.file) throw new Error("\u8FD9\u6B3E\u5B57\u4F53\u6CA1\u6709\u5185\u7F6E\u6587\u4EF6\u3002");
     const url = new URL(`./assets/fonts/${preset.file}`, window.__PREVIEW_MODULE_URL__).href;

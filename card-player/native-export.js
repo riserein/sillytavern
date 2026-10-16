@@ -9,13 +9,8 @@ import { MAX_PACKAGE_BYTES } from './config.js';
 import { compactNativeResponse } from './png-size.js';
 
 const LICENSES = {
-    'GenWanMin2TC-R.woff2': ['OFL-GenWanMin.txt'],
     'PoxiaoPixel.woff2': ['OFL-PoxiaoPixel.txt'],
-    'ChillHuoSong_F.woff2': ['OFL-ChillMovableType.txt'],
-    'AR-PL-UKai-CN.woff2': ['ARPHICPL.TXT', 'UKai-copyright.txt'],
     'ChildFunSans.woff2': ['OFL-ChildFunSans.txt'],
-    'KingHwaOldSong.ttf': ['LICENSE-TerryWang.txt'],
-    'Huiwen-mincho.woff2': ['CC0-Huiwen.txt'],
 };
 const UI_KEYS = [
     'theme',

@@ -1015,14 +1015,47 @@ test('missing art uses bundled images; manual cover and LRC imports persist and 
     await expect(page.locator('.stm-track')).toHaveCount(0);
 });
 
-test('the bundled GenWan font works offline, custom fonts persist, and font changes stay inside the player', async ({ page }) => {
+test('retired font selections fall back after reload without fetching removed files or losing local songs', async ({ page }) => {
+    await importSongs(page, ['迁移测试音乐']);
+    const saved = waitForPlayerSave(page, settings => settings.fontPreset === 'kinghwa' && settings.tracks.length === 1);
+    await page.evaluate(() => {
+        const context = SillyTavern.getContext();
+        context.extensionSettings.riserein_music_player.fontPreset = 'kinghwa';
+        context.saveSettingsDebounced();
+    });
+    await saved;
+    const removedRequests = [];
+    page.on('request', request => { if (/KingHwaOldSong|GenWanMin2TC|ChillHuoSong|AR-PL-UKai|Huiwen-mincho/.test(request.url())) removedRequests.push(request.url()); });
+    await page.reload();
+    await page.waitForFunction(() => !document.getElementById('preloader'));
+    await page.locator('#stm-launcher').click();
+    await playerPage(page, '外观');
+    await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', 'inherit');
+    await page.locator('#stm-font').click();
+    await expect(page.locator('[data-font-choice=kinghwa], [data-font-choice=genwan], [data-font-choice=chill], [data-font-choice=ukai], [data-font-choice=huiwen]')).toHaveCount(0);
+    for (const id of ['poxiao', 'child']) {
+        const row = page.locator(`.stm-font-row[data-font-id="${id}"]`);
+        await row.scrollIntoViewIfNeeded();
+        await expect(row).toHaveAttribute('data-preview', 'ready');
+    }
+    expect(await page.evaluate(async () => {
+        const state = SillyTavern.getContext().extensionSettings.riserein_music_player;
+        const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
+        return state.tracks[0].title === '迁移测试音乐' && Boolean(await new LocalMusicStore().get(state.tracks[0].id));
+    })).toBe(true);
+    expect(removedRequests).toEqual([]);
+    await page.locator('#stm-font-gallery').evaluate(element => { element.scrollTop = 0; });
+    await page.locator('#stm-player').screenshot({path:'docs/fonts.png'});
+});
+
+test('the bundled Poxiao font works offline, custom fonts persist, and font changes stay inside the player', async ({ page }) => {
     const hostFont = await page.locator('body').evaluate(element => getComputedStyle(element).fontFamily);
-    await playerPage(page, '外观'); await selectFont(page, 'genwan');
+    await playerPage(page, '外观'); await selectFont(page, 'poxiao');
     await expect(page.locator('[data-role="font-status"]')).toContainText('完整字库已内置', { timeout: 30000 });
-    expect(await page.evaluate(() => [...document.fonts].some(face => face.family === 'stm-genwan' && face.status === 'loaded'))).toBe(true);
+    expect(await page.evaluate(() => [...document.fonts].some(face => face.family === 'stm-poxiao' && face.status === 'loaded'))).toBe(true);
     expect(await page.locator('body').evaluate(element => getComputedStyle(element).fontFamily)).toBe(hostFont);
-    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).fontFamily)).toContain('stm-genwan');
-    await page.locator('[data-role="font-file"]').setInputFiles('assets/fonts/GenWanMin2TC-R.woff2');
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).fontFamily)).toContain('stm-poxiao');
+    await page.locator('[data-role="font-file"]').setInputFiles('assets/fonts/PoxiaoPixel.woff2');
     await expect(page.locator('.stm-status')).toContainText('字体已导入', { timeout: 30000 });
     const id = await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.fontId);
     const saved = waitForPlayerSave(page, settings => settings.fontId === id && settings.fontPreset === 'custom' && settings.volume === .29);
@@ -1035,12 +1068,12 @@ test('the bundled GenWan font works offline, custom fonts persist, and font chan
     await expect(page.locator('.stm-status')).toHaveClass(/stm-error/);
     expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.fontId)).toBe(id);
     if (await page.locator('#stm-font-gallery').isHidden()) await page.locator('#stm-font').click();
-    await page.getByRole('button', { name:'删除字体：GenWanMin2TC-R', exact:true }).click();
+    await page.getByRole('button', { name:'删除字体：PoxiaoPixel', exact:true }).click();
     await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', 'inherit');
     expect(await page.evaluate(async id => { const {LocalMusicStore} = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); return Boolean(await new LocalMusicStore().get(id)); },id)).toBe(false);
 });
 
-test('all seven bundled faces show their own previews, work without the font CDN, and support keyboard selection', async ({ page }) => {
+test('both compact bundled faces show their own previews, work without the font CDN, and support keyboard selection', async ({ page }) => {
     test.setTimeout(90000);
     const remoteFonts = [];
     page.on('request', request => { if (/fontsapi|zeoseven/.test(request.url())) remoteFonts.push(request.url()); });
@@ -1049,7 +1082,7 @@ test('all seven bundled faces show their own previews, work without the font CDN
     await playerPage(page, '外观');
     await page.locator('#stm-font').click();
     const renderedSamples = [];
-    for (const id of ['genwan', 'poxiao', 'chill', 'ukai', 'child', 'kinghwa', 'huiwen']) {
+    for (const id of ['poxiao', 'child']) {
         const row = page.locator(`.stm-font-row[data-font-id="${id}"]`);
         await row.scrollIntoViewIfNeeded();
         await expect(row).toHaveAttribute('data-preview', 'ready', { timeout: 30000 });
@@ -1066,7 +1099,7 @@ test('all seven bundled faces show their own previews, work without the font CDN
         renderedSamples.push(await sample.evaluate(element => { const canvas = document.createElement('canvas'); canvas.width = 700; canvas.height = 80; const painter = canvas.getContext('2d'); painter.font = `28px ${getComputedStyle(element).fontFamily}`; painter.fillText('听见故事里的风 · Music 0123456789', 5, 40); return canvas.toDataURL(); }));
         expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).fontFamily)).toContain(`stm-${id}`);
     }
-    expect(new Set(renderedSamples).size).toBe(7);
+    expect(new Set(renderedSamples).size).toBe(2);
     expect(remoteFonts).toEqual([]);
     expect(await page.locator('body').evaluate(element => getComputedStyle(element).fontFamily)).toBe(bodyFont);
     await page.keyboard.press('Home');
@@ -1102,9 +1135,9 @@ test('batch font imports preserve both files, reject duplicates and invalid file
     await page.getByRole('button', { name: '删除字体：ChildFunSans', exact: true }).click();
     await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', fonts[0].id);
     expect(await page.evaluate(async id => { const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); return Boolean(await new LocalMusicStore().get(id)); }, fonts[1].id)).toBe(false);
-    await selectFont(page, 'kinghwa');
+    await selectFont(page, 'child');
     await page.getByRole('button', { name: '删除字体：PoxiaoPixel', exact: true }).click();
-    await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', 'kinghwa');
+    await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', 'child');
     expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.fonts)).toEqual([]);
 });
 
@@ -1127,21 +1160,21 @@ test('a legacy single custom font survives upgrading to the preview library', as
 
 test('font previews fit mobile and failed bundled downloads keep the current font until a successful retry', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.route('**/assets/fonts/KingHwaOldSong.ttf', route => route.abort());
-    await selectFont(page, 'child');
-    const row = page.locator('.stm-font-row[data-font-id="kinghwa"]');
+    await page.route('**/assets/fonts/ChildFunSans.woff2', route => route.abort());
+    await selectFont(page, 'poxiao');
+    const row = page.locator('.stm-font-row[data-font-id="child"]');
     await row.scrollIntoViewIfNeeded();
     await expect(row).toHaveAttribute('data-preview', 'error');
     await expect(row.locator('.stm-font-sample')).toBeHidden();
     await row.getByRole('radio').click();
     await expect(page.locator('[data-role="font-status"]')).toContainText('加载失败');
-    await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', 'child');
+    await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', 'poxiao');
     const sizes = await page.locator('#stm-font-gallery').evaluate(element => ({ client: element.clientWidth, scroll: element.scrollWidth, right: element.getBoundingClientRect().right }));
     expect(sizes.scroll).toBeLessThanOrEqual(sizes.client + 1);
     expect(sizes.right).toBeLessThanOrEqual(375);
-    await page.unroute('**/assets/fonts/KingHwaOldSong.ttf');
+    await page.unroute('**/assets/fonts/ChildFunSans.woff2');
     await row.getByRole('radio').click();
-    await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', 'kinghwa');
+    await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', 'child');
     await expect(row).toHaveAttribute('data-preview', 'ready');
     await expect(row.locator('.stm-font-sample')).toBeVisible();
 });
