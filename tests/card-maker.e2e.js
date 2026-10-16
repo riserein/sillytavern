@@ -599,7 +599,7 @@ test('resource failures and edits prevent stale or partial exports without chang
             () => SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0].title,
         ),
     ).toBe('不会丢失');
-    // Delete only the fixture audio to simulate a browser missing the creator's original file.
+    // A saved project owns its bytes even if the original library file is removed.
     await page.evaluate(async () => {
         const { LocalMusicStore } = await import(
             '/scripts/extensions/third-party/sillytavern/local-store.js'
@@ -608,6 +608,11 @@ test('resource failures and edits prevent stale or partial exports without chang
             SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0].id,
         );
     });
+    await page.locator('[data-maker=prepare]').click();
+    await expect(page.locator('.stm-maker-status')).toContainText('检查通过');
+    // A NEW project copied from the now-missing library entry has no embedded draft copy.
+    await page.locator('[data-maker=project-new]').click();
+    await expect(page.getByRole('textbox', { name: '第1首歌名', exact: true })).toHaveValue('不会丢失');
     await page.locator('[data-maker=prepare]').click();
     await expect(page.locator('.stm-maker-status')).toContainText('本地音频不在当前浏览器');
     await expect(page.locator('.stm-maker-downloads')).toBeHidden();
