@@ -40,7 +40,8 @@ export function audioMime(blob, title = '') {
 export async function blobData(blob, mime = blob.type) {
     const bytes = new Uint8Array(await blob.arrayBuffer());
     let binary = '';
-    for (let i = 0; i < bytes.length; i += 32768) binary += String.fromCharCode(...bytes.subarray(i, i + 32768));
+    for (let i = 0; i < bytes.length; i += 32768)
+        binary += String.fromCharCode(...bytes.subarray(i, i + 32768));
     return `data:${mime};base64,${btoa(binary)}`;
 }
 function checkedImage(blob) {
@@ -51,7 +52,17 @@ function checkedImage(blob) {
 /** Reads copies only. No writes to the library, playlist or IndexedDB. */
 export async function prepareCardPackage(
     { id, title, tracks, appearance, volume, mode, startCollapsed },
-    { getBlob, readFallback, readPublicImage, readFont, readFontLicense, probeAudio, signal, onProgress = () => {} },
+    {
+        getBlob,
+        readFallback,
+        readPublicImage,
+        readFont,
+        readFontLicense,
+        probeAudio,
+        signal,
+        onProgress = () => {},
+        maxFontBytes = 20 * 1024 * 1024,
+    },
 ) {
     if (!tracks?.length) throw new Error('歌单没有歌曲，请先导入音乐。');
     if (tracks.length > 200) throw new Error('一次最多导出 200 首，请拆分歌单。');
@@ -60,7 +71,8 @@ export async function prepareCardPackage(
         errors = [];
     const add = (blob) => {
         total += blob.size;
-        if (total > MAX_PACKAGE_BYTES) throw new Error('内嵌资源合计不能超过 30 MB，请减少歌曲或改用稳定公开直链。');
+        if (total > MAX_PACKAGE_BYTES)
+            throw new Error('内嵌资源合计不能超过 30 MB，请减少歌曲或改用稳定公开直链。');
         return blob;
     };
     for (const [index, track] of tracks.entries()) {
@@ -70,7 +82,8 @@ export async function prepareCardPackage(
             let src;
             if (track.exportUrl) {
                 src = publicResource(track.exportUrl);
-                if (!src) throw new Error('导出直链必须是公开 HTTPS 地址，不能使用本机、临时签名或含令牌的地址。');
+                if (!src)
+                    throw new Error('导出直链必须是公开 HTTPS 地址，不能使用本机、临时签名或含令牌的地址。');
             } else if (track.kind === 'local') {
                 const blob = track.exportBlob || (await getBlob(track.id));
                 if (!blob?.size) throw new Error('本地音频不在当前浏览器中，请重新导入。');
@@ -120,13 +133,25 @@ export async function prepareCardPackage(
     }
     if (theme.fontId || theme.fontFile) {
         const font = theme.fontId ? await getBlob(theme.fontId) : await readFont(theme.fontFile, signal);
-        if (!font?.size || font.size > 20 * 1024 * 1024) throw new Error('字体文件缺失或超过 20 MB，请换字体。');
+        if (!font?.size) throw new Error('字体文件没有读到，请更新插件并刷新后重试。');
+        if (font.size > maxFontBytes)
+            throw new Error(
+                `携带的字体资源为 ${(font.size / 1024 / 1024).toFixed(1)} MB，超过本次导出的 ${Math.round(maxFontBytes / 1024 / 1024)} MB 上限。`,
+            );
         theme.font = await blobData(add(font), 'application/octet-stream');
         if (theme.fontFile) theme.fontLicense = await readFontLicense(theme.fontFile, signal);
         if (!theme.fontLicense?.trim()) throw new Error('请填写自定义字体的授权及署名说明，或取消携带字体。');
     }
     signal?.throwIfAborted();
-    const config = normalizeCardConfig({ id, title, tracks: ready, appearance: theme, volume, mode, startCollapsed });
+    const config = normalizeCardConfig({
+        id,
+        title,
+        tracks: ready,
+        appearance: theme,
+        volume,
+        mode,
+        startCollapsed,
+    });
     return {
         config,
         embeddedBytes: total,
@@ -168,13 +193,19 @@ export function buildCardExports(config, runtime, scriptId) {
 /** Preserve unknown card fields and other authors' scripts. Replace only our marked export. */
 export function attachPlayerToCard(input, script, projectId) {
     const card = structuredClone(input);
-    if (!card || !['chara_card_v2', 'chara_card_v3'].includes(card.spec) || typeof card.data?.name !== 'string')
+    if (
+        !card ||
+        !['chara_card_v2', 'chara_card_v3'].includes(card.spec) ||
+        typeof card.data?.name !== 'string'
+    )
         throw new Error('请选择酒馆导出的 V2/V3 角色卡 JSON；聊天文件或脚本 JSON 不能作为角色卡。');
     card.data.extensions ||= {};
     const ext = card.data.extensions;
     if (
         ext.tavern_helper !== undefined &&
-        (ext.tavern_helper === null || typeof ext.tavern_helper !== 'object' || Array.isArray(ext.tavern_helper))
+        (ext.tavern_helper === null ||
+            typeof ext.tavern_helper !== 'object' ||
+            Array.isArray(ext.tavern_helper))
     )
         throw new Error('角色卡的酒馆助手数据格式异常，未修改原卡。');
     ext.tavern_helper ||= {};

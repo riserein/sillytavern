@@ -1,7 +1,115 @@
 import { test, expect } from '@playwright/test';
-import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { readFile, mkdir, writeFile, mkdtemp, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 const results = [];
+test('large original KingHwa font binds and exports without conversion, then loads independently from PNG', async ({
+    browser,
+}) => {
+    test.setTimeout(360000);
+    const { page: author, context: authorContext } = await session(browser);
+    const avatar = await createCard(author, 'KingHwaOriginal');
+    await selectCard(author, avatar);
+    await author.getByRole('tab', { name: '曲库', exact: true }).click();
+    await author.locator('[data-action=new-playlist]').click();
+    await author.locator('#stm-new-playlist').fill('Large font playlist');
+    await author.getByRole('button', { name: '新建', exact: true }).click();
+    const playlist = await author.locator('#stm-library-playlist').inputValue();
+    await author.getByRole('tab', { name: '导入', exact: true }).click();
+    await menu(author, '#stm-import-playlist', playlist);
+    await author
+        .locator('[data-role=files]')
+        .setInputFiles({ name: 'Original font tone.mp3', mimeType: 'audio/mpeg', buffer: tone });
+    await expect(author.locator('.stm-status')).toContainText('已导入 1 首音乐');
+    await author.getByRole('tab', { name: '外观', exact: true }).click();
+    await author.locator('#stm-font').click();
+    await author.locator('[role=radio][data-font-choice=kinghwa]').click();
+    await expect(author.locator('#stm-font')).toHaveAttribute('data-font-choice', 'kinghwa', {
+        timeout: 60000,
+    });
+    await author.getByRole('tab', { name: '曲库', exact: true }).click();
+    await author.getByRole('button', { name: '打开歌单：Large font playlist', exact: true }).click();
+    await author.locator('[data-action=toggle-manager]').click();
+    await author.locator('[data-action=bind-roles]').click();
+    await author.locator('.stm-role-picker input').evaluateAll((inputs, avatar) => {
+        for (const input of inputs) input.checked = input.dataset.avatar === avatar;
+    }, avatar);
+    await author.locator('#stm-role-bindings button[type=submit]').click();
+    await expect(author.locator('.stm-status')).toContainText('音乐已随卡保存', { timeout: 120000 });
+    const exports = [];
+    for (const format of ['json', 'png']) {
+        await author.locator('#export_button').dispatchEvent('click');
+        const pending = author.waitForEvent('download', { timeout: 120000 });
+        await author.locator('.export_format[data-format=' + format + ']').dispatchEvent('click');
+        const file = await pending;
+        const bytes = await readFile(await file.path());
+        exports.push({ format, bytes });
+        if (format === 'json') {
+            const card = JSON.parse(bytes.toString());
+            const content = card.data.extensions.tavern_helper.scripts[0].content;
+            expect(content).toContain('"fontEncoding":"gzip"');
+            expect(content).toContain('"fontOriginalBytes":33259644');
+        }
+    }
+    await authorContext.close();
+    const { page: recipient } = await session(browser, { portable: true });
+    await recipient.evaluate(() => {
+        const original = URL.createObjectURL;
+        URL.createObjectURL = function (blob) {
+            if (blob.size === 33259644) window.__restoredFontBlob = blob;
+            return original.call(this, blob);
+        };
+    });
+    const imported = await importCard(recipient, exports.find((file) => file.format === 'png').bytes, 'png');
+    await selectCard(recipient, imported);
+    await recipient
+        .getByText(/^(确认|Confirm)$/, { exact: true })
+        .last()
+        .click();
+    await expect(recipient.locator(root)).toHaveCount(1, { timeout: 90000 });
+    await expect
+        .poll(
+            () =>
+                recipient.evaluate(() =>
+                    [...document.fonts].some(
+                        (face) => face.family === 'stm-kinghwa' && face.status === 'loaded',
+                    ),
+                ),
+            { timeout: 90000 },
+        )
+        .toBe(true);
+    const digest = await recipient.evaluate(async () =>
+        Array.from(
+            new Uint8Array(
+                await crypto.subtle.digest('SHA-256', await window.__restoredFontBlob.arrayBuffer()),
+            ),
+            (byte) => byte.toString(16).padStart(2, '0'),
+        ).join(''),
+    );
+    expect(digest).toBe('f7fef9fc413e9e2343f0bb432c51cca41c44b8fe37f071dc86b050896ae9f9e2');
+    await recipient.locator('[data-action=play]').click();
+    await expect
+        .poll(() => recipient.locator(root + ' audio').evaluate((audio) => audio.currentTime))
+        .toBeGreaterThan(0.2);
+    await recipient.locator(root).evaluate(
+        (node) =>
+            (window.__fontPlayer = {
+                node,
+                api: node.__risereinPlayer,
+                audio: node.__risereinPlayer.audio,
+            }),
+    );
+    await home(recipient);
+    await expect(recipient.locator(root)).toHaveCount(0);
+    expect(
+        await recipient.evaluate(
+            () =>
+                window.__fontPlayer.audio.paused &&
+                Object.values(window.__fontPlayer.api.resourceCounts).every((value) => value === 0),
+        ),
+    ).toBe(true);
+});
 test.beforeAll(async () => {
     await mkdir('docs/card-player', { recursive: true });
     await writeFile(
@@ -140,34 +248,38 @@ async function download(page, button) {
     };
 }
 async function importCard(page, bytes, format = 'json') {
-    const avatar = await page.evaluate(
-        async ({ bytes, format }) => {
-            const form = new FormData();
-            form.append(
-                'avatar',
-                new File([new Uint8Array(bytes)], 'RSCP_Test_Import.' + format, {
-                    type: format === 'png' ? 'image/png' : 'application/json',
-                }),
-            );
-            form.append('file_type', format);
-            const headers = SillyTavern.getContext().getRequestHeaders();
-            delete headers['Content-Type'];
-            const response = await fetch('/api/characters/import', {
-                method: 'POST',
-                headers,
-                body: form,
-            });
-            if (!response.ok) throw new Error('Actual JSON character import failed: ' + response.status);
-            const result = await response.json();
-            const { getCharacters } = await import('/script.js');
-            await getCharacters();
-            return result.file_name + '.png';
-        },
-        { bytes: Array.from(bytes), format },
-    );
-    expect(avatar.startsWith('RSCP_Test_')).toBe(true);
-    cards.push(avatar);
-    return avatar;
+    // File paths use Playwright's streamed upload for large cards instead of
+    // pushing a base64 PNG through one oversized browser protocol message.
+    const directory = await mkdtemp(join(tmpdir(), 'stm-native-import-'));
+    try {
+        const path = join(directory, 'RSCP_Test_Import.' + format);
+        await writeFile(path, bytes);
+        const pending = page.waitForResponse(
+            (response) => response.url().endsWith('/api/characters/import'),
+            { timeout: 120000 },
+        );
+        await page.locator('#character_import_file').setInputFiles(path);
+        const response = await pending;
+        expect(response.ok()).toBe(true);
+        const result = await response.json();
+        const avatar = result.file_name + '.png';
+        expect(avatar.startsWith('RSCP_Test_')).toBe(true);
+        cards.push(avatar);
+        await expect
+            .poll(
+                () =>
+                    page.evaluate(
+                        (avatar) =>
+                            SillyTavern.getContext().characters.some((card) => card.avatar === avatar),
+                        avatar,
+                    ),
+                { timeout: 60000 },
+            )
+            .toBe(true);
+        return avatar;
+    } finally {
+        await rm(directory, { recursive: true, force: true });
+    }
 }
 test.beforeEach(() => {
     sessions = [];
@@ -211,11 +323,11 @@ test.afterAll(async () => {
         JSON.stringify(
             {
                 status:
-                    results.length === 3 &&
+                    results.length === 4 &&
                     results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
                         ? 'passed'
                         : 'incomplete-or-failed',
-                version: '1.12.0',
+                version: '1.12.1',
                 verifiedAt: new Date().toISOString(),
                 runtimeSha256: createHash('sha256').update(runtime).digest('hex'),
                 sillyTavern: '1.19.0',

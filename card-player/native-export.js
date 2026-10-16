@@ -4,6 +4,8 @@ import { fallbackCoverUrl, prepareCover } from '../media.js';
 import { prepareCardPackage, attachPlayerToCard, blobData } from './export.js';
 import { jsonForScript, publicResource } from './config.js';
 import { fetchBlob, probeAudio } from './browser-resources.js';
+import { packFont } from './font-transport.js';
+import { MAX_PACKAGE_BYTES } from './config.js';
 
 const LICENSES = {
     'GenWanMin2TC-R.woff2': ['OFL-GenWanMin.txt'],
@@ -73,6 +75,8 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
     const read = (url) => fetchBlob(url, abort.signal);
     async function packagePlaylist(playlist) {
         const preset = FONT_PRESETS[settings.fontPreset];
+        let fontEncoding = '',
+            fontOriginalBytes = 0;
         if (settings.fontPreset === 'custom')
             throw new Error('当前自定义字体没有随卡授权记录。请先选择内置字体或设备字体，再导出');
         const { config, embeddedBytes } = await prepareCardPackage(
@@ -99,7 +103,12 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                     if (!safe) throw new Error('封面不是公开 HTTPS 图片，请换为本地封面');
                     return read(safe).then(prepareCover);
                 },
-                readFont: (file) => read(asset(`assets/fonts/${file}`)),
+                readFont: async (file) => {
+                    const transport = await packFont(await read(asset(`assets/fonts/${file}`)), abort.signal);
+                    fontEncoding = transport.encoding;
+                    fontOriginalBytes = transport.originalBytes;
+                    return transport.blob;
+                },
                 readFontLicense: async (file) => {
                     if (!LICENSES[file]) throw new Error('内置字体授权记录缺失');
                     return (
@@ -111,6 +120,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                     ).join('\n\n');
                 },
                 probeAudio,
+                maxFontBytes: MAX_PACKAGE_BYTES,
                 signal: abort.signal,
             },
         );
@@ -128,6 +138,8 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
             config,
             ui,
             fontFile: preset?.file || '',
+            fontEncoding,
+            fontOriginalBytes,
             playlist: {
                 id: playlist.id,
                 name: playlist.name,

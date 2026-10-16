@@ -4,6 +4,7 @@ import { normalizeCardConfig } from './config.js';
 import { createTrackId } from '../core.js';
 import { sharedEnvironment } from './shared-environment.js';
 import { mountSharedPlayer, SHARED_CSS } from './dist/shared-ui.js';
+import { unpackFont } from './font-transport.js';
 
 function dataBlob(value, win) {
     const comma = value.indexOf(','),
@@ -12,7 +13,7 @@ function dataBlob(value, win) {
         type: value.slice(5, value.indexOf(';')),
     });
 }
-export function mountNativePlayer(payload, scope) {
+export function mountNativePlayer(payload, scope, options = {}) {
     const config = normalizeCardConfig(payload.config),
         win = scope.hostWindow,
         doc = scope.hostDocument;
@@ -32,10 +33,12 @@ export function mountNativePlayer(payload, scope) {
     root.append(style);
     doc.body.append(root);
     const assets = { ...payload.assets };
-    if (payload.fontFile && config.appearance.font)
-        assets[`assets/fonts/${payload.fontFile}`] = config.appearance.font;
     const own = sharedEnvironment(root, assets, win),
         blobs = new Map();
+    if (payload.fontFile && config.appearance.font)
+        assets[`assets/fonts/${payload.fontFile}`] = options.fontBlob
+            ? own.environment.URL.createObjectURL(options.fontBlob)
+            : config.appearance.font;
     const namespace = `riserein:card-native:v1:${encodeURIComponent(scope.roleId)}:${encodeURIComponent(config.id)}`;
     const store = {
         get: async (id) => blobs.get(id),
@@ -187,6 +190,30 @@ export function mountNativePlayer(payload, scope) {
         throw error;
     }
 }
-export function startNativeCharacterPlayer(payload) {
-    return mountNativePlayer(payload, createCharacterScope());
+export async function startNativeCharacterPlayer(payload) {
+    const scope = createCharacterScope();
+    if (scope.hostWindow.__risereinFullMusicPlayer) return null;
+    const existing = scope.hostDocument.querySelector('[data-riserein-card-player]')?.__risereinPlayer;
+    if (existing?.roleId === scope.roleId && existing.scriptId === scope.scriptId) return existing;
+    if (payload.fontEncoding !== 'gzip') return mountNativePlayer(payload, scope);
+    const controller = new scope.hostWindow.AbortController();
+    const pending = watchRoleLifetime(scope, () => controller.abort());
+    try {
+        const blob = await unpackFont(
+            dataBlob(payload.config.appearance.font, scope.hostWindow),
+            payload.fontOriginalBytes,
+            controller.signal,
+        );
+        controller.signal.throwIfAborted();
+        return mountNativePlayer(payload, scope, { fontBlob: blob });
+    } catch (error) {
+        if (controller.signal.aborted) return null;
+        // Font support must not prevent listening to the card's music.
+        const fallback = { ...payload, fontFile: '', ui: { ...payload.ui, fontPreset: 'inherit' } };
+        const player = mountNativePlayer(fallback, scope);
+        scope.hostWindow.toastr?.warning(`随卡字体未能加载，已使用设备字体；音乐仍可播放。${error.message}`);
+        return player;
+    } finally {
+        pending.dispose();
+    }
 }

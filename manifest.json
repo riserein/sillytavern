@@ -6,7 +6,7 @@
     "js": "index.js",
     "css": "night-ui.css",
     "author": "riserein",
-    "version": "1.12.0",
+    "version": "1.12.1",
     "homePage": "https://github.com/riserein/sillytavern",
     "auto_update": false
 }
