@@ -6,6 +6,7 @@ import { jsonForScript, publicResource } from './config.js';
 import { fetchBlob, probeAudio } from './browser-resources.js';
 import { packFont } from './font-transport.js';
 import { MAX_PACKAGE_BYTES } from './config.js';
+import { compactNativeResponse } from './png-size.js';
 
 const LICENSES = {
     'GenWanMin2TC-R.woff2': ['OFL-GenWanMin.txt'],
@@ -65,7 +66,28 @@ export function nativeCardScript(payload, runtime, scriptId) {
 export function createNativeCardExport({ settings, store, getContext, showStatus }) {
     const abort = new AbortController();
     let queue = Promise.resolve(),
-        runtimePromise;
+        runtimePromise,
+        cachedFont;
+    const fixedImages = new Map(),
+        licenses = new Map(),
+        encoded = new WeakMap();
+    const memo = (map, key, load) => {
+        if (!map.has(key))
+            map.set(
+                key,
+                Promise.resolve()
+                    .then(load)
+                    .catch((error) => {
+                        map.delete(key);
+                        throw error;
+                    }),
+            );
+        return map.get(key);
+    };
+    const encodeBlob = (blob, mime = blob.type) => {
+        if (!encoded.has(blob)) encoded.set(blob, new Map());
+        return memo(encoded.get(blob), mime, () => blobData(blob, mime));
+    };
     const enqueue = (action) => {
         const task = queue.catch(() => {}).then(action);
         queue = task;
@@ -73,6 +95,8 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
     };
     const asset = (path) => new URL(`../${path}`, import.meta.url);
     const read = (url) => fetchBlob(url, abort.signal);
+    const fallback = (index) =>
+        memo(fixedImages, index, () => read(fallbackCoverUrl(index)).then(prepareCover));
     async function packagePlaylist(playlist) {
         const preset = FONT_PRESETS[settings.fontPreset];
         let fontEncoding = '',
@@ -97,14 +121,29 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
             },
             {
                 getBlob: (id) => store.get(id),
-                readFallback: (index) => read(fallbackCoverUrl(index)).then(prepareCover),
+                readFallback: fallback,
                 readPublicImage: (url) => {
                     const safe = publicResource(url);
                     if (!safe) throw new Error('封面不是公开 HTTPS 图片，请换为本地封面');
                     return read(safe).then(prepareCover);
                 },
                 readFont: async (file) => {
-                    const transport = await packFont(await read(asset(`assets/fonts/${file}`)), abort.signal);
+                    // Cache only the selected immutable bundled file. User blobs and
+                    // audio URLs are still freshly read/validated on each export.
+                    if (cachedFont?.file !== file)
+                        cachedFont = {
+                            file,
+                            promise: read(asset(`assets/fonts/${file}`)).then((blob) =>
+                                packFont(blob, abort.signal),
+                            ),
+                        };
+                    let transport;
+                    try {
+                        transport = await cachedFont.promise;
+                    } catch (error) {
+                        cachedFont = null;
+                        throw error;
+                    }
                     fontEncoding = transport.encoding;
                     fontOriginalBytes = transport.originalBytes;
                     return transport.blob;
@@ -114,21 +153,22 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                     return (
                         await Promise.all(
                             LICENSES[file].map((name) =>
-                                read(asset(`assets/fonts/${name}`)).then((blob) => blob.text()),
+                                memo(licenses, name, () =>
+                                    read(asset(`assets/fonts/${name}`)).then((blob) => blob.text()),
+                                ),
                             ),
                         )
                     ).join('\n\n');
                 },
                 probeAudio,
                 maxFontBytes: MAX_PACKAGE_BYTES,
+                encodeBlob,
                 signal: abort.signal,
             },
         );
         const assets = {};
         for (const [index, name] of ['forest', 'moon', 'sunroom'].entries())
-            assets[`assets/covers/${name}.png`] = await blobData(
-                await read(fallbackCoverUrl(index)).then(prepareCover),
-            );
+            assets[`assets/covers/${name}.png`] = await encodeBlob(await fallback(index));
         const cover = playlist.coverId ? await store.get(playlist.coverId) : null;
         if (playlist.coverId && !cover) throw new Error('歌单封面不在当前浏览器中，请重新选择封面');
         const playlistCover = cover ? await blobData(await prepareCover(cover)) : '';
@@ -186,6 +226,23 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                     throw error;
                 });
             const script = nativeCardScript(payload, await runtimePromise, old?.scriptId || createTrackId());
+            const findScript = (trees) => {
+                for (const tree of trees || []) {
+                    if (tree.type === 'folder') {
+                        const found = findScript(tree.scripts);
+                        if (found) return found;
+                    } else if (tree.id === script.id) return tree;
+                }
+            };
+            if (
+                old?.mode === 'native' &&
+                old.version === 1 &&
+                old.projectId === payload.config.id &&
+                old.playlistId === playlist.id &&
+                JSON.stringify(findScript(card.data.extensions.tavern_helper?.scripts)) ===
+                    JSON.stringify(script)
+            )
+                return;
             next = attachPlayerToCard(card, script, payload.config.id);
             Object.assign(next.data.extensions.riserein_card_player, {
                 mode: 'native',
@@ -284,8 +341,9 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                             ?.tavern_helper;
                     const original = structuredClone(liveSettings());
                     const filtered = helperExportSettings(original);
-                    if (JSON.stringify(filtered) === JSON.stringify(original))
-                        return previousFetch.call(this, input, init);
+                    const exportCurrent = async () =>
+                        compactNativeResponse(await previousFetch.call(this, input, init), body.format);
+                    if (JSON.stringify(filtered) === JSON.stringify(original)) return exportCurrent();
                     const write = async (value) => {
                         const saved = await previousFetch.call(window, '/api/characters/merge-attributes', {
                             method: 'POST',
@@ -299,7 +357,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                     // latest live settings after the native response is generated.
                     await write(filtered);
                     try {
-                        return await previousFetch.call(this, input, init);
+                        return await exportCurrent();
                     } finally {
                         await write(liveSettings() || original);
                     }
@@ -332,6 +390,9 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
             }),
         dispose() {
             abort.abort();
+            fixedImages.clear();
+            licenses.clear();
+            cachedFont = null;
             if (window.fetch === wrappedFetch) window.fetch = previousFetch;
         },
     };

@@ -543,7 +543,9 @@ export function initialize(options = {}) {
     });
     applyAppearance();
 
-    const fontPicker = createFontPicker({ panel, launcher, store, settings, save, showStatus, createId: createTrackId, availableFonts: options.availableFonts });
+    const fontPicker = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null
+        : createFontPicker({ panel, launcher, store, settings, save, showStatus, createId: createTrackId, availableFonts: options.availableFonts });
+    if ((typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) query('.stm-font-section').remove();
     const mini = createMiniPlayer({
         panel, audio,
         getTrack: () => findTrack(settings, settings.currentId),
@@ -1744,7 +1746,7 @@ export function initialize(options = {}) {
         if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
         if (coverUrl) URL.revokeObjectURL(coverUrl);
         for (const id of coverCache.keys()) forgetCover(id);
-        fontPicker.dispose(); mini.dispose(); playerUI.dispose(); online?.dispose(); platformLoadController?.abort(); menus.dispose(); resizer.dispose(); disposeClickEffects();
+        fontPicker?.dispose(); mini.dispose(); playerUI.dispose(); online?.dispose(); platformLoadController?.abort(); menus.dispose(); resizer.dispose(); disposeClickEffects();
         clearTimeout(playbackTimer); officialPlayer.close(); officialList.close();
         systemScheme.removeEventListener('change', onSystemScheme);
         window.clearInterval(historyTimer);

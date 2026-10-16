@@ -4,11 +4,28 @@ import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 const results = [];
+const exportMetrics = [];
 test('large original KingHwa font binds and exports without conversion, then loads independently from PNG', async ({
     browser,
 }) => {
     test.setTimeout(360000);
     const { page: author, context: authorContext } = await session(browser);
+    let fontReads = 0,
+        rawPngBytes = 0;
+    author.on('request', (request) => {
+        if (
+            request.resourceType() === 'fetch' &&
+            request.url().split('?')[0].endsWith('/assets/fonts/KingHwaOldSong.ttf')
+        )
+            fontReads++;
+    });
+    author.on('response', async (response) => {
+        if (
+            response.url().endsWith('/api/characters/export') &&
+            response.request().postDataJSON()?.format === 'png'
+        )
+            rawPngBytes = Number(await response.headerValue('content-length'));
+    });
     const avatar = await createCard(author, 'KingHwaOriginal');
     await selectCard(author, avatar);
     await author.getByRole('tab', { name: '曲库', exact: true }).click();
@@ -39,12 +56,14 @@ test('large original KingHwa font binds and exports without conversion, then loa
     await expect(author.locator('.stm-status')).toContainText('音乐已随卡保存', { timeout: 120000 });
     const exports = [];
     for (const format of ['json', 'png']) {
+        const started = Date.now();
         await author.locator('#export_button').dispatchEvent('click');
         const pending = author.waitForEvent('download', { timeout: 120000 });
         await author.locator('.export_format[data-format=' + format + ']').dispatchEvent('click');
         const file = await pending;
         const bytes = await readFile(await file.path());
         exports.push({ format, bytes });
+        exportMetrics.push({ format, bytes: bytes.length, milliseconds: Date.now() - started });
         if (format === 'json') {
             const card = JSON.parse(bytes.toString());
             const content = card.data.extensions.tavern_helper.scripts[0].content;
@@ -52,6 +71,27 @@ test('large original KingHwa font binds and exports without conversion, then loa
             expect(content).toContain('"fontOriginalBytes":33259644');
         }
     }
+    expect(fontReads).toBe(1);
+    const pngBytes = exports.find((file) => file.format === 'png').bytes.length;
+    expect(rawPngBytes).toBeGreaterThan(pngBytes);
+    expect(pngBytes / rawPngBytes).toBeLessThan(0.55);
+    exportMetrics.push({
+        rawPngBytes,
+        compactPngBytes: pngBytes,
+        packagedFontReadsAcrossBindingAndTwoExports: fontReads,
+    });
+    await author.getByRole('tab', { name: '外观', exact: true }).click();
+    if (await author.locator('#stm-font-gallery').isHidden()) await author.locator('#stm-font').click();
+    await author.locator('[role=radio][data-font-choice=poxiao]').click();
+    await expect(author.locator('#stm-font')).toHaveAttribute('data-font-choice', 'poxiao');
+    await author.locator('#export_button').dispatchEvent('click');
+    const switchedDownload = author.waitForEvent('download', { timeout: 120000 });
+    await author.locator('.export_format[data-format=json]').dispatchEvent('click');
+    const switched = await readFile(await (await switchedDownload).path());
+    expect(JSON.parse(switched.toString()).data.extensions.tavern_helper.scripts[0].content).toContain(
+        '"fontFile":"PoxiaoPixel.woff2"',
+    );
+    expect(switched.length).toBeLessThan(5 * 1024 * 1024);
     await authorContext.close();
     const { page: recipient } = await session(browser, { portable: true });
     await recipient.evaluate(() => {
@@ -68,6 +108,7 @@ test('large original KingHwa font binds and exports without conversion, then loa
         .last()
         .click();
     await expect(recipient.locator(root)).toHaveCount(1, { timeout: 90000 });
+    await expect(recipient.locator('#stm-font, .stm-font-section, [data-action=import-font]')).toHaveCount(0);
     await expect
         .poll(
             () =>
@@ -109,6 +150,27 @@ test('large original KingHwa font binds and exports without conversion, then loa
                 Object.values(window.__fontPlayer.api.resourceCounts).every((value) => value === 0),
         ),
     ).toBe(true);
+    const switchedAvatar = await importCard(recipient, switched, 'json');
+    await selectCard(recipient, switchedAvatar);
+    await recipient
+        .getByText(/^(确认|Confirm)$/, { exact: true })
+        .last()
+        .click();
+    await expect(recipient.locator(root)).toHaveCount(1);
+    await expect(recipient.locator('#stm-font, .stm-font-section, [data-action=import-font]')).toHaveCount(0);
+    await expect
+        .poll(() =>
+            recipient.evaluate(() =>
+                [...document.fonts]
+                    .filter((face) => face.family.startsWith('stm-'))
+                    .map((face) => face.family),
+            ),
+        )
+        .toEqual(['stm-poxiao']);
+    await recipient.locator('[data-action=play]').click();
+    await expect
+        .poll(() => recipient.locator(root + ' audio').evaluate((audio) => audio.currentTime))
+        .toBeGreaterThan(0.2);
 });
 test.beforeAll(async () => {
     await mkdir('docs/card-player', { recursive: true });
@@ -327,7 +389,7 @@ test.afterAll(async () => {
                     results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
                         ? 'passed'
                         : 'incomplete-or-failed',
-                version: '1.12.1',
+                version: '1.12.2',
                 verifiedAt: new Date().toISOString(),
                 runtimeSha256: createHash('sha256').update(runtime).digest('hex'),
                 sillyTavern: '1.19.0',
@@ -341,6 +403,7 @@ test.afterAll(async () => {
                 llm: 'real ST regenerate flow with fixture LLM/tokenizer responses',
                 mobile: 'Chromium viewport and touch emulation, not physical devices',
                 results,
+                exportMetrics,
             },
             null,
             2,
@@ -532,6 +595,9 @@ for (const mobile of [false, true])
             );
             await expect(recipient.getByRole('tab', { name: '导入', exact: true })).toHaveCount(0);
             await expect(recipient.locator('#stm-page-import')).toHaveCount(0);
+            await expect(
+                recipient.locator('#stm-font, .stm-font-section, [data-action=import-font]'),
+            ).toHaveCount(0);
             await expect(recipient.getByRole('tab', { name: '最近播放', exact: true })).toBeVisible();
             await expect(recipient.getByRole('tab', { name: '播放排行', exact: true })).toBeVisible();
             await expect

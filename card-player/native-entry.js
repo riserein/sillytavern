@@ -5,6 +5,7 @@ import { createTrackId } from '../core.js';
 import { sharedEnvironment } from './shared-environment.js';
 import { mountSharedPlayer, SHARED_CSS } from './dist/shared-ui.js';
 import { unpackFont } from './font-transport.js';
+import { FONT_PRESETS } from '../fonts.js';
 
 function dataBlob(value, win) {
     const comma = value.indexOf(','),
@@ -172,6 +173,25 @@ export function mountNativePlayer(payload, scope, options = {}) {
             availableFonts: payload.fontFile ? [payload.fontFile] : [],
         });
         mounted.panel.dataset.portable = 'true';
+        const preset = FONT_PRESETS[settings.fontPreset] || FONT_PRESETS.inherit;
+        const family = preset.family;
+        for (const element of [mounted.panel, mounted.launcher])
+            element.style.setProperty('--stm-font-family', family);
+        if (payload.fontFile && config.appearance.font) {
+            const face = new win.FontFace(
+                `stm-${settings.fontPreset}`,
+                `url("${assets[`assets/fonts/${payload.fontFile}`]}")`,
+                { display: 'swap' },
+            );
+            void face
+                .load()
+                .then(() => {
+                    if (!disposed) own.environment.document.fonts.add(face);
+                })
+                .catch(() => {
+                    if (!disposed) win.toastr?.warning('随卡字体未能加载，暂用设备字体；音乐仍可播放。');
+                });
+        }
         if (config.appearance.fontLicense) {
             const license = doc.createElement('details'),
                 title = doc.createElement('summary'),

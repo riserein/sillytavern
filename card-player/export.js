@@ -62,6 +62,7 @@ export async function prepareCardPackage(
         signal,
         onProgress = () => {},
         maxFontBytes = 20 * 1024 * 1024,
+        encodeBlob = blobData,
     },
 ) {
     if (!tracks?.length) throw new Error('歌单没有歌曲，请先导入音乐。');
@@ -91,7 +92,7 @@ export async function prepareCardPackage(
                     throw new Error('单首内嵌音频不能超过 20 MB，请压缩音频或使用公开直链。');
                 const mime = audioMime(blob, track.fileName || blob.name || track.title);
                 if (!mime) throw new Error('无法确认音频格式，请重新导入 MP3、WAV、OGG 等音频文件。');
-                src = await blobData(add(blob), mime);
+                src = await encodeBlob(add(blob), mime);
             } else if (
                 track.kind === 'url' ||
                 (track.kind === 'platform' && track.platform === 'direct' && track.playback === 'full')
@@ -107,7 +108,7 @@ export async function prepareCardPackage(
             else if (track.cover) image = await readPublicImage(track.cover, signal);
             else image = await readFallback(track.fallbackCover || 0, signal);
             if (!image) throw new Error('封面文件丢失，请重新导入封面或恢复内置封面。');
-            const cover = await blobData(add(checkedImage(image)));
+            const cover = await encodeBlob(add(checkedImage(image)));
             ready.push({
                 id: track.id,
                 title: track.title,
@@ -129,7 +130,7 @@ export async function prepareCardPackage(
     if (theme.imageBlob || theme.imageId) {
         const image = theme.imageBlob || (await getBlob(theme.imageId));
         if (!image) throw new Error('背景图片不在当前浏览器中，请重新导入或取消携带背景。');
-        theme.image = await blobData(add(checkedImage(image)));
+        theme.image = await encodeBlob(add(checkedImage(image)));
     }
     if (theme.fontId || theme.fontFile) {
         const font = theme.fontId ? await getBlob(theme.fontId) : await readFont(theme.fontFile, signal);
@@ -138,7 +139,7 @@ export async function prepareCardPackage(
             throw new Error(
                 `携带的字体资源为 ${(font.size / 1024 / 1024).toFixed(1)} MB，超过本次导出的 ${Math.round(maxFontBytes / 1024 / 1024)} MB 上限。`,
             );
-        theme.font = await blobData(add(font), 'application/octet-stream');
+        theme.font = await encodeBlob(add(font), 'application/octet-stream');
         if (theme.fontFile) theme.fontLicense = await readFontLicense(theme.fontFile, signal);
         if (!theme.fontLicense?.trim()) throw new Error('请填写自定义字体的授权及署名说明，或取消携带字体。');
     }
