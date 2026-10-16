@@ -19,6 +19,8 @@ import { fallbackCoverUrl, randomCover, readEmbeddedMetadata, prepareCover, pars
 import { createFontPicker } from './font-picker.js';
 import { createMiniPlayer, playSymbol } from './player-components.js';
 import { CUSTOM_PROPERTIES, customPalette, hexRgba, defaultMaskOpacity, attachClickEffects } from './appearance.js';
+import { createPlayerUI } from './player-ui.js';
+import { createPlaybackQueue } from './playback-queue.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
 
@@ -30,7 +32,7 @@ function initialize() {
         return;
     }
 
-    const settings = normalizeSettings(context.extensionSettings[SETTINGS_KEY]);
+    const settings = normalizeSettings(context.extensionSettings[SETTINGS_KEY] ?? { theme: 'night', colorScheme: 'dark', surface: 'matte', panelSize: { width: 640, height: 700 } });
     context.extensionSettings[SETTINGS_KEY] = settings;
     const store = new LocalMusicStore();
     const platformService = createPlatformService();
@@ -45,6 +47,10 @@ function initialize() {
     let canAutoAdvance = true;
     let membershipTrackId = null;
     let libraryDetail = false;
+    let browsedPlaylistId = settings.activePlaylistId;
+    const playbackQueue = createPlaybackQueue(id => getQueue(settings, id));
+    playbackQueue.reset(settings.activePlaylistId);
+    const librarySelection = new Set();
     const sheetReturnFocus = new Map();
     let statusTimer;
     let currentPage = 'playback';
@@ -129,7 +135,7 @@ function initialize() {
             <form class="stm-create-playlist">
                 <label for="stm-new-playlist" data-role="create-title">给新歌单起个名字</label>
                 <div class="stm-inline-form"><input id="stm-new-playlist" placeholder="例如：雨夜、角色主题曲" maxlength="80" required autocomplete="off"><button type="submit" class="stm-primary">新建</button></div>
-                <p class="stm-hint">建好后可直接导入音乐，也可以到总曲库，点歌曲右侧的“加入歌单”。</p>
+                <p class="stm-hint">建好后可直接导入音乐，也可以到总曲库，点歌曲右侧的“⋯”，再选“加入歌单”。</p>
                 <button type="button" class="stm-secondary" data-action="cancel-create">取消</button>
             </form>
         </div>
@@ -142,6 +148,7 @@ function initialize() {
         <select id="stm-library-playlist" data-no-menu aria-label="当前查看的歌单" hidden><option value="">总曲库</option></select>
         <div id="stm-library-detail" hidden>
         <button type="button" class="stm-secondary" data-action="library-home">‹ 我的音乐</button>
+        <div class="stm-collection-hero"><img alt="歌单封面"><div><strong data-role="hero-title"></strong><small data-role="hero-meta"></small><p data-role="hero-description"></p></div></div>
         <div class="stm-list-heading"><h3><span data-role="collection-title">总曲库</span> <span data-role="count">0</span></h3><button type="button" class="stm-secondary" data-action="toggle-manager" aria-expanded="false" aria-controls="stm-playlist-manager">管理此歌单</button></div>
         <div class="stm-collection-actions"><button type="button" class="stm-secondary" data-action="go-import">＋ 导入音乐</button><button type="button" class="stm-secondary" data-action="choose-library-songs">从总曲库选歌</button></div>
         <div id="stm-playlist-manager" class="stm-playlist-manager" hidden>
@@ -151,11 +158,13 @@ function initialize() {
                     <input id="stm-playlist-name" maxlength="80" required autocomplete="off">
                     <button type="submit" class="stm-secondary">保存名称</button>
                 </form>
+                <label class="stm-description-label" for="stm-playlist-description">歌单简介</label><textarea id="stm-playlist-description" maxlength="240" rows="2" placeholder="给这张歌单写一段话"></textarea><button type="button" class="stm-secondary" data-action="save-description">保存简介</button>
                 <div class="stm-playlist-actions">
                     <button type="button" class="stm-secondary" data-action="playlist-cover">更换歌单封面</button>
                     <button type="button" class="stm-secondary" data-action="clear-playlist-cover">恢复默认封面</button>
                     <input type="file" data-role="playlist-cover-file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" hidden>
                     <button type="button" class="stm-secondary" data-action="bind-roles" aria-expanded="false" aria-controls="stm-role-bindings">绑定角色</button>
+                    <button type="button" class="stm-secondary" data-action="edit-order" aria-pressed="false">调整歌曲顺序</button>
                     <button type="button" class="stm-secondary stm-danger" data-action="delete-playlist">删除歌单</button>
                 </div>
                 <form id="stm-role-bindings" hidden>
@@ -177,6 +186,14 @@ function initialize() {
                 <button type="button" class="stm-icon" data-action="close-membership" aria-label="取消加入歌单">×</button>
             </div>
         </div>
+        <div class="stm-library-tools">
+            <label class="stm-sr-only" for="stm-library-search">搜索当前曲库</label><input id="stm-library-search" type="search" placeholder="搜索歌名或歌手" autocomplete="off">
+            <label class="stm-sr-only" for="stm-library-sort">曲库显示顺序</label><select id="stm-library-sort"><option value="original">原有顺序</option><option value="title">歌名排序</option><option value="artist">歌手排序</option></select>
+            <label class="stm-sr-only" for="stm-library-filter">歌曲来源</label><select id="stm-library-filter"><option value="all">全部来源</option><option value="playable">可直接播放</option><option value="local">本地音乐</option><option value="url">音频直链</option><option value="platform">在线平台</option><option value="restricted">受限来源</option></select>
+            <button type="button" class="stm-secondary" data-action="toggle-bulk" aria-pressed="false">批量管理</button>
+        </div>
+        <div class="stm-bulk-tools" hidden><label class="stm-check-label"><input type="checkbox" id="stm-select-visible">选择本页结果</label><span data-role="selection-count"></span><label class="stm-sr-only" for="stm-bulk-target">批量加入的歌单</label><select id="stm-bulk-target"></select><button type="button" class="stm-secondary" data-action="bulk-add">加入歌单</button><button type="button" class="stm-secondary" data-action="bulk-unlink">从此歌单移除</button><button type="button" class="stm-secondary stm-danger" data-action="bulk-delete">从曲库删除</button></div>
+        <p class="stm-search-empty" hidden>没有匹配的歌曲，试试其他关键词或来源。</p>
         <ol class="stm-track-list" aria-label="播放列表"></ol>
         <p class="stm-empty">曲库还没有歌曲，点上方“导入音乐”开始吧。</p>
         </div>
@@ -208,7 +225,7 @@ function initialize() {
         <section id="stm-appearance" class="stm-page stm-appearance" role="tabpanel" aria-labelledby="stm-tab-appearance" data-view="appearance" hidden>
             <div class="stm-page-heading"><h3>配色与背景</h3><span>为音乐换一种氛围</span></div>
             <label class="stm-check-label"><input type="checkbox" id="stm-hide-builtin">隐藏默认曲库</label>
-            <p class="stm-hint">默认歌曲由开发者随版本提供，不占自建歌单数量。</p>
+            <p class="stm-hint" data-role="builtin-hint">默认歌曲由开发者随版本提供，不占自建歌单数量。</p>
             <div class="stm-scheme-control"><span>日夜外观</span><div class="stm-scheme-options" role="group" aria-label="日夜外观"><button type="button" data-scheme-choice="system">跟随系统</button><button type="button" data-scheme-choice="light">日间</button><button type="button" data-scheme-choice="dark">夜间</button></div><p class="stm-hint">保留当前配色与背景，自定义颜色优先。</p></div>
             <section class="stm-font-section">
                 <div class="stm-font-heading"><span>界面字体</span><button type="button" class="stm-secondary" data-action="import-font">＋ 导入字体</button></div>
@@ -258,7 +275,7 @@ function initialize() {
             <section class="stm-queue-sheet" role="dialog" aria-modal="true" aria-label="当前播放列表">
                 <span class="stm-sheet-grip" aria-hidden="true"></span>
                 <header><div><strong>当前播放</strong><span data-role="queue-count"></span><small data-role="queue-source"></small></div><button type="button" class="stm-icon" data-action="close-queue" aria-label="关闭播放列表">×</button></header>
-                <ol class="stm-queue-list" aria-label="当前歌单"></ol><p class="stm-sheet-empty stm-hint">播放列表还是空的。</p>
+                <div class="stm-queue-tools"><span>临时调整不会修改歌单</span><button type="button" class="stm-secondary" data-action="reset-queue">恢复歌单顺序</button></div><ol class="stm-queue-list" aria-label="当前歌单"></ol><p class="stm-sheet-empty stm-hint">播放列表还是空的。</p>
             </section>
         </div>
         <div id="stm-details" class="stm-queue-overlay stm-details-overlay" hidden>
@@ -268,6 +285,7 @@ function initialize() {
                 <header><strong>歌曲详情</strong><button type="button" class="stm-icon" data-action="close-details" aria-label="关闭歌曲详情">×</button></header>
                 <div class="stm-details-content">
                     <div class="stm-details-summary"><img class="stm-details-cover" alt="歌曲封面"><div><strong data-role="details-title"></strong><small data-role="details-source"></small></div></div>
+                    <div class="stm-detail-primary-actions"><button type="button" class="stm-primary" data-action="detail-play">播放</button><button type="button" class="stm-secondary" data-action="detail-membership">加入歌单</button><button type="button" class="stm-secondary" data-action="detail-unlink">从此歌单移除</button><button type="button" class="stm-secondary stm-danger" data-action="detail-delete">从曲库删除</button></div>
                     <p class="stm-hint">让封面和歌词，成为这首歌的一部分。</p>
                     <div class="stm-platform-credit stm-hint" data-role="platform-credit" hidden></div>
                     <button type="button" class="stm-secondary" data-action="open-official" hidden>打开官方播放器</button>
@@ -393,14 +411,14 @@ function initialize() {
         query(selector).addEventListener('keydown', event => {
             if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); }
             if (event.key === 'Tab') {
-                const buttons = [...query(selector).querySelectorAll('button:not(:disabled), a[href]')];
+                const buttons = [...query(selector).querySelectorAll('button:not(:disabled), a[href]')].filter(element => element.getClientRects().length);
                 if (event.shiftKey && document.activeElement === buttons[0]) { event.preventDefault(); buttons.at(-1)?.focus(); }
                 else if (!event.shiftKey && document.activeElement === buttons.at(-1)) { event.preventDefault(); buttons[0]?.focus(); }
             }
         });
     }
     query('[data-action="toggle-queue"]').addEventListener('click', () => setQueueOpen(query('#stm-queue').hidden));
-    query('[data-action="go-import"]').addEventListener('click', () => { importTarget.value = settings.activePlaylistId || ''; menus.refresh(); showPage('import'); });
+    query('[data-action="go-import"]').addEventListener('click', () => { importTarget.value = browsedPlaylistId === BUILTIN_ID ? '' : browsedPlaylistId || ''; menus.refresh(); showPage('import'); });
     query('[data-action="go-library"]').addEventListener('click', showLibraryHome);
     function setManagerOpen(open) {
         query('#stm-playlist-manager').hidden = !open;
@@ -411,7 +429,7 @@ function initialize() {
     tabs.forEach((button, index) => {
         button.addEventListener('click', () => { if (button.dataset.page === 'library') showLibraryHome(); else showPage(button.dataset.page); });
         button.addEventListener('keydown', event => {
-            const offset = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+            const offset = ['ArrowRight','ArrowDown'].includes(event.key) ? 1 : ['ArrowLeft','ArrowUp'].includes(event.key) ? -1 : 0;
             if (offset || event.key === 'Home' || event.key === 'End') {
                 event.preventDefault();
                 const next = event.key === 'Home' ? tabs[0] : event.key === 'End' ? tabs.at(-1) : tabs[(index + offset + tabs.length) % tabs.length];
@@ -420,7 +438,7 @@ function initialize() {
             }
         });
     });
-    const themes = { amber: '暖砂', ocean: '雾蓝', forest: '松绿', rose: '烟粉', lavender: '月紫', pearl: '珍珠白' };
+    const themes = { night: '夜航', amber: '暖砂', ocean: '雾蓝', forest: '松绿', rose: '烟粉', lavender: '月紫', pearl: '珍珠白' };
     for (const [theme, name] of Object.entries(themes)) {
         const button = document.createElement('button');
         button.type = 'button';
@@ -523,7 +541,7 @@ function initialize() {
     const mini = createMiniPlayer({
         panel, audio,
         getTrack: () => findTrack(settings, settings.currentId),
-        getCount: () => getQueue(settings).filter(track => platformService.canPlay(track)).length,
+        getCount: () => playbackQueue.tracks().filter(track => platformService.canPlay(track)).length,
         loadCover: track => track.coverId ? cachedCover(track.coverId) : Promise.resolve(track.cover || null),
         onOpen: () => showPage('playback'), onPlay: toggleCurrent, onQueue: () => setQueueOpen(true),
     });
@@ -538,7 +556,7 @@ function initialize() {
         },
         showStatus, async onPlay(track, force = false) {
             savePlatformImport({ type: 'track', complete: true, total: 1, tracks: [track], name: track.title }, { targetId: importTarget.value || null });
-            if (!getQueue(settings).some(item => item.id === track.id)) await activatePlaylist(importTarget.value || null);
+            if (!playbackQueue.tracks().some(item => item.id === track.id)) await activatePlaylist(importTarget.value || null);
             if (force) await selectTrack(track.id, true); else await toggleTrack(track.id);
         },
     });
@@ -563,6 +581,7 @@ function initialize() {
         if (settings.builtinHidden && settings.activePlaylistId === BUILTIN_ID) await activatePlaylist(null);
         save(); renderPlaylists(); renderTracks();
     });
+    const playerUI = createPlayerUI(panel, launcher, audio);
     function updateMini() { mini.render(currentPage === 'playback' || panel.dataset.lyricsOpen === 'true'); }
 
 
@@ -670,11 +689,25 @@ function initialize() {
             if (track.license) { const notice = document.createElement('p'); notice.textContent = track.license.attribution; credit.append(notice); }
             for (const [label, url] of [['在官方平台查看', track.sourceUrl], ['许可说明', track.license?.url]]) if (url) { const link = document.createElement('a'); link.href = url; link.textContent = label; link.target = '_blank'; link.rel = 'noopener noreferrer'; credit.append(link); }
         }
+        const playing = settings.currentId === track.id && !audio.paused && !audio.ended;
+        const direct = platformService.canPlay(track);
+        query('[data-action="detail-play"]').hidden = !direct;
+        query('[data-action="detail-play"]').textContent = playing ? '暂停' : '播放';
+        query('[data-action="detail-play"]').setAttribute('aria-label', `${playing ? '暂停歌曲' : '播放歌曲'}：${track.title}`);
+        query('[data-action="detail-membership"]').setAttribute('aria-label', `加入歌单：${track.title}`);
+        query('[data-action="detail-delete"]').setAttribute('aria-label', `删除：${track.title}`);
+        query('[data-action="detail-delete"]').hidden = browsedPlaylistId === BUILTIN_ID;
+        query('[data-action="detail-unlink"]').hidden = !browsedPlaylist()?.trackIds.includes(track.id);
+        query('[data-action="detail-unlink"]').setAttribute('aria-label', `从歌单移除：${track.title}`);
         const coverId = track.coverId;
         if (coverId) void cachedCover(coverId).then(url => {
             if (url && detailsTrackId === track.id && track.coverId === coverId) image.src = url;
         });
     }
+    query('[data-action="detail-play"]').addEventListener('click', () => void toggleTrack(detailsTrackId, browsedPlaylistId));
+    query('[data-action="detail-membership"]').addEventListener('click', () => { setDetailsOpen(false); showMembership(detailsTrackId); });
+    query('[data-action="detail-unlink"]').addEventListener('click', () => { setDetailsOpen(false); void unlinkTrack(detailsTrackId); });
+    query('[data-action="detail-delete"]').addEventListener('click', async () => { await removeTrack(detailsTrackId); if (!findTrack(settings, detailsTrackId)) setDetailsOpen(false); });
     query('[data-action="open-official"]').addEventListener('click', () => officialPlayer.open(findTrack(settings, detailsTrackId)));
     function editableDetailsTrack(id = detailsTrackId) {
         if (!findTrack(settings, id)) return null;
@@ -830,8 +863,87 @@ function initialize() {
     }
 
     const activePlaylist = () => settings.playlists.find(item => item.id === settings.activePlaylistId);
-    const collectionName = () => settings.activePlaylistId === BUILTIN_ID ? settings.builtinCatalog.title : activePlaylist()?.name || '总曲库';
+    const browsedPlaylist = () => settings.playlists.find(item => item.id === browsedPlaylistId);
+    const collectionName = (id = settings.activePlaylistId) => id === BUILTIN_ID ? settings.builtinCatalog.title : settings.playlists.find(item => item.id === id)?.name || '总曲库';
     const freshContext = () => globalThis.SillyTavern.getContext();
+
+    function libraryTracks(tracks = getQueue(settings, browsedPlaylistId)) {
+        const term = query('#stm-library-search').value.trim().toLocaleLowerCase();
+        const filter = query('#stm-library-filter').value;
+        const result = tracks.filter(track => (!term || `${track.title} ${track.artist || ''}`.toLocaleLowerCase().includes(term))
+            && (filter === 'all' || filter === track.kind || filter === 'playable' && platformService.canPlay(track) || filter === 'restricted' && !platformService.canPlay(track)));
+        const sort = query('#stm-library-sort').value;
+        if (sort !== 'original') result.sort((a,b) => String(sort === 'artist' ? a.artist || '' : a.title).localeCompare(String(sort === 'artist' ? b.artist || '' : b.title),'zh-CN'));
+        return result;
+    }
+    function renderCollectionHero() {
+        const selected = browsedPlaylist(), count = getQueue(settings, browsedPlaylistId).length;
+        query('[data-role="hero-title"]').textContent = collectionName(browsedPlaylistId);
+        const names = new Map((freshContext().characters || []).map(character => [character.avatar, character.name]));
+        const roles = selected?.characterAvatars.map(avatar => names.get(avatar) || avatar) || [];
+        query('[data-role="hero-meta"]').textContent = `${count} 首${selected ? roles.length ? ` · 已绑定：${roles.join('、')}` : ' · 未绑定角色' : browsedPlaylistId === BUILTIN_ID ? ' · 开发者预设' : ' · 全部音乐'}`;
+        query('[data-role="hero-description"]').textContent = selected?.description || (selected ? '喜欢的旋律，与同一段故事相伴。' : '所有音乐在这里，找到今天想听的那一首。');
+        collectionImage(query('.stm-collection-hero img'), selected || (browsedPlaylistId === BUILTIN_ID ? {id:BUILTIN_ID} : null));
+        query('[data-action="bulk-unlink"]').hidden = !selected;
+        query('[data-action="bulk-delete"]').hidden = browsedPlaylistId === BUILTIN_ID;
+        query('[data-action="edit-order"]').hidden = !selected;
+    }
+    function updateSelection() {
+        const ids = new Set(getQueue(settings, browsedPlaylistId).map(track => track.id));
+        for (const id of librarySelection) if (!ids.has(id)) librarySelection.delete(id);
+        const visible = libraryTracks(), selected = visible.filter(track => librarySelection.has(track.id)).length;
+        query('[data-role="selection-count"]').textContent = `已选 ${librarySelection.size} 首`;
+        const check = query('#stm-select-visible'); check.checked = Boolean(visible.length) && selected === visible.length; check.indeterminate = selected > 0 && selected < visible.length;
+        for (const button of panel.querySelectorAll('[data-action^="bulk-"]')) button.disabled = !librarySelection.size || button.dataset.action === 'bulk-add' && !settings.playlists.length;
+    }
+    function showMembership(id) {
+        const track = findTrack(settings, id); if (!track) return;
+        membershipTrackId = id;
+        showPage('library');
+        if (!libraryDetail) { libraryDetail = true; panel.dataset.libraryDetail = 'true'; renderLibraryHome(); }
+        query('[data-role="membership-title"]').textContent = `将「${track.title}」加入歌单`;
+        query('[data-action="confirm-membership"]').disabled = !settings.playlists.length;
+        if (settings.playlists.some(playlist => playlist.id === preferredPlaylistId)) { query('#stm-add-target').value = preferredPlaylistId; menus.refresh(); }
+        query('.stm-membership').hidden = false;
+        query('.stm-membership').scrollIntoView({block:'nearest'});
+        (query('#stm-add-target-trigger').disabled ? query('[data-action="create-for-song"]') : query('#stm-add-target-trigger')).focus();
+    }
+    for (const id of ['stm-library-search','stm-library-sort','stm-library-filter']) query(`#${id}`).addEventListener(id.endsWith('search') ? 'input' : 'change', () => { panel.dataset.orderEditing = 'false'; query('[data-action="edit-order"]').setAttribute('aria-pressed','false'); renderTracks(); });
+    query('[data-action="toggle-bulk"]').addEventListener('click', event => {
+        const open = panel.dataset.bulkEditing !== 'true'; panel.dataset.bulkEditing = String(open);
+        panel.dataset.orderEditing = 'false'; query('[data-action="edit-order"]').setAttribute('aria-pressed','false');
+        event.currentTarget.setAttribute('aria-pressed',String(open)); query('.stm-bulk-tools').hidden = !open;
+        if (!open) librarySelection.clear(); renderTracks();
+    });
+    query('#stm-select-visible').addEventListener('change', event => { for (const track of libraryTracks()) if (event.target.checked) librarySelection.add(track.id); else librarySelection.delete(track.id); renderTracks(); });
+    query('[data-action="bulk-add"]').addEventListener('click', () => {
+        try {
+            const ids = [...librarySelection], target = query('#stm-bulk-target').value;
+            if (!settings.playlists.some(playlist => playlist.id === target)) throw new Error('请先创建并选择目标歌单。');
+            if (ids.filter(id => !settings.tracks.some(track => track.id === id)).length > MAX_TRACKS - settings.tracks.length) throw new Error('总曲库容量不足，请减少勾选数量后重试。');
+            for (const id of ids) addTrackToPlaylist(settings,target,id);
+            save(); renderPlaylists(); renderTracks(); showStatus(`已将 ${ids.length} 首歌曲加入歌单，原歌曲保留不变。`);
+        } catch (error) { showStatus(error.message,true); }
+    });
+    query('[data-action="bulk-unlink"]').addEventListener('click', async () => { const sourceId = browsedPlaylistId; for (const id of [...librarySelection]) await unlinkTrack(id, sourceId); librarySelection.clear(); renderTracks(); });
+    query('[data-action="bulk-delete"]').addEventListener('click', async () => {
+        if (!window.confirm(`从总曲库及所有歌单删除所选 ${librarySelection.size} 首歌曲？`)) return;
+        for (const id of [...librarySelection]) await removeTrack(id,true);
+        librarySelection.clear(); renderTracks();
+    });
+    query('[data-action="save-description"]').addEventListener('click', () => {
+        const selected = browsedPlaylist(); if (!selected) return;
+        const text = query('#stm-playlist-description').value.trim().slice(0,240);
+        if (text) selected.description = text; else delete selected.description;
+        save(); renderCollectionHero(); showStatus('歌单简介已保存。');
+    });
+    query('[data-action="edit-order"]').addEventListener('click', event => {
+        const open = panel.dataset.orderEditing !== 'true'; panel.dataset.orderEditing = String(open); event.currentTarget.setAttribute('aria-pressed',String(open));
+        panel.dataset.bulkEditing = 'false'; query('.stm-bulk-tools').hidden = true; query('[data-action="toggle-bulk"]').setAttribute('aria-pressed','false'); librarySelection.clear();
+        query('#stm-library-sort').value = 'original'; query('#stm-library-filter').value = 'all'; query('#stm-library-search').value = ''; menus.refresh(); renderTracks();
+        if (open) showStatus('使用歌曲右侧的上下箭头调整歌单顺序；当前临时播放队列保持不变。');
+    });
+    query('[data-action="reset-queue"]').addEventListener('click', () => { playbackQueue.reset(settings.activePlaylistId); renderQueue(); updateMini(); showStatus('已恢复歌单顺序，永久歌单没有改动。'); });
 
     function renderRoleStatus() {
         const current = freshContext();
@@ -844,7 +956,7 @@ function initialize() {
     }
 
     function renderRolePicker() {
-        const selected = activePlaylist();
+        const selected = browsedPlaylist();
         const picker = query('.stm-role-picker');
         picker.replaceChildren();
         if (!selected) return;
@@ -876,7 +988,7 @@ function initialize() {
     }
 
     function showLibraryHome() {
-        libraryDetail = false;
+        libraryDetail = false; panel.dataset.libraryDetail = 'false';
         query('#stm-library-home').hidden = false;
         query('#stm-library-detail').hidden = true;
         query('#stm-create-playlist-panel').hidden = true;
@@ -886,8 +998,8 @@ function initialize() {
     async function browseCollection(id) {
         const normalized = id === BUILTIN_ID && !settings.builtinHidden ? BUILTIN_ID : settings.playlists.some(playlist => playlist.id === id) ? id : null;
         showPage('library');
-        if (settings.activePlaylistId !== normalized && !await activatePlaylist(normalized)) return;
-        libraryDetail = true;
+        viewRevision++; browsedPlaylistId = normalized; librarySelection.clear();
+        libraryDetail = true; panel.dataset.libraryDetail = 'true';
         query('#stm-library-home').hidden = true;
         query('#stm-library-detail').hidden = false;
         setManagerOpen(false);
@@ -908,7 +1020,7 @@ function initialize() {
         const coverId = playlist?.coverId || track?.coverId;
         const fallback = fallbackCoverUrl(track?.fallbackCover ?? 0);
         image.src = playlist?.source?.cover || track?.cover || fallback;
-        image.addEventListener('error', () => { if (image.src !== fallback) image.src = fallback; }, { once: true });
+        image.onerror = () => { if (image.src !== fallback) image.src = fallback; };
         if (coverId) void cachedCover(coverId).then(url => { if (url && image.isConnected) image.src = url; });
     }
     function renderLibraryHome() {
@@ -928,7 +1040,7 @@ function initialize() {
                 if (playlist) {
                     const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'stm-icon'; edit.textContent = '⋯';
                     edit.setAttribute('aria-label', `管理歌单：${playlist.name}`);
-                    edit.addEventListener('click', async () => { await browseCollection(playlist.id); if (activePlaylist()?.id === playlist.id) setManagerOpen(true); });
+                    edit.addEventListener('click', async () => { await browseCollection(playlist.id); if (browsedPlaylist()?.id === playlist.id) setManagerOpen(true); });
                     row.append(edit);
                 }
                 target.append(row); collectionImage(image, playlist);
@@ -952,16 +1064,16 @@ function initialize() {
     query('[data-action="create-for-song"]').addEventListener('click', () => openCreatePlaylist(membershipTrackId));
     let preferredPlaylistId = null;
     query('[data-action="choose-library-songs"]').addEventListener('click', async () => {
-        const playlist = activePlaylist(); if (!playlist) return;
+        const playlist = browsedPlaylist(); if (!playlist) return;
         preferredPlaylistId = playlist.id;
         await browseCollection(null);
-        showStatus(`在歌曲右侧点“加入歌单”，目标已预选为「${playlist.name}」。`);
+        showStatus(`点歌曲右侧“⋯ → 加入歌单”，目标已预选为「${playlist.name}」。`);
     });
     const playlistCoverInput = query('[data-role="playlist-cover-file"]');
     query('[data-action="playlist-cover"]').addEventListener('click', () => playlistCoverInput.click());
     playlistCoverInput.addEventListener('change', async () => {
         const file = playlistCoverInput.files[0]; playlistCoverInput.value = '';
-        const playlist = activePlaylist(); if (!file || !playlist) return;
+        const playlist = browsedPlaylist(); if (!file || !playlist) return;
         const id = `cover:${createTrackId()}`;
         try {
             validateImageFile(file);
@@ -975,7 +1087,7 @@ function initialize() {
         } catch (error) { await store.delete(id).catch(() => {}); showStatus(error.message || '歌单封面保存失败。', true); }
     });
     query('[data-action="clear-playlist-cover"]').addEventListener('click', async () => {
-        const playlist = activePlaylist(); if (!playlist?.coverId) return;
+        const playlist = browsedPlaylist(); if (!playlist?.coverId) return;
         const previous = playlist.coverId;
         try { await store.delete(previous); } catch { showStatus('封面删除失败，请重试。', true); return; }
         delete playlist.coverId; forgetCover(previous); save(); renderPlaylists(); showStatus('已恢复歌单默认封面。');
@@ -983,26 +1095,29 @@ function initialize() {
 
     function renderPlaylists() {
         const importId = importTarget.value;
+        const bulkId = query('#stm-bulk-target').value;
         const membershipId = query('#stm-add-target').value;
-        for (const [select, libraryName] of [[playlistSelect, '总曲库'], [query('#stm-library-playlist'), '总曲库'], [importTarget, '不选择 · 仅加入总曲库'], [query('#stm-add-target'), null]]) {
+        for (const [select, libraryName] of [[playlistSelect, '总曲库'], [query('#stm-library-playlist'), '总曲库'], [importTarget, '不选择 · 仅加入总曲库'], [query('#stm-add-target'), null], [query('#stm-bulk-target'), null]]) {
             select.replaceChildren();
             if (libraryName) select.append(new Option(libraryName, ''));
             if (select === playlistSelect && !settings.builtinHidden && settings.builtinCatalog.tracks.length) select.append(new Option(settings.builtinCatalog.title, BUILTIN_ID));
-            if (select === query('#stm-library-playlist') && settings.activePlaylistId === BUILTIN_ID) select.append(new Option(settings.builtinCatalog.title, BUILTIN_ID));
+            if (select === query('#stm-library-playlist') && browsedPlaylistId === BUILTIN_ID) select.append(new Option(settings.builtinCatalog.title, BUILTIN_ID));
             for (const playlist of settings.playlists) select.append(new Option(playlist.name, playlist.id));
         }
         playlistSelect.value = settings.activePlaylistId || '';
-        query('#stm-library-playlist').value = settings.activePlaylistId || '';
+        query('#stm-library-playlist').value = browsedPlaylistId || '';
         importTarget.value = settings.playlists.some(item => item.id === importId) ? importId : '';
         if (settings.playlists.some(item => item.id === membershipId)) query('#stm-add-target').value = membershipId;
-        const selected = activePlaylist();
+        if (settings.playlists.some(item => item.id === bulkId)) query('#stm-bulk-target').value = bulkId;
+        const selected = browsedPlaylist();
         query('.stm-playlist-editor').hidden = !selected;
-        if (selected) query('#stm-playlist-name').value = selected.name;
+        if (selected) { query('#stm-playlist-name').value = selected.name; query('#stm-playlist-description').value = selected.description || ''; }
         menus.refresh();
         if (!settings.playlists.length || !findTrack(settings, membershipTrackId)) query('.stm-membership').hidden = true;
         renderRoleStatus();
         renderRolePicker();
         renderLibraryHome();
+        renderCollectionHero();
         query('[data-action="toggle-manager"]').hidden = !selected;
         query('[data-action="choose-library-songs"]').hidden = !selected;
         query('[data-action="clear-playlist-cover"]').disabled = !selected?.coverId;
@@ -1011,11 +1126,12 @@ function initialize() {
     async function activatePlaylist(id, open = false) {
         settings.activePlaylistId = id === BUILTIN_ID && !settings.builtinHidden ? BUILTIN_ID : settings.playlists.some(playlist => playlist.id === id) ? id : null;
         const revision = ++viewRevision;
+        playbackQueue.reset(settings.activePlaylistId);
         pausePlayback();
         query('.stm-membership').hidden = true;
         renderPlaylists();
         if (open) { showPage('playback'); setOpen(true, false); }
-        const queue = getQueue(settings);
+        const queue = playbackQueue.tracks();
         const selected = activePlaylist();
         const track = queue.find(item => item.id === settings.currentId)
             || queue.find(item => item.id === selected?.lastTrackId) || queue[0];
@@ -1025,6 +1141,7 @@ function initialize() {
     }
 
     function pausePlayback() {
+        playerUI.setResolving(false);
         clearTimeout(playbackTimer); officialPlayer.close(); officialList.close();
         platformLoadController?.abort(); platformLoadController = null;
         loadSequence++;
@@ -1042,6 +1159,8 @@ function initialize() {
         if (avatar) {
             pausePlayback();
             const binding = playlistForCharacter(settings, avatar);
+            browsedPlaylistId = binding?.id ?? null;
+            librarySelection.clear();
             const activated = await activatePlaylist(binding?.id ?? null, Boolean(binding));
             if (!activated || revision !== roleRevision) return;
             if (binding) showStatus(`已打开「${binding.name}」，点击播放开始听歌。`);
@@ -1054,12 +1173,19 @@ function initialize() {
 
     function renderTracks() {
         list.replaceChildren();
-        const queue = getQueue(settings);
+        const collection = getQueue(settings, browsedPlaylistId);
+        const queue = libraryTracks(collection);
         let assignedCover = false;
         for (const track of queue) {
             if (track.fallbackCover === undefined) { track.fallbackCover = randomCover(); assignedCover = true; }
             const row = document.createElement('li');
-            row.className = 'stm-track';
+            row.className = 'stm-track'; row.dataset.trackId = track.id;
+            if (panel.dataset.bulkEditing === 'true') {
+                const label = document.createElement('label'); label.className = 'stm-bulk-check';
+                const check = document.createElement('input'); check.type = 'checkbox'; check.checked = librarySelection.has(track.id); check.setAttribute('aria-label', `选择歌曲：${track.title}`);
+                check.addEventListener('change', () => { if (check.checked) librarySelection.add(track.id); else librarySelection.delete(track.id); updateSelection(); });
+                label.append(check); row.append(label);
+            }
             row.classList.toggle('stm-active', track.id === settings.currentId);
             const thumbnail = document.createElement('img');
             thumbnail.className = 'stm-track-thumbnail'; thumbnail.alt = ''; thumbnail.loading = 'lazy';
@@ -1070,7 +1196,7 @@ function initialize() {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'stm-track-select';
-            button.setAttribute('aria-label', `播放：${track.title}`);
+            button.setAttribute('aria-label', `${platformService.canPlay(track) ? '播放' : '查看来源'}：${track.title}`);
             button.setAttribute('aria-current', track.id === settings.currentId ? 'true' : 'false');
             const title = document.createElement('span');
             title.className = 'stm-track-title';
@@ -1078,14 +1204,7 @@ function initialize() {
             const source = document.createElement('small');
             source.textContent = track.kind === 'platform' ? `${track.artist ? track.artist + ' · ' : ''}${PLATFORM_NAMES[track.platform]} · ${platformService.canPlay(track) ? '站内播放' : platformService.canEmbed(track) ? '官方播放器 · 可能仅试听' : '官方平台收听'}` : track.artist || (track.kind === 'local' ? '本地音乐' : new URL(track.url).hostname);
             button.append(title, source);
-            button.addEventListener('click', () => void toggleTrack(track.id));
-            const remove = document.createElement('button');
-            remove.type = 'button';
-            remove.className = 'stm-icon stm-remove';
-            remove.textContent = '×';
-            remove.setAttribute('aria-label', `删除：${track.title}`);
-            remove.title = '从总曲库及所有歌单删除此音乐';
-            remove.addEventListener('click', () => void removeTrack(track.id));
+            button.addEventListener('click', () => void toggleTrack(track.id, browsedPlaylistId));
             row.append(button);
             const details = document.createElement('button');
             details.type = 'button'; details.className = 'stm-icon'; details.textContent = '⋯';
@@ -1095,44 +1214,30 @@ function initialize() {
                 detailsTrackId = track.id; setDetailsOpen(true);
             });
             row.append(details);
-            if (activePlaylist()) {
-                const unlink = document.createElement('button');
-                unlink.type = 'button';
-                unlink.className = 'stm-icon';
-                unlink.textContent = '−';
-                unlink.title = '仅从此歌单移除，保留曲库歌曲';
-                unlink.setAttribute('aria-label', `从歌单移除：${track.title}`);
-                unlink.addEventListener('click', () => void unlinkTrack(track.id));
-                row.append(unlink);
-            } else {
-                const add = document.createElement('button');
-                add.type = 'button';
-                add.className = 'stm-secondary stm-add-song';
-                add.textContent = '加入歌单';
-                add.title = '加入歌单（没有歌单时可新建）';
-                add.setAttribute('aria-label', `加入歌单：${track.title}`);
-                add.addEventListener('click', () => {
-                    membershipTrackId = track.id;
-                    query('[data-role="membership-title"]').textContent = `将「${track.title}」加入歌单`;
-                    query('[data-action="confirm-membership"]').disabled = !settings.playlists.length;
-                    if (settings.playlists.some(playlist => playlist.id === preferredPlaylistId)) { query('#stm-add-target').value = preferredPlaylistId; menus.refresh(); }
-                    query('.stm-membership').hidden = false;
-                    query('.stm-membership').scrollIntoView({ block: 'nearest' });
-                    (query('#stm-add-target-trigger').disabled ? query('[data-action="create-for-song"]') : query('#stm-add-target-trigger')).focus();
-                });
-                row.append(add);
+            if (browsedPlaylist() && panel.dataset.orderEditing === 'true') {
+                for (const [direction, caption] of [[-1,'上移'],[1,'下移']]) {
+                    const move = document.createElement('button'); move.type = 'button'; move.className = 'stm-icon stm-move-song'; move.textContent = direction < 0 ? '↑' : '↓'; move.setAttribute('aria-label', `${caption}歌曲：${track.title}`);
+                    const index = browsedPlaylist().trackIds.indexOf(track.id); move.disabled = direction < 0 ? index === 0 : index === browsedPlaylist().trackIds.length - 1;
+                    move.addEventListener('click', () => {
+                        const ids = browsedPlaylist().trackIds, from = ids.indexOf(track.id), to = from + direction;
+                        if (from < 0 || to < 0 || to >= ids.length) return;
+                        [ids[from], ids[to]] = [ids[to], ids[from]]; save(); renderTracks();
+                        [...list.querySelectorAll('.stm-move-song')].find(button => button.getAttribute('aria-label') === `${caption}歌曲：${track.title}`)?.focus({preventScroll:true});
+                    }); row.append(move);
+                }
             }
-            if (settings.activePlaylistId !== BUILTIN_ID) row.append(remove);
-            row.append(trackControl(track));
+            row.append(trackControl(track, browsedPlaylistId));
             list.append(row);
         }
-        query('[data-role="collection-title"]').textContent = collectionName();
+        query('[data-role="collection-title"]').textContent = collectionName(browsedPlaylistId);
         query('[data-role="count"]').textContent = String(queue.length);
-        query('.stm-empty').hidden = queue.length > 0;
-        query('.stm-empty').textContent = settings.activePlaylistId === BUILTIN_ID ? '开发者尚未配置默认曲目。以后更新插件会收到预设曲库，你的歌曲和歌单会保留。' : activePlaylist() ? '此歌单还没有歌曲，请选择导入目标，或从总曲库添加。' : '曲库还是空的，导入本地音乐或添加直链开始吧。';
-        playButton.disabled = !queue.some(track => platformService.canPlay(track));
-        query('[data-action="previous"]').disabled = queue.length === 0;
-        query('[data-action="next"]').disabled = queue.length === 0;
+        query('.stm-empty').hidden = collection.length > 0;
+        query('.stm-search-empty').hidden = !collection.length || Boolean(queue.length);
+        updateSelection(); renderCollectionHero();
+        query('.stm-empty').textContent = browsedPlaylistId === BUILTIN_ID ? '开发者尚未配置默认曲目。以后更新插件会收到预设曲库，你的歌曲和歌单会保留。' : browsedPlaylist() ? '此歌单还没有歌曲，请选择导入目标，或从总曲库添加。' : '曲库还是空的，导入本地音乐或添加直链开始吧。';
+        playButton.disabled = !playbackQueue.tracks().some(track => platformService.canPlay(track));
+        query('[data-action="previous"]').disabled = playbackQueue.tracks().length === 0;
+        query('[data-action="next"]').disabled = playbackQueue.tracks().length === 0;
         if (assignedCover) save();
         if (!findTrack(settings, detailsTrackId)) setDetailsOpen(false);
         else if (!query('#stm-details').hidden) renderSongDetails();
@@ -1145,7 +1250,7 @@ function initialize() {
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'stm-track-select';
-        button.setAttribute('aria-label', `${label}：${track.title}`);
+        button.setAttribute('aria-label', `${platformService.canPlay(track) ? label : '查看来源'}：${track.title}`);
         button.setAttribute('aria-current', String(track.id === settings.currentId));
         const title = document.createElement('span');
         title.className = 'stm-song-title';
@@ -1158,12 +1263,12 @@ function initialize() {
     }
 
     function renderQueue() {
-        const queue = getQueue(settings);
+        const queue = playbackQueue.tracks();
         const target = query('.stm-queue-list');
         const scrollTop = target.scrollTop;
         const focused = target.contains(document.activeElement) ? {
             id: document.activeElement.closest('.stm-queue-track')?.dataset.trackId,
-            toggle: document.activeElement.classList.contains('stm-row-play'),
+            toggle: document.activeElement.classList.contains('stm-row-play'), action: document.activeElement.dataset.queueAction,
         } : null;
         target.replaceChildren();
         for (const track of queue) {
@@ -1171,14 +1276,22 @@ function initialize() {
             row.className = 'stm-queue-track';
             row.dataset.trackId = track.id;
             row.classList.toggle('stm-active', track.id === settings.currentId);
-            row.append(songButton(track, '播放队列歌曲', track.artist || (track.kind === 'local' ? '本地音乐' : '在线音乐'), () => { void toggleTrack(track.id); }), trackControl(track));
+            row.append(songButton(track, '播放队列歌曲', `${track.id === settings.currentId ? '当前歌曲' : playbackQueue.hasPlayed(track.id) ? '本轮已播放' : '接下来'} · ${track.artist || (track.kind === 'local' ? '本地音乐' : '在线音乐')}`, () => { void toggleTrack(track.id); }), trackControl(track));
+            for (const [action, label, text] of [['up','上移队列歌曲','↑'],['down','下移队列歌曲','↓'],['remove','移出播放队列','×']]) {
+                const button = document.createElement('button'); button.type = 'button'; button.className = 'stm-icon stm-queue-edit'; button.textContent = text; button.dataset.queueAction = action; button.setAttribute('aria-label', `${label}：${track.title}`);
+                const index = queue.findIndex(item => item.id === track.id);
+                button.disabled = action === 'remove' ? track.id === settings.currentId : action === 'up' ? index === 0 : index === queue.length - 1;
+                button.addEventListener('click', () => { if (action === 'remove') playbackQueue.remove(track.id, settings.currentId); else playbackQueue.move(track.id, action === 'up' ? -1 : 1); renderQueue(); updateMini();
+                    [...target.querySelectorAll('[data-queue-action]')].find(item => item.closest('li').dataset.trackId === track.id && item.dataset.queueAction === action)?.focus({preventScroll:true});
+                }); row.append(button);
+            }
             target.append(row);
         }
         query('.stm-queue-empty').hidden = queue.length > 0;
         target.scrollTop = scrollTop;
         if (focused && !query('#stm-queue').hidden) {
             const row = [...target.children].find(element => element.dataset.trackId === focused.id);
-            (row?.querySelector(focused.toggle ? '.stm-row-play' : '.stm-track-select') || query('#stm-queue button')).focus({ preventScroll: true });
+            (row?.querySelector(focused.action ? `[data-queue-action=${focused.action}]` : focused.toggle ? '.stm-row-play' : '.stm-track-select') || query('#stm-queue button')).focus({ preventScroll: true });
         }
         query('.stm-sheet-empty').hidden = queue.length > 0;
         query('[data-role="queue-count"]').textContent = ` · ${queue.length} 首`;
@@ -1186,7 +1299,7 @@ function initialize() {
         updatePlayback();
     }
 
-    async function toggleTrack(id) {
+    async function toggleTrack(id, sourceId) {
         const selected = findTrack(settings, id);
         if (!selected) return;
         if (!platformService.canPlay(selected)) { detailsTrackId = id; setDetailsOpen(true); if (platformService.canEmbed(selected)) officialPlayer.open(selected); else showStatus('此歌曲仅支持前往官方平台收听。'); return; }
@@ -1194,20 +1307,21 @@ function initialize() {
             if (!audio.paused && !audio.ended) audio.pause(); else await play();
             return;
         }
-        if (!getQueue(settings).some(track => track.id === id) && !await activatePlaylist(null)) return;
+        const destination = sourceId === undefined ? (settings.builtinCatalog.tracks.some(track => track.id === id) && !settings.tracks.some(track => track.id === id) ? BUILTIN_ID : null) : sourceId;
+        if ((sourceId !== undefined && sourceId !== settings.activePlaylistId || !playbackQueue.tracks().some(track => track.id === id)) && !await activatePlaylist(destination)) return;
         await selectTrack(id, true);
     }
-    function trackControl(track) {
+    function trackControl(track, sourceId) {
         if (!platformService.canPlay(track)) {
             if (platformService.canEmbed(track)) {
                 const button = document.createElement('button'); button.type = 'button'; button.className = 'stm-secondary stm-embed-open'; button.textContent = '官方播放器';
-                button.setAttribute('aria-label', `打开官方播放器：${track.title}`); button.addEventListener('click', () => void toggleTrack(track.id)); return button;
+                button.setAttribute('aria-label', `打开官方播放器：${track.title}`); button.addEventListener('click', () => void toggleTrack(track.id, sourceId)); return button;
             }
             const link = document.createElement('a'); link.className = 'stm-external-source'; link.href = track.sourceUrl; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = '↗'; link.setAttribute('aria-label', `前往官方平台：${track.title}`); return link;
         }
         const button = document.createElement('button'); button.type = 'button'; button.className = 'stm-row-play';
         button.dataset.trackToggle = track.id; button.dataset.trackTitle = track.title;
-        button.addEventListener('click', () => { void toggleTrack(track.id); });
+        button.addEventListener('click', () => { void toggleTrack(track.id, sourceId); });
         return button;
     }
     async function playHistoryTrack(id) { await toggleTrack(id); }
@@ -1262,9 +1376,11 @@ function initialize() {
         launcher.classList.toggle('stm-playing', playing);
         launcher.title = playing ? '正在播放音乐 · 点击打开，拖动可移动' : '点击打开音乐播放器，拖动可移动';
         launcher.setAttribute('aria-label', launcher.title);
+        if (!query('#stm-details').hidden) renderSongDetails();
     }
 
     function releaseSource() {
+        playerUI.setResolving(false);
         clearTimeout(playbackTimer); officialPlayer.close(); officialList.close();
         platformLoadController?.abort(); platformLoadController = null;
         audio.pause();
@@ -1302,7 +1418,7 @@ function initialize() {
         playSession++;
         canAutoAdvance = true;
         releaseSource();
-        const track = getQueue(settings).find(item => item.id === id);
+        const track = playbackQueue.tracks().find(item => item.id === id);
         settings.currentId = track?.id ?? null;
         const playlist = activePlaylist();
         if (playlist && track) playlist.lastTrackId = track.id;
@@ -1319,6 +1435,7 @@ function initialize() {
             if (track.kind === 'platform') {
                 if (!platformService.canPlay(track)) { if (shouldPlay) showStatus('此平台歌曲仅支持前往官方平台收听，可在歌曲详情中打开来源。'); return; }
                 platformLoadController = new AbortController();
+                playerUI.setResolving(true);
                 const resolved = await platformService.resolve(track, { signal: platformLoadController.signal });
                 if (sequence !== loadSequence) return;
                 source = normalizeUrl(resolved.url);
@@ -1339,13 +1456,15 @@ function initialize() {
             if (shouldPlay) await play();
         } catch (error) {
             if (sequence === loadSequence) showStatus(error.message || '读取音乐失败，请重新导入。', true);
+        } finally {
+            if (sequence === loadSequence) playerUI.setResolving(false);
         }
     }
 
-    async function removeTrack(id) {
+    async function removeTrack(id, confirmed = false) {
         const track = findTrack(settings, id);
         if (!track) return;
-        if (!window.confirm(`从总曲库删除「${track.title}」？\n这首歌也会从所有歌单中移除。`)) return;
+        if (!confirmed && !window.confirm(`从总曲库删除「${track.title}」？\n这首歌也会从所有歌单中移除。`)) return;
         try {
             const keys = [...(track.kind === 'local' ? [id] : []), ...(track.coverId ? [track.coverId] : [])];
             if (keys.length) await store.deleteMany(keys);
@@ -1354,7 +1473,7 @@ function initialize() {
             return;
         }
         if (!findTrack(settings, id)) return;
-        const liveIndex = getQueue(settings).findIndex(item => item.id === id);
+        const liveIndex = playbackQueue.tracks().findIndex(item => item.id === id);
         const current = settings.currentId === id;
         const wasPlaying = !audio.paused;
         deleteTrackFromLibrary(settings, id);
@@ -1362,21 +1481,21 @@ function initialize() {
         save();
         renderPlaylists();
         renderTracks();
-        const queue = getQueue(settings);
+        const queue = playbackQueue.tracks();
         if (current) await selectTrack(queue.length ? queue[Math.max(0, liveIndex) % queue.length].id : null, wasPlaying);
     }
 
-    async function unlinkTrack(id) {
-        const playlist = activePlaylist();
+    async function unlinkTrack(id, playlistId = browsedPlaylistId) {
+        const playlist = settings.playlists.find(item => item.id === playlistId);
         if (!playlist) return;
-        const index = getQueue(settings).findIndex(track => track.id === id);
-        const current = settings.currentId === id;
+        const index = playbackQueue.tracks().findIndex(track => track.id === id);
+        const current = settings.activePlaylistId === playlist.id && settings.currentId === id;
         const wasPlaying = !audio.paused;
         removeTrackFromPlaylist(settings, playlist.id, id);
         save();
         renderPlaylists();
         renderTracks();
-        const queue = getQueue(settings);
+        const queue = playbackQueue.tracks();
         if (current) await selectTrack(queue.length ? queue[Math.max(0, index) % queue.length].id : null, wasPlaying);
         showStatus('已从此歌单移除，歌曲仍保留在总曲库。');
     }
@@ -1384,9 +1503,10 @@ function initialize() {
     async function finishImport(targetId, revision) {
         const target = settings.playlists.find(item => item.id === targetId);
         const destinationId = target?.id ?? null;
+        if (revision === viewRevision) browsedPlaylistId = destinationId;
         renderPlaylists();
         if (revision === viewRevision) {
-            if (settings.activePlaylistId !== destinationId) await activatePlaylist(destinationId);
+            if (settings.activePlaylistId !== destinationId && audio.paused) await activatePlaylist(destinationId);
             else if (!settings.currentId && getQueue(settings).length) await selectTrack(getQueue(settings)[0].id);
         }
         renderTracks();
@@ -1443,15 +1563,15 @@ function initialize() {
     });
     function toggleCurrent() {
         const current = findTrack(settings, settings.currentId);
-        if (!current || !platformService.canPlay(current)) { void selectTrack(getQueue(settings).find(track => platformService.canPlay(track))?.id, true); return; }
+        if (!current || !platformService.canPlay(current)) { void selectTrack(playbackQueue.tracks().find(track => platformService.canPlay(track))?.id, true); return; }
         if (!audio.paused) audio.pause();
-        else if (!audio.getAttribute('src') || audio.error) void selectTrack(settings.currentId || getQueue(settings)[0]?.id, true);
+        else if (!audio.getAttribute('src') || audio.error) void selectTrack(settings.currentId || playbackQueue.tracks()[0]?.id, true);
         else void play();
     }
     playButton.addEventListener('click', toggleCurrent);
     for (const [action, direction] of [['previous', -1], ['next', 1]]) {
         query(`[data-action="${action}"]`).addEventListener('click', () => {
-            void selectTrack(nextTrackId(getQueue(settings).filter(track => platformService.canPlay(track)), settings.currentId, settings.mode, { direction }), !audio.paused);
+            void selectTrack(nextTrackId(playbackQueue.tracks().filter(track => platformService.canPlay(track)), settings.currentId, settings.mode, { direction }), !audio.paused);
         });
     }
     query('[data-action="import"]').addEventListener('click', () => fileInput.click());
@@ -1479,8 +1599,8 @@ function initialize() {
     });
 
     playlistSelect.addEventListener('change', () => void activatePlaylist(playlistSelect.value || null));
-    query('#stm-library-playlist').addEventListener('change', event => void activatePlaylist(event.currentTarget.value || null));
-    query('[data-action="manage-playlists"]').addEventListener('click', async () => { await browseCollection(settings.activePlaylistId); if (activePlaylist()) setManagerOpen(true); else openCreatePlaylist(); });
+    query('#stm-library-playlist').addEventListener('change', event => void browseCollection(event.currentTarget.value || null));
+    query('[data-action="manage-playlists"]').addEventListener('click', async () => { await browseCollection(settings.activePlaylistId); if (browsedPlaylist()) setManagerOpen(true); else openCreatePlaylist(); });
     query('.stm-create-playlist').addEventListener('submit', async event => {
         event.preventDefault();
         try {
@@ -1498,13 +1618,13 @@ function initialize() {
     query('.stm-rename-playlist').addEventListener('submit', event => {
         event.preventDefault();
         try {
-            renamePlaylist(settings, settings.activePlaylistId, query('#stm-playlist-name').value);
+            renamePlaylist(settings, browsedPlaylistId, query('#stm-playlist-name').value);
             save(); renderPlaylists(); renderTracks();
             showStatus('歌单名称已保存。');
         } catch (error) { showStatus(error.message, true); }
     });
     query('[data-action="delete-playlist"]').addEventListener('click', async () => {
-        const selected = activePlaylist();
+        const selected = browsedPlaylist();
         if (!selected || !window.confirm(`删除歌单「${selected.name}」？\n歌曲将全部保留在总曲库，角色绑定会解除。`)) return;
         if (selected.coverId) {
             try { await store.delete(selected.coverId); forgetCover(selected.coverId); }
@@ -1512,6 +1632,7 @@ function initialize() {
         }
         const wasActive = settings.activePlaylistId === selected.id;
         deletePlaylist(settings, selected.id);
+        browsedPlaylistId = null; librarySelection.clear();
         save();
         renderPlaylists();
         if (wasActive) await activatePlaylist(null);
@@ -1526,7 +1647,7 @@ function initialize() {
     });
     query('#stm-role-bindings').addEventListener('submit', async event => {
         event.preventDefault();
-        bindPlaylistCharacters(settings, settings.activePlaylistId, Array.from(panel.querySelectorAll('.stm-role-picker input:checked'), input => input.dataset.avatar));
+        bindPlaylistCharacters(settings, browsedPlaylistId, Array.from(panel.querySelectorAll('.stm-role-picker input:checked'), input => input.dataset.avatar));
         save(); renderPlaylists();
         await syncRole(true);
         showStatus('角色绑定已保存。进入角色只切换歌单，音乐需手动播放。');
@@ -1578,11 +1699,11 @@ function initialize() {
         if (Number.isFinite(audio.duration) && audio.duration > 0) audio.currentTime = Number(seek.value);
     });
     for (const event of ['timeupdate', 'loadedmetadata', 'durationchange', 'emptied']) audio.addEventListener(event, updateProgress);
-    for (const event of ['play', 'pause', 'ended']) audio.addEventListener(event, updatePlayback);
+    for (const event of ['play', 'playing', 'waiting', 'stalled', 'pause', 'ended', 'error']) audio.addEventListener(event, updatePlayback);
     audio.addEventListener('playing', () => {
         clearTimeout(playbackTimer);
         if (audio.paused || !settings.currentId || countedSession === playSession) return;
-        countedSession = playSession;
+        countedSession = playSession; playbackQueue.markPlayed(settings.currentId);
         recordPlayback(settings, settings.currentId);
         save();
         renderHistory();
@@ -1593,7 +1714,7 @@ function initialize() {
     }, 60000);
     audio.addEventListener('ended', () => {
         if (!canAutoAdvance) return;
-        const nextId = nextTrackId(getQueue(settings).filter(track => platformService.canPlay(track)), settings.currentId, settings.mode, { ended: true });
+        const nextId = nextTrackId(playbackQueue.tracks().filter(track => platformService.canPlay(track)), settings.currentId, settings.mode, { ended: true });
         if (nextId) void selectTrack(nextId, true);
         else showStatus('播放列表已播放完毕。');
     });
@@ -1613,7 +1734,7 @@ function initialize() {
             if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
             if (coverUrl) URL.revokeObjectURL(coverUrl);
             for (const id of coverCache.keys()) forgetCover(id);
-            fontPicker.dispose(); mini.dispose(); online.dispose(); platformLoadController?.abort(); menus.dispose(); resizer.dispose(); disposeClickEffects();
+            fontPicker.dispose(); mini.dispose(); playerUI.dispose(); online.dispose(); platformLoadController?.abort(); menus.dispose(); resizer.dispose(); disposeClickEffects();
             clearTimeout(playbackTimer); officialPlayer.close(); officialList.close();
             systemScheme.removeEventListener('change', onSystemScheme);
             window.clearInterval(historyTimer);

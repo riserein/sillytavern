@@ -11,7 +11,7 @@ export const MAX_TRACKS = 200;
 export const MAX_PLAYLISTS = 50;
 export const MAX_FILE_BYTES = 100 * 1024 * 1024;
 export const PLAY_MODES = ['sequence', 'list', 'single', 'shuffle'];
-export const THEMES = ['amber', 'ocean', 'forest', 'rose', 'lavender', 'pearl'];
+export const THEMES = ['night', 'amber', 'ocean', 'forest', 'rose', 'lavender', 'pearl'];
 export const SURFACES = ['matte', 'glass', 'clear'];
 export const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
 export const MAX_RECENT = 100;
@@ -97,6 +97,7 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
         playlists.push({
             id: item.id,
             name: String(item.name || '未命名歌单').trim().slice(0, 80) || '未命名歌单',
+            ...(typeof item.description === 'string' && item.description.trim() ? { description: item.description.trim().slice(0, 240) } : {}),
             trackIds,
             characterAvatars,
             ...(normalizePlaylistSource(item.source) ? { source: normalizePlaylistSource(item.source) } : {}),

@@ -1,0 +1,45 @@
+{
+  "version": "1.10.0",
+  "clientDate": "2026-10-16",
+  "timeZone": "Asia/Shanghai",
+  "baseline": "56dc13e",
+  "syntaxCheck": "passed",
+  "unitTests": {
+    "passed": 60,
+    "failed": 0
+  },
+  "browserTests": {
+    "distinctScenariosPassed": 60,
+    "unresolvedFailures": [],
+    "runs": [
+      {
+        "name": "full regression",
+        "passed": 58,
+        "failed": 2,
+        "failures": [
+          "background saves leave no lingering message and the compact mini bar stays at the bottom in both color schemes",
+          "sharing unsupported platform songs produces explicit external bookmarks while unsupported playlists never import"
+        ]
+      },
+      {
+        "name": "targeted follow-up",
+        "passed": 4,
+        "failed": 1,
+        "failures": [
+          "background saves leave no lingering message and the compact mini bar stays at the bottom in both color schemes"
+        ]
+      },
+      {
+        "name": "release follow-up",
+        "passed": 7,
+        "failed": 0,
+        "failures": []
+      }
+    ],
+    "note": "Full run initially had two failures; targeted reruns verify both fixes and affected UI flows. This is not a claim of a single all-green full run."
+  },
+  "actualAudio": "Generated WAV/MP3 through HTML Audio; external platform test responses are fixtures unless specifically marked live.",
+  "mobile": "Chromium viewport and touch emulation; no physical iOS/Android validation.",
+  "realExternalPlaybackVerified": false,
+  "liveReport": "v1.10-live-verification.json"
+}

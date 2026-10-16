@@ -52,11 +52,19 @@ async function playSong(page, name) {
 }
 
 async function selectAlbum(page, id) {
-    await playerPage(page, '曲库');
+    // These legacy scenarios intentionally change the playing source as well as opening its editor.
+    await playerPage(page, '播放');
+    await chooseSelect(page, '#stm-playlist', id);
     await page.getByRole('tab', { name: '曲库', exact: true }).click();
     await page.locator(`.stm-collection-open[data-collection-id="${id}"]`).click();
     await expect(page.locator('#stm-library-playlist')).toHaveValue(id);
     if (id) await page.locator('[data-action="toggle-manager"]').click();
+}
+
+async function songAction(page, name) {
+    const title = name.slice(name.indexOf('：') + 1);
+    if (await page.locator('#stm-details').isHidden()) await page.getByRole('button', {name:`歌曲详情：${title}`,exact:true}).click();
+    await page.getByRole('button', {name,exact:true}).click();
 }
 
 async function importSongs(page, names = ['雨夜', '旅途']) {
@@ -247,7 +255,7 @@ test('invalid files, broken links and browser playback restrictions explain reco
     await expect(page.locator('.stm-status')).toContainText('音乐加载失败');
     page.once('dialog', dialog => dialog.accept());
     await playerPage(page, '曲库');
-    await page.getByRole('button', { name: '删除：missing', exact: true }).click();
+    await songAction(page, '删除：missing');
     await importSongs(page, ['需要点击播放']);
     await page.locator('#stm-player audio').evaluate(audio => { audio.play = () => Promise.reject(new DOMException('blocked', 'NotAllowedError')); });
     await playerPage(page, '播放');
@@ -263,7 +271,7 @@ test('deleting a selected local track clears playback and its stored audio', asy
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.currentTime)).toBeGreaterThan(0);
     page.once('dialog', dialog => dialog.accept());
     await playerPage(page, '曲库');
-    await page.getByRole('button', { name: '删除：要删除的音乐', exact: true }).click();
+    await songAction(page, '删除：要删除的音乐');
     await expect(page.locator('.stm-track')).toHaveCount(0);
     await expect(page.locator('[data-action="play"]')).toBeDisabled();
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(true);
@@ -436,16 +444,17 @@ test.describe('touch dragging', () => {
 
 async function createAlbum(page, name) {
     await playerPage(page, '曲库');
+    await page.getByRole('tab', {name:'曲库',exact:true}).click();
     await page.locator('[data-action="new-playlist"]').click();
     await page.locator('#stm-new-playlist').fill(name);
     await page.getByRole('button', { name: '新建', exact: true }).click();
     await expect(page.locator('[data-role="collection-title"]')).toHaveText(name);
-    return page.locator('#stm-playlist').inputValue();
+    return page.locator('#stm-library-playlist').inputValue();
 }
 
 async function addExisting(page, song, playlistId) {
     await selectAlbum(page, '');
-    await page.getByRole('button', { name: `加入歌单：${song}`, exact: true }).click();
+    await songAction(page, `加入歌单：${song}`);
     await chooseSelect(page, '#stm-add-target', playlistId);
     await page.getByRole('button', { name: '加入歌单', exact: true }).click();
 }
@@ -550,17 +559,17 @@ test('shared songs, album-only removal and confirmed global deletion have distin
     await page.getByRole('button', { name: '下一首', exact: true }).click();
     await expect(page.locator('[data-role="title"]')).toHaveText('共有曲');
     await playerPage(page, '曲库');
-    await page.getByRole('button', { name: '从歌单移除：共有曲', exact: true }).click();
+    await songAction(page, '从歌单移除：共有曲');
     await expect(page.locator('.stm-track')).toHaveCount(0);
     await selectAlbum(page, second);
     await expect(page.locator('.stm-track')).toHaveCount(1);
     page.once('dialog', dialog => dialog.dismiss());
     await playerPage(page, '曲库');
-    await page.getByRole('button', { name: '删除：共有曲', exact: true }).click();
+    await songAction(page, '删除：共有曲');
     await expect(page.locator('.stm-track')).toHaveCount(1);
     page.once('dialog', dialog => dialog.accept());
     await playerPage(page, '曲库');
-    await page.getByRole('button', { name: '删除：共有曲', exact: true }).click();
+    await songAction(page, '删除：共有曲');
     await expect(page.locator('.stm-track')).toHaveCount(0);
     await selectAlbum(page, '');
     await expect(page.locator('.stm-track')).toHaveCount(1);
@@ -717,7 +726,7 @@ test('recent and ranking pages record successful starts once, support replay, pe
     await expect(page.locator('.stm-recent-list .stm-song-title')).toHaveText(['乙曲', '甲曲']);
     await playerPage(page, '曲库');
     page.once('dialog', dialog => dialog.accept());
-    await page.getByRole('button', { name: '删除：甲曲', exact: true }).click();
+    await songAction(page, '删除：甲曲');
     await playerPage(page, '播放排行');
     await expect(page.locator('.stm-ranking-list .stm-song-title')).toHaveText(['乙曲']);
     await playerPage(page, '最近播放');
@@ -1001,7 +1010,7 @@ test('missing art uses bundled images; manual cover and LRC imports persist and 
     await expect(page.locator('.stm-lyrics-lines p')).toHaveText(['月光', '照进窗台']);
     const keys = await page.evaluate(() => { const track = SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0]; return [track.id, track.coverId]; });
     await playerPage(page, '曲库'); page.once('dialog', dialog => dialog.accept());
-    await page.getByRole('button', { name: '删除：没有封面的歌', exact: true }).click();
+    await songAction(page, '删除：没有封面的歌');
     expect(await page.evaluate(async keys => { const {LocalMusicStore} = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); const store=new LocalMusicStore(); return (await Promise.all(keys.map(key=>store.get(key)))).every(value=>!value); }, keys)).toBe(true);
     await expect(page.locator('.stm-track')).toHaveCount(0);
 });
@@ -1293,7 +1302,7 @@ test('my music lists library first, creates an album from a song, and saves an i
     await expect(page.locator('#stm-library-playlist')).toBeHidden();
     await expect(page.locator('#stm-library-playlist-trigger')).toHaveCount(0);
     await page.getByRole('button', { name: '打开歌单：总曲库', exact: true }).click();
-    await page.getByRole('button', { name: '加入歌单：放入新歌单', exact: true }).click();
+    await songAction(page, '加入歌单：放入新歌单');
     await expect(page.locator('[data-role="membership-title"]')).toHaveText('将「放入新歌单」加入歌单');
     await expect(page.locator('[data-action="confirm-membership"]')).toBeDisabled();
     await page.locator('[data-action="create-for-song"]').click();
@@ -1484,7 +1493,7 @@ test('sharing unsupported platform songs produces explicit external bookmarks wh
     await expect(page.locator('.stm-track')).toHaveCount(1);
     await playerPage(page,'曲库');await expect(page.locator('.stm-track .stm-external-source')).toHaveAttribute('href','https://music.163.com/song?id=123');
     await expect(page.locator('.stm-track .stm-row-play')).toHaveCount(0);
-    await page.getByRole('button',{name:'播放：我的网易云收藏',exact:true}).click();
+    await page.getByRole('button',{name:'查看来源：我的网易云收藏',exact:true}).click();
     await expect(page.getByRole('dialog',{name:'歌曲详情',exact:true})).toBeVisible();
     await expect(page.locator('[data-role=platform-credit]')).toContainText('仅支持前往官方平台');
     await expect.poll(()=>page.locator('#stm-player audio').evaluate(audio=>audio.paused)).toBe(true);
@@ -1546,7 +1555,7 @@ test('bundled catalog updates do not fetch playlists at startup or overwrite cop
     const album=await createAlbum(page,'保留自己的收藏');
     await page.getByRole('tab',{name:'曲库',exact:true}).click();await page.getByRole('button',{name:'打开默认曲库',exact:true}).click();
     await expect(page.locator('.stm-track-title')).toHaveText('开发者测试预设');
-    await page.getByRole('button',{name:'加入歌单：开发者测试预设',exact:true}).click();await chooseSelect(page,'#stm-add-target',album);
+    await songAction(page, '加入歌单：开发者测试预设');await chooseSelect(page,'#stm-add-target',album);
     const saved=waitForPlayerSave(page,s=>s.tracks.length===1&&s.playlists[0].trackIds.length===1);await page.locator('[data-action=confirm-membership]').click();await saved;
     const renamed=waitForPlayerSave(page,s=>s.tracks[0].title==='用户自己的名称');await page.evaluate(()=>{const c=SillyTavern.getContext();c.extensionSettings.riserein_music_player.tracks[0].title='用户自己的名称';c.saveSettingsDebounced();});await renamed;
     version=2;await page.reload();await page.waitForFunction(()=>!document.getElementById('preloader'));await page.locator('#stm-launcher').click();
