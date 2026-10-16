@@ -3,6 +3,8 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
     testDir: './tests',
     testMatch: '*.e2e.js',
+    // The independent card suite needs a real, separately installed Tavern Helper.
+    testIgnore: '**/card-player.e2e.js',
     workers: 1,
     timeout: 45000,
     use: {

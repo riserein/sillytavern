@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "tavernHelperVersion": "4.11.3",
+  "tavernHelperRevision": "a0f3a180344cff38a4b3e75041d5a94380b877d6",
+  "sillyTavernVersion": "1.19.0",
+  "fullPluginEnabled": false,
+  "musicMocked": false,
+  "music": "embedded original synthetic MP3",
+  "llmResponse": "deterministic local test fixture; no real AI service",
+  "mobile": "Chromium touch/viewport emulation, not physical hardware",
+  "results": [
+    {
+      "name": "real character script keeps its host audio across greetings, messages, AI swipes, edits, regeneration and chats",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "real script import, disable/re-enable, duplicate execution and PNG card export/reimport retain an independent working player",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "mobile character lifecycle reuses audio during chat/swipe and removes all resources on exit",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ]
+}
