@@ -70,10 +70,12 @@ test('drafts survive close/reopen/reload, copy and switch, retaining actual impo
     await expect(page.locator('#stm-maker-title')).toHaveValue('项目 A');
     await expect(page.getByLabel('第1首歌词', { exact: true })).toHaveValue('[00:01]保存歌词');
     await expect(page.locator('[data-maker-color=accent]')).toHaveValue('#123456');
+    await page.locator('[data-maker-color=background]').evaluate(node=>{node.value='#234567';node.dispatchEvent(new Event('input'));});
     await page.evaluate(() => maker.flush());
     await page.reload();
     await maker(page);
     await expect(page.locator('#stm-maker-title')).toHaveValue('项目 A');
+    await expect(page.locator('[data-maker-color=background]')).toHaveValue('#234567');
     const saved = await page.evaluate(async (prefix) => {
         const { CardProjectStore } = await import(prefix + 'card-player/project-store.js');
         const db = new CardProjectStore();
@@ -643,7 +645,7 @@ test.afterEach(async ({}, info) => {
         milliseconds: info.duration,
     });
     await writeFile(
-        'docs/card-player/quality-browser-validation.json',
+        process.env.ST_QUALITY_REPORT || 'docs/card-player/quality-browser-validation.json',
         JSON.stringify(
             {
                 environment:

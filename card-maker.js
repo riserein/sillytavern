@@ -89,7 +89,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
             ]
                 .filter((node) => ['INPUT', 'TEXTAREA', 'SELECT'].includes(node.tagName))
                 .map((node) => [
-                    node.id || node.dataset.makerColor || node.dataset.maker,
+                    node.dataset.makerColor ? `color:${node.dataset.makerColor}` : node.id || node.dataset.maker,
                     node.type === 'checkbox' ? node.checked : node.value,
                 ]),
         );
@@ -193,10 +193,11 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         sourceSettings = project.sourceSettings;
         projectAssets = project.assets || {};
         for (const node of element.querySelectorAll('input,textarea,select')) {
-            const key = node.id || node.dataset.makerColor || node.dataset.maker;
-            if (!(key in project.form)) continue;
-            if (node.type === 'checkbox') node.checked = project.form[key];
-            else node.value = project.form[key];
+            const key = node.dataset.makerColor ? `color:${node.dataset.makerColor}` : node.id || node.dataset.maker;
+            const value = project.form[key] ?? (node.dataset.makerColor ? project.form[node.dataset.makerColor] : undefined);
+            if (value === undefined || (node.type === 'color' && typeof value !== 'string')) continue;
+            if (node.type === 'checkbox') node.checked = value;
+            else node.value = value;
         }
         q('[data-maker=background]').disabled = !sourceSettings.backgroundId && !projectAssets.imageBlob;
         q('[data-maker=font-credit-label]').hidden = sourceSettings.fontPreset !== 'custom';
