@@ -1,0 +1,351 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.data.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/v1.13.3/data-browser.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/data",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-data.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-data.e2e.js",
+      "file": "card-data.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "complete ZIP download includes actual library/project bytes and excludes host credentials; preview is read-only",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3002,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:40:43.634Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-b7cdacfe99e7a2949e86",
+          "file": "card-data.e2e.js",
+          "line": 40,
+          "column": 1
+        },
+        {
+          "title": "ZIP restores into a clean account with actual IDB, checked role remapping and preserved original project IDs",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5459,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:40:46.862Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-f52449abf7f52694944b",
+          "file": "card-data.e2e.js",
+          "line": 48,
+          "column": 1
+        },
+        {
+          "title": "failed settings save keeps staged bytes and old settings; explicit readback safely rolls back only owned data",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5769,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:40:52.341Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-467a9b4750dcca03a9a3",
+          "file": "card-data.e2e.js",
+          "line": 58,
+          "column": 1
+        },
+        {
+          "title": "damaged backup never mutates existing IDB or visible settings",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2133,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:40:58.130Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-96de153ab0790d0394e9",
+          "file": "card-data.e2e.js",
+          "line": 67,
+          "column": 1
+        },
+        {
+          "title": "same-origin account stores and project IDs are isolated and never automatically adopt legacy bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 380,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:41:00.272Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-49d31f15ddf55acbfe9b",
+          "file": "card-data.e2e.js",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "legacy UI requires ownership and explicit selection/copy; music/font/project bytes survive and original DB stays intact",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 11009,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[2m    \"audio\": 240162,\u001b[22m\n\u001b[32m-   \"current\": 5,\u001b[39m\n\u001b[31m+   \"current\": 10,\u001b[39m\n\u001b[2m    \"drafts\": 1,\u001b[22m\n\u001b[2m    \"fonts\": 1,\u001b[22m\n\u001b[2m    \"old\": 5,\u001b[22m\n\u001b[2m    \"oldDrafts\": 1,\u001b[22m\n\u001b[2m  }\u001b[22m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[2m    \"audio\": 240162,\u001b[22m\n\u001b[32m-   \"current\": 5,\u001b[39m\n\u001b[31m+   \"current\": 10,\u001b[39m\n\u001b[2m    \"drafts\": 1,\u001b[22m\n\u001b[2m    \"fonts\": 1,\u001b[22m\n\u001b[2m    \"old\": 5,\u001b[22m\n\u001b[2m    \"oldDrafts\": 1,\u001b[22m\n\u001b[2m  }\u001b[22m\n    at /workspace/sillytavern/tests/card-data.e2e.js:93:17",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-data.e2e.js",
+                      "column": 17,
+                      "line": 93
+                    },
+                    "snippet": "  91 |  expect(await page.evaluate(async()=>(await library.entries()).length)).toBe(0);await page.locator('[data-data=apply]').click();await expect(page.locator('[data-data=status]')).toContainText('恢复完成',{timeout:30000});\n  92 |  const result=await page.evaluate(async prefix=>{const {LocalMusicStore}=await import(prefix+'local-store.js'),{CardProjectStore}=await import(prefix+'card-player/project-store.js');return {current:await library.count(),drafts:await drafts.count(),old:await new LocalMusicStore({scope:'legacy'}).count(),oldDrafts:await new CardProjectStore(indexedDB,{scope:'legacy'}).count(),audio:(await library.get(app.settings.tracks[0].id)).size,fonts:app.settings.fonts.length};},prefix);\n> 93 |  expect(result).toEqual({current:5,drafts:1,old:5,oldDrafts:1,audio:tone.length,fonts:1});\n     |                 ^\n  94 | });\n  95 | test('real quota failure aborts a binary batch and its ownership records without deleting prior bytes',async()=>{\n  96 |  const directory=await mkdtemp(join(tmpdir(),'stm-v133-quota-'));let context;"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-data.e2e.js",
+                        "column": 17,
+                        "line": 93
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[2m    \"audio\": 240162,\u001b[22m\n\u001b[32m-   \"current\": 5,\u001b[39m\n\u001b[31m+   \"current\": 10,\u001b[39m\n\u001b[2m    \"drafts\": 1,\u001b[22m\n\u001b[2m    \"fonts\": 1,\u001b[22m\n\u001b[2m    \"old\": 5,\u001b[22m\n\u001b[2m    \"oldDrafts\": 1,\u001b[22m\n\u001b[2m  }\u001b[22m\n\n  91 |  expect(await page.evaluate(async()=>(await library.entries()).length)).toBe(0);await page.locator('[data-data=apply]').click();await expect(page.locator('[data-data=status]')).toContainText('恢复完成',{timeout:30000});\n  92 |  const result=await page.evaluate(async prefix=>{const {LocalMusicStore}=await import(prefix+'local-store.js'),{CardProjectStore}=await import(prefix+'card-player/project-store.js');return {current:await library.count(),drafts:await drafts.count(),old:await new LocalMusicStore({scope:'legacy'}).count(),oldDrafts:await new CardProjectStore(indexedDB,{scope:'legacy'}).count(),audio:(await library.get(app.settings.tracks[0].id)).size,fonts:app.settings.fonts.length};},prefix);\n> 93 |  expect(result).toEqual({current:5,drafts:1,old:5,oldDrafts:1,audio:tone.length,fonts:1});\n     |                 ^\n  94 | });\n  95 | test('real quota failure aborts a binary batch and its ownership records without deleting prior bytes',async()=>{\n  96 |  const directory=await mkdtemp(join(tmpdir(),'stm-v133-quota-'));let context;\n    at /workspace/sillytavern/tests/card-data.e2e.js:93:17"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:41:00.662Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/data/card-data.e2e.js-legacy-UI-0e8f9-nd-original-DB-stays-intact/test-failed-1.png"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/data/card-data.e2e.js-legacy-UI-0e8f9-nd-original-DB-stays-intact/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-data.e2e.js",
+                    "column": 17,
+                    "line": 93
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-24d0bde67669b8a714d9",
+          "file": "card-data.e2e.js",
+          "line": 85,
+          "column": 1
+        },
+        {
+          "title": "real quota failure aborts a binary batch and its ownership records without deleting prior bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1506,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:41:12.668Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-83821edae9e16ad3dcd4",
+          "file": "card-data.e2e.js",
+          "line": 95,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T10:40:42.894Z",
+    "duration": 31540.409000000003,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

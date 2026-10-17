@@ -4,6 +4,7 @@ import { parseLyrics, currentLyricIndex } from '../media.js';
 import { watchRoleLifetime } from './lifecycle.js';
 import { clampPosition } from '../floating.js';
 import { normalizeCardConfig, normalizeAppearance } from './config.js';
+import { rolePreferences } from './preferences.js';
 
 /** Host-owned audio survives message/chat changes; the role owns every resource. */
 export function mountCardPlayer(input, scope) {
@@ -52,11 +53,9 @@ export function mountCardPlayer(input, scope) {
     const fontName = `rscp-${scope.scriptId}-${roleId}`.replace(/[^a-z0-9-]/gi, '');
     let drag = null,
         suppressClick = false;
+    const preferences=rolePreferences(scope,namespace,legacyNamespace);
     try {
-        const current = win.localStorage.getItem(namespace);
-        const legacy = current ? null : win.localStorage.getItem(legacyNamespace);
-        const saved = JSON.parse(current || legacy || '{}');
-        if (!current && legacy) win.localStorage.setItem(namespace, JSON.stringify(saved));
+        const saved = preferences.read();
         audio.volume = Number.isFinite(saved.volume) ? Math.min(1, Math.max(0, saved.volume)) : config.volume;
     } catch {
         audio.volume = config.volume;
@@ -252,7 +251,7 @@ export function mountCardPlayer(input, scope) {
     listen(query('.volume input'), 'input', (event) => {
         audio.volume = Number(event.target.value) / 100;
         try {
-            win.localStorage.setItem(namespace, JSON.stringify({ volume: audio.volume }));
+            preferences.write({volume:audio.volume});
         } catch {
             /* Optional preference. */
         }

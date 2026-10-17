@@ -1,4 +1,5 @@
 import { createLyricsLookup } from './lyrics.js';
+import { preferenceKey } from './data/identity.js';
 import { CardProjectStore, captureProjectResources } from './card-player/project-store.js';
 import {
     PLAYER_BUILD,
@@ -151,7 +152,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     draftStatus('草稿已保存 · 仅存于当前浏览器，请定期导出备份');
                 }
                 try {
-                    localStorage.setItem('riserein:maker:last-project', snapshot.id);
+                    localStorage.setItem(preferenceKey('riserein:maker:last-project',drafts.scope), snapshot.id);
                 } catch {
                     /* optional */
                 }
@@ -541,7 +542,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
             const rows = await drafts.list();
             let last;
             try {
-                last = localStorage.getItem('riserein:maker:last-project');
+                last = localStorage.getItem(preferenceKey('riserein:maker:last-project',drafts.scope));
             } catch {
                 /* optional */
             }

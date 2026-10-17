@@ -8,6 +8,7 @@ import { mountSharedPlayer, SHARED_CSS } from './dist/shared-ui.js';
 import { unpackFont } from './font-transport.js';
 import { FONT_PRESETS } from '../fonts.js';
 import { base64Bytes } from '../base64.js';
+import { rolePreferences } from './preferences.js';
 
 function dataBlob(value, win) {
     const comma = value.indexOf(',');
@@ -109,12 +110,9 @@ export function mountNativePlayer(payload, scope, options = {}) {
             'positions',
             'panelSize',
         ];
+        const preferences=rolePreferences(scope,namespace,`riserein:card-native:v1:${encodeURIComponent(scope.roleId)}:${encodeURIComponent(config.id)}`);
         try {
-            const legacyNamespace = `riserein:card-native:v1:${encodeURIComponent(scope.roleId)}:${encodeURIComponent(config.id)}`;
-            const current = win.localStorage.getItem(namespace);
-            const legacy = current ? null : win.localStorage.getItem(legacyNamespace);
-            const saved = JSON.parse(current || legacy || '{}');
-            if (!current && legacy) win.localStorage.setItem(namespace, JSON.stringify(saved));
+            const saved = preferences.read();
             for (const key of allowedState) if (Object.hasOwn(saved, key)) settings[key] = saved[key];
         } catch {
             /* Browser may block local storage; the player still works. */
@@ -126,10 +124,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
             saveSettingsDebounced() {
                 const state = context.extensionSettings.riserein_music_player;
                 try {
-                    win.localStorage.setItem(
-                        namespace,
-                        JSON.stringify(Object.fromEntries(allowedState.map((key) => [key, state[key]]))),
-                    );
+                    preferences.write(Object.fromEntries(allowedState.map((key) => [key, state[key]])));
                 } catch {
                     /* Optional preferences. */
                 }
@@ -185,6 +180,14 @@ export function mountNativePlayer(payload, scope, options = {}) {
             version.className = 'stm-hint';
             version.textContent = `随卡播放器 v${api.runtimeVersion} · 更新请由制作端重建并重新导出角色卡`;
             mounted.panel.querySelector('[data-view=appearance]').append(version);
+            if(preferences.legacy){
+                const adopt=doc.createElement('button');adopt.className='stm-secondary';adopt.textContent='确认归属并复制此角色的旧播放器偏好';
+                adopt.addEventListener('click',()=>{
+                    if(disposed||!win.confirm('确认这份旧设备偏好属于当前账号？只复制音量、外观等设置，原记录保留。'))return;
+                    try{const saved=JSON.parse(preferences.legacy);preferences.write(Object.fromEntries(allowedState.filter(key=>Object.hasOwn(saved,key)).map(key=>[key,saved[key]])));api.dispose();if(scope.currentRole()===scope.roleId)mountNativePlayer(payload,scope,options);}
+                    catch{win.toastr?.warning('旧偏好无法读取，原记录已保留。');}
+                });mounted.panel.querySelector('[data-view=appearance]').append(adopt);
+            }
             const preset = FONT_PRESETS[settings.fontPreset] || FONT_PRESETS.inherit;
             const family = preset.family;
             for (const element of [mounted.panel, mounted.launcher])

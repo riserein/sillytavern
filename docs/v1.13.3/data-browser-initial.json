@@ -1,0 +1,359 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.data.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/v1.13.3/data-browser.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/data",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-data.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-data.e2e.js",
+      "file": "card-data.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "complete ZIP download includes actual library/project bytes and excludes host credentials; preview is read-only",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 90443,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 90000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 90000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 90000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-data.e2e.js",
+                        "column": 116,
+                        "line": 46
+                      },
+                      "message": "Error: locator.click: Test timeout of 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-data=scan]')\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" data-data=\"scan\" class=\"stm-secondary\">扫描空间与安全清理预览</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    168 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m        - element is not visible\u001b[22m\n\u001b[2m      - retrying click action\u001b[22m\n\u001b[2m        - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n\n\n  44 |  const audio=restored.assets.find(([id])=>id===restored.manifest.settings.tracks[0].id)[1];expect(Buffer.from(await audio.arrayBuffer())).toEqual(tone);\n  45 |  const before=await page.evaluate(()=>JSON.stringify(app.settings));await importZip(page,zip);\n> 46 |  expect(await page.evaluate(()=>JSON.stringify(app.settings))).toBe(before);await page.locator('[data-data=scan]').click();await expect(page.locator('[data-data=storage-text]')).toContainText('本地音频');\n     |                                                                                                                    ^\n  47 | });\n  48 | test('ZIP restores into a clean account with actual IDB, checked role remapping and preserved original project IDs',async({browser})=>{\n  49 |  const a=await browser.newPage();await fixture(a);const zip=await exportZip(a);await a.close();\n    at /workspace/sillytavern/tests/card-data.e2e.js:46:116"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:25:30.135Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/data/card-data.e2e.js-complete--38e4a-ntials-preview-is-read-only/test-failed-1.png"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/data/card-data.e2e.js-complete--38e4a-ntials-preview-is-read-only/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-b7cdacfe99e7a2949e86",
+          "file": "card-data.e2e.js",
+          "line": 40,
+          "column": 1
+        },
+        {
+          "title": "ZIP restores into a clean account with actual IDB, checked role remapping and preserved original project IDs",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5653,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:27:01.888Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-f52449abf7f52694944b",
+          "file": "card-data.e2e.js",
+          "line": 48,
+          "column": 1
+        },
+        {
+          "title": "failed settings save keeps staged bytes and old settings; explicit readback safely rolls back only owned data",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 34918,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-data=status]')\nExpected substring: \u001b[32m\"暂存文件\"\u001b[39m\nReceived string:    \u001b[31m\"恢复完成，资源引用与酒馆保存已核对。点击“刷新酒馆”应用曲库和外观；原有数据未清空。\"\u001b[39m\nTimeout: 30000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-data=status]')\u001b[22m\n\u001b[2m    - locator resolved to <p role=\"status\" class=\"stm-hint\" aria-live=\"polite\" data-data=\"status\">恢复计划已核对，请检查数量、恢复方式和角色映射后确认。</p>\u001b[22m\n\u001b[2m    - unexpected value \"恢复计划已核对，请检查数量、恢复方式和角色映射后确认。\"\u001b[22m\n\u001b[2m    - locator resolved to <p role=\"status\" class=\"stm-hint\" aria-live=\"polite\" data-data=\"status\">资源已暂存</p>\u001b[22m\n\u001b[2m    - unexpected value \"资源已暂存\"\u001b[22m\n\u001b[2m    32 × locator resolved to <p role=\"status\" class=\"stm-hint\" aria-live=\"polite\" data-data=\"status\">恢复完成，资源引用与酒馆保存已核对。点击“刷新酒馆”应用曲库和外观；原有数据未清空。</p>\u001b[22m\n\u001b[2m       - unexpected value \"恢复完成，资源引用与酒馆保存已核对。点击“刷新酒馆”应用曲库和外观；原有数据未清空。\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-data=status]')\nExpected substring: \u001b[32m\"暂存文件\"\u001b[39m\nReceived string:    \u001b[31m\"恢复完成，资源引用与酒馆保存已核对。点击“刷新酒馆”应用曲库和外观；原有数据未清空。\"\u001b[39m\nTimeout: 30000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-data=status]')\u001b[22m\n\u001b[2m    - locator resolved to <p role=\"status\" class=\"stm-hint\" aria-live=\"polite\" data-data=\"status\">恢复计划已核对，请检查数量、恢复方式和角色映射后确认。</p>\u001b[22m\n\u001b[2m    - unexpected value \"恢复计划已核对，请检查数量、恢复方式和角色映射后确认。\"\u001b[22m\n\u001b[2m    - locator resolved to <p role=\"status\" class=\"stm-hint\" aria-live=\"polite\" data-data=\"status\">资源已暂存</p>\u001b[22m\n\u001b[2m    - unexpected value \"资源已暂存\"\u001b[22m\n\u001b[2m    32 × locator resolved to <p role=\"status\" class=\"stm-hint\" aria-live=\"polite\" data-data=\"status\">恢复完成，资源引用与酒馆保存已核对。点击“刷新酒馆”应用曲库和外观；原有数据未清空。</p>\u001b[22m\n\u001b[2m       - unexpected value \"恢复完成，资源引用与酒馆保存已核对。点击“刷新酒馆”应用曲库和外观；原有数据未清空。\"\u001b[22m\n\n    at /workspace/sillytavern/tests/card-data.e2e.js:61:148",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-data.e2e.js",
+                      "column": 148,
+                      "line": 61
+                    },
+                    "snippet": "  59 |  const author=await browser.newPage();await fixture(author);const zip=await exportZip(author);await author.close();\n  60 |  const context=await browser.newContext(),page=await context.newPage();await fixture(page,{seed:false});page.on('dialog',dialog=>dialog.accept());await importZip(page,zip);\n> 61 |  await page.evaluate(()=>{window.failSave=true;});await page.locator('[data-data=apply]').click();await expect(page.locator('[data-data=status]')).toContainText('暂存文件',{timeout:30000});\n     |                                                                                                                                                    ^\n  62 |  expect(await page.evaluate(()=>app.settings.tracks.length)).toBe(0);expect(await page.evaluate(async()=>(await library.entries()).length)).toBeGreaterThan(0);\n  63 |  await page.locator('[data-data=recover]').evaluate(n=>n.closest('details').open=true);await page.locator('[data-data=recover]').click();await expect(page.locator('[data-data=recovery-text]')).toContainText('rolled-back');\n  64 |  expect(await page.evaluate(async()=>(await library.entries()).length)).toBe(0);expect(await page.evaluate(async()=>(await drafts.list()).length)).toBe(0);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-data.e2e.js",
+                        "column": 148,
+                        "line": 61
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-data=status]')\nExpected substring: \u001b[32m\"暂存文件\"\u001b[39m\nReceived string:    \u001b[31m\"恢复完成，资源引用与酒馆保存已核对。点击“刷新酒馆”应用曲库和外观；原有数据未清空。\"\u001b[39m\nTimeout: 30000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-data=status]')\u001b[22m\n\u001b[2m    - locator resolved to <p role=\"status\" class=\"stm-hint\" aria-live=\"polite\" data-data=\"status\">恢复计划已核对，请检查数量、恢复方式和角色映射后确认。</p>\u001b[22m\n\u001b[2m    - unexpected value \"恢复计划已核对，请检查数量、恢复方式和角色映射后确认。\"\u001b[22m\n\u001b[2m    - locator resolved to <p role=\"status\" class=\"stm-hint\" aria-live=\"polite\" data-data=\"status\">资源已暂存</p>\u001b[22m\n\u001b[2m    - unexpected value \"资源已暂存\"\u001b[22m\n\u001b[2m    32 × locator resolved to <p role=\"status\" class=\"stm-hint\" aria-live=\"polite\" data-data=\"status\">恢复完成，资源引用与酒馆保存已核对。点击“刷新酒馆”应用曲库和外观；原有数据未清空。</p>\u001b[22m\n\u001b[2m       - unexpected value \"恢复完成，资源引用与酒馆保存已核对。点击“刷新酒馆”应用曲库和外观；原有数据未清空。\"\u001b[22m\n\n\n  59 |  const author=await browser.newPage();await fixture(author);const zip=await exportZip(author);await author.close();\n  60 |  const context=await browser.newContext(),page=await context.newPage();await fixture(page,{seed:false});page.on('dialog',dialog=>dialog.accept());await importZip(page,zip);\n> 61 |  await page.evaluate(()=>{window.failSave=true;});await page.locator('[data-data=apply]').click();await expect(page.locator('[data-data=status]')).toContainText('暂存文件',{timeout:30000});\n     |                                                                                                                                                    ^\n  62 |  expect(await page.evaluate(()=>app.settings.tracks.length)).toBe(0);expect(await page.evaluate(async()=>(await library.entries()).length)).toBeGreaterThan(0);\n  63 |  await page.locator('[data-data=recover]').evaluate(n=>n.closest('details').open=true);await page.locator('[data-data=recover]').click();await expect(page.locator('[data-data=recovery-text]')).toContainText('rolled-back');\n  64 |  expect(await page.evaluate(async()=>(await library.entries()).length)).toBe(0);expect(await page.evaluate(async()=>(await drafts.list()).length)).toBe(0);\n    at /workspace/sillytavern/tests/card-data.e2e.js:61:148"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:27:07.749Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/data/card-data.e2e.js-failed-se-c4d8d--rolls-back-only-owned-data/test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/data/card-data.e2e.js-failed-se-c4d8d--rolls-back-only-owned-data/test-failed-2.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/data/card-data.e2e.js-failed-se-c4d8d--rolls-back-only-owned-data/test-failed-3.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/data/card-data.e2e.js-failed-se-c4d8d--rolls-back-only-owned-data/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/data/card-data.e2e.js-failed-se-c4d8d--rolls-back-only-owned-data/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-data.e2e.js",
+                    "column": 148,
+                    "line": 61
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-467a9b4750dcca03a9a3",
+          "file": "card-data.e2e.js",
+          "line": 58,
+          "column": 1
+        },
+        {
+          "title": "damaged backup never mutates existing IDB or visible settings",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2327,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:27:44.115Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-96de153ab0790d0394e9",
+          "file": "card-data.e2e.js",
+          "line": 67,
+          "column": 1
+        },
+        {
+          "title": "same-origin account stores and project IDs are isolated; legacy copy requires explicit ownership and preserves old DB",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 308,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:27:46.638Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-1e2d47b255ad0f853297",
+          "file": "card-data.e2e.js",
+          "line": 72,
+          "column": 1
+        },
+        {
+          "title": "real quota failure aborts a binary batch and its ownership records without deleting prior bytes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1539,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:27:46.958Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-83821edae9e16ad3dcd4",
+          "file": "card-data.e2e.js",
+          "line": 85,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T10:25:29.272Z",
+    "duration": 139303.93699999998,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

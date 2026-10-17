@@ -1,4 +1,5 @@
 import { mountCardPlayer } from './runtime.js';
+import { accountPreferences } from './preferences.js';
 
 export function createCharacterScope() {
     // These are verified Tavern Helper iframe APIs, not guessed globals on the main page.
@@ -35,6 +36,7 @@ export function createCharacterScope() {
         hostWindow,
         roleId,
         scriptId,
+        preferences: accountPreferences(SillyTavern.getContext()),
         currentRole,
         onRoleChange(handler) {
             eventOn(tavern_events.CHAT_CHANGED, handler);

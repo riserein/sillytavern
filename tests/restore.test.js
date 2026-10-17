@@ -73,3 +73,8 @@ test('changed settings or projects invalidate preview; unrelated remote changes 
  const op={before:plan.before,after:plan.after,id:'op',assets:[],projectIds:[]};
  const result=await recoverRestore({...env,op,remote:env.settings,localSettings:env.settings});assert.equal(result.status,'needs-review');
 });
+test('same-size replacement of reused bytes invalidates restore before any journal or settings write',async()=>{
+ const env=environment(fixture()),plan=await makeRestorePlan({backup:await backup(),current:env.settings,store:env.store,projects:await env.projects.list()});
+ const row=plan.reusedAssets[0],original=env.values.get(row.id);env.values.set(row.id,new Blob([new Uint8Array(original.size).fill(92)]));
+ await assert.rejects(applyRestore({...env,plan,commitSettings:async()=>{throw new Error('must not publish');}}),/资源发生变化/);assert.equal(env.operations.size,0);
+});

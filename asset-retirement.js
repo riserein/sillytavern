@@ -23,7 +23,7 @@ async function postedSettings(input, init) {
  * Never treats the host's debounced-save call or a generic save event as a commit.
  * A closed page can leave unused bytes behind; retaining them is safer than deleting live data.
  */
-export function createAssetRetirement({ store, settings, scheduleSave, onError, onUnconfirmed, host = window }) {
+export function createAssetRetirement({ store, settings, scheduleSave, onError, onUnconfirmed, journal, protectedReferences, host = window }) {
     const previous = host.fetch;
     const pending = new Set();
     let disposed = false, cleanup = Promise.resolve(), active = 0, generation = 0;
@@ -59,25 +59,34 @@ export function createAssetRetirement({ store, settings, scheduleSave, onError, 
             if (saved) {
                 cleanup = cleanup.catch(() => {}).then(async () => {
                     if (disposed || active || token !== generation) return;
+                    const protectedGraph=protectedReferences?await protectedReferences():{refs:new Set(),unknown:false};
+                    if(disposed||active||token!==generation||protectedGraph?.unknown)return;
                     const live = referencedAssets(settings);
                     if (!live) return;
-                    const ids = [...pending].filter(id => !saved.has(id) && !live.has(id));
+                    const acknowledged=[...pending].filter(id=>!saved.has(id)&&!live.has(id));
+                    if(journal)for(const id of acknowledged)await journal.put({id,confirmed:true,at:Date.now()},'retired');
+                    if(disposed||active||token!==generation)return;
+                    const ids = acknowledged.filter(id=>!protectedGraph?.refs?.has(id));
                     if (!ids.length) return;
                     try {
                         await store.deleteMany(ids);
-                        for (const id of ids) pending.delete(id);
+                        for (const id of ids) { pending.delete(id); if(journal)await journal.delete(id,'retired'); }
                     } catch (error) { if (!disposed) onError?.(error); }
                 });
-                await cleanup;
+                await cleanup.catch(error=>{if(!disposed)onError?.(error);});
             }
         }
         return response;
     }
     host.fetch = wrapped;
+    if(journal)void journal.list('retired').then(rows=>{
+        if(disposed)return;for(const row of rows)pending.add(row.id);if(pending.size)scheduleSave();
+    }).catch(error=>{if(!disposed)onError?.(error);});
     return {
         retire(ids) {
             if (disposed) return;
             for (const id of ids) if (id) pending.add(id);
+            if(journal)for(const id of ids)if(id)void journal.put({id,confirmed:false,at:Date.now()},'retired').then(()=>{if(!disposed)scheduleSave();}).catch(error=>{if(!disposed)onError?.(error);});
             if (!disposed && pending.size) scheduleSave();
         },
         get pendingCount() { return pending.size; },
@@ -85,7 +94,7 @@ export function createAssetRetirement({ store, settings, scheduleSave, onError, 
             disposed = true; pending.clear();
             if (host.fetch === wrapped) host.fetch = previous;
             // Another extension can retain a forwarding wrapper; release references to this player.
-            store = settings = scheduleSave = onError = onUnconfirmed = null;
+            store = settings = scheduleSave = onError = onUnconfirmed = journal = protectedReferences = null;
         },
     };
 }

@@ -1,0 +1,152 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.accounts.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/v1.13.3/accounts-browser.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/accounts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-accounts.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-accounts.e2e.js",
+      "file": "card-accounts.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "real SillyTavern accounts isolate library/drafts and reject an old page saving into the new account",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 13694,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m409\u001b[39m\nReceived: \u001b[31m200\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m409\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n    at /workspace/sillytavern/tests/card-accounts.e2e.js:51:274",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-accounts.e2e.js",
+                      "column": 274,
+                      "line": 51
+                    },
+                    "snippet": "  49 |   },prefix);expect(accountB.scope.key).not.toBe(accountA.key);expect(accountB.before).toEqual({resources:0,projects:0});\n  50 |   const retained=await a.evaluate(async({prefix,scope})=>{const {LocalMusicStore}=await import(prefix+'local-store.js'),{CardProjectStore}=await import(prefix+'card-player/project-store.js');return {audio:await(await new LocalMusicStore({scope}).get('shared-id')).text(),project:(await new CardProjectStore(indexedDB,{scope}).get('shared-project')).title};},{prefix,scope:accountA.key});expect(retained).toEqual({audio:'private-A',project:'private-A'});\n> 51 |   const staleSave=await a.evaluate(async()=>{const c=SillyTavern.getContext(),response=await fetch('/api/settings/save',{method:'POST',headers:c.getRequestHeaders(),body:JSON.stringify({extension_settings:c.extensionSettings})});return response.status;});expect(staleSave).toBe(409);\n     |                                                                                                                                                                                                                                                                                  ^\n  52 |   await expect(a.locator('#stm-player')).toHaveCount(0);await expect(a.locator('#stm-launcher')).toHaveCount(0);\n  53 |   const remote=await request.post('/api/settings/get',{headers:await b.evaluate(()=>SillyTavern.getContext().getRequestHeaders())});expect(JSON.parse((await remote.json()).settings).extension_settings?.riserein_music_player?.tracks||[]).toHaveLength(0);\n  54 |  }finally{await context.close().catch(()=>{});}"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-accounts.e2e.js",
+                        "column": 274,
+                        "line": 51
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m409\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n\n  49 |   },prefix);expect(accountB.scope.key).not.toBe(accountA.key);expect(accountB.before).toEqual({resources:0,projects:0});\n  50 |   const retained=await a.evaluate(async({prefix,scope})=>{const {LocalMusicStore}=await import(prefix+'local-store.js'),{CardProjectStore}=await import(prefix+'card-player/project-store.js');return {audio:await(await new LocalMusicStore({scope}).get('shared-id')).text(),project:(await new CardProjectStore(indexedDB,{scope}).get('shared-project')).title};},{prefix,scope:accountA.key});expect(retained).toEqual({audio:'private-A',project:'private-A'});\n> 51 |   const staleSave=await a.evaluate(async()=>{const c=SillyTavern.getContext(),response=await fetch('/api/settings/save',{method:'POST',headers:c.getRequestHeaders(),body:JSON.stringify({extension_settings:c.extensionSettings})});return response.status;});expect(staleSave).toBe(409);\n     |                                                                                                                                                                                                                                                                                  ^\n  52 |   await expect(a.locator('#stm-player')).toHaveCount(0);await expect(a.locator('#stm-launcher')).toHaveCount(0);\n  53 |   const remote=await request.post('/api/settings/get',{headers:await b.evaluate(()=>SillyTavern.getContext().getRequestHeaders())});expect(JSON.parse((await remote.json()).settings).extension_settings?.riserein_music_player?.tracks||[]).toHaveLength(0);\n  54 |  }finally{await context.close().catch(()=>{});}\n    at /workspace/sillytavern/tests/card-accounts.e2e.js:51:274"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T10:39:44.528Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/accounts/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/accounts/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/test-failed-2.png"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/accounts/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-accounts.e2e.js",
+                    "column": 274,
+                    "line": 51
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "caa230fccb85f643e6e7-d25817a7a6a32acb9ebd",
+          "file": "card-accounts.e2e.js",
+          "line": 63,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T10:39:43.853Z",
+    "duration": 15353.919,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

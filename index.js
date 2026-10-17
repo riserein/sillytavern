@@ -27,6 +27,10 @@ import { createNativeCardExport } from './card-player/native-export.js';
 import { createCardHandoff } from './card-player/handoff.js';
 import { createAssetRetirement } from './asset-retirement.js';
 
+import { identifyAccount, setStorageScope, createAccountGuard } from './data/identity.js';
+import { MaintenanceJournal } from './data/journal.js';
+import { createDataPanel } from './data/panel.js';
+
 const SETTINGS_KEY = 'riserein_music_player';
 // Keep the build-time guard explicit at author-only branches: esbuild can then
 // eliminate storage, platform search and the maker from the independent target.
@@ -49,6 +53,8 @@ export function initialize(options = {}) {
     const store = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? options.store : new LocalMusicStore();
     const platformService = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? { canPlay: track => Boolean(track), canEmbed: () => false } : createPlatformService();
     let disposed = false;
+    let maintenanceBusy = false;
+    let dataPanel = null;
     let online = null;
     let platformLoadController = null;
     let objectUrl = null;
@@ -349,12 +355,14 @@ export function initialize(options = {}) {
     const importTarget = query('#stm-import-playlist');
 
     function save() {
-        if (disposed) return;
+        if (disposed || maintenanceBusy) return;
         context.extensionSettings[SETTINGS_KEY] = settings;
         context.saveSettingsDebounced();
     }
+    const maintenanceJournal = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) || !options.account?.verified ? null : new MaintenanceJournal({scope:store.scope});
     const retirement = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : createAssetRetirement({
-        store, settings, scheduleSave: save,
+        store, settings, scheduleSave: save, journal:maintenanceJournal,
+        protectedReferences:maintenanceJournal?()=>dataPanel?dataPanel.protectedReferences():Promise.resolve({unknown:true}):null,
         onError: () => showStatus('设置已保存，但旧资源尚未清理；文件已保留，下次保存时会重试。', true),
         onUnconfirmed: () => showStatus('酒馆没有确认设置已保存；旧资源已保留，请检查连接或服务器磁盘空间后重试。', true),
     });
@@ -1199,6 +1207,7 @@ export function initialize(options = {}) {
     }
 
     async function syncRole(force = false) {
+        if(maintenanceBusy)return;
         const avatar = currentCharacterAvatar(freshContext());
         if (!force && avatar === lastRoleAvatar) { renderRoleStatus(); return; }
         const previous = lastRoleAvatar;
@@ -1788,7 +1797,7 @@ export function initialize(options = {}) {
     function dispose() {
         if (disposed) return;
         disposed = true;
-        cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose(); retirement?.dispose();
+        dataPanel?.dispose(); cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose(); retirement?.dispose(); options.onDispose?.();
         ++loadSequence;
         pausePlayback(); audio.removeAttribute('src'); audio.load();
         for (const stop of hostStops.splice(0)) stop();
@@ -1849,6 +1858,9 @@ export function initialize(options = {}) {
     if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
         cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback});
         query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
+        if(options.account){
+            dataPanel=createDataPanel({panel,settings,store,journal:maintenanceJournal,context,account:options.account,assertAccount:options.assertAccount||(async()=>{throw new Error('账号身份未确认，请重新登录并刷新。');}),flushMaker:()=>cardMaker.flush(),pausePlayback,setMaintenanceBusy:value=>{maintenanceBusy=value;}});
+        }
         query('[data-action="rebuild-native"]').addEventListener('click', async () => {
             const latest = freshContext(), avatar = latest.characters[latest.characterId]?.avatar;
             if (latest.groupId || !avatar || !playlistForCharacter(settings, avatar)) { showStatus('请先打开已绑定歌单的单人角色卡。', true); return; }
@@ -1869,7 +1881,24 @@ export function initialize(options = {}) {
     return { panel, launcher, audio, settings, dispose, setOpen };
 }
 
+async function startFullPlayer() {
+    const context=globalThis.SillyTavern?.getContext();
+    if(!context?.extensionSettings)return initialize();
+    if(document.querySelector('#stm-player:not([data-portable])'))return;
+    let account;
+    try {account=await identifyAccount({headers:context.getRequestHeaders()});}
+    catch(error){
+        setStorageScope({key:null,verified:false,label:'账号身份未确认'});
+        const api=initialize({account:{key:null,verified:false},accountError:error.message});
+        window.toastr?.warning(error.message,'音乐存储已锁定',{escapeHtml:true});return api;
+    }
+    setStorageScope(account);let api;
+    const guard=createAccountGuard({account,context,onMismatch(){api?.dispose();window.toastr?.warning('酒馆账号已切换，旧音乐播放器已停止。请刷新当前页面。','账号变化',{escapeHtml:true});}});
+    try {api=initialize({account,assertAccount:guard.assert,onDispose:guard.dispose});return api;}
+    catch(error){guard.dispose();throw error;}
+}
 if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => initialize(), { once: true });
-    else initialize();
+    const start=()=>{void startFullPlayer().catch(error=>{console.error('[音乐播放器] 初始化失败');window.toastr?.error(error.message,'音乐播放器',{escapeHtml:true});});};
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true});
+    else start();
 }

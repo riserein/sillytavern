@@ -219,3 +219,11 @@
 .stm-maker-busy .stm-maker-tracks { opacity:.6; }.stm-card-maker input[type=checkbox] { appearance:auto; accent-color:var(--ui-accent); }
 
 .stm-card-maker .stm-maker-scroll { height:100%; overflow:auto; overscroll-behavior:contain; padding:18px 22px 28px; }
+
+/* Account maintenance tools use the existing night UI controls and palette. */
+.stm-player.stm-night-ui .stm-data-tools { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--stm-border); }
+.stm-player.stm-night-ui .stm-data-tools summary { cursor: pointer; margin: 12px 0; }
+.stm-player.stm-night-ui .stm-data-tools label { display: block; margin: 10px 0; }
+.stm-player.stm-night-ui .stm-data-tools pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: inherit; }
+.stm-player.stm-night-ui .stm-data-tools progress { display: block; width: 100%; margin: 12px 0; accent-color: var(--stm-accent); }
+.stm-player.stm-night-ui .stm-data-tools progress[hidden] { display: none; }

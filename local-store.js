@@ -32,7 +32,7 @@ export class LocalMusicStore {
         });
     }
 
-    count() { return this.#run('readonly',store=>store.count()); }
+    async count() { const keys=await this.#run('readonly',store=>store.getAllKeys());return keys.filter(key=>!(Array.isArray(key)&&key[0]==='@rscp-owner-v1')).length; }
     entries() {
         return this.#run('readonly', store => {
             const keys=store.getAllKeys(), values=store.getAll();
@@ -43,7 +43,7 @@ export class LocalMusicStore {
         return this.#run('readwrite', store => {
             for(const [id,blob] of entries) {
                 if(!(blob instanceof Blob)) throw new Error('本地资源必须是二进制文件。');
-                const write=()=>{store.put(blob,id);if(owner)store.put({marker:'rscp-owner-v1',owner},['@rscp-owner-v1',id]);};
+                const write=()=>{store.put(blob,id);if(owner)store.put({marker:'rscp-owner-v1',owner},['@rscp-owner-v1',id]);else store.delete(['@rscp-owner-v1',id]);};
                 if(!ifAbsent) write();
                 else {
                     const request=store.getKey(id);

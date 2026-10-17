@@ -10,7 +10,9 @@ export async function identifyAccount({fetcher=globalThis.fetch,headers={},signa
     const combined = signal ? AbortSignal.any([signal,AbortSignal.timeout(5000)]) : AbortSignal.timeout(5000);
     const response = await fetcher('/api/users/me',{headers,credentials:'same-origin',signal:combined,cache:'no-store'});
     if(!response.ok || response.redirected) throw new Error('酒馆未确认当前账号，已暂停本地存储读写；请重新登录并刷新。');
-    const profile = JSON.parse(new TextDecoder().decode(await boundedBytes(response,65536,combined)));
+    // Official /me also returns the base64 avatar; the default avatar alone exceeds 64 KiB.
+    // Keep a finite bound while allowing normal uploaded pictures. Never persist/log the avatar.
+    const profile = JSON.parse(new TextDecoder().decode(await boundedBytes(response,16*1024*1024,combined)));
     if(typeof profile.handle!=='string' || !profile.handle || profile.handle.length>128 || !Number.isSafeInteger(profile.created) || profile.created<=0)
         throw new Error('当前酒馆没有提供受支持的稳定账号标识，本地存储保持锁定。');
     // handle is the server's internal account primary key; created prevents handle-reuse adoption.
@@ -25,22 +27,26 @@ export function databaseName(base,scope=getStorageScope().key) {
 export function preferenceKey(name,scope=getStorageScope().key) { return `${name}:${scope||'locked'}`; }
 
 export function createAccountGuard({account,context,host=window,onMismatch=()=>{}}) {
-    const previous=host.fetch,controller=new AbortController();let disposed=false;
+    const previous=host.fetch,controller=new AbortController();let disposed=false,locked=false;
     const assert=async()=>{
         controller.signal.throwIfAborted();
         const current=await identifyAccount({fetcher:previous.bind(host),headers:context.getRequestHeaders(),signal:controller.signal});
-        if(current.key!==account.key){onMismatch();throw new Error('酒馆账号已切换，已停止旧播放器；请刷新当前页面。');}
+        controller.signal.throwIfAborted();
+        if(current.key!==account.key){locked=true;onMismatch();throw new Error('酒馆账号已切换，已停止旧播放器；请刷新当前页面。');}
         return current;
     };
     async function wrapped(input,init) {
-        if(disposed)return previous.call(this,input,init);
         const target=new URL(typeof input==='string'||input instanceof URL?input:input.url,host.location.href);
         if(target.origin===host.location.origin&&['/api/settings/save','/api/characters/merge-attributes'].includes(target.pathname)){
+            // A stale host page can keep saving AFTER the player has been disposed.
+            // Keep this tiny forwarding guard until reload; release all player listeners below.
+            if(locked)return Response.json({error:'酒馆账号已切换，请刷新旧页面后再保存。'},{status:409});
+            if(disposed)return previous.call(this,input,init);
             try{await assert();}catch(error){return Response.json({error:error.message},{status:409});}
         }
         return previous.call(this,input,init);
     }
     const check=()=>{if(!disposed&&host.document.visibilityState!=='hidden')void assert().catch(()=>{});};
     host.fetch=wrapped;host.addEventListener('focus',check);host.document.addEventListener('visibilitychange',check);
-    return {assert,dispose(){disposed=true;controller.abort();host.removeEventListener('focus',check);host.document.removeEventListener('visibilitychange',check);if(host.fetch===wrapped)host.fetch=previous;}};
+    return {assert,dispose(){disposed=true;controller.abort();host.removeEventListener('focus',check);host.document.removeEventListener('visibilitychange',check);if(!locked&&host.fetch===wrapped)host.fetch=previous;context=null;account=null;onMismatch=null;}};
 }

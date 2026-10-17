@@ -10,10 +10,10 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
     if(!['merge','missing','copy'].includes(mode))throw new Error('请选择受支持的恢复方式。');
     const before=cloneSettings(current),after=cloneSettings(current),incoming=backup.manifest.settings;
     const blobs=new Map(await store.entries()),source=new Map(backup.assets),refs=referencedAssets(before),assetIds=new Map(),trackIds=new Map(),playlistIds=new Map();
-    const byHash=new Map(),fontHashes=new Map();
+    const byHash=new Map(),fontHashes=new Map(),existingDigests=new Map();
     let done=0;
     for(const track of before.tracks.filter(t=>t.kind==='local'))if(blobs.has(track.id)){
-        const digest=await checksum(blobs.get(track.id),{signal});byHash.set(digest.sha256,track.id);onProgress({phase:'duplicates',done:++done,total:before.tracks.length});
+        const digest=await checksum(blobs.get(track.id),{signal});byHash.set(digest.sha256,track.id);existingDigests.set(track.id,digest.sha256);onProgress({phase:'duplicates',done:++done,total:before.tracks.length});
     }
     for(const font of before.fonts)if(blobs.has(font.id))fontHashes.set((await checksum(blobs.get(font.id),{signal})).sha256,font.id);
     const resourceRows=new Map(backup.manifest.resources.map(row=>[row.id,row]));
@@ -21,7 +21,7 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
     const mappedAsset=id=>{
         if(!id)return id;
         if(assetIds.has(id))return assetIds.get(id);
-        if(id.endsWith(':original')){const value=mappedAsset(id.slice(0,-9))+':original';assetIds.set(id,value);if(prefix==='background:'&&source.has(id+':original'))assetIds.set(id+':original',value+':original');return value;}
+        if(id.endsWith(':original')){const value=mappedAsset(id.slice(0,-9))+':original';assetIds.set(id,value);return value;}
         const prefix=id.startsWith('cover:')?'cover:':id.startsWith('background:')?'background:':id.startsWith('font:')?'font:':'';
         const value=refs.has(id)&&!blobs.has(id)?id:prefix+createTrackId();assetIds.set(id,value);if(prefix==='background:'&&source.has(id+':original'))assetIds.set(id+':original',value+':original');return value;
     };
@@ -70,6 +70,7 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
     }
     for(const font of incoming.fonts){
         const row=resourceRows.get(font.id);if(!row)throw new Error('备份字体文件缺失。');
+        if(after.fonts.some(f=>f.id===font.id)&&!blobs.has(font.id)){assetIds.set(font.id,font.id);continue;}
         const existing=fontHashes.get(row.sha256);
         if(existing&&mode!=='copy')assetIds.set(font.id,existing);
         else {const id=mappedAsset(font.id);after.fonts.push({...font,id,hash:row.sha256});fontHashes.set(row.sha256,id);}
@@ -102,7 +103,9 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
     for(const id of finalRefs)if(!blobs.has(id)&&!assetWrites.some(([key])=>key===id))throw new Error('恢复后仍有缺失资源引用；当前曲库与备份均未修改。');
     const checked=normalizeSettings(after);
     if(checked.tracks.length!==after.tracks.length||checked.playlists.length!==after.playlists.length||checked.fonts.length!==after.fonts.length)throw new Error('恢复计划会丢弃无效或冲突项目，已阻止执行。');
-    return {before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.fontBlob?.size||0),0)};
+    const reusedAssets=[];
+    for(const id of finalRefs)if(blobs.has(id))reusedAssets.push({id,bytes:blobs.get(id).size,sha256:existingDigests.get(id)||(await checksum(blobs.get(id),{signal})).sha256});
+    return {before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),reusedAssets,assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.fontBlob?.size||0),0)};
 }
 export async function verifyReferences(settings,store,projects=[]) {
     const missing=[];
@@ -115,6 +118,7 @@ export async function verifyReferences(settings,store,projects=[]) {
 export async function applyRestore({plan,store,projects,journal,settings,commitSettings,assertAccount=async()=>{},signal,onProgress=()=>{}}) {
     await assertAccount();signal?.throwIfAborted();
     if(settingsHash(settings)!==plan.beforeHash||projectVersions(await projects.list())!==plan.projectVersions)throw new Error('预览后曲库或项目已改变，请重新预览；未写入。');
+    for(const row of plan.reusedAssets||[]){const blob=await store.get(row.id);if(!(blob instanceof Blob)||blob.size!==row.bytes||(await checksum(blob,{signal})).sha256!==row.sha256)throw new Error('预览后已有资源发生变化，请重新预览；未写入。');}
     const op={id:'restore:'+createTrackId(),kind:'restore',stage:'prepared',createdAt:Date.now(),before:plan.before,after:plan.after,assets:[],projectIds:plan.projectWrites.map(p=>p.id)};
     for(const [id,blob] of plan.assetWrites)op.assets.push({id,...await checksum(blob,{signal})});
     await journal.put(op);

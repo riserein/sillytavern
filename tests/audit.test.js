@@ -104,6 +104,19 @@ test('disposal preserves another extension fetch wrapper and a retained retired 
     assert.deepEqual(f.deleted, []);
     assert.equal(f.api.pendingCount, 0);
 });
+test('retirement journal preserves draft references and retries confirmed bytes after restart',async()=>{
+ const settings=state(),deleted=[],rows=new Map([['old',{id:'old',confirmed:false}]]),host={location:new URL('https://tavern.example/'),fetch:async()=>Response.json({result:'ok'})};let protect=true;
+ const journal={list:async()=>[...rows.values()],put:async row=>rows.set(row.id,row),delete:async id=>rows.delete(id)};
+ const api=createAssetRetirement({host,settings,journal,protectedReferences:async()=>({refs:new Set(protect?['old']:[]),unknown:false}),store:{deleteMany:async ids=>deleted.push(...ids)},scheduleSave(){}});
+ await new Promise(r=>setTimeout(r,0));const save=()=>host.fetch('/api/settings/save',{method:'POST',body:JSON.stringify({extension_settings:{riserein_music_player:settings}})});
+ await save();assert.equal(rows.get('old').confirmed,true);assert.deepEqual(deleted,[]);protect=false;await save();assert.deepEqual(deleted,['old']);assert.equal(rows.size,0);api.dispose();
+});
+test('maintenance journal quota failure never turns a successful host save into rejection or deletes bytes',async()=>{
+ const settings=state(),deleted=[],errors=[],host={location:new URL('https://tavern.example/'),fetch:async()=>Response.json({result:'ok'})};
+ const api=createAssetRetirement({host,settings,journal:{list:async()=>[],put:async()=>{throw new DOMException('quota','QuotaExceededError');}},store:{deleteMany:async ids=>deleted.push(...ids)},scheduleSave(){},onError:e=>errors.push(e.name)});
+ api.retire(['old']);const response=await host.fetch('/api/settings/save',{method:'POST',body:JSON.stringify({extension_settings:{riserein_music_player:settings}})});
+ assert.equal((await response.json()).result,'ok');assert.deepEqual(deleted,[]);assert(errors.includes('QuotaExceededError'));api.dispose();
+});
 test('static card verification rejects a script larger than 45 MiB instead of overriding its failed status', () => {
     const config = { id: 'audit', title: 'size', tracks: [{ id: 'a', title: 'a', src: 'https://audio.example.org/a.mp3', cover: '' }], appearance: {} };
     const content = payloadLiteral({ config }) + ' '.repeat(46 * 1024 * 1024);
