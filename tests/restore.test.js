@@ -4,6 +4,7 @@ import {fixture} from './data-fixtures.js';
 import {createBackup,inspectBackup} from '../data/backup.js';
 import {makeRestorePlan,applyRestore,recoverRestore,settingsHash} from '../data/restore.js';
 import {normalizeSettings} from '../core.js';
+import {createSettingsCommitter} from '../data/settings-commit.js';
 function environment(source={settings:normalizeSettings({}),entries:[],projects:[]}){
  const values=new Map(source.entries),owners=new Map(),rows=new Map(source.projects.map(p=>[p.id,structuredClone(p)])),operations=new Map();
  return {settings:structuredClone(source.settings),store:{entries:async()=>[...values],get:async id=>values.get(id),owner:async id=>owners.get(id),putMany:async(entries,{ifAbsent,owner})=>{
@@ -38,7 +39,7 @@ test('successful restore publishes only after staging and verifies references',a
  const env=environment(),plan=await makeRestorePlan({backup:await backup(),current:env.settings,store:env.store,projects:[],restorePreferences:true});
  let published=false;
  const result=await applyRestore({...env,plan,commitSettings:async after=>{assert(env.values.size>0);assert(env.rows.size>0);Object.assign(env.settings,after);published=true;return 'confirmed';}});
- assert(published);assert.equal(result.verification.passed,true);assert.equal((await env.journal.list())[0].stage,'complete');
+ assert(published);assert.equal(result.verification.passed,true);const completed=(await env.journal.list())[0];assert.equal(completed.stage,'complete');assert.equal(completed.before,undefined);assert.equal(completed.after,undefined);assert.equal(completed.assets,undefined);assert(completed.resourceCount>0);
 });
 test('project stage failure rolls back only owned new bytes and preserves old data',async()=>{
  const source=fixture(),env=environment(source),original=[...env.values.keys()];
@@ -77,4 +78,10 @@ test('same-size replacement of reused bytes invalidates restore before any journ
  const env=environment(fixture()),plan=await makeRestorePlan({backup:await backup(),current:env.settings,store:env.store,projects:await env.projects.list()});
  const row=plan.reusedAssets[0],original=env.values.get(row.id);env.values.set(row.id,new Blob([new Uint8Array(original.size).fill(92)]));
  await assert.rejects(applyRestore({...env,plan,commitSettings:async()=>{throw new Error('must not publish');}}),/资源发生变化/);assert.equal(env.operations.size,0);
+});
+test('an edit made during the remote preflight is never overwritten by the restore snapshot',async()=>{
+ const before=normalizeSettings({}),settings=structuredClone(before);let release;
+ const host={location:new URL('https://tavern.example/'),fetch:async()=>new Promise(resolve=>{release=()=>resolve(Response.json({settings:JSON.stringify({extension_settings:{riserein_music_player:before}})}));})};
+ const api=createSettingsCommitter({host,settings,context:{getRequestHeaders:()=>({}),extensionSettings:{},saveSettingsDebounced(){throw new Error('must not save');}},assertAccount:async()=>{}});
+ const result=api.commit({...before,volume:.9},before);await new Promise(r=>setTimeout(r,0));settings.volume=.17;release();await assert.rejects(result,/本地设置已改变/);assert.equal(settings.volume,.17);api.dispose();
 });

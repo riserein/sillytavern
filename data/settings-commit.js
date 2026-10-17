@@ -39,6 +39,7 @@ export function createSettingsCommitter({context,settings,assertAccount,host=win
     return {remote,async commit(next,before) {
         if(pending)throw new Error('另一项恢复仍在保存，请先完成核对。');
         const saved=await remote();if(settingsHash(saved)!==settingsHash(before))throw new Error('服务器音乐设置与预览前不同，未覆盖；请刷新后重新预览。');
+        if(settingsHash(settings)!==settingsHash(before))throw new Error('恢复期间本地设置已改变，未覆盖新编辑；请重新预览。');
         controller.signal.throwIfAborted();
         let timer;
         const acknowledged=new Promise(resolve=>{

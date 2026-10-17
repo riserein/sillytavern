@@ -6,6 +6,8 @@ import {checksum,hashText} from './checksum.js';
 const cloneSettings=settings=>JSON.parse(JSON.stringify(normalizeSettings(settings)));
 export const settingsHash=settings=>hashText(canonical(cloneSettings(settings)));
 export const projectVersions=projects=>canonical(projects.map(p=>[p.id,p.revision||0]).sort(([a],[b])=>a.localeCompare(b)));
+// Completed recovery metadata must not retain another full copy of lyrics/settings forever.
+const completedRecord=(op,stage)=>({id:op.id,kind:op.kind||'restore',stage,createdAt:op.createdAt,completedAt:Date.now(),resourceCount:op.assets?.length||0,projectCount:op.projectIds?.length||0});
 export async function makeRestorePlan({backup,current,store,projects=[],mode='merge',restorePreferences=false,bindingMap={},signal,onProgress=()=>{}}) {
     if(!['merge','missing','copy'].includes(mode))throw new Error('请选择受支持的恢复方式。');
     const before=cloneSettings(current),after=cloneSettings(current),incoming=backup.manifest.settings;
@@ -105,7 +107,7 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
     if(checked.tracks.length!==after.tracks.length||checked.playlists.length!==after.playlists.length||checked.fonts.length!==after.fonts.length)throw new Error('恢复计划会丢弃无效或冲突项目，已阻止执行。');
     const reusedAssets=[];
     for(const id of finalRefs)if(blobs.has(id))reusedAssets.push({id,bytes:blobs.get(id).size,sha256:existingDigests.get(id)||(await checksum(blobs.get(id),{signal})).sha256});
-    return {before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),reusedAssets,assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.fontBlob?.size||0),0)};
+    return {before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),reusedAssets,assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0),0)};
 }
 export async function verifyReferences(settings,store,projects=[]) {
     const missing=[];
@@ -132,7 +134,7 @@ export async function applyRestore({plan,store,projects,journal,settings,commitS
         if(result!=='confirmed')throw new Error('服务器保存结果尚未确认；暂存资源和恢复记录已保留，请重新核对。');
         op.stage='committed';await journal.put(op);
         const verification=await verifyReferences(plan.after,store,await projects.list());
-        op.stage='complete';await journal.put(op);onProgress({phase:'complete'});
+        op.stage='complete';await journal.put(completedRecord(op,'complete'));onProgress({phase:'complete'});
         return {operation:op.id,verification};
     } catch(error) {
         // Never guess that a failed/aborted HTTP response means the server did not commit.
@@ -160,12 +162,12 @@ export async function rollbackStaging({op,store,projects,journal,protectedSettin
         if(refs.has(row.id)||blob.size!==row.bytes||(await checksum(blob)).sha256!==row.sha256){retained++;continue;}remove.push(row.id);
     }
     await store.deleteMany(remove);
-    op.stage=retained?'needs-review':'rolled-back';op.retained=retained;await journal.put(op);
+    op.stage=retained?'needs-review':'rolled-back';op.retained=retained;await journal.put(retained?op:completedRecord(op,'rolled-back'));
     return {removed:remove.length,retained};
 }
 export async function recoverRestore({op,remote,store,projects,journal,localSettings}) {
     const actual=settingsHash(remote);
-    if(actual===settingsHash(op.after)) {await verifyReferences(op.after,store,await projects.list());op.stage='complete';await journal.put(op);return {status:'confirmed'};}
+    if(actual===settingsHash(op.after)) {await verifyReferences(op.after,store,await projects.list());op.stage='complete';await journal.put(completedRecord(op,'complete'));return {status:'confirmed'};}
     if(actual===settingsHash(op.before)) {
         const result=await rollbackStaging({op,store,projects,journal,protectedSettings:localSettings&&settingsHash(localSettings)!==settingsHash(op.after)?localSettings:remote});
         return {status:result.retained?'needs-review':'rolled-back',...result};

@@ -21,3 +21,10 @@ test('role/script preferences stay in the official account store; old global pre
  const a=accountPreferences({}),b=accountPreferences({}),old=new Map([['v1',JSON.stringify({volume:.9})]]),window={localStorage:{getItem:key=>old.get(key)||null,setItem:(k,v)=>old.set(k,v)}};
  const first=rolePreferences({preferences:a,hostWindow:window},'v2','v1');assert.deepEqual(first.read(),{});assert(first.legacy);first.write({volume:.2});assert.deepEqual(rolePreferences({preferences:a,hostWindow:window},'v2','v1').read(),{volume:.2});assert.deepEqual(rolePreferences({preferences:b,hostWindow:window},'v2','v1').read(),{});assert(old.has('v1'));assert(!old.has('v2'));
 });
+test('account preference writes require current authorization and a late older result cannot overwrite a newer edit',async()=>{
+ const values=new Map(),checks=[],storage={getItem:key=>values.get(key)||null,setItem:(key,value)=>values.set(key,value)},p=accountPreferences({accountStorage:storage},()=>new Promise((resolve,reject)=>checks.push({resolve,reject})));
+ p.setItem('volume','old');p.setItem('volume','new');await new Promise(r=>setTimeout(r,0));checks[1].resolve();checks[0].resolve();await new Promise(r=>setTimeout(r,0));assert.equal(values.get('volume'),'new');p.setItem('volume','wrong-account');await new Promise(r=>setTimeout(r,0));checks[2].reject(new Error('changed account'));await new Promise(r=>setTimeout(r,0));assert.equal(values.get('volume'),'new');
+});
+test('opaque-origin maker preview still runs when merely accessing localStorage throws SecurityError',async()=>{
+ const host={get localStorage(){throw new DOMException('opaque sandbox','SecurityError');}},prefs=rolePreferences({hostWindow:host},'new','old');assert.deepEqual(prefs.read(),{});assert.equal(await prefs.write({volume:.3}),false);
+});

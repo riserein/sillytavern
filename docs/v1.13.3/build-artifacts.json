@@ -1,0 +1,10 @@
+{
+  "version": "1.13.3",
+  "sha256": {
+    "card-player/dist/native-runtime.js": "1ef07700b665171736628c8f049ba0dd2ea9d4ba1c8f32894e9e39a6d9c99bbb",
+    "card-player/dist/runtime.js": "c2f4fd43ec97470480c2108fe814800b1ccfd97aaf103f277ee23313440c3250",
+    "card-player/dist/shared-ui.js": "78178e1035a6f19e331a864808bd746e9c18a212e7fc136686147c89d4464147",
+    "card-player/dist/demo.tavern-helper.json": "3aff08c7eaf542fc8c25c54ce3e99ef2b2969aab5c7835d19f6097dcfd2ea53c",
+    "vendor/sha256.js": "479e0e3a98989c060e0d1969fa844e9a7a8a6209074f544e8cd1df44a74772d3"
+  }
+}

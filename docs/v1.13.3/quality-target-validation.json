@@ -1,0 +1,15 @@
+{
+  "environment": "Chromium controlled browser fixture, NOT Tavern Helper or physical phone acceptance",
+  "results": [
+    {
+      "name": "controlled Helper scope shares account protection across font/mount leases and blocks cross-realm URL saves after account changes",
+      "status": "passed",
+      "milliseconds": 357
+    },
+    {
+      "name": "explicit legacy preference adoption waits for authorized storage before rebuilding the current player",
+      "status": "passed",
+      "milliseconds": 5239
+    }
+  ]
+}

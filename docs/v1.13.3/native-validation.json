@@ -1,0 +1,160 @@
+{
+  "status": "passed",
+  "version": "1.13.3",
+  "largeFixture": false,
+  "coverage": "full-suite",
+  "verifiedAt": "2026-10-17T11:20:25.500Z",
+  "runtimeSha256": "66655bdc32438efa6ff71b87eb2bbc989664e331c4ec2ad79019450d7db52812",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "compact selected font stays fixed after native export and changes only on a new author export",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean desktop recipient",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean phone recipient",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "saving local bindings and exporting an imported card never remove its unrelated carried player",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "format": "json",
+      "bytes": 3094302,
+      "milliseconds": 1531
+    },
+    {
+      "format": "resource-breakdown",
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "Selected font tone",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Selected font tone · 封面",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        },
+        {
+          "kind": "font",
+          "name": "游趣体",
+          "bytes": 1531668,
+          "encodedBytes": 2042261,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 2120484,
+      "payloadBytes": 2833336,
+      "scriptBytes": 3092002,
+      "problems": [],
+      "jsonPlayerBytes": 3092002,
+      "pngPlayerBytes": 4122672,
+      "pngUncompactedPlayerBytes": 8245344,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "format": "png",
+      "bytes": 4200836,
+      "milliseconds": 2559
+    },
+    {
+      "nativeWritesBeforeFontChange": 1,
+      "expected": "one binding write; unchanged JSON/PNG exports reuse the stored player despite Helper schema key order"
+    },
+    {
+      "rawPngBytes": 8325053,
+      "compactPngBytes": 4200836,
+      "packagedFontReadsAcrossBindingAndTwoExports": 1
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4200836,
+      "milliseconds": 1281
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 2741265,
+      "milliseconds": 1028
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 3401105,
+      "milliseconds": 1070
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4611396,
+      "milliseconds": 3306
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 3367089,
+      "milliseconds": 1075
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4566040,
+      "milliseconds": 1306
+    }
+  ],
+  "performanceRecords": []
+}

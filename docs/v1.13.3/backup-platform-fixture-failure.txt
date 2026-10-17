@@ -1,0 +1,24 @@
+✔ incremental SHA-256 and CRC match independent known implementations, including empty files (78.86359ms)
+✔ ZIP binary full backup round-trips all library and project bytes without Base64 (9.034505ms)
+✔ backup never exports settings credentials or unrelated host data and redacts known URL tokens (1.577808ms)
+✔ missing assets fail export and corruption fails import before any restore operation (3.951371ms)
+✔ unsupported manifest versions and duplicate/unsafe ZIP paths are rejected (2.528815ms)
+✔ hashing and backup verification respect cancellation (1.293822ms)
+✖ platform identity/album and referenced default songs survive a backup even when receiving catalog is empty (1.523867ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 6
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 168.954641
+
+✖ failing tests:
+
+test at tests/backup.test.js:52:1
+✖ platform identity/album and referenced default songs survive a backup even when receiving catalog is empty (1.523867ms)
+  TypeError: Cannot read properties of undefined (reading 'platformTrackId')
+      at TestContext.<anonymous> (file:///workspace/sillytavern/tests/backup.test.js:56:48)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)

@@ -1,5 +1,5 @@
 /** Keep native select models for the existing playlist logic; render scoped frosted menus. */
-export function createSelectMenus(panel) {
+export function createSelectMenus(panel, {controlsRoot=panel}={}) {
     const controls = [];
     let opened = null;
     const close = (focus = false) => {
@@ -19,6 +19,7 @@ export function createSelectMenus(panel) {
         control.menu.style.maxHeight = `${Math.max(65, height)}px`;
         control.menu.style.left = `${Math.max(12, Math.min(anchor.left - bounds.left, bounds.width - width - 16))}px`;
         control.menu.style.top = `${below >= height || below >= above ? anchor.bottom - bounds.top + 5 : Math.max(12, anchor.top - bounds.top - height - 5)}px`;
+        control.anchor = {left:anchor.left,top:anchor.top};
     }
     function refresh(control) {
         control.button.querySelector('span').textContent = control.select.selectedOptions[0]?.textContent || '请选择歌单';
@@ -42,7 +43,7 @@ export function createSelectMenus(panel) {
         }
         position(control);
     }
-    for (const select of panel.querySelectorAll('select:not([data-no-menu])')) {
+    for (const select of controlsRoot.querySelectorAll('select:not([data-no-menu])')) {
         const wrapper = document.createElement('div'); wrapper.className = 'stm-select'; wrapper.id = `${select.id}-control`;
         const button = document.createElement('button'); button.type = 'button'; button.className = 'stm-select-trigger';
         button.id = `${select.id}-trigger`; button.setAttribute('role', 'combobox'); button.setAttribute('aria-haspopup', 'listbox');
@@ -82,14 +83,25 @@ export function createSelectMenus(panel) {
         control.observer = observer; refresh(control);
     }
     const outside = event => { if (opened && !opened.button.contains(event.target) && !opened.menu.contains(event.target)) close(); };
-    const scroll = event => { if (opened && !opened.menu.contains(event.target)) close(); };
+    const scroll = event => {
+        if (!opened || opened.menu.contains(event.target)) return;
+        // Focus/scroll-into-view may have moved the page BEFORE open(), but dispatch
+        // its scroll event afterwards. Keep a correctly anchored menu in that case.
+        const anchor=opened.button.getBoundingClientRect(),before=opened.anchor;
+        if(!before||Math.abs(anchor.left-before.left)>.5||Math.abs(anchor.top-before.top)>.5){
+            const bounds=panel.getBoundingClientRect();
+            if(!opened.button.getClientRects().length||anchor.bottom<bounds.top||anchor.top>bounds.bottom)close();else position(opened);
+        }
+    };
+    const userScroll=event=>{if(opened&&!opened.menu.contains(event.target))close();};
     const resize = () => close();
     document.addEventListener('pointerdown', outside, true);
     panel.addEventListener('scroll', scroll, true);
+    panel.addEventListener('wheel',userScroll,{capture:true,passive:true});panel.addEventListener('touchmove',userScroll,{capture:true,passive:true});
     window.addEventListener('resize', resize);
     return {
         close,
         refresh() { for (const control of controls) refresh(control); },
-        dispose() { close(); controls.forEach(control => control.observer.disconnect()); document.removeEventListener('pointerdown', outside, true); panel.removeEventListener('scroll', scroll, true); window.removeEventListener('resize', resize); },
+        dispose() { close(); controls.forEach(control => {control.observer.disconnect();control.menu.remove();}); document.removeEventListener('pointerdown', outside, true); panel.removeEventListener('scroll', scroll, true);panel.removeEventListener('wheel',userScroll,true);panel.removeEventListener('touchmove',userScroll,true); window.removeEventListener('resize', resize); },
     };
 }

@@ -7,7 +7,10 @@ const prefix='/scripts/extensions/third-party/sillytavern/';
 const tone=await readFile(new URL('../card-player/demo-assets/test-tone-a.mp3',import.meta.url));
 async function fixture(page,{seed=true,legacy=false}={}){
  await page.route('**/data-fixture',r=>r.fulfill({contentType:'text/html',body:`<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="${prefix}night-ui.css"><body><section id="extensions_settings"></section></body>`}));
- await page.route('**/api/settings/get',async r=>r.fulfill({json:{settings:JSON.stringify(await page.evaluate(()=>window.remoteSettings))}}));
+ await page.route('**/api/settings/get',async r=>{
+  if(await page.evaluate(()=>window.pausePreflight===true)){await page.evaluate(()=>{window.settingsReadWaiting=true;});await page.waitForFunction(()=>window.releaseSettingsRead===true);}
+  return r.fulfill({json:{settings:JSON.stringify(await page.evaluate(()=>window.remoteSettings))}});
+ });
  await page.route('**/api/settings/save',async r=>{
   const failed=await page.evaluate(()=>window.failSave);
   if(failed)return r.fulfill({status:500,json:{error:'controlled disk failure'}});
@@ -43,6 +46,9 @@ test('complete ZIP download includes actual library/project bytes and excludes h
  expect(JSON.stringify(restored.manifest)).not.toContain('PRIVATE-HOST');
  const audio=restored.assets.find(([id])=>id===restored.manifest.settings.tracks[0].id)[1];expect(Buffer.from(await audio.arrayBuffer())).toEqual(tone);
  const before=await page.evaluate(()=>JSON.stringify(app.settings));await importZip(page,zip);
+ await page.locator('#stm-restore-mode-trigger').click();await expect(page.locator('#stm-restore-mode-menu')).toBeVisible();
+ const bounds=await page.locator('#stm-restore-mode-menu').boundingBox(),panel=await page.locator('#stm-player').boundingBox();expect(bounds.x).toBeGreaterThanOrEqual(panel.x);expect(bounds.x+bounds.width).toBeLessThanOrEqual(panel.x+panel.width+1);
+ await page.locator('#stm-restore-mode-menu').getByRole('option',{name:'独立副本：新歌曲、歌单和项目 ID',exact:true}).click();await expect(page.locator('#stm-restore-mode')).toHaveValue('copy');
  expect(await page.evaluate(()=>JSON.stringify(app.settings))).toBe(before);await page.locator('[data-data=scan]').evaluate(n=>n.closest('details').open=true);await page.locator('[data-data=scan]').click();await expect(page.locator('[data-data=storage-text]')).toContainText('本地音频');
 });
 test('ZIP restores into a clean account with actual IDB, checked role remapping and preserved original project IDs',async({browser})=>{
@@ -63,6 +69,14 @@ test('failed settings save keeps staged bytes and old settings; explicit readbac
  await page.locator('[data-data=recover]').evaluate(n=>n.closest('details').open=true);await page.locator('[data-data=recover]').click();await expect(page.locator('[data-data=recovery-text]')).toContainText('rolled-back');
  expect(await page.evaluate(async()=>(await library.entries()).length)).toBe(0);expect(await page.evaluate(async()=>(await drafts.list()).length)).toBe(0);
  await page.evaluate(()=>app.dispose());await context.close();
+});
+test('restore locks edits while server verification is pending and restores control states afterwards',async({browser})=>{
+ const author=await browser.newPage();await fixture(author);const zip=await exportZip(author);await author.close();const context=await browser.newContext(),page=await context.newPage();
+ try{
+  await fixture(page,{seed:false});page.on('dialog',d=>d.accept());await importZip(page,zip);const before=await page.evaluate(()=>app.settings.volume);await page.evaluate(()=>window.pausePreflight=true);await page.locator('[data-data=apply]').click();await page.waitForFunction(()=>window.settingsReadWaiting);
+  await expect(page.locator('#stm-volume')).toBeDisabled();await page.locator('#stm-volume').evaluate(n=>{n.value='17';n.dispatchEvent(new Event('input',{bubbles:true}));});expect(await page.evaluate(()=>app.settings.volume)).toBe(before);
+  await page.evaluate(()=>{window.pausePreflight=false;window.releaseSettingsRead=true;});await expect(page.locator('[data-data=status]')).toContainText('恢复完成',{timeout:30000});await expect(page.locator('#stm-volume')).toBeEnabled();
+ }finally{await page.evaluate(()=>app?.dispose()).catch(()=>{});await context.close();}
 });
 test('damaged backup never mutates existing IDB or visible settings',async({page})=>{
  await fixture(page);const bytes=await exportZip(page),before=await page.evaluate(()=>JSON.stringify(app.settings));

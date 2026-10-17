@@ -1,0 +1,5 @@
+
+> sillytavern-music-player@1.13.3 build:card-demo
+> node scripts/build-card-demo.mjs
+
+Built independent lifecycle fixture: 3 embedded original test tones, no full-plugin runtime or storage dependency.

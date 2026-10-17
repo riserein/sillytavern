@@ -1,0 +1,13 @@
+{
+  "fixture": "original synthetic MP3 + actual bundled moon image/font; no user music",
+  "audioBytes": 240162,
+  "imageBytes": 2418010,
+  "fontBytes": 1531668,
+  "libraryLogicalBytes": 9025860,
+  "projectLogicalBytes": 9025860,
+  "zipBytes": 4195190,
+  "physicalBinaryFiles": 3,
+  "logicalLibraryReferences": 5,
+  "projects": 1,
+  "integrity": "SHA-256/CRC verified; original background preserved; binary bytes round-tripped"
+}

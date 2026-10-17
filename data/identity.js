@@ -36,7 +36,7 @@ export function createAccountGuard({account,context,host=window,onMismatch=()=>{
         return current;
     };
     async function wrapped(input,init) {
-        const target=new URL(typeof input==='string'||input instanceof URL?input:input.url,host.location.href);
+        const target=new URL(typeof input==='string'?input:input?.url||String(input),host.location.href);
         if(target.origin===host.location.origin&&['/api/settings/save','/api/characters/merge-attributes'].includes(target.pathname)){
             // A stale host page can keep saving AFTER the player has been disposed.
             // Keep this tiny forwarding guard until reload; release all player listeners below.
@@ -47,6 +47,12 @@ export function createAccountGuard({account,context,host=window,onMismatch=()=>{
         return previous.call(this,input,init);
     }
     const check=()=>{if(!disposed&&host.document.visibilityState!=='hidden')void assert().catch(()=>{});};
+    let channel;
+    try{
+        if(host.BroadcastChannel){channel=new host.BroadcastChannel('riserein:verified-account');channel.onmessage=event=>{
+            if(!disposed&&event.data?.type==='active-account'&&/^account-[a-f0-9]{64}$/.test(event.data.key)&&event.data.key!==account.key){locked=true;onMismatch();}
+        };channel.postMessage({type:'active-account',key:account.key});}
+    }catch{/* Focus and pre-save verification remain available on unsupported hosts. */}
     host.fetch=wrapped;host.addEventListener('focus',check);host.document.addEventListener('visibilitychange',check);
-    return {assert,dispose(){disposed=true;controller.abort();host.removeEventListener('focus',check);host.document.removeEventListener('visibilitychange',check);if(!locked&&host.fetch===wrapped)host.fetch=previous;context=null;account=null;onMismatch=null;}};
+    return {assert,dispose(){disposed=true;controller.abort();channel?.close();channel=null;host.removeEventListener('focus',check);host.document.removeEventListener('visibilitychange',check);if(!locked&&host.fetch===wrapped)host.fetch=previous;context=null;account=null;onMismatch=null;}};
 }

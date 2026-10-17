@@ -4,10 +4,13 @@ import { readFile, mkdir, writeFile, mkdtemp, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import {performanceSampler} from './performance-sampler.js';
 const results = [];
 const exportMetrics = [];
+const performanceRecords=[],performanceStops=[];
 const helperVersion = process.env.ST_HELPER_VERSION || '4.11.3';
 const reportPath = process.env.ST_NATIVE_REPORT || 'docs/card-player/native-validation.json';
+const screenshotDir=process.env.ST_SCREENSHOT_DIR||'docs/card-player';
 const largeFixture = process.env.ST_AUDIT_LARGE === '1';
 function largeWav(mebibytes) {
     const bytes = Buffer.alloc(mebibytes * 1024 * 1024);
@@ -202,7 +205,7 @@ test('compact selected font stays fixed after native export and changes only on 
         .toBeGreaterThan(0.2);
 });
 test.beforeAll(async () => {
-    await mkdir('docs/card-player', { recursive: true });
+    await mkdir(screenshotDir, { recursive: true });
     await writeFile(
         reportPath,
         JSON.stringify({ status: 'running', results: [] }) + '\n',
@@ -215,6 +218,7 @@ const image = await readFile(new URL('../assets/covers/moon.png', import.meta.ur
 let sessions = [],
     cards = [];
 async function selectCard(page, avatar) {
+    if(process.env.ST_AUDIT_PERF==='1')await page.evaluate(()=>window.__stmPerformance?.roles.push({start:performance.now()}));
     await page.evaluate(async (avatar) => {
         const { selectCharacterById } = await import('/script.js');
         await selectCharacterById(
@@ -253,6 +257,9 @@ async function session(browser, { portable = false, mobile = false } = {}) {
         hasTouch: mobile,
     });
     const page = await context.newPage();
+    if(process.env.ST_AUDIT_PERF==='1'){
+        const stop=await performanceSampler(browser,context,page,portable?'recipient':'author',performanceRecords);performanceStops.push(stop);context.on('close',()=>void stop());
+    }
     sessions.push({ context, page });
     page.setDefaultTimeout(20000);
     await page.route('**/api/settings/get', async (route) => {
@@ -339,6 +346,7 @@ async function download(page, button) {
     };
 }
 async function importCard(page, bytes, format = 'json') {
+    const started=Date.now();
     // File paths use Playwright's streamed upload for large cards instead of
     // pushing a base64 PNG through one oversized browser protocol message.
     const directory = await mkdtemp(join(tmpdir(), 'stm-native-import-'));
@@ -367,7 +375,7 @@ async function importCard(page, bytes, format = 'json') {
                 { timeout: 60000 },
             )
             .toBe(true);
-        return avatar;
+        exportMetrics.push({operation:'native-import',format,bytes:bytes.length,milliseconds:Date.now()-started});return avatar;
     } finally {
         await rm(directory, { recursive: true, force: true });
     }
@@ -408,6 +416,7 @@ test.afterEach(async ({}, info) => {
 });
 
 test.afterAll(async () => {
+    await Promise.all(performanceStops.map(stop=>stop()));
     const runtime = await readFile(new URL('../card-player/dist/native-runtime.js', import.meta.url));
     await writeFile(
         reportPath,
@@ -433,6 +442,7 @@ test.afterAll(async () => {
                 mobile: 'Chromium viewport and touch emulation, not physical devices',
                 results,
                 exportMetrics,
+                performanceRecords,
             },
             null,
             2,
@@ -576,20 +586,19 @@ for (const mobile of [false, true])
                 expect(privateScript.data).toEqual({});
                 expect(privateScript.button.buttons).toEqual([]);
             }
-            const persisted = await author.evaluate(async (avatar) => {
+            // Official Helper restores its temporary export filter asynchronously after
+            // character_export_ready; assert the durable end state, not an intermediate write.
+            await expect.poll(async()=>author.evaluate(async (avatar) => {
                 const response = await fetch('/api/characters/get', {
                     method: 'POST',
                     headers: SillyTavern.getContext().getRequestHeaders(),
                     body: JSON.stringify({ avatar_url: avatar }),
                 });
                 if (!response.ok) throw new Error('Read saved author card failed');
-                return response.json();
-            }, a);
-            expect(
-                persisted.data.extensions.tavern_helper.scripts.find(
+                const persisted=await response.json();return persisted.data.extensions.tavern_helper.scripts.find(
                     (script) => script.id === 'native-private-script',
-                ).data.privateFixture,
-            ).toBe('retain only in author card');
+                ).data.privateFixture;
+            }, a),{timeout:15000}).toBe('retain only in author card');
         }
         await author.evaluate(
             () =>
@@ -685,7 +694,7 @@ for (const mobile of [false, true])
                     }),
                 ).toBe(true);
                 await recipient.locator('#stm-player').screenshot({
-                    path: `docs/card-player/native-${mobile ? 'mobile' : 'desktop'}-playback.png`,
+                    path: `${screenshotDir}/native-${mobile ? 'mobile' : 'desktop'}-playback.png`,
                 });
             }
             await recipient.locator('[data-action=close]').click();
@@ -775,9 +784,9 @@ for (const mobile of [false, true])
             await recipient.getByRole('tab', { name: '最近播放', exact: true }).click();
             await expect(recipient.locator('.stm-mini-player')).toBeVisible();
             await expect(recipient.locator('[data-view=recent] li')).toHaveCount(3);
-            await mkdir('docs/card-player', { recursive: true });
+            await mkdir(screenshotDir, { recursive: true });
             await recipient.locator('#stm-player').screenshot({
-                path: `docs/card-player/native-${mobile ? 'mobile' : 'desktop'}-${file.format}.png`,
+                path: `${screenshotDir}/native-${mobile ? 'mobile' : 'desktop'}-${file.format}.png`,
             });
             await selectCard(recipient, blank);
             await expect(recipient.locator(root)).toHaveCount(0);

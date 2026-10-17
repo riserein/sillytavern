@@ -1,0 +1,20 @@
+{
+  "status": "incomplete-or-failed",
+  "version": "1.13.3",
+  "runtimeSha256": "0ad8f39726af72a1f4f138a100b6b2057087d88c2159fb58c50b8d5c36756acc",
+  "verifiedAt": "2026-10-17T11:10:10.731Z",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientMusicDatabase": false,
+  "recipientPluginAssetsBlocked": true,
+  "audio": "real browser decoding/playback of original synthetic MP3, not music API mocks",
+  "mobile": "Chromium viewport/touch emulation, not physical hardware",
+  "results": [
+    {
+      "name": "resource failures and edits prevent stale or partial exports without changing the original library",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ]
+}

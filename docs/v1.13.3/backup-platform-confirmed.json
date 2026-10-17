@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "3b13251",
+  "sourceTracks": 1,
+  "exportedMetadata": [
+    {
+      "id": "platform:openverse:one",
+      "kind": "platform",
+      "title": "Test",
+      "artist": "",
+      "platform": "openverse",
+      "sourceUrl": "https://openverse.org/audio/one",
+      "playback": "full"
+    }
+  ],
+  "error": "备份包含无效或重复曲目/歌单，不能静默舍弃。",
+  "scope": "pre-release backup serializer regression, not a v1.13.2 bug"
+}

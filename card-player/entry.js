@@ -1,5 +1,6 @@
 import { mountCardPlayer } from './runtime.js';
 import { accountPreferences } from './preferences.js';
+import {identifyAccount,createAccountGuard} from '../data/identity.js';
 
 export function createCharacterScope() {
     // These are verified Tavern Helper iframe APIs, not guessed globals on the main page.
@@ -31,12 +32,16 @@ export function createCharacterScope() {
     };
     const roleId = currentRole();
     if (!roleId) throw new Error('当前没有单人角色，取消创建角色播放器。');
+    const context=SillyTavern.getContext();let accountSession;
+    // Host account identity is independent of the role/script IDs. Failure keeps
+    // embedded playback available, but account preferences may not be persisted.
+    const authorize=async()=>{const session=accountSession;if(!session)throw new Error('播放器已关闭');await session.ready;session.controller.signal.throwIfAborted();if(!session.guard)throw new Error('账号保护尚未就绪');await session.guard.assert();};
     const scope = {
         hostDocument,
         hostWindow,
         roleId,
         scriptId,
-        preferences: accountPreferences(SillyTavern.getContext()),
+        preferences: accountPreferences(context,authorize),
         currentRole,
         onRoleChange(handler) {
             eventOn(tavern_events.CHAT_CHANGED, handler);
@@ -52,7 +57,18 @@ export function createCharacterScope() {
         },
         onHostExit(handler) {
             hostWindow.addEventListener('pagehide', handler);
-            return () => hostWindow.removeEventListener('pagehide', handler);
+            if(!accountSession){
+                const session={controller:new AbortController(),callbacks:new Set()};accountSession=session;
+                session.ready=identifyAccount({fetcher:hostWindow.fetch.bind(hostWindow),headers:context.getRequestHeaders?.()||{},signal:session.controller.signal}).then(account=>{
+                    if(!session.controller.signal.aborted)session.guard=createAccountGuard({account,context,host:hostWindow,onMismatch:()=>{for(const callback of [...session.callbacks])callback();}});
+                });void session.ready.catch(()=>{});
+            }
+            const session=accountSession;session.callbacks.add(handler);
+            return () => {
+                session.callbacks.delete(handler);hostWindow.removeEventListener('pagehide',handler);
+                // Font preparation and the mounted player temporarily hold two leases.
+                if(!session.callbacks.size){session.controller.abort();session.guard?.dispose();if(accountSession===session)accountSession=null;}
+            };
         },
         onFrameRemoved(handler) {
             const frame = window.frameElement;

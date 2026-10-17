@@ -29,7 +29,7 @@ export async function storageSnapshot({settings,store,projects,journal,estimate=
         else if(id.startsWith('font:'))totals.fonts+=blob.size;
         else totals.unknown+=blob.size;
     }
-    for(const p of rows){for(const t of p.tracks||[])totals.drafts+=(t.exportBlob?.size||0)+(t.exportCover?.size||0);totals.drafts+=(p.assets?.imageBlob?.size||0)+(p.assets?.fontBlob?.size||0);}
+    for(const p of rows){for(const t of p.tracks||[])totals.drafts+=(t.exportBlob?.size||0)+(t.exportCover?.size||0);totals.drafts+=(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0);}
     const candidates=graph.unknown?[]:retired.filter(r=>r.confirmed===true&&!graph.refs.has(r.id)&&byId.get(r.id) instanceof Blob).map(r=>({id:r.id,bytes:byId.get(r.id).size}));
     return {totals,quota,candidates,unknownReferences:graph.unknown,pending:operations.filter(op=>!['complete','rolled-back'].includes(op.stage)),fingerprint:hashText(canonical({settings,projects:rows.map(p=>[p.id,p.revision]),retired,entries:entries.map(([id,b])=>[id,b.size||0])}))};
 }

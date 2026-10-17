@@ -193,6 +193,7 @@ async function runtime(page) {
                 onScriptExit: subscribe('exit'),
                 onHostExit: subscribe('host'),
                 onFrameRemoved: subscribe('frame'),
+                ...window.extraScope,
             };
             const api = mountNativePlayer(payload, scope);
             players.push(api);
@@ -201,6 +202,44 @@ async function runtime(page) {
         window.mount();
     }, prefix);
 }
+test('leaving during embedded audio decode cancels pending work without late URLs, audio or duplicate roots',async({page})=>{
+ await runtime(page);
+ const result=await page.evaluate(async()=>{
+  for(const p of players)p.dispose();const bytes=new Uint8Array(4*1024*1024);let binary='';for(let i=0;i<bytes.length;i+=32768)binary+=String.fromCharCode(...bytes.subarray(i,i+32768));payload.config.tracks[0].src='data:audio/wav;base64,'+btoa(binary);
+  const api=mount('pending-audio'),pending=api.resourceCounts.pendingDecodes;role='B';hooks.dispatchEvent(new Event('role'));await new Promise(r=>setTimeout(r,50));
+  return {pending,disposed:api.disposed,counts:api.resourceCounts,roots:document.querySelectorAll('[data-riserein-card-player]').length,paused:api.audio.paused,src:api.audio.getAttribute('src')};
+ });
+ expect(result.pending).toBe(1);expect(result.disposed).toBe(true);expect(result.roots).toBe(0);expect(result.paused).toBe(true);expect(result.src).toBeNull();expect(Object.values(result.counts).every(n=>n===0)).toBe(true);
+});
+test('controlled Helper scope shares account protection across font/mount leases and blocks cross-realm URL saves after account changes',async({page})=>{
+ await page.route('**/api/settings/save',r=>r.fulfill({status:418,body:'controlled fixture; never write host settings'}));
+ await page.route('**/api/users/me',r=>r.fulfill({json:{handle:'scope-'+(r.request().headers()['x-test-account']||'a'),created:123}}));
+ const result=await page.evaluate(async prefix=>{
+  window.testAccount='a';window.testContext={characterId:0,accountStorage:{getItem:()=>null,setItem(){}},getRequestHeaders:()=>({'X-Test-Account':testAccount})};
+  const frame=document.createElement('iframe');document.body.append(frame);const w=frame.contentWindow;
+  Object.assign(w,{SillyTavern:{getContext:()=>testContext},getScriptId:()=> 'scope-script',getCurrentCharacterId:()=> 'scope.png',getScriptTrees:()=>[{id:'scope-script',type:'script',enabled:true}],eventOn(){},eventRemoveListener(){},tavern_events:{CHAT_CHANGED:'chat'}});
+  const {createCharacterScope}=await w.eval(`import('${prefix}card-player/entry.js')`),scope=createCharacterScope();let exits=0,stopMain;
+  const stopPending=scope.onHostExit(()=>{});stopMain=scope.onHostExit(()=>{exits++;stopMain();});const ready=await scope.preferences.setItem('lease-fixture','one');stopPending();testAccount='b';
+  const response=await fetch(new URL('/api/settings/save',location.href),{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});frame.remove();return {status:response.status,exits,ready};
+ },prefix);
+ expect(result).toEqual({status:409,exits:1,ready:true});
+});
+test('explicit legacy preference adoption waits for authorized storage before rebuilding the current player',async({page})=>{
+ await runtime(page);page.on('dialog',d=>d.accept());
+ await page.evaluate(async prefix=>{
+  players[0].dispose();const {accountPreferences}=await import(prefix+'card-player/preferences.js'),state=new Map();window.allowPreferenceWrite=null;const gate=new Promise(resolve=>{allowPreferenceWrite=resolve;});
+  window.extraScope={preferences:accountPreferences({accountStorage:{getItem:key=>state.get(key)||null,setItem:(key,value)=>state.set(key,value)}},()=>gate)};
+  localStorage.setItem('riserein:card-native:v2:A:script-A:quality',JSON.stringify({volume:.27}));mount();
+ },prefix);
+ await page.getByRole('tab',{name:'外观',exact:true}).click();await page.getByRole('button',{name:'确认归属并复制此角色的旧播放器偏好'}).click();
+ expect(await page.locator('audio').evaluate(a=>a.volume)).toBe(.1);await page.evaluate(()=>allowPreferenceWrite());await expect.poll(()=>page.locator('audio').evaluate(a=>a.volume)).toBe(.27);await expect(page.locator('[data-riserein-card-player]')).toHaveCount(1);
+ await page.evaluate(()=>document.querySelector('[data-riserein-card-player]').__risereinPlayer.dispose());
+});
+test('a queued focus scroll keeps the menu aligned while a later user wheel closes it',async({page})=>{
+ const result=await page.evaluate(async prefix=>{
+  const {createSelectMenus}=await import(prefix+'select-menu.js');const panel=document.createElement('section');panel.style.cssText='position:fixed;left:10px;top:10px;width:400px;height:300px';panel.innerHTML='<div id="scrollport" style="height:200px;overflow:auto"><div style="height:600px;padding-top:80px"><select id="scroll-select"><option value="a">A</option><option value="b">B</option></select></div></div>';document.body.append(panel);const menus=createSelectMenus(panel),scroller=panel.querySelector('#scrollport');scroller.scrollTop=30;panel.querySelector('#scroll-select-trigger').click();scroller.dispatchEvent(new Event('scroll'));const preserved=!panel.querySelector('#scroll-select-menu').hidden;scroller.scrollTop=60;scroller.dispatchEvent(new Event('scroll'));const realigned=!panel.querySelector('#scroll-select-menu').hidden;scroller.dispatchEvent(new WheelEvent('wheel',{deltaY:20,bubbles:true}));const closed=panel.querySelector('#scroll-select-menu').hidden;menus.dispose();panel.remove();return {preserved,realigned,closed};
+ },prefix);expect(result).toEqual({preserved:true,realigned:true,closed:true});
+});
 test('rapid roles, duplicate starts, same-role events, script exit and full-plugin handoff release resources and audio', async ({
     page,
 }) => {

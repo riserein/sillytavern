@@ -1,0 +1,102 @@
+[
+  {
+    "suite": "native",
+    "exitCode": 0,
+    "seconds": 142.86,
+    "command": [
+      "npm",
+      "run",
+      "test:card-native",
+      "--",
+      "--trace=off"
+    ]
+  },
+  {
+    "suite": "maker",
+    "exitCode": 0,
+    "seconds": 116.82,
+    "command": [
+      "npm",
+      "run",
+      "test:card-export",
+      "--",
+      "--trace=off"
+    ]
+  },
+  {
+    "suite": "full-plugin",
+    "exitCode": 1,
+    "seconds": 484.02,
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "tests/player.e2e.js",
+      "--reporter=json",
+      "--trace=off"
+    ]
+  },
+  {
+    "suite": "quality",
+    "exitCode": 0,
+    "seconds": 20.75,
+    "command": [
+      "npm",
+      "run",
+      "test:card-quality",
+      "--",
+      "--reporter=json",
+      "--trace=off"
+    ]
+  },
+  {
+    "suite": "audit",
+    "exitCode": 0,
+    "seconds": 10.05,
+    "command": [
+      "npm",
+      "run",
+      "test:card-audit",
+      "--",
+      "--trace=off"
+    ]
+  },
+  {
+    "suite": "data",
+    "exitCode": 0,
+    "seconds": 33.06,
+    "command": [
+      "npm",
+      "run",
+      "test:data",
+      "--",
+      "--trace=off"
+    ]
+  },
+  {
+    "suite": "accounts",
+    "exitCode": 0,
+    "seconds": 18.72,
+    "command": [
+      "npm",
+      "run",
+      "test:accounts",
+      "--",
+      "--trace=off"
+    ]
+  },
+  {
+    "suite": "helper-495",
+    "exitCode": 0,
+    "seconds": 27.0,
+    "command": [
+      "npm",
+      "run",
+      "test:card-native",
+      "--",
+      "--grep",
+      "compact selected font",
+      "--trace=off"
+    ]
+  }
+]

@@ -54,6 +54,15 @@ export function initialize(options = {}) {
     const platformService = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? { canPlay: track => Boolean(track), canEmbed: () => false } : createPlatformService();
     let disposed = false;
     let maintenanceBusy = false;
+    let maintenanceControls=[];
+    function setMaintenanceBusy(value){
+        if(maintenanceBusy===value)return;maintenanceBusy=value;
+        if(value){
+            panel.setAttribute('aria-busy','true');
+            maintenanceControls=[...panel.querySelectorAll('button,input,select,textarea')].filter(node=>!node.closest('[data-role=data-tools]')).map(node=>[node,node.disabled]);
+            for(const [node]of maintenanceControls)node.disabled=true;
+        }else{panel.removeAttribute('aria-busy');for(const [node,disabled]of maintenanceControls)node.disabled=disabled;maintenanceControls=[];}
+    }
     let dataPanel = null;
     let online = null;
     let platformLoadController = null;
@@ -335,6 +344,10 @@ export function initialize(options = {}) {
             <p class="stm-crop-error stm-hint" role="status"></p>
         </section>`;
     document.body.append(launcher, panel);
+    if(!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)){
+        const protect=event=>{if(maintenanceBusy&&!event.target.closest?.('[data-role=data-tools]')){event.preventDefault();event.stopImmediatePropagation();}};
+        for(const event of ['click','input','change','submit'])panel.addEventListener(event,protect,true);
+    }
 
     const query = selector => panel.querySelector(selector);
     const audio = query('audio');
@@ -1499,6 +1512,7 @@ export function initialize(options = {}) {
                 source = normalizeUrl(resolved.url);
             }
             if (track.kind === 'local') {
+                playerUI.setResolving(true);
                 const blob = await store.get(track.id);
                 if (sequence !== loadSequence) return;
                 if (!blob) throw new Error('这个本地文件不在当前浏览器中，请删除该条目并重新导入。');
@@ -1859,7 +1873,7 @@ export function initialize(options = {}) {
         cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback});
         query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
         if(options.account){
-            dataPanel=createDataPanel({panel,settings,store,journal:maintenanceJournal,context,account:options.account,assertAccount:options.assertAccount||(async()=>{throw new Error('账号身份未确认，请重新登录并刷新。');}),flushMaker:()=>cardMaker.flush(),pausePlayback,setMaintenanceBusy:value=>{maintenanceBusy=value;}});
+            dataPanel=createDataPanel({panel,settings,store,journal:maintenanceJournal,context,account:options.account,assertAccount:options.assertAccount||(async()=>{throw new Error('账号身份未确认，请重新登录并刷新。');}),flushMaker:()=>cardMaker.flush(),pausePlayback,setMaintenanceBusy});
         }
         query('[data-action="rebuild-native"]').addEventListener('click', async () => {
             const latest = freshContext(), avatar = latest.characters[latest.characterId]?.avatar;
@@ -1893,6 +1907,10 @@ async function startFullPlayer() {
         window.toastr?.warning(error.message,'音乐存储已锁定',{escapeHtml:true});return api;
     }
     setStorageScope(account);let api;
+    // Unwind the recipient's account wrapper before capturing the host fetch.
+    // Otherwise the full-player guard can retain a forwarding wrapper from a closed iframe.
+    window.dispatchEvent(new Event('riserein:full-player-start'));
+    document.querySelector('[data-riserein-card-player]')?.__risereinPlayer?.dispose();
     const guard=createAccountGuard({account,context,onMismatch(){api?.dispose();window.toastr?.warning('酒馆账号已切换，旧音乐播放器已停止。请刷新当前页面。','账号变化',{escapeHtml:true});}});
     try {api=initialize({account,assertAccount:guard.assert,onDispose:guard.dispose});return api;}
     catch(error){guard.dispose();throw error;}

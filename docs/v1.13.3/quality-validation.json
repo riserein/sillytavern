@@ -1,0 +1,80 @@
+{
+  "environment": "Chromium controlled browser fixture, NOT Tavern Helper or physical phone acceptance",
+  "results": [
+    {
+      "name": "drafts survive close/reopen/reload, copy and switch, retaining actual imported audio and edits",
+      "status": "passed",
+      "milliseconds": 1264
+    },
+    {
+      "name": "draft database transactions roll back on clone failure and ordered delete cannot resurrect a project",
+      "status": "passed",
+      "milliseconds": 186
+    },
+    {
+      "name": "leaving during embedded audio decode cancels pending work without late URLs, audio or duplicate roots",
+      "status": "passed",
+      "milliseconds": 1049
+    },
+    {
+      "name": "controlled Helper scope shares account protection across font/mount leases and blocks cross-realm URL saves after account changes",
+      "status": "passed",
+      "milliseconds": 267
+    },
+    {
+      "name": "explicit legacy preference adoption waits for authorized storage before rebuilding the current player",
+      "status": "passed",
+      "milliseconds": 5184
+    },
+    {
+      "name": "a queued focus scroll keeps the menu aligned while a later user wheel closes it",
+      "status": "passed",
+      "milliseconds": 183
+    },
+    {
+      "name": "rapid roles, duplicate starts, same-role events, script exit and full-plugin handoff release resources and audio",
+      "status": "passed",
+      "milliseconds": 3595
+    },
+    {
+      "name": "malformed resources unwind early DOM and object URLs; a late FontFace load cannot reattach after exit",
+      "status": "passed",
+      "milliseconds": 860
+    },
+    {
+      "name": "disposing a scoped request after headers aborts its unfinished response body and observer reuse is cleaned",
+      "status": "passed",
+      "milliseconds": 160
+    },
+    {
+      "name": "concurrent font decoding starts share one pending task, exit cancels it and scripts isolate persisted preferences",
+      "status": "passed",
+      "milliseconds": 1201
+    },
+    {
+      "name": "maker reads embedded MP3 lyrics and confirmed search results travel into exported script without recipient lookup",
+      "status": "passed",
+      "milliseconds": 1199
+    },
+    {
+      "name": "simulated storage failure retains the old draft and restores unsaved edits within the current page",
+      "status": "passed",
+      "milliseconds": 469
+    },
+    {
+      "name": "draft audio, cover and background remain usable after their original library files are removed",
+      "status": "passed",
+      "milliseconds": 835
+    },
+    {
+      "name": "leaving during image decoding closes the late bitmap and never restores the cropper or its resources",
+      "status": "passed",
+      "milliseconds": 752
+    },
+    {
+      "name": "independent maker runtime isolates scripts, replaces old audio and defers to the full plugin",
+      "status": "passed",
+      "milliseconds": 752
+    }
+  ]
+}

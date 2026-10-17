@@ -1,3 +1,5 @@
+const makerReport=process.env.ST_MAKER_REPORT||'docs/card-player/export-validation.json';
+const screenshotDir=process.env.ST_SCREENSHOT_DIR||'docs/card-player';
 import { createHash } from 'node:crypto';
 import { PLAYER_BUILD } from '../card-player/quality.js';
 import { test, expect } from '@playwright/test';
@@ -196,9 +198,9 @@ async function gone(page) {
 }
 
 test.beforeAll(async () => {
-    await mkdir('docs/card-player', { recursive: true });
+    await mkdir(screenshotDir, { recursive: true });
     await writeFile(
-        'docs/card-player/export-validation.json',
+        makerReport,
         JSON.stringify({ status: 'running', results: [] }) + '\n',
     );
 });
@@ -238,7 +240,7 @@ test.afterEach(async ({}, info) => {
 });
 test.afterAll(async () => {
     await writeFile(
-        'docs/card-player/export-validation.json',
+        makerReport,
         JSON.stringify(
             {
                 status:
@@ -418,7 +420,7 @@ for (const mobile of [false, true])
         expect(merged.data.extensions.tavern_helper.scripts).toHaveLength(2);
         expect(merged.data.extensions.tavern_helper.scripts[0].id).toBe('unrelated-script');
         await author.locator('.stm-maker-preview').scrollIntoViewIfNeeded();
-        if (!mobile) await author.screenshot({ path: 'docs/card-player/maker-desktop.png' });
+        if (!mobile) await author.screenshot({ path: `${screenshotDir}/maker-desktop.png` });
         const htmlFile = await download(author, author.locator('[data-maker=preview]'));
         const standalone = await authorContext.newPage();
         await standalone.setContent(htmlFile.bytes.toString());
@@ -537,7 +539,7 @@ for (const mobile of [false, true])
         await continuous(recipient, 9);
         if (mobile)
             expect((await recipient.locator(root + ' .volume').boundingBox()).height).toBeLessThanOrEqual(30);
-        await recipient.screenshot({ path: `docs/card-player/json-${mobile ? 'mobile' : 'desktop'}.png` });
+        await recipient.screenshot({ path: `${screenshotDir}/json-${mobile ? 'mobile' : 'desktop'}.png` });
         const b = await createCard(recipient, 'B');
         await selectCard(recipient, b);
         await gone(recipient);

@@ -9,6 +9,7 @@ import { unpackFont } from './font-transport.js';
 import { FONT_PRESETS } from '../fonts.js';
 import { base64Bytes } from '../base64.js';
 import { rolePreferences } from './preferences.js';
+import { createEmbeddedStore } from './embedded-store.js';
 
 function dataBlob(value, win) {
     const comma = value.indexOf(',');
@@ -37,7 +38,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
     doc.body.append(root);
     const assets = { ...payload.assets };
     const own = sharedEnvironment(root, assets, win),
-        blobs = new Map();
+        embedded = createEmbeddedStore(win);
     let disposed = false;
     try {
         if (payload.fontFile && config.appearance.font)
@@ -45,17 +46,10 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 ? own.environment.URL.createObjectURL(options.fontBlob)
                 : config.appearance.font;
         const namespace = `riserein:card-native:v2:${encodeURIComponent(scope.roleId)}:${encodeURIComponent(scope.scriptId)}:${encodeURIComponent(config.id)}`;
-        const store = {
-            get: async (id) => disposed ? undefined : blobs.get(id),
-            put: async (id, blob) => { if (disposed) throw new DOMException('播放器已关闭', 'AbortError'); blobs.set(id, blob); },
-            delete: async (id) => blobs.delete(id),
-            deleteMany: async (ids) => {
-                for (const id of ids) blobs.delete(id);
-            },
-        };
+        const store = embedded.store;
         const tracks = config.tracks.map((track) => {
             const coverId = `cover:${createTrackId(win.crypto)}`;
-            blobs.set(coverId, dataBlob(track.cover, win));
+            embedded.setBlob(coverId, dataBlob(track.cover, win));
             const result = {
                 id: track.id,
                 title: track.title,
@@ -65,7 +59,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 coverId,
             };
             if (track.src.startsWith('data:')) {
-                blobs.set(track.id, dataBlob(track.src, win));
+                embedded.setData(track.id,track.src);
                 return { ...result, kind: 'local' };
             }
             return { ...result, kind: 'url', url: track.src };
@@ -78,7 +72,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
             };
         if (playlist.cover) {
             playlist.coverId = `cover:${createTrackId(win.crypto)}`;
-            blobs.set(playlist.coverId, dataBlob(playlist.cover, win));
+            embedded.setBlob(playlist.coverId, dataBlob(playlist.cover, win));
             delete playlist.cover;
         }
         const settings = {
@@ -93,7 +87,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
         };
         if (config.appearance.image) {
             settings.backgroundId = `background:${createTrackId(win.crypto)}`;
-            blobs.set(settings.backgroundId, dataBlob(config.appearance.image, win));
+            embedded.setBlob(settings.backgroundId, dataBlob(config.appearance.image, win));
         }
         const allowedState = [
             'volume',
@@ -146,7 +140,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 return {
                     ...own.resourceCounts,
                     subscriptions: lifetime?.subscriptions || 0,
-                    blobs: blobs.size,
+                    ...embedded.resourceCounts,
                 };
             },
             dispose() {
@@ -162,7 +156,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
                         audio.load();
                     }
                     own.dispose();
-                    blobs.clear();
+                    embedded.dispose();
                     root.remove();
                 }
             },
@@ -182,9 +176,9 @@ export function mountNativePlayer(payload, scope, options = {}) {
             mounted.panel.querySelector('[data-view=appearance]').append(version);
             if(preferences.legacy){
                 const adopt=doc.createElement('button');adopt.className='stm-secondary';adopt.textContent='确认归属并复制此角色的旧播放器偏好';
-                adopt.addEventListener('click',()=>{
+                adopt.addEventListener('click',async()=>{
                     if(disposed||!win.confirm('确认这份旧设备偏好属于当前账号？只复制音量、外观等设置，原记录保留。'))return;
-                    try{const saved=JSON.parse(preferences.legacy);preferences.write(Object.fromEntries(allowedState.filter(key=>Object.hasOwn(saved,key)).map(key=>[key,saved[key]])));api.dispose();if(scope.currentRole()===scope.roleId)mountNativePlayer(payload,scope,options);}
+                    try{const saved=JSON.parse(preferences.legacy),written=await preferences.write(Object.fromEntries(allowedState.filter(key=>Object.hasOwn(saved,key)).map(key=>[key,saved[key]])));if(disposed)return;if(!written){win.toastr?.warning('账号尚未确认，旧偏好已保留，请稍后再试。');return;}api.dispose();if(scope.currentRole()===scope.roleId)mountNativePlayer(payload,scope,options);}
                     catch{win.toastr?.warning('旧偏好无法读取，原记录已保留。');}
                 });mounted.panel.querySelector('[data-view=appearance]').append(adopt);
             }
@@ -227,7 +221,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
     } catch (error) {
         // Resource decoding and font URL creation may fail before the shared UI exists.
         own.dispose();
-        blobs.clear();
+        embedded.dispose();
         root.remove();
         throw error;
     }
@@ -251,11 +245,11 @@ export async function startNativeInScope(payload, scope) {
         }
     const controller = new win.AbortController();
     const pending = watchRoleLifetime(scope, () => controller.abort());
-    const onFullPlayer = () => controller.abort();
+    const onFullPlayer = () => {controller.abort();pending.dispose();};
     win.addEventListener('riserein:full-player-start', onFullPlayer, {
         once: true,
     });
-    const task = { abort: () => controller.abort() };
+    const task = { abort: () => {controller.abort();pending.dispose();} };
     task.promise = (async () => {
         let fontBlob;
         try {

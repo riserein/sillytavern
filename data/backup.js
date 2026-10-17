@@ -2,8 +2,9 @@ import {normalizeSettings} from '../core.js';
 import {referencedAssets} from '../asset-retirement.js';
 import {checksum,hashText} from './checksum.js';
 import {zipBlob,readZip} from './zip.js';
+import {normalizePlatformTrack} from '../platforms/catalog.js';
 const encoder=new TextEncoder();
-const TRACK_KEYS=['id','kind','title','artist','url','coverId','lyrics','lyricsSource','fallbackCover','platform','remoteId','sourceUrl','playback','cover','duration','metadataStatus','restriction'];
+const TRACK_KEYS=['id','kind','title','artist','album','url','coverId','lyrics','lyricsSource','fallbackCover','platform','platformTrackId','remoteId','sourceUrl','playback','cover','duration','metadataStatus','restriction'];
 const FORM_KEYS=['stm-maker-title','stm-maker-collection','stm-maker-theme','stm-maker-surface','accent','background','text','color:accent','color:background','color:text','opacity','font','font-credit','collapsed'];
 const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode'];
 const pick=(object,keys)=>Object.fromEntries(keys.filter(key=>Object.hasOwn(object||{},key)).map(key=>[key,object[key]]));
@@ -24,8 +25,8 @@ function trackMetadata(track,warnings) {
     if(track.license){row.license=pick(track.license,['code','url','attribution','sourceUrl']);for(const key of ['url','sourceUrl'])if(row.license[key])row.license[key]=cleanUrl(row.license[key],warnings);}
     return row;
 }
-export function safeSettings(raw,warnings=new Set()) {
-    const safe=JSON.parse(JSON.stringify(normalizeSettings(raw)));
+export function safeSettings(raw,warnings=new Set(),catalog=raw?.builtinCatalog) {
+    const safe=JSON.parse(JSON.stringify(normalizeSettings(raw,Date.now(),catalog)));
     safe.tracks=safe.tracks.map(track=>trackMetadata(track,warnings));
     for(const list of safe.playlists)if(list.source){list.source=pick(list.source,['platform','id','url','name','author','total','cover']);for(const key of ['url','cover'])if(list.source[key])list.source[key]=cleanUrl(list.source[key],warnings);}
     return safe;
@@ -39,6 +40,8 @@ export function draftReferences(project) {
 }
 export async function createBackup({settings,store,projects=[],version='1.13.3',signal,onProgress=()=>{}}) {
     const warnings=new Set(),snapshot=safeSettings(settings,warnings),files=new Map(),resources=[];
+    if(!Array.isArray(projects)||projects.length>10000)throw new Error('制作项目超过备份版本支持的数量，未生成部分备份。');
+    for(const key of ['tracks','playlists','fonts'])if(Array.isArray(settings[key])&&settings[key].length!==snapshot[key].length)throw new Error('当前资料包含超限、重复或无效条目，未静默删减生成备份；请先核对曲库。');
     const all=new Map(await store.entries());
     const add=async(blob,label)=>{
         signal?.throwIfAborted();
@@ -64,14 +67,17 @@ export async function createBackup({settings,store,projects=[],version='1.13.3',
             copy.tracks.push(row);
         }
         const image=project.assets?.imageBlob||(project.sourceSettings?.backgroundId?all.get(project.sourceSettings.backgroundId):null);
+        const original=project.assets?.imageOriginalBlob||(project.sourceSettings?.backgroundId?all.get(project.sourceSettings.backgroundId+':original'):null);
         const font=project.assets?.fontBlob||(project.sourceSettings?.fontPreset==='custom'?all.get(project.sourceSettings.fontId):null);
         if(image)copy.assets.imageBlob=await add(image,'项目背景');
+        if(original)copy.assets.imageOriginalBlob=await add(original,'项目背景原图');
+        else if(image&&project.sourceSettings?.backgroundId)warnings.add('部分旧项目只有已保存的背景图，未找到早期原图；已存在的图片字节仍保留。');
         if(font)copy.assets.fontBlob=await add(font,'项目字体');
         if(project.sourceSettings?.backgroundId&&!image||project.sourceSettings?.fontPreset==='custom'&&!font)throw new Error('项目背景或字体缺失，未生成不完整备份。');
         drafts.push(copy);
         onProgress({phase:'projects',done:drafts.length,total:projects.length});
     }
-    const catalog=(settings.builtinCatalog?.tracks||[]).filter(track=>settings.playlists.some(list=>list.trackIds.includes(track.id))).map(track=>trackMetadata(track,warnings));
+    const catalog=(settings.builtinCatalog?.tracks||[]).filter(track=>settings.currentId===track.id||settings.playlists.some(list=>list.trackIds.includes(track.id))).map(track=>trackMetadata(track,warnings));
     const manifest={format:'riserein-music-backup',version:1,appVersion:version,createdAt:new Date().toISOString(),settings:snapshot,catalog,projects:drafts,resources,warnings:[...warnings],remoteAudio:'metadata-and-URLs-only; not offline audio'};
     const manifestBlob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
     if(manifestBlob.size>64*1024*1024)throw new Error('备份目录超过 64 MiB 上限，未生成部分备份。');
@@ -101,7 +107,7 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
         if(typeof project.id!=='string'||!project.id||projects.has(project.id)||!Array.isArray(project.tracks)||project.tracks.length>200||!plain(project.form)||!plain(project.sourceSettings))throw new Error('备份项目结构或 ID 无效。');
         projects.add(project.id);
         for(const track of project.tracks){if(track.exportBlob)expectResource(track.exportBlob);if(track.exportCover)expectResource(track.exportCover);}
-        for(const key of ['imageBlob','fontBlob'])if(project.assets?.[key])expectResource(project.assets[key]);
+        for(const key of ['imageBlob','imageOriginalBlob','fontBlob'])if(project.assets?.[key])expectResource(project.assets[key]);
     }
     if(entries.size!==referenced.size+2)throw new Error('ZIP 包含未在目录登记的文件，未导入。');
     let done=0;const verified=new Map();
@@ -111,20 +117,23 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
         verified.set(path,entry.blob);onProgress({phase:'verify',done:++done,total:referenced.size});
     }
     // Re-sanitize metadata on import; never trust arbitrary settings/project keys from a ZIP.
-    const warnings=new Set(Array.isArray(manifest.warnings)?manifest.warnings.filter(w=>typeof w==='string').map(w=>w.slice(0,500)):[]),safe=safeSettings(manifest.settings,warnings);
+    if(!Array.isArray(manifest.catalog)||manifest.catalog.length>200)throw new Error('默认来源记录无效。');
+    const warnings=new Set(Array.isArray(manifest.warnings)?manifest.warnings.filter(w=>typeof w==='string').map(w=>w.slice(0,500)):[]);
+    manifest.catalog=manifest.catalog.map(track=>trackMetadata(track,warnings));
+    const normalizedCatalog=manifest.catalog.map(normalizePlatformTrack);
+    if(normalizedCatalog.some((track,i)=>!track||track.id!==manifest.catalog[i].id)||new Set(normalizedCatalog.map(t=>t.id)).size!==normalizedCatalog.length)throw new Error('默认来源记录无效或重复。');
+    const safe=safeSettings(manifest.settings,warnings,{version:1,tracks:manifest.catalog});
     if(safe.tracks.length!==manifest.settings.tracks.length||safe.playlists.length!==manifest.settings.playlists.length)throw new Error('备份包含无效或重复曲目/歌单，不能静默舍弃。');
     if(resourceIds.size!==referencedAssets(safe).size)throw new Error('备份资源清单包含未知引用，未导入。');
     for(const id of referencedAssets(safe))if(!resourceIds.has(id))throw new Error('备份缺少有效曲库引用的资源。');
     const binary=row=>verified.get(row.path).slice(0,row.bytes,row.type);
-    if(!Array.isArray(manifest.catalog)||manifest.catalog.length>200)throw new Error('默认来源记录无效。');
-    manifest.catalog=manifest.catalog.map(track=>trackMetadata(track,warnings));
     const hydrated=manifest.projects.map(project=>{
         const row={...pick(project,['id','title','format','updatedAt','revision','runtimeVersion','editRevision']),sourceSettings:pick(project.sourceSettings,SOURCE_KEYS),form:pick(project.form,FORM_KEYS),assets:{},tracks:project.tracks.map(track=>{
             const copy=trackMetadata(track,warnings);if(track.exportUrl)copy.exportUrl=cleanUrl(track.exportUrl,warnings);
             for(const key of ['exportBlob','exportCover'])if(track[key])copy[key]=binary(track[key]);
             if(track.kind==='local'&&!copy.exportBlob&&!copy.exportUrl)throw new Error('项目音频引用不完整。');return copy;
         })};
-        for(const key of ['imageBlob','fontBlob'])if(project.assets?.[key])row.assets[key]=binary(project.assets[key]);
+        for(const key of ['imageBlob','imageOriginalBlob','fontBlob'])if(project.assets?.[key])row.assets[key]=binary(project.assets[key]);
         return row;
     });
     return {manifest:{...manifest,settings:safe,warnings:[...warnings]},projects:hydrated,assets:manifest.resources.map(row=>[row.id,binary(row)]),hash:digest.sha256,bytes:file.size,remoteTracks:safe.tracks.filter(t=>t.kind!=='local').length};

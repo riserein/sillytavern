@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-17T11:09:00.572712+00:00",
+  "scope": "real HTTP probes via environment route; no TLS/proxy bypass; not browser playback acceptance",
+  "results": [
+    {
+      "source": "Openverse",
+      "url": "https://api.openverse.org/v1/audio/?q=piano&page_size=1",
+      "metadataMocks": false,
+      "audioMocks": false,
+      "browserPlayback": "not-verified",
+      "status": 403,
+      "transport": "blocked-or-failed"
+    },
+    {
+      "source": "MDN CC0 audio",
+      "url": "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3",
+      "metadataMocks": false,
+      "audioMocks": false,
+      "browserPlayback": "not-verified",
+      "transport": "blocked-or-failed",
+      "errorType": "URLError"
+    }
+  ]
+}

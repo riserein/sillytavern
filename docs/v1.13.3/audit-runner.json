@@ -1,0 +1,464 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-audit.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/v1.13.3/audit-runner.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/audit",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-audit.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-audit.e2e.js",
+      "file": "card-audit.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "replacing artwork retains the previous bytes when metadata save fails",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1113,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:30:48.521Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-21724bfe1aa4c615c802",
+          "file": "card-audit.e2e.js",
+          "line": 39,
+          "column": 1
+        },
+        {
+          "title": "font import finishing after full-player disposal cannot attach a face or save zombie metadata",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1024,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:30:49.826Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-15c446be82be2d318dda",
+          "file": "card-audit.e2e.js",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "an HTTP success for old metadata does not delete bytes, then a matching new save can retire them",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1254,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:30:50.864Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-b0eede298213dda12d3d",
+          "file": "card-audit.e2e.js",
+          "line": 74,
+          "column": 1
+        },
+        {
+          "title": "real IndexedDB quota failure leaves the previous resource readable",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1860,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:30:52.137Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "quota-estimate",
+                      "contentType": "application/json",
+                      "body": "eyJlc3RpbWF0ZSI6eyJxdW90YSI6MTA3Mzc0MTgyNDAsInVzYWdlIjowLCJ1c2FnZURldGFpbHMiOnt9fSwiYmFja2VuZCI6eyJ1c2FnZSI6MCwicXVvdGEiOjEsIm92ZXJyaWRlQWN0aXZlIjp0cnVlLCJ1c2FnZUJyZWFrZG93biI6W3sic3RvcmFnZVR5cGUiOiJmaWxlX3N5c3RlbXMiLCJ1c2FnZSI6MH0seyJzdG9yYWdlVHlwZSI6ImluZGV4ZWRkYiIsInVzYWdlIjowfSx7InN0b3JhZ2VUeXBlIjoiY2FjaGVfc3RvcmFnZSIsInVzYWdlIjowfSx7InN0b3JhZ2VUeXBlIjoic2VydmljZV93b3JrZXJzIiwidXNhZ2UiOjB9XX19"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-4c8beb0778ebd964811e",
+          "file": "card-audit.e2e.js",
+          "line": 89,
+          "column": 1
+        },
+        {
+          "title": "audio import finishing after disposal cannot commit a track or leave its uncommitted blob",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 549,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:30:54.019Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-aade1c487fe518a62b3a",
+          "file": "card-audit.e2e.js",
+          "line": 123,
+          "column": 1
+        },
+        {
+          "title": "lyrics text read finishing after disposal cannot modify the previous player settings",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 632,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:30:54.588Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-ed4aa47ab9d4d2bb6326",
+          "file": "card-audit.e2e.js",
+          "line": 147,
+          "column": 1
+        },
+        {
+          "title": "manual card verification never runs code carried by an untrusted script",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 242,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:30:55.233Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-0cf2ce7f105ce6aba392",
+          "file": "card-audit.e2e.js",
+          "line": 167,
+          "column": 1
+        },
+        {
+          "title": "character scope refuses a disabled script or a disabled parent folder before mounting UI",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 263,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:30:55.489Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-017bfbad82256044a37e",
+          "file": "card-audit.e2e.js",
+          "line": 177,
+          "column": 1
+        },
+        {
+          "title": "an invalid key in a multi-delete aborts the entire real IndexedDB transaction",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 803,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:30:55.762Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-9125a48fe2175567c562",
+          "file": "card-audit.e2e.js",
+          "line": 191,
+          "column": 1
+        },
+        {
+          "title": "export error notifications render untrusted song titles as text even when another extension enables HTML toasts",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 355,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:30:56.578Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "toast-observation",
+                      "contentType": "application/json",
+                      "body": "eyJpbmplY3RlZCI6ZmFsc2UsImh0bWxJbWFnZXMiOjB9"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-00e4340f1df703bb2066",
+          "file": "card-audit.e2e.js",
+          "line": 202,
+          "column": 1
+        },
+        {
+          "title": "stale project delete rolls back instead of removing a newer revision",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 235,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:30:56.950Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-57babab67cf63356d981",
+          "file": "card-audit.e2e.js",
+          "line": 227,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T11:30:47.977Z",
+    "duration": 9295.249,
+    "expected": 11,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

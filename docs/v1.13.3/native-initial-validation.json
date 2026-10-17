@@ -1,0 +1,31 @@
+{
+  "status": "selected-tests-passed",
+  "version": "1.13.3",
+  "largeFixture": false,
+  "coverage": "partial-or-selected-tests; see runner report for overall status",
+  "verifiedAt": "2026-10-17T10:54:04.052Z",
+  "runtimeSha256": "cb5f2ad701b54f2501b4f64d32849234e0b007ebfc2358940d1c8fbb944d0815",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "saving local bindings and exporting an imported card never remove its unrelated carried player",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [],
+  "performanceRecords": []
+}

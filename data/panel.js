@@ -27,7 +27,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
     const urls=new Set(),timers=new Set(),scope=account?.key;
     const estimate=()=>navigator.storage?.estimate?.()||Promise.resolve(null);
     const committer=createSettingsCommitter({context,settings,assertAccount});
-    const menus=createSelectMenus(root);
+    const menus=createSelectMenus(panel,{controlsRoot:root});
     const status=text=>{if(!disposed)q('status').textContent=text;};
     q('identity').textContent=account?.verified?`当前账号：${account.label} · 独立本地存储。旧库保留，确认归属后才复制。`:'当前账号身份未确认，本地备份、恢复和迁移已锁定；重新登录并刷新后重试。';
     const invalidate=()=>{plan=null;q('apply').disabled=true;q('preview-text').textContent='选项已变化，请重新核对恢复计划。';};
@@ -48,7 +48,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
         if(mutating){pausePlayback();setMaintenanceBusy(true);}
         const execute=async()=>{await assertAccount();return task(controller.signal);};
         activePromise=(navigator.locks?navigator.locks.request('riserein:maintenance:'+scope,{signal:controller.signal},execute):execute())
-            .catch(error=>{status(error.name==='AbortError'?'操作已取消。已发布或保存结果不明的恢复会保留阶段记录，请重新核对。':`未完成：${error.message}`);})
+            .catch(error=>{status(error.name==='AbortError'?'操作已取消。已发布或保存结果不明的恢复会保留阶段记录，请重新核对。':error.name==='QuotaExceededError'?'浏览器存储空间不足，原有曲库未清空；请释放空间，并在恢复记录中核对暂存内容。':`未完成：${error.message}`);})
             .finally(()=>{
                 job=null;setMaintenanceBusy(false);
                 if(!disposed){for(const [node,disabled]of states)node.disabled=disabled;q('cancel').hidden=true;q('cancel').disabled=false;q('progress').hidden=true;q('apply').disabled=!plan;q('clean').disabled=!scan?.candidates.length;q('legacy-copy').disabled=!legacyPreviewed;}
@@ -70,7 +70,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
             for(const card of characters)select.append(new Option(String(card.name||card.avatar),card.avatar));
             select.addEventListener('change',invalidate,{signal:listeners.signal});label.append(select);q('bindings').append(label);
         }
-        bindingMenus=createSelectMenus(q('bindings'));
+        bindingMenus=createSelectMenus(panel,{controlsRoot:q('bindings')});
     }
     async function preview(signal){
         if(!backup)throw new Error('请先选择并校验备份文件。');

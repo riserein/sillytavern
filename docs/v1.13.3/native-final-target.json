@@ -1,0 +1,116 @@
+{
+  "status": "selected-tests-passed",
+  "version": "1.13.3",
+  "largeFixture": false,
+  "coverage": "partial-or-selected-tests; see runner report for overall status",
+  "verifiedAt": "2026-10-17T11:41:52.071Z",
+  "runtimeSha256": "1ef07700b665171736628c8f049ba0dd2ea9d4ba1c8f32894e9e39a6d9c99bbb",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "compact selected font stays fixed after native export and changes only on a new author export",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "format": "json",
+      "bytes": 3095009,
+      "milliseconds": 1535
+    },
+    {
+      "format": "resource-breakdown",
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "Selected font tone",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Selected font tone · 封面",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        },
+        {
+          "kind": "font",
+          "name": "游趣体",
+          "bytes": 1531668,
+          "encodedBytes": 2042261,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 2120484,
+      "payloadBytes": 2833336,
+      "scriptBytes": 3092709,
+      "problems": [],
+      "jsonPlayerBytes": 3092709,
+      "pngPlayerBytes": 4123612,
+      "pngUncompactedPlayerBytes": 8247224,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "format": "png",
+      "bytes": 4201780,
+      "milliseconds": 2639
+    },
+    {
+      "nativeWritesBeforeFontChange": 1,
+      "expected": "one binding write; unchanged JSON/PNG exports reuse the stored player despite Helper schema key order"
+    },
+    {
+      "rawPngBytes": 8326941,
+      "compactPngBytes": 4201780,
+      "packagedFontReadsAcrossBindingAndTwoExports": 1
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4201780,
+      "milliseconds": 1293
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 2741972,
+      "milliseconds": 1004
+    }
+  ],
+  "performanceRecords": []
+}

@@ -1,0 +1,9 @@
+Controlled real ST 1.19.0 page; saves intercepted so host data is not changed.
+Current source: create playlist -> Import -> open destination selector: menu hidden immediately.
+A second run served index.js from b879e43; select-menu.js is unchanged from that baseline: same result.
+Observed setter stacks:
+  menu.hidden=false: select-menu.js:61 open(), button click
+  menu.hidden=true: select-menu.js:8 close(), select-menu.js:85 scroll()
+Late event target: stm-page-import, scrollTop 96.
+The scroll had already positioned the trigger when open() measured it, but the queued scroll event closed the newly opened menu.
+This is not evidence that all historical environments reproduce it; the unchanged source's unconditional scroll-close path is confirmed.

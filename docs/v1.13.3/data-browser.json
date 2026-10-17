@@ -79,12 +79,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 23602,
+                  "duration": 2852,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T10:44:35.589Z",
+                  "startTime": "2026-10-17T11:30:58.839Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -94,7 +94,7 @@
           ],
           "id": "f0b603ab9be46cf4a586-b7cdacfe99e7a2949e86",
           "file": "card-data.e2e.js",
-          "line": 40,
+          "line": 43,
           "column": 1
         },
         {
@@ -113,12 +113,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6367,
+                  "duration": 4279,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T10:44:59.395Z",
+                  "startTime": "2026-10-17T11:31:01.904Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -128,7 +128,7 @@
           ],
           "id": "f0b603ab9be46cf4a586-f52449abf7f52694944b",
           "file": "card-data.e2e.js",
-          "line": 48,
+          "line": 54,
           "column": 1
         },
         {
@@ -147,12 +147,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6383,
+                  "duration": 4085,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T10:45:05.781Z",
+                  "startTime": "2026-10-17T11:31:06.197Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -162,7 +162,41 @@
           ],
           "id": "f0b603ab9be46cf4a586-467a9b4750dcca03a9a3",
           "file": "card-data.e2e.js",
-          "line": 58,
+          "line": 64,
+          "column": 1
+        },
+        {
+          "title": "restore locks edits while server verification is pending and restores control states afterwards",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4069,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:31:10.296Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f0b603ab9be46cf4a586-e7de66bd7c0586febb6f",
+          "file": "card-data.e2e.js",
+          "line": 73,
           "column": 1
         },
         {
@@ -181,12 +215,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 13834,
+                  "duration": 1820,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T10:45:12.182Z",
+                  "startTime": "2026-10-17T11:31:14.388Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -196,7 +230,7 @@
           ],
           "id": "f0b603ab9be46cf4a586-96de153ab0790d0394e9",
           "file": "card-data.e2e.js",
-          "line": 67,
+          "line": 81,
           "column": 1
         },
         {
@@ -215,12 +249,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 332,
+                  "duration": 254,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T10:45:26.030Z",
+                  "startTime": "2026-10-17T11:31:16.221Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -230,7 +264,7 @@
           ],
           "id": "f0b603ab9be46cf4a586-49d31f15ddf55acbfe9b",
           "file": "card-data.e2e.js",
-          "line": 72,
+          "line": 86,
           "column": 1
         },
         {
@@ -249,12 +283,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 11110,
+                  "duration": 10261,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T10:45:26.379Z",
+                  "startTime": "2026-10-17T11:31:16.490Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -264,7 +298,7 @@
           ],
           "id": "f0b603ab9be46cf4a586-24d0bde67669b8a714d9",
           "file": "card-data.e2e.js",
-          "line": 85,
+          "line": 99,
           "column": 1
         },
         {
@@ -283,12 +317,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6848,
+                  "duration": 2060,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T10:45:37.512Z",
+                  "startTime": "2026-10-17T11:31:26.762Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -298,7 +332,7 @@
           ],
           "id": "f0b603ab9be46cf4a586-1a7b6bac0bc16805ebc2",
           "file": "card-data.e2e.js",
-          "line": 95,
+          "line": 109,
           "column": 1
         },
         {
@@ -317,12 +351,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1899,
+                  "duration": 1350,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-17T10:45:44.374Z",
+                  "startTime": "2026-10-17T11:31:28.836Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -332,7 +366,7 @@
           ],
           "id": "f0b603ab9be46cf4a586-83821edae9e16ad3dcd4",
           "file": "card-data.e2e.js",
-          "line": 102,
+          "line": 116,
           "column": 1
         }
       ]
@@ -340,9 +374,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-17T10:44:34.842Z",
-    "duration": 71549.95999999999,
-    "expected": 8,
+    "startTime": "2026-10-17T11:30:58.008Z",
+    "duration": 32312.078,
+    "expected": 9,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

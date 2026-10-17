@@ -1,0 +1,1751 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [
+          "**/card-*.e2e.js"
+        ],
+        "testMatch": [
+          "*.e2e.js"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "player.e2e.js",
+      "file": "player.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "SillyTavern loads the extension and the empty player is usable",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3537,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:10:12.318Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-2d3f6eefbe9f1d754020",
+          "file": "player.e2e.js",
+          "line": 207,
+          "column": 1
+        },
+        {
+          "title": "local imports play actual audio, seek, adjust volume, and keep playing with panel closed",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6287,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:10:16.061Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-20608b6a4fe610779c38",
+          "file": "player.e2e.js",
+          "line": 223,
+          "column": 1
+        },
+        {
+          "title": "manual switching and all four completion modes behave correctly",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6262,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:10:22.364Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-17bbb3a3d49a9aced5dc",
+          "file": "player.e2e.js",
+          "line": 259,
+          "column": 1
+        },
+        {
+          "title": "settings and IndexedDB music survive a real page reload without autoplay",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7749,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:10:28.643Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-42dfad07186ee2d598ee",
+          "file": "player.e2e.js",
+          "line": 298,
+          "column": 1
+        },
+        {
+          "title": "audio URLs play and duplicate entries are rejected",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5592,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:10:36.403Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-6f8e629bfc10496c756a",
+          "file": "player.e2e.js",
+          "line": 321,
+          "column": 1
+        },
+        {
+          "title": "invalid files, broken links and browser playback restrictions explain recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13149,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:10:42.008Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-56041591000d2f74826d",
+          "file": "player.e2e.js",
+          "line": 345,
+          "column": 1
+        },
+        {
+          "title": "deleting a selected local track clears playback and its stored audio",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7746,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:10:55.167Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-b9374da2e568a5a7564a",
+          "file": "player.e2e.js",
+          "line": 378,
+          "column": 1
+        },
+        {
+          "title": "failed compressed settings saves preserve prior artwork across reload; confirmed saves retire it",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10608,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:11:02.923Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-0736aaea6013e7a54f66",
+          "file": "player.e2e.js",
+          "line": 399,
+          "column": 1
+        },
+        {
+          "title": "filenames are rendered as text, and the player fits a small screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3531,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:11:13.543Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-9523a9fb06905466380c",
+          "file": "player.e2e.js",
+          "line": 461,
+          "column": 1
+        },
+        {
+          "title": "the launcher and window drag independently, preserve their positions and do not toggle on drag",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7167,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:11:17.091Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-b0b9653aa20456956496",
+          "file": "player.e2e.js",
+          "line": 491,
+          "column": 1
+        },
+        {
+          "title": "dragging is bounded, a smaller viewport remains usable, and positions can be reset",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4211,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:11:24.270Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-ba6d4609cbc0e0397d67",
+          "file": "player.e2e.js",
+          "line": 534,
+          "column": 1
+        },
+        {
+          "title": "all six palettes and both materials apply to both controls without interrupting music, and persist",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9710,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:11:28.492Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-12878bc718d37d1a4a3d",
+          "file": "player.e2e.js",
+          "line": 579,
+          "column": 1
+        },
+        {
+          "title": "import destinations, album rename and deletion preserve music and survive reload",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 45398,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/player.e2e.js",
+                        "column": 87,
+                        "line": 39
+                      },
+                      "message": "Error: locator.click: Test timeout of 45000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#stm-import-playlist-menu').getByRole('option', { name: '雨夜歌单', exact: true })\u001b[22m\n\n\n  37 |     const name = await page.locator(selector).evaluate((select, selected) => [...select.options].find(option => option.value === selected)?.textContent, value);\n  38 |     await page.locator(`${selector}-trigger`).click();\n> 39 |     await page.locator(`${selector}-menu`).getByRole('option', { name, exact: true }).click();\n     |                                                                                       ^\n  40 |     await expect(page.locator(selector)).toHaveValue(value);\n  41 | }\n  42 |\n    at chooseSelect (/workspace/sillytavern/tests/player.e2e.js:39:87)\n    at /workspace/sillytavern/tests/player.e2e.js:555:5"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:11:45.889Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-import-desti-ac1c8-ve-music-and-survive-reload/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-import-desti-ac1c8-ve-music-and-survive-reload/error-context.md"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-b753475cc1ad56cd2af4",
+          "file": "player.e2e.js",
+          "line": 843,
+          "column": 1
+        },
+        {
+          "title": "shared songs, album-only removal and confirmed global deletion have distinct effects",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 45448,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/player.e2e.js",
+                        "column": 87,
+                        "line": 39
+                      },
+                      "message": "Error: locator.click: Test timeout of 45000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#stm-playlist-menu').getByRole('option', { name: '总曲库', exact: true })\u001b[22m\n\n\n  37 |     const name = await page.locator(selector).evaluate((select, selected) => [...select.options].find(option => option.value === selected)?.textContent, value);\n  38 |     await page.locator(`${selector}-trigger`).click();\n> 39 |     await page.locator(`${selector}-menu`).getByRole('option', { name, exact: true }).click();\n     |                                                                                       ^\n  40 |     await expect(page.locator(selector)).toHaveValue(value);\n  41 | }\n  42 |\n    at chooseSelect (/workspace/sillytavern/tests/player.e2e.js:39:87)\n    at selectAlbum (/workspace/sillytavern/tests/player.e2e.js:58:5)\n    at addExisting (/workspace/sillytavern/tests/player.e2e.js:497:5)\n    at /workspace/sillytavern/tests/player.e2e.js:593:5"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:12:31.945Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-shared-songs-68b4e-etion-have-distinct-effects/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-shared-songs-68b4e-etion-have-distinct-effects/error-context.md"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-6b0b044ec9f152701acd",
+          "file": "player.e2e.js",
+          "line": 896,
+          "column": 1
+        },
+        {
+          "title": "one album binds multiple real cards, card changes never autoplay, and going home pauses music",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 45532,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/player.e2e.js",
+                        "column": 16,
+                        "line": 537
+                      },
+                      "message": "Error: page.evaluate: Target page, context or browser has been closed\n\n  535 |\n  536 | async function removeTestCards(page, cards) {\n> 537 |     await page.evaluate(async avatars => {\n      |                ^\n  538 |         const { closeCurrentChat, getCharacters } = await import('/script.js');\n  539 |         await closeCurrentChat();\n  540 |         for (const avatar of avatars) {\n    at removeTestCards (/workspace/sillytavern/tests/player.e2e.js:537:16)\n    at /workspace/sillytavern/tests/player.e2e.js:667:23"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:13:18.223Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-one-album-bi-740f6-and-going-home-pauses-music/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-one-album-bi-740f6-and-going-home-pauses-music/error-context.md"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-75f6ca14c97b18ab012d",
+          "file": "player.e2e.js",
+          "line": 931,
+          "column": 1
+        },
+        {
+          "title": "going home cancels pending local audio loads without reopening a stale role playlist",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 45459,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/player.e2e.js",
+                        "column": 20,
+                        "line": 703
+                      },
+                      "message": "Error: page.evaluate: Target page, context or browser has been closed\n\n  701 |         expect(await page.evaluate(() => SillyTavern.getContext().characterId)).toBeUndefined();\n  702 |     } finally {\n> 703 |         await page.evaluate(async () => {\n      |                    ^\n  704 |             const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');\n  705 |             if (window.__stmOriginalGet) LocalMusicStore.prototype.get = window.__stmOriginalGet;\n  706 |             window.__stmReleaseRead?.();\n    at /workspace/sillytavern/tests/player.e2e.js:703:20"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:14:05.234Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-going-home-c-9ed2f-ening-a-stale-role-playlist/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-going-home-c-9ed2f-ening-a-stale-role-playlist/error-context.md"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-9e86193656d507eb4ca1",
+          "file": "player.e2e.js",
+          "line": 992,
+          "column": 1
+        },
+        {
+          "title": "separate pages keep management away from playback and preserve audio across tabs",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6725,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:14:51.611Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-00edcb6a4fcbdcebb318",
+          "file": "player.e2e.js",
+          "line": 1054,
+          "column": 1
+        },
+        {
+          "title": "recent and ranking pages record successful starts once, support replay, persist and clean up deletions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12275,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:14:58.534Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-41bb499f521d758e4cb1",
+          "file": "player.e2e.js",
+          "line": 1083,
+          "column": 1
+        },
+        {
+          "title": "recent page shows only 100 songs and rolling rankings drop expired plays",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6624,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:15:10.823Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-a1782bc60f02b2c200ab",
+          "file": "player.e2e.js",
+          "line": 1134,
+          "column": 1
+        },
+        {
+          "title": "cropping chooses the actual region, layers themes and materials, persists and removes stored images",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13844,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:15:17.474Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-9a5674db563746669d45",
+          "file": "player.e2e.js",
+          "line": 1185,
+          "column": 1
+        },
+        {
+          "title": "crop dragging, cancellation and invalid image recovery work on a small screen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "interrupted",
+                  "duration": 2522,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#stm-launcher')\nExpected: visible\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('#stm-launcher')\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#stm-launcher')\nExpected: visible\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('#stm-launcher')\u001b[22m\n\n    at /workspace/sillytavern/tests/player.e2e.js:138:49",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/player.e2e.js",
+                      "column": 49,
+                      "line": 138
+                    },
+                    "snippet": "  136 |     });\n  137 |     await page.goto('/');\n> 138 |     await expect(page.locator('#stm-launcher')).toBeVisible({ timeout: 30000 });\n      |                                                 ^\n  139 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  140 |     await page.evaluate(async () => { const { closeCurrentChat } = await import('/script.js'); await closeCurrentChat(); });\n  141 |     await page.unroute('**/api/settings/get');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/player.e2e.js",
+                        "column": 49,
+                        "line": 138
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#stm-launcher')\nExpected: visible\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('#stm-launcher')\u001b[22m\n\n\n  136 |     });\n  137 |     await page.goto('/');\n> 138 |     await expect(page.locator('#stm-launcher')).toBeVisible({ timeout: 30000 });\n      |                                                 ^\n  139 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  140 |     await page.evaluate(async () => { const { closeCurrentChat } = await import('/script.js'); await closeCurrentChat(); });\n  141 |     await page.unroute('**/api/settings/get');\n    at /workspace/sillytavern/tests/player.e2e.js:138:49"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T11:15:31.327Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/player.e2e.js-crop-draggin-460c7-very-work-on-a-small-screen/test-failed-1.png"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/player.e2e.js",
+                    "column": 49,
+                    "line": 138
+                  }
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-d5f3137a2acce26719d8",
+          "file": "player.e2e.js",
+          "line": 1294,
+          "column": 1
+        },
+        {
+          "title": "mask transparency is independent per material, preserves clear mode, and persists across reloads",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-75444059a43b9d581f5f",
+          "file": "player.e2e.js",
+          "line": 1335,
+          "column": 1
+        },
+        {
+          "title": "custom accent, background and text colors update both controls, preserve music and image, and restore presets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-f5e629632950fb565ede",
+          "file": "player.e2e.js",
+          "line": 1423,
+          "column": 1
+        },
+        {
+          "title": "click halos animate, clean up, respect reduced motion and never turn drags into clicks",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-8665553dff8b6d60604a",
+          "file": "player.e2e.js",
+          "line": 1484,
+          "column": 1
+        },
+        {
+          "title": "library and import are independent, and covers switch to synchronized embedded MP3 lyrics",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-575d61861058f1729ce5",
+          "file": "player.e2e.js",
+          "line": 1522,
+          "column": 1
+        },
+        {
+          "title": "missing art uses bundled images; manual cover and LRC imports persist and delete with the song",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-b76ca1b0c28bff2c33e1",
+          "file": "player.e2e.js",
+          "line": 1577,
+          "column": 1
+        },
+        {
+          "title": "retired font selections fall back after reload without fetching removed files or losing local songs",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-db4bfed7803b2a1291d8",
+          "file": "player.e2e.js",
+          "line": 1629,
+          "column": 1
+        },
+        {
+          "title": "the bundled Poxiao font works offline, custom fonts persist, and font changes stay inside the player",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-3a7eb1880d84d0953631",
+          "file": "player.e2e.js",
+          "line": 1671,
+          "column": 1
+        },
+        {
+          "title": "both compact bundled faces show their own previews, work without the font CDN, and support keyboard selection",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-c2458019f3a41ced57fb",
+          "file": "player.e2e.js",
+          "line": 1720,
+          "column": 1
+        },
+        {
+          "title": "batch font imports preserve both files, reject duplicates and invalid files, and delete independently after reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-375af34e229b6479c298",
+          "file": "player.e2e.js",
+          "line": 1771,
+          "column": 1
+        },
+        {
+          "title": "a legacy single custom font survives upgrading to the preview library",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-2d3a0162a640675f95d7",
+          "file": "player.e2e.js",
+          "line": 1822,
+          "column": 1
+        },
+        {
+          "title": "font previews fit mobile and failed bundled downloads keep the current font until a successful retry",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-3460dbd3cff3f42bfb4c",
+          "file": "player.e2e.js",
+          "line": 1849,
+          "column": 1
+        },
+        {
+          "title": "lyrics occupy the transparent full panel, preserve playback, and return with a click or Escape",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-46d05150a5d2547fa872",
+          "file": "player.e2e.js",
+          "line": 1878,
+          "column": 1
+        },
+        {
+          "title": "frosted playlist menus are readable, keyboard accessible, and stay inside a phone-sized panel",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-71726f603cc207cbf5e7",
+          "file": "player.e2e.js",
+          "line": 1925,
+          "column": 1
+        },
+        {
+          "title": "resizing clamps the panel, saves size and position, preserves audio and recovers after viewport changes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-79660c2a03da51dfc70f",
+          "file": "player.e2e.js",
+          "line": 1969,
+          "column": 1
+        },
+        {
+          "title": "system day/night changes update both controls while manual mode and custom colors remain saved",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-0bfaa62d61e496d124da",
+          "file": "player.e2e.js",
+          "line": 2025,
+          "column": 1
+        },
+        {
+          "title": "only player clicks and blank areas trigger small optional ripples without intercepting tavern input",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-c8d97789dd13ce406f2c",
+          "file": "player.e2e.js",
+          "line": 2073,
+          "column": 1
+        },
+        {
+          "title": "checkbox ticks remain visible and scrollbars are slim without white tracks",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-6fff8569120566db4a86",
+          "file": "player.e2e.js",
+          "line": 2158,
+          "column": 1
+        },
+        {
+          "title": "my music lists library first, creates an album from a song, and saves an independent playlist cover",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-b4e3b8cd0d07dd300a8e",
+          "file": "player.e2e.js",
+          "line": 2196,
+          "column": 1
+        },
+        {
+          "title": "recent and library song controls pause and resume in place and stay in sync with the mini player",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-16a4762855eba3728393",
+          "file": "player.e2e.js",
+          "line": 2275,
+          "column": 1
+        },
+        {
+          "title": "vinyl mini bar animates only while playing and its queue uses two thirds of desktop and mobile player",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-dda18a7558a316c16aba",
+          "file": "player.e2e.js",
+          "line": 2300,
+          "column": 1
+        },
+        {
+          "title": "song details open as a two thirds bottom sheet and retain controls, focus and playback after cover edits",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-9492b8960d228e431633",
+          "file": "player.e2e.js",
+          "line": 2351,
+          "column": 1
+        },
+        {
+          "title": "background saves leave no lingering message and the compact mini bar stays at the bottom in both color schemes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-022d323f952ae6d8222d",
+          "file": "player.e2e.js",
+          "line": 2408,
+          "column": 1
+        },
+        {
+          "title": "online search plays real fixture audio, shows attribution, deduplicates saves and reloads without fetching on startup",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-f662e7eab3241576cd56",
+          "file": "player.e2e.js",
+          "line": 2515,
+          "column": 1
+        },
+        {
+          "title": "sharing unsupported platform songs produces explicit external bookmarks while unsupported playlists never import",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-a8d276aa52eb4a079f05",
+          "file": "player.e2e.js",
+          "line": 2551,
+          "column": 1
+        },
+        {
+          "title": "share previews are invalidated when edited, confirm target albums, and preserve local/platform mixed playback and binding",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-9c1fe2fd6a54487ff2c8",
+          "file": "player.e2e.js",
+          "line": 2587,
+          "column": 1
+        },
+        {
+          "title": "failed and cancelled online searches leave local music usable and enforce rate-limit cooldown",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-391d642f9bf89c68941c",
+          "file": "player.e2e.js",
+          "line": 2624,
+          "column": 1
+        },
+        {
+          "title": "empty default catalog stays separate, can be hidden, and never invents preset songs",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-e64453836ee645e34daf",
+          "file": "player.e2e.js",
+          "line": 2653,
+          "column": 1
+        },
+        {
+          "title": "cancelling an online request prevents stale results from replacing a later successful search",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-45911a860d279c4f51f3",
+          "file": "player.e2e.js",
+          "line": 2687,
+          "column": 1
+        },
+        {
+          "title": "bundled catalog updates do not fetch playlists at startup or overwrite copied songs and user memberships",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-3fb43c768a550649b6a2",
+          "file": "player.e2e.js",
+          "line": 2723,
+          "column": 1
+        },
+        {
+          "title": "conditional playlist adapter previews every page, refuses overflow and reuses repeated source playlists",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-49eebceb856ca205090a",
+          "file": "player.e2e.js",
+          "line": 2805,
+          "column": 1
+        },
+        {
+          "title": "official music embeds preserve metadata, pause native playback, stop on dismissal and never fabricate history",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-ef7c3fbb35620a01d128",
+          "file": "player.e2e.js",
+          "line": 2892,
+          "column": 1
+        },
+        {
+          "title": "expired platform audio is refreshed on manual retry and the real playback check requires advancing audio",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-ee93cfb84b7bf8a6da20",
+          "file": "player.e2e.js",
+          "line": 2978,
+          "column": 1
+        },
+        {
+          "title": "a large playlist can be explicitly selected to fit capacity without silently discarding tracks or source artwork",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-d7a6c292012e18e82372",
+          "file": "player.e2e.js",
+          "line": 3024,
+          "column": 1
+        },
+        {
+          "title": "a licensed permanent direct default plays through the real native player and viewing details does not copy it",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-1bcc6474e3a947114f8a",
+          "file": "player.e2e.js",
+          "line": 3108,
+          "column": 1
+        },
+        {
+          "title": "candidate official playback unloads on actual role exit without adding native history",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-69c44fe976c06a47707b",
+          "file": "player.e2e.js",
+          "line": 3165,
+          "column": 1
+        },
+        {
+          "title": "missing lyrics can be searched, previewed and confirmed without interrupting playback, then survive reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "a3e98d84d57a3ab3c279-db10fe989f07d6a7c195",
+          "file": "player.e2e.js",
+          "line": 3222,
+          "column": 1
+        }
+      ],
+      "suites": [
+        {
+          "title": "touch dragging",
+          "file": "player.e2e.js",
+          "line": 620,
+          "column": 6,
+          "specs": [
+            {
+              "title": "touch moves the ball and header, and a cancelled gesture does not break the next click",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3934,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-17T11:11:38.213Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3e98d84d57a3ab3c279-4ac6545bacab7143e860",
+              "file": "player.e2e.js",
+              "line": 624,
+              "column": 3
+            },
+            {
+              "title": "touch drags the background crop and saves the selected area",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3720,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-17T11:11:42.158Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a3e98d84d57a3ab3c279-103115cc57752ea023f1",
+              "file": "player.e2e.js",
+              "line": 695,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "touch resizing",
+          "file": "player.e2e.js",
+          "line": 2116,
+          "column": 6,
+          "specs": [
+            {
+              "title": "the resize grip works with touch and keeps all edges visible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a3e98d84d57a3ab3c279-3329e722578219ca668d",
+              "file": "player.e2e.js",
+              "line": 2120,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T11:10:11.720Z",
+    "duration": 322249.115,
+    "expected": 18,
+    "skipped": 38,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}

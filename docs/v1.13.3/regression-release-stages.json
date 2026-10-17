@@ -1,0 +1,68 @@
+[
+  {
+    "suite": "full-target",
+    "exitCode": 0,
+    "seconds": 30.75,
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "tests/player.e2e.js",
+      "--grep",
+      "frosted playlist menus|vinyl mini bar|song details open|licensed permanent direct default",
+      "--reporter=json",
+      "--trace=off"
+    ]
+  },
+  {
+    "suite": "full-plugin",
+    "exitCode": 0,
+    "seconds": 480.43,
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "tests/player.e2e.js",
+      "--reporter=json",
+      "--trace=off"
+    ]
+  },
+  {
+    "suite": "native-target",
+    "exitCode": 0,
+    "seconds": 29.82,
+    "command": [
+      "npm",
+      "run",
+      "test:card-native",
+      "--",
+      "--grep",
+      "compact selected font",
+      "--trace=off"
+    ]
+  },
+  {
+    "suite": "controlled-before",
+    "exitCode": 0,
+    "seconds": 2.42,
+    "command": [
+      "npm",
+      "run",
+      "audit:large-player",
+      "--",
+      "v133-before"
+    ]
+  },
+  {
+    "suite": "controlled-after",
+    "exitCode": 0,
+    "seconds": 2.6,
+    "command": [
+      "npm",
+      "run",
+      "audit:large-player",
+      "--",
+      "v133-after"
+    ]
+  }
+]

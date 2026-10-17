@@ -44,6 +44,9 @@ async function chooseMode(page, value) {
     for (let n = 0; n < 4 && await page.locator('#stm-mode').getAttribute('data-mode') !== value; n++) await page.locator('#stm-mode').click();
     await expect(page.locator('#stm-mode')).toHaveAttribute('data-mode', value);
 }
+async function finishEntrance(locator) {
+    await locator.evaluate(async node=>{await Promise.all(node.getAnimations().map(animation=>animation.finished.catch(()=>{})));});
+}
 
 async function playSong(page, name) {
     await playerPage(page, '播放');
@@ -1458,6 +1461,7 @@ test('vinyl mini bar animates only while playing and its queue uses two thirds o
         await page.setViewportSize(viewport);
         await page.locator('.stm-mini-queue').click();
         await expect(page.locator('.stm-queue-track')).toHaveCount(16);
+        await finishEntrance(page.locator('#stm-queue .stm-queue-sheet'));
         const panel = await page.locator('#stm-player').boundingBox(), sheet = await page.locator('#stm-queue .stm-queue-sheet').boundingBox();
         expect(sheet.height).toBeLessThanOrEqual(panel.height * 2/3 + 1); expect(sheet.height).toBeGreaterThan(panel.height * .6);
         expect(sheet.y+sheet.height).toBeLessThanOrEqual(panel.y+panel.height);
@@ -1483,6 +1487,7 @@ test('song details open as a two thirds bottom sheet and retain controls, focus 
         await page.setViewportSize(viewport); await opener.click();
         const sheet = page.getByRole('dialog', {name:'歌曲详情', exact:true});
         await expect(sheet).toBeVisible();
+        await finishEntrance(sheet);
         const panel = await page.locator('#stm-player').boundingBox(), box = await sheet.boundingBox();
         expect(box.height).toBeLessThanOrEqual(panel.height*2/3+1);
         expect(box.y).toBeGreaterThanOrEqual(panel.y+panel.height/3-1);
@@ -1756,6 +1761,10 @@ test('a large playlist can be explicitly selected to fit capacity without silent
 });
 
 test('a licensed permanent direct default plays through the real native player and viewing details does not copy it', async ({ page }) => {
+    // beforeEach's empty settings response is not itself a server save. Persist
+    // this fixture before reload so a prior 199-track test cannot leak into it.
+    const reset=waitForPlayerSave(page,s=>s.tracks.length===0);
+    await page.evaluate(()=>SillyTavern.getContext().saveSettingsDebounced());await reset;
     const track = { kind:'platform',platform:'direct',platformTrackId:'rain',title:'开发者直链测试',artist:'测试作者',sourceUrl:'https://example.test/license',url:'https://audio.example.test/default.wav',playback:'full',license:{code:'by',url:'https://creativecommons.org/licenses/by/4.0/',attribution:'测试录音 — 作者'} };
     await page.route('**/builtin-tracks.js', route => route.fulfill({ contentType:'text/javascript',body:`export const BUILTIN_CATALOG=${JSON.stringify({version:20,title:'测试默认',tracks:[track]})};` }));
     await page.route('https://audio.example.test/default.wav', route => route.fulfill({ contentType:'audio/wav',body:wav(30) }));
