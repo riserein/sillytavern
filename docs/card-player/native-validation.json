@@ -1,9 +1,10 @@
 {
   "status": "passed",
-  "version": "1.13.1",
-  "coverage": "selected-tests-only",
-  "verifiedAt": "2026-10-16T13:38:46.756Z",
-  "runtimeSha256": "7f8a7ef801f474c15d19b06027c84d5e6092f2865b94a44e08e389ddd7b341f8",
+  "version": "1.13.2",
+  "largeFixture": false,
+  "coverage": "full-suite",
+  "verifiedAt": "2026-10-17T06:31:48.666Z",
+  "runtimeSha256": "de53b05127cafc1ec02a5383941edb718a20ecee594417b3c987eae2ee4fd58d",
   "sillyTavern": "1.19.0",
   "tavernHelper": "4.11.3",
   "fullPluginInRecipient": false,
@@ -18,13 +19,33 @@
       "name": "compact selected font stays fixed after native export and changes only on a new author export",
       "status": "passed",
       "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean desktop recipient",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean phone recipient",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "saving local bindings and exporting an imported card never remove its unrelated carried player",
+      "status": "passed",
+      "cleanup": "passed"
     }
   ],
   "exportMetrics": [
     {
       "format": "json",
-      "bytes": 3075546,
-      "milliseconds": 2683
+      "bytes": 3075826,
+      "milliseconds": 1664
     },
     {
       "format": "resource-breakdown",
@@ -74,11 +95,11 @@
       ],
       "embeddedBytes": 2120484,
       "payloadBytes": 2833336,
-      "scriptBytes": 3073210,
+      "scriptBytes": 3073526,
       "problems": [],
-      "jsonPlayerBytes": 3073210,
-      "pngPlayerBytes": 4097616,
-      "pngUncompactedPlayerBytes": 8195232,
+      "jsonPlayerBytes": 3073526,
+      "pngPlayerBytes": 4098036,
+      "pngUncompactedPlayerBytes": 8196072,
       "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
       "static": "passed",
       "browser": "not-tested",
@@ -86,12 +107,16 @@
     },
     {
       "format": "png",
-      "bytes": 4175828,
-      "milliseconds": 3889
+      "bytes": 4176200,
+      "milliseconds": 2674
     },
     {
-      "rawPngBytes": 8275037,
-      "compactPngBytes": 4175828,
+      "nativeWritesBeforeFontChange": 1,
+      "expected": "one binding write; unchanged JSON/PNG exports reuse the stored player despite Helper schema key order"
+    },
+    {
+      "rawPngBytes": 8275781,
+      "compactPngBytes": 4176200,
       "packagedFontReadsAcrossBindingAndTwoExports": 1
     }
   ]

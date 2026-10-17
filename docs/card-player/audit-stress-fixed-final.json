@@ -1,0 +1,27 @@
+{
+  "label": "fixed-final",
+  "environment": "isolated desktop Chromium renderer with a 384 MiB V8 old-space limit (not a process-memory limit), not a physical phone",
+  "browser": "154.0.8037.57",
+  "embeddedAudioBytes": 30408704,
+  "runtimeSha256": "de53b05127cafc1ec02a5383941edb718a20ecee594417b3c987eae2ee4fd58d",
+  "result": {
+    "beforeHeapBytes": 115304824,
+    "afterHeapBytes": 114242914,
+    "mountMilliseconds": 263.30000001192093,
+    "progress": 0.244592,
+    "resourceCounts": {
+      "timers": 0,
+      "frames": 0,
+      "urls": 0,
+      "observers": 0,
+      "listeners": 0,
+      "requests": 0,
+      "fonts": 0,
+      "subscriptions": 0,
+      "blobs": 0
+    },
+    "remainingRoots": 0
+  },
+  "milliseconds": 1579,
+  "status": "completed"
+}

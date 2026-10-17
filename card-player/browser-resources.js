@@ -32,12 +32,37 @@ export function probeAudio(src, signal, timeout = 15000) {
         audio.load();
     });
 }
-export async function fetchBlob(url, signal) {
+export async function fetchBlob(url, signal, { maxBytes = 64 * 1024 * 1024 } = {}) {
+    if (!Number.isSafeInteger(maxBytes) || maxBytes < 1) throw new Error('资源读取大小限制无效。');
     const timeout = AbortSignal.timeout(20000);
     const response = await fetch(url, {
         signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
         credentials: 'omit',
+        referrerPolicy: 'no-referrer',
     });
     if (!response.ok) throw new Error('资源文件读取失败，请重新导入或检查网络。');
-    return response.blob();
+    if (Number(response.headers.get('Content-Length')) > maxBytes) {
+        await response.body?.cancel().catch(() => {});
+        throw new Error(`资源文件超过 ${(maxBytes / 1048576).toFixed(0)} MB，已停止读取。`);
+    }
+    if (!response.body) {
+        const blob = await response.blob();
+        if (blob.size > maxBytes) throw new Error('资源文件超过读取上限。');
+        return blob;
+    }
+    const reader = response.body.getReader(), parts = [];
+    let bytes = 0;
+    try {
+        for (;;) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            bytes += value.byteLength;
+            if (bytes > maxBytes) throw new Error(`资源文件超过 ${(maxBytes / 1048576).toFixed(0)} MB，已停止读取。`);
+            parts.push(value);
+        }
+        return new Blob(parts, { type: response.headers.get('Content-Type') || '' });
+    } finally {
+        await reader.cancel().catch(() => {});
+        reader.releaseLock();
+    }
 }

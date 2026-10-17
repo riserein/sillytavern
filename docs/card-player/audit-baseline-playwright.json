@@ -1,0 +1,214 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-audit.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/audit",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-audit.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-audit.e2e.js",
+      "file": "card-audit.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "replacing artwork retains the previous bytes when metadata save fails",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1763,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /workspace/sillytavern/tests/card-audit.e2e.js:49:81",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                      "column": 81,
+                      "line": 49
+                    },
+                    "snippet": "  47 |     await expect(page.locator('.stm-status')).toHaveText('歌曲封面已更新。');\n  48 |     await saved;\n> 49 |     expect(await page.evaluate(async () => Boolean(await store.get(oldCover)))).toBe(true);\n     |                                                                                 ^\n  50 |     expect(await page.evaluate(() => beforeMetadata.tracks[0].coverId)).toBe(await page.evaluate(() => oldCover));\n  51 | });\n  52 | test('font import finishing after full-player disposal cannot attach a face or save zombie metadata', async ({ page }) => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                        "column": 81,
+                        "line": 49
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  47 |     await expect(page.locator('.stm-status')).toHaveText('歌曲封面已更新。');\n  48 |     await saved;\n> 49 |     expect(await page.evaluate(async () => Boolean(await store.get(oldCover)))).toBe(true);\n     |                                                                                 ^\n  50 |     expect(await page.evaluate(() => beforeMetadata.tracks[0].coverId)).toBe(await page.evaluate(() => oldCover));\n  51 | });\n  52 | test('font import finishing after full-player disposal cannot attach a face or save zombie metadata', async ({ page }) => {\n    at /workspace/sillytavern/tests/card-audit.e2e.js:49:81"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T05:22:53.360Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-replacin-398f2-es-when-metadata-save-fails/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-replacin-398f2-es-when-metadata-save-fails/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-replacin-398f2-es-when-metadata-save-fails/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                    "column": 81,
+                    "line": 49
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-21724bfe1aa4c615c802",
+          "file": "card-audit.e2e.js",
+          "line": 38,
+          "column": 1
+        },
+        {
+          "title": "font import finishing after full-player disposal cannot attach a face or save zombie metadata",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1478,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n    at /workspace/sillytavern/tests/card-audit.e2e.js:70:119",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                      "column": 119,
+                      "line": 70
+                    },
+                    "snippet": "  68 |     await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe('loaded');\n  69 |     await page.waitForTimeout(300);\n> 70 |     expect(await page.evaluate(() => [...document.fonts].filter(face => face.family.startsWith('stm-font-')).length)).toBe(0);\n     |                                                                                                                       ^\n  71 |     expect(await page.evaluate(() => app.settings.fonts.length)).toBe(0);\n  72 | });\n  73 | test.afterEach(async ({}, info) => results.push({ name: info.title, status: info.status }));"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                        "column": 119,
+                        "line": 70
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\n  68 |     await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe('loaded');\n  69 |     await page.waitForTimeout(300);\n> 70 |     expect(await page.evaluate(() => [...document.fonts].filter(face => face.family.startsWith('stm-font-')).length)).toBe(0);\n     |                                                                                                                       ^\n  71 |     expect(await page.evaluate(() => app.settings.fonts.length)).toBe(0);\n  72 | });\n  73 | test.afterEach(async ({}, info) => results.push({ name: info.title, status: info.status }));\n    at /workspace/sillytavern/tests/card-audit.e2e.js:70:119"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T05:22:56.201Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-font-imp-f47f1-ace-or-save-zombie-metadata/test-failed-1.png"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-font-imp-f47f1-ace-or-save-zombie-metadata/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                    "column": 119,
+                    "line": 70
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-15c446be82be2d318dda",
+          "file": "card-audit.e2e.js",
+          "line": 52,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T05:22:52.746Z",
+    "duration": 5499.479,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

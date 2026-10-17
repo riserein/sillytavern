@@ -1,0 +1,152 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-native.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/card-player/native-large-playwright-v1.13.2.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-native.e2e.js"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-native.e2e.js",
+      "file": "card-native.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "compact selected font stays fixed after native export and changes only on a new author export",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 360000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 133883,
+                  "error": {
+                    "message": "Error: Cannot set buffer larger than 50Mb, please write it to a file and pass its path instead.",
+                    "stack": "Error: Cannot set buffer larger than 50Mb, please write it to a file and pass its path instead.\n    at /workspace/sillytavern/tests/card-native.e2e.js:99:64",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                      "column": 64,
+                      "line": 99
+                    },
+                    "snippet": "   97 |     await author.locator('[data-role=card-handoff] summary').click();\n   98 |     for (const exported of exports) {\n>  99 |         await author.locator('[data-role=card-handoff] input').setInputFiles({ name: 'export.' + exported.format, mimeType: exported.format === 'png' ? 'image/png' : 'application/json', buffer: exported.bytes });\n      |                                                                ^\n  100 |         await expect(author.locator('[data-role=handoff-result]')).toContainText(`文件静态核对通过：${largeFixture ? 2 : 1} 首`);\n  101 |         await expect(author.locator('[data-role=handoff-result]')).toContainText('接收端无需音乐插件');\n  102 |     }"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                        "column": 64,
+                        "line": 99
+                      },
+                      "message": "Error: Cannot set buffer larger than 50Mb, please write it to a file and pass its path instead.\n\n   97 |     await author.locator('[data-role=card-handoff] summary').click();\n   98 |     for (const exported of exports) {\n>  99 |         await author.locator('[data-role=card-handoff] input').setInputFiles({ name: 'export.' + exported.format, mimeType: exported.format === 'png' ? 'image/png' : 'application/json', buffer: exported.bytes });\n      |                                                                ^\n  100 |         await expect(author.locator('[data-role=handoff-result]')).toContainText(`文件静态核对通过：${largeFixture ? 2 : 1} 首`);\n  101 |         await expect(author.locator('[data-role=handoff-result]')).toContainText('接收端无需音乐插件');\n  102 |     }\n    at /workspace/sillytavern/tests/card-native.e2e.js:99:64"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T06:02:18.289Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/card-native.e2e.js-compact-ece3a-only-on-a-new-author-export/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/card-native.e2e.js-compact-ece3a-only-on-a-new-author-export/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/card-native.e2e.js-compact-ece3a-only-on-a-new-author-export/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                    "column": 64,
+                    "line": 99
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-e9107af2b2724da5c32b",
+          "file": "card-native.e2e.js",
+          "line": 28,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T06:02:17.757Z",
+    "duration": 137953.44999999998,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

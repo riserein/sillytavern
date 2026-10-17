@@ -1,4 +1,4 @@
-import { readScriptPayload, analyzePayload } from '../card-player/quality.js';
+import { readScriptPayload, analyzePayload, PLAYER_BUILD } from '../card-player/quality.js';
 import { test, expect } from '@playwright/test';
 import { readFile, mkdir, writeFile, mkdtemp, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -8,14 +8,26 @@ const results = [];
 const exportMetrics = [];
 const helperVersion = process.env.ST_HELPER_VERSION || '4.11.3';
 const reportPath = process.env.ST_NATIVE_REPORT || 'docs/card-player/native-validation.json';
+const largeFixture = process.env.ST_AUDIT_LARGE === '1';
+function largeWav(mebibytes) {
+    const bytes = Buffer.alloc(mebibytes * 1024 * 1024);
+    bytes.write('RIFF', 0); bytes.writeUInt32LE(bytes.length - 8, 4); bytes.write('WAVEfmt ', 8);
+    bytes.writeUInt32LE(16, 16); bytes.writeUInt16LE(1, 20); bytes.writeUInt16LE(1, 22);
+    bytes.writeUInt32LE(8000, 24); bytes.writeUInt32LE(16000, 28);
+    bytes.writeUInt16LE(2, 32); bytes.writeUInt16LE(16, 34); bytes.write('data', 36); bytes.writeUInt32LE(bytes.length - 44, 40);
+    return bytes;
+}
 test('compact selected font stays fixed after native export and changes only on a new author export', async ({
     browser,
 }) => {
-    test.setTimeout(360000);
+    test.setTimeout(largeFixture ? 900000 : 360000);
     const { page: author, context: authorContext } = await session(browser);
     let fontReads = 0,
-        rawPngBytes = 0;
+        rawPngBytes = 0,
+        nativeWrites = 0,
+        targetAvatar;
     author.on('request', (request) => {
+        if (request.url().endsWith('/api/characters/merge-attributes') && request.postDataJSON()?.avatar === targetAvatar) nativeWrites++;
         if (
             request.resourceType() === 'fetch' &&
             request.url().split('?')[0].endsWith('/assets/fonts/ChildFunSans.woff2')
@@ -30,6 +42,7 @@ test('compact selected font stays fixed after native export and changes only on 
             rawPngBytes = Number(await response.headerValue('content-length'));
     });
     const avatar = await createCard(author, 'CompactFont');
+    targetAvatar = avatar;
     await selectCard(author, avatar);
     await author.getByRole('tab', { name: '曲库', exact: true }).click();
     await author.locator('[data-action=new-playlist]').click();
@@ -40,8 +53,8 @@ test('compact selected font stays fixed after native export and changes only on 
     await menu(author, '#stm-import-playlist', playlist);
     await author
         .locator('[data-role=files]')
-        .setInputFiles({ name: 'Selected font tone.mp3', mimeType: 'audio/mpeg', buffer: tone });
-    await expect(author.locator('.stm-status')).toContainText('已导入 1 首音乐');
+        .setInputFiles(largeFixture ? [20, 8].map((size, i) => ({ name: `Large synthetic ${i}.wav`, mimeType: 'audio/wav', buffer: largeWav(size) })) : { name: 'Selected font tone.mp3', mimeType: 'audio/mpeg', buffer: tone });
+    await expect(author.locator('.stm-status')).toContainText(`已导入 ${largeFixture ? 2 : 1} 首音乐`, { timeout: 120000 });
     await author.getByRole('tab', { name: '外观', exact: true }).click();
     await author.locator('#stm-font').click();
     await author.locator('[role=radio][data-font-choice=child]').click();
@@ -87,13 +100,20 @@ test('compact selected font stays fixed after native export and changes only on 
     await author.getByRole('tab', { name: '曲库', exact: true }).click();
     await author.locator('[data-role=card-handoff] summary').click();
     for (const exported of exports) {
-        await author.locator('[data-role=card-handoff] input').setInputFiles({ name: 'export.' + exported.format, mimeType: exported.format === 'png' ? 'image/png' : 'application/json', buffer: exported.bytes });
-        await expect(author.locator('[data-role=handoff-result]')).toContainText('文件静态核对通过：1 首');
+        const directory = await mkdtemp(join(tmpdir(), 'stm-handoff-audit-'));
+        try {
+            const path = join(directory, 'export.' + exported.format);
+            await writeFile(path, exported.bytes);
+            await author.locator('[data-role=card-handoff] input').setInputFiles(path);
+        } finally { await rm(directory, { recursive: true, force: true }); }
+        await expect(author.locator('[data-role=handoff-result]')).toContainText(`文件静态核对通过：${largeFixture ? 2 : 1} 首`);
         await expect(author.locator('[data-role=handoff-result]')).toContainText('接收端无需音乐插件');
     }
     await author.locator('[data-role=card-handoff] input').setInputFiles({ name: 'old.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ spec: 'chara_card_v2', data: { name: 'Binding only', extensions: {} } })) });
     await expect(author.locator('[data-role=handoff-result]')).toContainText('此文件没有随卡播放器记录');
     expect(fontReads).toBe(1);
+    expect(nativeWrites).toBe(1);
+    exportMetrics.push({ nativeWritesBeforeFontChange: nativeWrites, expected: 'one binding write; unchanged JSON/PNG exports reuse the stored player despite Helper schema key order' });
     const pngBytes = exports.find((file) => file.format === 'png').bytes.length;
     expect(rawPngBytes).toBeGreaterThan(pngBytes);
     expect(pngBytes / rawPngBytes).toBeLessThan(0.55);
@@ -113,7 +133,7 @@ test('compact selected font stays fixed after native export and changes only on 
     expect(JSON.parse(switched.toString()).data.extensions.tavern_helper.scripts[0].content).toContain(
         '"fontFile":"PoxiaoPixel.woff2"',
     );
-    expect(switched.length).toBeLessThan(5 * 1024 * 1024);
+    expect(switched.length).toBeLessThan((largeFixture ? 45 : 5) * 1024 * 1024);
     await authorContext.close();
     const { page: recipient } = await session(browser, { portable: true });
     const imported = await importCard(recipient, exports.find((file) => file.format === 'png').bytes, 'png');
@@ -393,13 +413,12 @@ test.afterAll(async () => {
         reportPath,
         JSON.stringify(
             {
-                status:
-                    results.length > 0 &&
-                    results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
-                        ? 'passed'
-                        : 'incomplete-or-failed',
-                version: '1.13.1',
-                coverage: results.length === 4 ? 'full-suite' : 'selected-tests-only',
+                status: results.length && results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
+                    ? (results.length === 5 ? 'passed' : 'selected-tests-passed')
+                    : 'incomplete-or-failed',
+                version: PLAYER_BUILD,
+                largeFixture,
+                coverage: results.length === 5 ? 'full-suite' : 'partial-or-selected-tests; see runner report for overall status',
                 verifiedAt: new Date().toISOString(),
                 runtimeSha256: createHash('sha256').update(runtime).digest('hex'),
                 sillyTavern: '1.19.0',
@@ -409,7 +428,7 @@ test.afterAll(async () => {
                 recipientMusicDatabase: false,
                 nativeControls:
                     'ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON',
-                audio: 'actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host',
+                audio: largeFixture ? 'actual Chromium decoding and playback of original synthetic WAV; not external music-host validation' : 'actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host',
                 llm: 'real ST regenerate flow with fixture LLM/tokenizer responses',
                 mobile: 'Chromium viewport and touch emulation, not physical devices',
                 results,
@@ -1017,4 +1036,65 @@ test('native export blocks missing resources, preserves the previous card, refre
         'native-foreign',
     ]);
     expect(clean.data.extensions.tavern_helper.scripts[0].data.untouched).toBe(1);
+});
+
+test('saving local bindings and exporting an imported card never remove its unrelated carried player', async ({ browser }) => {
+    test.setTimeout(180000);
+    const { page } = await session(browser);
+    const own = await createCard(page, 'LocallyManaged');
+    const imported = await createCard(page, 'ImportedUnmanaged');
+    await selectCard(page, own);
+    await page.evaluate(async ({ prefix, bytes, own }) => {
+        const { createPlaylist, addTrackToPlaylist, bindPlaylistCharacters } = await import(prefix + 'core.js');
+        const { LocalMusicStore } = await import(prefix + 'local-store.js');
+        const state = SillyTavern.getContext().extensionSettings.riserein_music_player;
+        const id = crypto.randomUUID();
+        await new LocalMusicStore().put(id, new Blob([Uint8Array.from(bytes)], { type: 'audio/mpeg' }));
+        state.tracks.push({ id, kind: 'local', title: 'Original scope fixture' });
+        const list = createPlaylist(state, 'Scoped local playlist');
+        addTrackToPlaylist(state, list.id, id);
+        bindPlaylistCharacters(state, list.id, [own]);
+    }, { prefix: '/scripts/extensions/third-party/sillytavern/', bytes: Array.from(tone), own });
+    const original = await page.evaluate(async ({ own, imported }) => {
+        const headers = SillyTavern.getContext().getRequestHeaders();
+        const response = await fetch('/api/characters/export', { method: 'POST', headers, body: JSON.stringify({ avatar_url: own, format: 'json' }) });
+        if (!response.ok) throw new Error(await response.text());
+        const card = await response.json();
+        const extensions = structuredClone(card.data.extensions);
+        const saved = await fetch('/api/characters/merge-attributes', { method: 'POST', headers, body: JSON.stringify({ avatar: imported, data: { extensions } }) });
+        if (!saved.ok) throw new Error('Failed to seed imported-card fixture');
+        const foreign = SillyTavern.getContext().characters.find(card => card.avatar === imported);
+        foreign.data.extensions = structuredClone(extensions);
+        const marker = extensions.riserein_card_player;
+        return { scriptId: marker.scriptId, content: extensions.tavern_helper.scripts.find(script => script.id === marker.scriptId).content };
+    }, { own, imported });
+    async function serverCard(avatar) {
+        const headers = await page.evaluate(() => SillyTavern.getContext().getRequestHeaders());
+        const response = await page.request.post(baseURL + '/api/characters/export', { headers, data: { avatar_url: avatar, format: 'json' } });
+        expect(response.ok()).toBe(true);
+        return response.json();
+    }
+    async function bindings(avatars) {
+        await page.getByRole('tab', { name: '曲库', exact: true }).click();
+        await page.getByRole('button', { name: '打开歌单：Scoped local playlist', exact: true }).click();
+        if (await page.locator('#stm-playlist-manager').isHidden()) await page.locator('[data-action=toggle-manager]').click();
+        if (await page.locator('#stm-role-bindings').isHidden()) await page.locator('[data-action=bind-roles]').click();
+        await page.locator('.stm-role-picker input').evaluateAll((inputs, avatars) => { for (const input of inputs) input.checked = avatars.includes(input.dataset.avatar); }, avatars);
+        await page.locator('#stm-role-bindings button[type=submit]').click();
+        await expect(page.locator('.stm-status')).toContainText('音乐已随卡保存', { timeout: 120000 });
+    }
+    await bindings([own]);
+    const afterBinding = await serverCard(imported);
+    expect(afterBinding.data.extensions.tavern_helper.scripts.find(script => script.id === original.scriptId).content).toBe(original.content);
+    const wrapped = await page.evaluate(async avatar => {
+        const response = await fetch('/api/characters/export', { method: 'POST', headers: SillyTavern.getContext().getRequestHeaders(), body: JSON.stringify({ avatar_url: avatar, format: 'json' }) });
+        if (!response.ok) throw new Error(await response.text());
+        return response.json();
+    }, imported);
+    expect(wrapped.data.extensions.tavern_helper.scripts.find(script => script.id === original.scriptId).content).toBe(original.content);
+    await bindings([]);
+    const cleared = await serverCard(own);
+    expect(cleared.data.extensions.riserein_card_player).toBeNull();
+    const preserved = await serverCard(imported);
+    expect(preserved.data.extensions.tavern_helper.scripts.find(script => script.id === original.scriptId).content).toBe(original.content);
 });

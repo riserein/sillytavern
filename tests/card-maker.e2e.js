@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { PLAYER_BUILD } from '../card-player/quality.js';
 import { test, expect } from '@playwright/test';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 
@@ -245,7 +246,7 @@ test.afterAll(async () => {
                     results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
                         ? 'passed'
                         : 'incomplete-or-failed',
-                version: '1.13.0',
+                version: PLAYER_BUILD,
                 runtimeSha256,
                 verifiedAt: new Date().toISOString(),
                 sillyTavern: '1.19.0',

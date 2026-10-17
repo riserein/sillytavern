@@ -4,7 +4,9 @@ import {
     assertCapacity,
     payloadLiteral,
     verifyCardFile,
+    readCardFile,
     transformCardFile,
+    sameData,
 } from './quality.js';
 import { getQueue, playlistForCharacter, createTrackId } from '../core.js';
 import { FONT_PRESETS } from '../fonts.js';
@@ -55,7 +57,7 @@ export function nativeCardScript(payload, runtime, scriptId) {
         id: scriptId,
         name: `角色音乐 · ${payload.config.title}`,
         content: `/* Riserein shared-UI card player. MIT. */\n(()=>{\n${runtime}\nconst reportStartupError=(error)=>{console.error('[Riserein card player]',error);const message='随卡播放器启动失败（${PLAYER_BUILD}）：'+(error?.message||String(error))+'。请保留此提示，联系角色卡制作端检查并重新导出。';try{const host=window.parent;if(host.toastr?.error)host.toastr.error(message,'角色音乐播放器',{timeOut:0,extendedTimeOut:0,closeButton:true,escapeHtml:true});else host.alert(message);}catch{console.error(message);}};\ntry{Promise.resolve(RisereinNativePlayer.startNativeCharacterPlayer(${payloadLiteral(payload)})).catch(reportStartupError);}catch(error){reportStartupError(error);}\n})();`,
-        info: '由 Riserein 音乐播放器制作。原生 PNG/JSON 随卡播放器；共享完整版界面，无音乐导入功能。不依赖完整版插件，需要酒馆助手。',
+        info: '由 Riserein 音乐播放器制作。原生 PNG/JSON 随卡播放器；共享完整版界面，无音乐导入功能。不依赖完整版插件，需要酒馆助手角色脚本权限；脚本会访问酒馆主页面，请仅启用可信来源的角色脚本。',
         button: { enabled: false, buttons: [] },
         data: {},
         export_with: { data: true, button: true },
@@ -69,6 +71,8 @@ export function nativeCardScript(payload, runtime, scriptId) {
 /** Author-only bridge. The normal ST server exports the resulting card in BOTH formats. */
 export function createNativeCardExport({ settings, store, getContext, showStatus }) {
     const abort = new AbortController();
+    // A native marker can come from an imported card. It is not proof of a local binding.
+    const managedAvatars = new Set(settings.playlists.flatMap(item => item.characterAvatars || []));
     let queue = Promise.resolve(),
         runtimePromise,
         cachedFont;
@@ -99,7 +103,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         return task;
     };
     const asset = (path) => new URL(`../${path}`, import.meta.url);
-    const read = (url) => fetchBlob(url, abort.signal);
+    const read = (url, maxBytes) => fetchBlob(url, abort.signal, maxBytes ? { maxBytes } : undefined);
     const fallback = (index) =>
         memo(fixedImages, index, () => read(fallbackCoverUrl(index)).then(prepareCover));
     const sourceSnapshot = (playlist) => ({
@@ -160,7 +164,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                 readPublicImage: (url) => {
                     const safe = publicResource(url);
                     if (!safe) throw new Error('封面不是公开 HTTPS 图片，请换为本地封面');
-                    return read(safe).then(prepareCover);
+                    return read(safe, 10 * 1024 * 1024).then(prepareCover);
                 },
                 readFont: async (file) => {
                     // Cache only the selected immutable bundled file. User blobs and
@@ -248,7 +252,8 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         card.data.extensions ||= {};
         const old = card.data.extensions.riserein_card_player;
         const playlist = playlistForCharacter(settings, avatar);
-        if (!playlist && old?.mode !== 'native') return;
+        if (!playlist && !managedAvatars.has(avatar)) return;
+        if (!playlist && old?.mode !== 'native') { managedAvatars.delete(avatar); return; }
         const current = () => {
             const latest = getContext();
             return latest.characters[latest.characterId]?.avatar === avatar;
@@ -290,10 +295,8 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                 old.version === 1 &&
                 old.projectId === payload.config.id &&
                 old.playlistId === playlist.id &&
-                JSON.stringify(findScript(card.data.extensions.tavern_helper?.scripts)) ===
-                    JSON.stringify(script)
-            )
-                return;
+                sameData(findScript(card.data.extensions.tavern_helper?.scripts), script)
+            ) { managedAvatars.add(avatar); return; }
             next = attachPlayerToCard(card, script, payload.config.id);
             Object.assign(next.data.extensions.riserein_card_player, {
                 mode: 'native',
@@ -301,6 +304,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
             });
         } else {
             next = card;
+            next.data.extensions.tavern_helper ||= {};
             const remove = (trees) =>
                 trees.flatMap((tree) =>
                     tree.type === 'folder'
@@ -383,10 +387,13 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                 );
             throw error;
         }
+        if (playlist) managedAvatars.add(avatar);
+        else managedAvatars.delete(avatar);
     }
     let lastReport = null;
     const previousFetch = window.fetch;
     async function wrappedFetch(input, init) {
+        if (abort.signal.aborted) return previousFetch.call(this, input, init);
         const url = typeof input === 'string' ? input : input?.url || String(input);
         if (new URL(url, location.href).pathname !== '/api/characters/export')
             return previousFetch.call(this, input, init);
@@ -401,12 +408,13 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         const marked =
             context.characters.find((card) => card.avatar === avatar)?.data?.extensions?.riserein_card_player
                 ?.mode === 'native';
-        if (playlistForCharacter(settings, avatar) || marked) {
+        const local = Boolean(playlistForCharacter(settings, avatar)) || managedAvatars.has(avatar);
+        if (local || marked) {
             try {
                 showStatus('正在检查随卡音乐并保存播放器…');
                 return await enqueue(async () => {
-                    await syncAvatar(avatar);
-                    showStatus('随卡播放器已准备好，正在导出角色卡。');
+                    if (local) await syncAvatar(avatar);
+                    showStatus(local ? '随卡播放器已准备好，正在导出角色卡。' : '本机未绑定此卡的源歌单，将保留原有随卡播放器导出。');
                     const liveSettings = () =>
                         getContext().characters.find((card) => card.avatar === avatar)?.data?.extensions
                             ?.tavern_helper;
@@ -452,6 +460,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                             const script = flatten(filtered.scripts).find(
                                 (item) => item.id === marker.scriptId,
                             );
+                            if (!script) throw new Error('随卡播放器脚本缺失，未删除或覆盖原卡，请检查角色脚本。');
                             const blob = await compact.clone().blob();
                             // ST normalizes its own envelope; compare authored character fields separately.
                             const characterData = Object.fromEntries(
@@ -476,13 +485,16 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                                     .filter((key) => key in expectedData)
                                     .map((key) => [key, expectedData[key]]),
                             );
-                            lastReport = await verifyCardFile(blob, body.format, {
-                                script,
-                                characterData,
-                            });
-                            showStatus(
-                                `导出静态核对通过：${lastReport.tracks} 首，文件 ${(blob.size / 1048576).toFixed(2)} MB。浏览器试听与接收端酒馆验收需分别完成。`,
-                            );
+                            if (script.content.includes('/*RSCP_PAYLOAD_V1:')) {
+                                lastReport = await verifyCardFile(blob, body.format, { script, characterData });
+                                showStatus(`导出静态核对通过：${lastReport.tracks} 首，文件 ${(blob.size / 1048576).toFixed(2)} MB。浏览器试听与接收端酒馆验收需分别完成。`);
+                            } else {
+                                const exported = await readCardFile(blob, body.format);
+                                for (const [key, value] of Object.entries(characterData))
+                                    if (!sameData(exported.data[key], value)) throw new Error(`角色字段「${key}」导出前后不一致。`);
+                                lastReport = { static: 'not-verified', character: 'passed', browser: 'not-tested', tavern: 'not-tested', fileBytes: blob.size };
+                                showStatus('已保留旧版随卡脚本导出，角色字段已核对；旧脚本的音乐资源未静态验证，不能视为播放验收通过。');
+                            }
                         }
                         return compact;
                     };
@@ -491,7 +503,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
             } catch (error) {
                 const message = `角色卡未导出：${error.message}`;
                 showStatus(message, true);
-                window.toastr?.error(message, '随卡音乐需要处理');
+                window.toastr?.error(message, '随卡音乐需要处理', { escapeHtml: true });
                 // Fail closed: never silently hand the author a stale or empty music export.
                 return new Response(message, {
                     status: 422,
@@ -513,16 +525,18 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                 for (const playlist of settings.playlists.filter((item) => item.characterAvatars.length))
                     prepared.set(playlist.id, await packagePlaylist(playlist));
                 const avatars = new Set(settings.playlists.flatMap((item) => item.characterAvatars));
-                for (const card of getContext().characters)
-                    if (card.data?.extensions?.riserein_card_player?.mode === 'native')
-                        avatars.add(card.avatar);
-                for (const avatar of avatars) await syncAvatar(avatar, prepared);
+                for (const avatar of managedAvatars) avatars.add(avatar);
+                for (const avatar of avatars) {
+                    if (!playlistForCharacter(settings, avatar) && !getContext().characters.some(card => card.avatar === avatar)) { managedAvatars.delete(avatar); continue; }
+                    await syncAvatar(avatar, prepared);
+                }
             }),
         dispose() {
             abort.abort();
             fixedImages.clear();
             licenses.clear();
             cachedFont = null;
+            managedAvatars.clear();
             if (window.fetch === wrappedFetch) window.fetch = previousFetch;
         },
     };

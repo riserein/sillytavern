@@ -53,7 +53,7 @@
 
 ## 测试结果与体积
 
-最终结果、构建哈希、逐项资源字节及边界见本目录的 [quality-validation-v1.13.0.json](quality-validation-v1.13.0.json)。原生真实酒馆结果见 [native-validation-v1.13.0.json](native-validation-v1.13.0.json)，独立浏览器专项见 [quality-browser-validation.json](quality-browser-validation.json)，完整版回归见 [full-plugin-validation-v1.13.0.json](full-plugin-validation-v1.13.0.json)，真实外网探针见 [public-audio-validation.json](public-audio-validation.json)。这些文件各自记录测试环境，不把不同环境的结果互相替代。
+最终结果、构建哈希、逐项资源字节及边界见本目录的 [quality-validation-v1.13.0.json](quality-validation-v1.13.0.json)。原生真实酒馆结果见 [native-validation-v1.13.0.json](native-validation-v1.13.0.json)，独立浏览器专项见 [quality-browser-validation-v1.13.0.json](quality-browser-validation-v1.13.0.json)，完整版回归见 [full-plugin-validation-v1.13.0.json](full-plugin-validation-v1.13.0.json)，真实外网探针见 [public-audio-validation.json](public-audio-validation.json)。这些文件各自记录测试环境，不把不同环境的结果互相替代。
 
 跨浏览器和实体手机清单见 [compatibility-plan-v1.13.0.md](compatibility-plan-v1.13.0.md)，普通用户操作见 [使用说明](quality-user-guide.md)。
 

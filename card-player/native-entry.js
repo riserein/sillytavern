@@ -7,11 +7,11 @@ import { sharedEnvironment } from './shared-environment.js';
 import { mountSharedPlayer, SHARED_CSS } from './dist/shared-ui.js';
 import { unpackFont } from './font-transport.js';
 import { FONT_PRESETS } from '../fonts.js';
+import { base64Bytes } from '../base64.js';
 
 function dataBlob(value, win) {
-    const comma = value.indexOf(','),
-        bytes = win.atob(value.slice(comma + 1));
-    return new win.Blob([Uint8Array.from(bytes, (char) => char.charCodeAt(0))], {
+    const comma = value.indexOf(',');
+    return new win.Blob([base64Bytes(value.slice(comma + 1))], {
         type: value.slice(5, value.indexOf(';')),
     });
 }

@@ -1,0 +1,8 @@
+{
+  "baseline": "c02ca50",
+  "scriptBytes": 48234711,
+  "static": "passed",
+  "problems": [
+    "脚本超过 45 MB；请减少内嵌资源。"
+  ]
+}

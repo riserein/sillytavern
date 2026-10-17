@@ -756,7 +756,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     readPublicImage: (url, signal) => {
                         const safe = publicResource(url);
                         if (!safe) throw new Error('封面地址不能公开分发，请替换封面或使用内置封面。');
-                        return fetchBlob(safe, signal).then(prepareCover);
+                        return fetchBlob(safe, signal, { maxBytes: 10 * 1024 * 1024 }).then(prepareCover);
                     },
                     readFont: (file, signal) =>
                         fetchBlob(new URL(`./assets/fonts/${file}`, import.meta.url), signal),

@@ -109,7 +109,7 @@
     },
     "controlledFixture": {
       "passed": 11,
-      "report": "quality-browser-validation.json",
+      "report": "quality-browser-validation-v1.13.0.json",
       "claimsRealHelperAcceptance": false,
       "simulatedScenarios": [
         "stream response body cancellation",
@@ -139,7 +139,7 @@
     },
     "independentMaker": {
       "passed": 3,
-      "report": "export-validation.json",
+      "report": "export-validation-v1.13.0.json",
       "realTavernHelper": true,
       "mobile": "Chromium emulation, not a physical phone"
     }

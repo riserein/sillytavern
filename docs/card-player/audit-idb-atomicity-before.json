@@ -1,0 +1,152 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-audit.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/card-player/audit-idb-atomicity-before.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/audit",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-audit.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-audit.e2e.js",
+      "file": "card-audit.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "an invalid key in a multi-delete aborts the entire real IndexedDB transaction",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1275,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[2m    \"error\": \"DataError\",\u001b[22m\n\u001b[32m-   \"oldPresent\": true,\u001b[39m\n\u001b[31m+   \"oldPresent\": false,\u001b[39m\n\u001b[2m  }\u001b[22m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[2m    \"error\": \"DataError\",\u001b[22m\n\u001b[32m-   \"oldPresent\": true,\u001b[39m\n\u001b[31m+   \"oldPresent\": false,\u001b[39m\n\u001b[2m  }\u001b[22m\n    at /workspace/sillytavern/tests/card-audit.e2e.js:171:20",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                      "column": 20,
+                      "line": 171
+                    },
+                    "snippet": "  169 |         return { error, oldPresent: Boolean(await store.get(oldCover)) };\n  170 |     });\n> 171 |     expect(result).toEqual({ error: 'DataError', oldPresent: true });\n      |                    ^\n  172 | });\n  173 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                        "column": 20,
+                        "line": 171
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[2m    \"error\": \"DataError\",\u001b[22m\n\u001b[32m-   \"oldPresent\": true,\u001b[39m\n\u001b[31m+   \"oldPresent\": false,\u001b[39m\n\u001b[2m  }\u001b[22m\n\n  169 |         return { error, oldPresent: Boolean(await store.get(oldCover)) };\n  170 |     });\n> 171 |     expect(result).toEqual({ error: 'DataError', oldPresent: true });\n      |                    ^\n  172 | });\n  173 |\n    at /workspace/sillytavern/tests/card-audit.e2e.js:171:20"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T05:33:16.748Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-an-inval-8f3aa--real-IndexedDB-transaction/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-an-inval-8f3aa--real-IndexedDB-transaction/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-an-inval-8f3aa--real-IndexedDB-transaction/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                    "column": 20,
+                    "line": 171
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-9125a48fe2175567c562",
+          "file": "card-audit.e2e.js",
+          "line": 162,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T05:33:16.057Z",
+    "duration": 2652.435,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

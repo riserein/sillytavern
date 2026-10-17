@@ -22,10 +22,11 @@ export class LocalMusicStore {
         const database = await this.#open();
         return new Promise((resolve, reject) => {
             const transaction = database.transaction('tracks', mode);
-            const request = operation(transaction.objectStore('tracks'));
+            let request, operationError;
             transaction.oncomplete = () => resolve(request.result);
-            transaction.onerror = () => reject(transaction.error || request.error);
-            transaction.onabort = () => reject(transaction.error || new Error('音乐存储操作被中断。'));
+            transaction.onerror = transaction.onabort = () => reject(operationError || transaction.error || new Error('音乐存储操作被中断。'));
+            try { request = operation(transaction.objectStore('tracks')); }
+            catch (error) { operationError = error; transaction.abort(); }
         });
     }
 

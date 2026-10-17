@@ -190,7 +190,7 @@ export function buildCardExports(config, runtime, scriptId) {
         name: `角色音乐 · ${config.title}`,
         id: scriptId,
         content: javascript,
-        info: '由 Riserein 音乐播放器制作。角色脚本；音频已内嵌或使用公开直链，不依赖完整版插件。',
+        info: '由 Riserein 音乐播放器制作。角色脚本；音频已内嵌或使用公开直链，不依赖完整版插件。需要酒馆助手角色脚本权限，会访问酒馆主页面；请仅启用可信来源的脚本。',
         button: { enabled: false, buttons: [] },
         data: {},
         export_with: { data: true, button: true },

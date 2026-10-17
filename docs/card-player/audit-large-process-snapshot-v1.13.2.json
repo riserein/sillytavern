@@ -1,0 +1,23 @@
+{
+  "observedAt": "2026-10-17T06:35:21Z",
+  "runtimeSha256": "de53b05127cafc1ec02a5383941edb718a20ecee594417b3c987eae2ee4fd58d",
+  "collection": "ps -eo pid,ppid,etimes,pcpu,rss,comm --sort=-rss | head -n 10; values copied from observed tool output, not a continuous memory trace",
+  "scenario": "final near-30-MiB native export/import Playwright run, with author and recipient browser contexts",
+  "sample": {
+    "pid": 367777,
+    "parentPid": 367425,
+    "comm": "chromium",
+    "elapsedSeconds": 48,
+    "rssKiB": 1440288,
+    "rssBytes": 1474854912
+  },
+  "browserRoot": {
+    "pid": 367407,
+    "parentPid": 367379,
+    "rssKiB": 249868
+  },
+  "notPeak": true,
+  "notSinglePlayerAttribution": true,
+  "notPhysicalPhone": true,
+  "note": "A later attempt to capture the complete browser tree from /proc missed its exit; no complete-tree total or peak was obtained. Do not compare process RSS directly to performance.memory JS-heap snapshots; test-harness and multiple contexts affect memory."
+}

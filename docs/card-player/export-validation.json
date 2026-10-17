@@ -1,8 +1,8 @@
 {
   "status": "passed",
-  "version": "1.13.0",
+  "version": "1.13.2",
   "runtimeSha256": "9db73d1899c0489d0d99086b936c9a662ef4f6fc061fc79676296ef3a91181ba",
-  "verifiedAt": "2026-10-16T13:17:43.099Z",
+  "verifiedAt": "2026-10-17T05:46:38.860Z",
   "sillyTavern": "1.19.0",
   "tavernHelper": "4.11.3",
   "fullPluginInRecipient": false,

@@ -1,7 +1,7 @@
 import { FONT_PRESETS, MAX_FONTS, validateFontFile, decodeFont, loadBuiltinFont } from './fonts.js';
 
 /** A scoped, keyboard-accessible picker. Preview faces stay loaded while browsing. */
-export function createFontPicker({ panel, launcher, store, settings, save, showStatus, createId, availableFonts }) {
+export function createFontPicker({ panel, launcher, store, settings, save, showStatus, createId, availableFonts, retireAssets }) {
     const query = selector => panel.querySelector(selector);
     const toggle = query('#stm-font');
     const gallery = query('#stm-font-gallery');
@@ -115,7 +115,7 @@ export function createFontPicker({ panel, launcher, store, settings, save, showS
 
     async function remove(entry) {
         if (importing) return;
-        try { await store.delete(entry.id); }
+        try { if (!retireAssets) await store.delete(entry.id); }
         catch { showStatus('字体删除失败，请重试。', true); return; }
         settings.fonts = settings.fonts.filter(font => font.id !== entry.id);
         if (settings.fontId === entry.id) {
@@ -129,6 +129,7 @@ export function createFontPicker({ panel, launcher, store, settings, save, showS
         const face = await cache.get(entry.id)?.catch(() => null);
         if (face) { document.fonts.delete(face); faces.delete(face); }
         cache.delete(entry.id);
+        retireAssets?.([entry.id]);
         save(); renderList();
         status.textContent = `已移除：${entry.name}。其他字体保留。`;
         gallery.querySelector('[aria-checked="true"]')?.focus();
@@ -193,18 +194,22 @@ export function createFontPicker({ panel, launcher, store, settings, save, showS
         let added = 0;
         let duplicates = 0;
         for (const file of files) {
+            if (disposed) break;
             let id = null;
             try {
                 validateFontFile(file);
                 // crypto.subtle is unavailable on HTTP LAN installs; imports still work there.
                 const digest = globalThis.crypto?.subtle && await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+                if (disposed) break;
                 const hash = digest ? [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('') : null;
                 const previous = hash && settings.fonts.find(font => font.hash === hash);
                 if (previous) { last = previous; duplicates++; continue; }
                 if (settings.fonts.length >= MAX_FONTS) throw new Error(`最多保留 ${MAX_FONTS} 款本地字体，请先删除不需要的字体。`);
                 id = `font:${createId()}`;
                 const face = await decodeFont(file, id);
+                if (disposed) break;
                 await store.put(id, file);
+                if (disposed) { await store.delete(id).catch(() => {}); break; }
                 const entry = { id, name: file.name.replace(/\.[^.]+$/, '').slice(0, 80), ...(hash ? { hash } : {}) };
                 settings.fonts.push(entry);
                 faces.add(face); document.fonts.add(face); cache.set(id, Promise.resolve(face));
@@ -214,6 +219,7 @@ export function createFontPicker({ panel, launcher, store, settings, save, showS
                 errors.push(`${file.name}：${error.message || '无法读取字体文件。'}`);
             }
         }
+        if (disposed) { importing = false; return; }
         importing = false; importButton.disabled = false;
         renderList();
         if (last && revision === turn) await choose({ ...last, local: true });

@@ -1,0 +1,230 @@
+{
+  "baseline": {
+    "version": "1.13.1",
+    "commit": "c02ca5084fb3f616de9697e75408e6d09fc8c251"
+  },
+  "version": "1.13.2",
+  "generatedAt": "2026-10-17T06:38:23.354337+00:00",
+  "auditReport": "../quality-audit-v1.13.2.md",
+  "confirmedFindings": {
+    "P0": 0,
+    "P1": 2,
+    "P2": 10,
+    "note": "Evidence includes baseline browser/Node reproductions, source-confirmed paths and a measured performance defect. Source-only unbounded responses are not claimed to have exhausted memory. Full backup is a feature gap, not a fixed bug."
+  },
+  "compatibleStorage": {
+    "musicDatabaseSchemaChanged": false,
+    "projectDatabaseSchemaChanged": false,
+    "existingMetadataMigrationRequired": false
+  },
+  "runtimeSha256": "de53b05127cafc1ec02a5383941edb718a20ecee594417b3c987eae2ee4fd58d",
+  "makerRuntimeSha256": "9db73d1899c0489d0d99086b936c9a662ef4f6fc061fc79676296ef3a91181ba",
+  "tests": {
+    "unit": {
+      "passed": 113,
+      "report": "unit-test-audit-v1.13.2.txt"
+    },
+    "controlledAuditBrowser": {
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "startTime": "2026-10-17T06:28:38.952Z",
+      "durationMilliseconds": 13845.031,
+      "report": "audit-browser-playwright.json"
+    },
+    "controlledQualityBrowser": {
+      "passed": 11,
+      "report": "quality-browser-validation.json",
+      "realHelper": false
+    },
+    "fullPluginEarlierPass": {
+      "passed": 60,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "startTime": "2026-10-17T05:47:03.992Z",
+      "durationMilliseconds": 721919.61,
+      "report": "full-plugin-audit-v1.13.2.json",
+      "sourcePhase": "after asset-retirement and storage fixes, before final imported-card ownership fix; supplemented by final targeted pass below"
+    },
+    "fullPluginFinalTargeted": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "startTime": "2026-10-17T06:36:04.351Z",
+      "durationMilliseconds": 125196.075,
+      "report": "full-plugin-audit-targeted-v1.13.2.json"
+    },
+    "nativeFinal": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "startTime": "2026-10-17T06:28:12.525Z",
+      "durationMilliseconds": 216326.66400000002,
+      "report": "native-playwright.json",
+      "summary": "native-validation.json",
+      "realST": "1.19.0",
+      "officialHelper": "4.11.3"
+    },
+    "advancedMaker": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "startTime": "2026-10-17T05:43:50.288Z",
+      "durationMilliseconds": 168778.068,
+      "report": "export-playwright.json",
+      "summary": "export-validation.json"
+    },
+    "near30MiB": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "startTime": "2026-10-17T06:32:13.789Z",
+      "durationMilliseconds": 190241.136,
+      "report": "native-large-playwright-v1.13.2.json",
+      "summary": "native-large-v1.13.2.json",
+      "trace": "off",
+      "selectedTestOnly": true
+    },
+    "officialHelper495": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "startTime": "2026-10-17T06:35:24.820Z",
+      "durationMilliseconds": 38647.228,
+      "report": "native-helper-4.9.5-audit-playwright-v1.13.2.json",
+      "summary": "native-helper-4.9.5-audit-v1.13.2.json",
+      "selectedTestOnly": true,
+      "officialCommit": "af21bee2aadef5bf384f618e3456ff15ba9c431d"
+    }
+  },
+  "largeExports": [
+    {
+      "format": "json",
+      "bytes": 41959709,
+      "milliseconds": 24282
+    },
+    {
+      "format": "resource-breakdown",
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "Large synthetic 0",
+          "bytes": 20971520,
+          "encodedBytes": 27962050,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Large synthetic 0 · 封面",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "audio",
+          "name": "Large synthetic 1",
+          "bytes": 8388608,
+          "encodedBytes": 11184834,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Large synthetic 1 · 封面",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "font",
+          "name": "游趣体",
+          "bytes": 1531668,
+          "encodedBytes": 2042261,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 31283226,
+      "payloadBytes": 41717186,
+      "scriptBytes": 41957409,
+      "problems": [],
+      "jsonPlayerBytes": 41957409,
+      "pngPlayerBytes": 55943212,
+      "pngUncompactedPlayerBytes": 111886424,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "format": "png",
+      "bytes": 56021380,
+      "milliseconds": 52973
+    },
+    {
+      "nativeWritesBeforeFontChange": 1,
+      "expected": "one binding write; unchanged JSON/PNG exports reuse the stored player despite Helper schema key order"
+    },
+    {
+      "rawPngBytes": 111966141,
+      "compactPngBytes": 56021380,
+      "packagedFontReadsAcrossBindingAndTwoExports": 1
+    }
+  ],
+  "memory": {
+    "controlled29MiBBase64Before": "audit-stress-baseline.json",
+    "controlled29MiBBase64Final": "audit-stress-fixed-final.json",
+    "completePipelineProcessObservation": "audit-large-process-snapshot-v1.13.2.json",
+    "notPeakMeasurement": true,
+    "notPhysicalPhone": true
+  },
+  "externalAudio": {
+    "status": "not-passed",
+    "probeReports": [
+      "audit-public-audio-v1.13.2.json",
+      "audit-online-v1.13.2.json"
+    ],
+    "observedFailures": [
+      "net::ERR_TUNNEL_CONNECTION_FAILED",
+      "net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "tlsVerificationDisabled": false,
+    "audius": "not enabled; no maintainer public Key"
+  },
+  "remaining": {
+    "completeCrossDeviceLibraryAndDraftBackup": "not implemented",
+    "physicalIOSAndroid": "not tested",
+    "firefoxWebKitSafari": "not tested",
+    "mobileTests": "desktop Chromium viewport/touch emulation only",
+    "unconfirmedRetiredBlobs": "retained for safety, can use quota after page closes",
+    "sameOriginMultiAccountDraftIsolation": "source-scoped risk; not real multi-account acceptance",
+    "thirdPartyCardEditors": "not general compatibility certification"
+  },
+  "failedAndPartialEvidence": "Historical and initial failing reports are retained. The first large-file upload exceeded Playwright in-memory Buffer limits, quota setup needed a cold persistent profile, and the first stress driver called play before loadeddata. These harness failures are not presented as product bugs. Runner reports, not partial worker summaries, determine suite status."
+}

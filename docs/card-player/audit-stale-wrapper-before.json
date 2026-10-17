@@ -1,0 +1,7 @@
+{
+  "baseline": "c02ca50",
+  "environment": "Node controlled outer fetch wrapper; not a real third-party extension",
+  "status": 422,
+  "forwarded": 0,
+  "body": "角色卡未导出：This operation was aborted"
+}

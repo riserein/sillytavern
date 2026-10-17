@@ -1,0 +1,157 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-audit.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/card-player/audit-toast-before-observed.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/audit",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-audit.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-audit.e2e.js",
+      "file": "card-audit.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "export error notifications render untrusted song titles as text even when another extension enables HTML toasts",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5651,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.toast-message')\nTimeout: 5000ms\n\u001b[32m- Expected substring  - 1\u001b[39m\n\u001b[31m+ Received string     + 2\u001b[39m\n\n\u001b[32m- <img\u001b[39m\n\u001b[31m+ 角色卡未导出：未导出，1 首歌曲需要处理：\u001b[39m\n\u001b[31m+ 「」：本地音频不在当前浏览器中，请重新导入。\u001b[39m\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.toast-message')\u001b[22m\n\u001b[2m    9 × locator resolved to <div class=\"toast-message\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"角色卡未导出：未导出，1 首歌曲需要处理：\u001b[22m\n\u001b[2m「」：本地音频不在当前浏览器中，请重新导入。\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.toast-message')\nTimeout: 5000ms\n\u001b[32m- Expected substring  - 1\u001b[39m\n\u001b[31m+ Received string     + 2\u001b[39m\n\n\u001b[32m- <img\u001b[39m\n\u001b[31m+ 角色卡未导出：未导出，1 首歌曲需要处理：\u001b[39m\n\u001b[31m+ 「」：本地音频不在当前浏览器中，请重新导入。\u001b[39m\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.toast-message')\u001b[22m\n\u001b[2m    9 × locator resolved to <div class=\"toast-message\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"角色卡未导出：未导出，1 首歌曲需要处理：\u001b[22m\n\u001b[2m「」：本地音频不在当前浏览器中，请重新导入。\"\u001b[22m\n\n    at /workspace/sillytavern/tests/card-audit.e2e.js:202:50",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                      "column": 50,
+                      "line": 202
+                    },
+                    "snippet": "  200 |     const observation = await page.evaluate(() => ({ injected: Boolean(window.auditToastInjected), htmlImages: document.querySelectorAll('.toast-message img').length }));\n  201 |     await test.info().attach('toast-observation', { body: JSON.stringify(observation), contentType: 'application/json' });\n> 202 |     await expect(page.locator('.toast-message')).toContainText('<img');\n      |                                                  ^\n  203 |     await expect(page.locator('.toast-message img')).toHaveCount(0);\n  204 |     expect(await page.evaluate(() => Boolean(window.auditToastInjected))).toBe(false);\n  205 | });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                        "column": 50,
+                        "line": 202
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.toast-message')\nTimeout: 5000ms\n\u001b[32m- Expected substring  - 1\u001b[39m\n\u001b[31m+ Received string     + 2\u001b[39m\n\n\u001b[32m- <img\u001b[39m\n\u001b[31m+ 角色卡未导出：未导出，1 首歌曲需要处理：\u001b[39m\n\u001b[31m+ 「」：本地音频不在当前浏览器中，请重新导入。\u001b[39m\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.toast-message')\u001b[22m\n\u001b[2m    9 × locator resolved to <div class=\"toast-message\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"角色卡未导出：未导出，1 首歌曲需要处理：\u001b[22m\n\u001b[2m「」：本地音频不在当前浏览器中，请重新导入。\"\u001b[22m\n\n\n  200 |     const observation = await page.evaluate(() => ({ injected: Boolean(window.auditToastInjected), htmlImages: document.querySelectorAll('.toast-message img').length }));\n  201 |     await test.info().attach('toast-observation', { body: JSON.stringify(observation), contentType: 'application/json' });\n> 202 |     await expect(page.locator('.toast-message')).toContainText('<img');\n      |                                                  ^\n  203 |     await expect(page.locator('.toast-message img')).toHaveCount(0);\n  204 |     expect(await page.evaluate(() => Boolean(window.auditToastInjected))).toBe(false);\n  205 | });\n    at /workspace/sillytavern/tests/card-audit.e2e.js:202:50"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T05:50:32.006Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "toast-observation",
+                      "contentType": "application/json",
+                      "body": "eyJpbmplY3RlZCI6dHJ1ZSwiaHRtbEltYWdlcyI6MX0="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-export-e-46990-tension-enables-HTML-toasts/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-export-e-46990-tension-enables-HTML-toasts/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-export-e-46990-tension-enables-HTML-toasts/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                    "column": 50,
+                    "line": 202
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-00e4340f1df703bb2066",
+          "file": "card-audit.e2e.js",
+          "line": 182,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T05:50:31.305Z",
+    "duration": 6676.88,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

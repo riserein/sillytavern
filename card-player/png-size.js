@@ -1,3 +1,4 @@
+import { base64Bytes } from '../base64.js';
 const SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10];
 const word = (bytes) => String.fromCharCode(...bytes);
 function v2TextChunk(card) {
@@ -24,9 +25,7 @@ function v2TextChunk(card) {
     return result;
 }
 function metadata(bytes) {
-    const binary = atob(new TextDecoder().decode(bytes));
-    const decoded = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) decoded[i] = binary.charCodeAt(i);
+    const decoded = base64Bytes(new TextDecoder().decode(bytes));
     return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(decoded));
 }
 /** Keep a standard V2 PNG only when its V3 chunk is an exact envelope duplicate.

@@ -1,0 +1,23 @@
+{
+  "baseline": "c02ca50",
+  "environment": "Node minimal reproduction with controlled persistence endpoint; no user cards modified",
+  "results": [
+    {
+      "action": "syncBindings",
+      "serverRequests": [
+        "/api/characters/merge-attributes"
+      ],
+      "remainingScriptCount": 0,
+      "remainingMarker": null
+    },
+    {
+      "action": "nativeExport",
+      "serverRequests": [
+        "/api/characters/merge-attributes",
+        "/api/characters/export"
+      ],
+      "remainingScriptCount": 0,
+      "remainingMarker": null
+    }
+  ]
+}

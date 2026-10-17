@@ -1,0 +1,157 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-audit.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/card-player/audit-quota-persistent.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/audit",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-audit.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-audit.e2e.js",
+      "file": "card-audit.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "real IndexedDB quota failure leaves the previous resource readable",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1633,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m10737420678\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m10737420678\u001b[39m\n    at /workspace/sillytavern/tests/card-audit.e2e.js:104:32",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                      "column": 32,
+                      "line": 104
+                    },
+                    "snippet": "  102 |         const estimate = await page.evaluate(() => navigator.storage.estimate());\n  103 |         await test.info().attach('quota-estimate', { body: JSON.stringify(estimate), contentType: 'application/json' });\n> 104 |         expect(estimate.quota).toBe(1);\n      |                                ^\n  105 |         const result = await page.evaluate(async () => {\n  106 |             let error;\n  107 |             try { await store.put('quota-new', new Blob([new Uint8Array(32 * 1024 * 1024)])); }"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                        "column": 32,
+                        "line": 104
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m10737420678\u001b[39m\n\n  102 |         const estimate = await page.evaluate(() => navigator.storage.estimate());\n  103 |         await test.info().attach('quota-estimate', { body: JSON.stringify(estimate), contentType: 'application/json' });\n> 104 |         expect(estimate.quota).toBe(1);\n      |                                ^\n  105 |         const result = await page.evaluate(async () => {\n  106 |             let error;\n  107 |             try { await store.put('quota-new', new Blob([new Uint8Array(32 * 1024 * 1024)])); }\n    at /workspace/sillytavern/tests/card-audit.e2e.js:104:32"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T05:32:51.190Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "quota-estimate",
+                      "contentType": "application/json",
+                      "body": "eyJxdW90YSI6MTA3Mzc0MjA2NzgsInVzYWdlIjoyNDM4LCJ1c2FnZURldGFpbHMiOnsiaW5kZXhlZERCIjoyNDM4fX0="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-real-Ind-d66b4--previous-resource-readable/test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-real-Ind-d66b4--previous-resource-readable/test-failed-2.png"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/audit/card-audit.e2e.js-real-Ind-d66b4--previous-resource-readable/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-audit.e2e.js",
+                    "column": 32,
+                    "line": 104
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "e402490a4aca82c982b3-4c8beb0778ebd964811e",
+          "file": "card-audit.e2e.js",
+          "line": 89,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T05:32:50.427Z",
+    "duration": 2877.745,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

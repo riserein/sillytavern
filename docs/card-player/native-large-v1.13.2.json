@@ -1,0 +1,117 @@
+{
+  "status": "selected-tests-passed",
+  "version": "1.13.2",
+  "largeFixture": true,
+  "coverage": "partial-or-selected-tests; see runner report for overall status",
+  "verifiedAt": "2026-10-17T06:35:23.933Z",
+  "runtimeSha256": "de53b05127cafc1ec02a5383941edb718a20ecee594417b3c987eae2ee4fd58d",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic WAV; not external music-host validation",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "compact selected font stays fixed after native export and changes only on a new author export",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "format": "json",
+      "bytes": 41959709,
+      "milliseconds": 24282
+    },
+    {
+      "format": "resource-breakdown",
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "Large synthetic 0",
+          "bytes": 20971520,
+          "encodedBytes": 27962050,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Large synthetic 0 · 封面",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "audio",
+          "name": "Large synthetic 1",
+          "bytes": 8388608,
+          "encodedBytes": 11184834,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Large synthetic 1 · 封面",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "font",
+          "name": "游趣体",
+          "bytes": 1531668,
+          "encodedBytes": 2042261,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 31283226,
+      "payloadBytes": 41717186,
+      "scriptBytes": 41957409,
+      "problems": [],
+      "jsonPlayerBytes": 41957409,
+      "pngPlayerBytes": 55943212,
+      "pngUncompactedPlayerBytes": 111886424,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "format": "png",
+      "bytes": 56021380,
+      "milliseconds": 52973
+    },
+    {
+      "nativeWritesBeforeFontChange": 1,
+      "expected": "one binding write; unchanged JSON/PNG exports reuse the stored player despite Helper schema key order"
+    },
+    {
+      "rawPngBytes": 111966141,
+      "compactPngBytes": 56021380,
+      "packagedFontReadsAcrossBindingAndTwoExports": 1
+    }
+  ]
+}

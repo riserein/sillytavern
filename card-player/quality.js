@@ -1,6 +1,7 @@
 import { MAX_PACKAGE_BYTES, MAX_AUDIO_BYTES, jsonForScript, normalizeCardConfig } from './config.js';
+import { base64Bytes } from '../base64.js';
 
-export const PLAYER_BUILD = '1.13.1';
+export const PLAYER_BUILD = '1.13.2';
 export const PAYLOAD_FORMAT = 1;
 export const byteSize = (value) =>
     new TextEncoder().encode(typeof value === 'string' ? value : JSON.stringify(value)).length;
@@ -153,7 +154,7 @@ export function verifyCardObject(card, { script, characterData } = {}) {
                 throw new Error(`角色字段「${key}」导出前后不一致，已阻止下载。`);
         }
     return {
-        ...analyzePayload(payload, actual),
+        ...assertCapacity(analyzePayload(payload, actual)),
         runtimeVersion: payload.runtimeVersion || 'legacy',
         tracks: (payload.config || payload).tracks.length,
         character: 'passed',
@@ -195,11 +196,11 @@ export async function readCardFile(blob, format) {
                 zero = data.indexOf(0);
             const key = new TextDecoder().decode(data.subarray(0, zero));
             if (['chara', 'ccv3'].includes(key)) {
-                const binary = atob(new TextDecoder().decode(data.subarray(zero + 1)));
+                const decoded = base64Bytes(new TextDecoder().decode(data.subarray(zero + 1)));
                 cards.push(
                     JSON.parse(
                         new TextDecoder('utf-8', { fatal: true }).decode(
-                            Uint8Array.from(binary, (c) => c.charCodeAt(0)),
+                            decoded,
                         ),
                     ),
                 );
@@ -254,10 +255,10 @@ export async function transformCardFile(blob, format, transform) {
                 zero = data.indexOf(0);
             const key = new TextDecoder().decode(data.subarray(0, zero));
             if (['chara', 'ccv3'].includes(key)) {
-                const binary = atob(new TextDecoder().decode(data.subarray(zero + 1)));
+                const decoded = base64Bytes(new TextDecoder().decode(data.subarray(zero + 1)));
                 const value = JSON.parse(
                     new TextDecoder('utf-8', { fatal: true }).decode(
-                        Uint8Array.from(binary, (c) => c.charCodeAt(0)),
+                        decoded,
                     ),
                 );
                 replacement = cardTextChunk(key, transform(value));

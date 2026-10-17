@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { gunzipSync } from 'node:zlib';
 
 function wav(seconds = 8) {
     const rate = 8000;
@@ -112,7 +113,10 @@ function waitForPlayerSave(page, predicate) {
     return page.waitForResponse(response => {
         if (!response.url().endsWith('/api/settings/save') || !response.ok()) return false;
         try {
-            const player = response.request().postDataJSON()?.extension_settings?.riserein_music_player;
+            const request = response.request();
+            const bytes = request.postDataBuffer();
+            const body = request.headers()['content-encoding'] === 'gzip' ? JSON.parse(gunzipSync(bytes).toString()) : request.postDataJSON();
+            const player = body?.extension_settings?.riserein_music_player;
             return Boolean(player && predicate(player));
         } catch { return false; }
     });
@@ -275,11 +279,48 @@ test('deleting a selected local track clears playback and its stored audio', asy
     await expect(page.locator('.stm-track')).toHaveCount(0);
     await expect(page.locator('[data-action="play"]')).toBeDisabled();
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(true);
-    const hasBlob = await page.evaluate(async id => {
+    await expect.poll(() => page.evaluate(async id => {
         const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
         return Boolean(await new LocalMusicStore().get(id));
-    }, id);
-    expect(hasBlob).toBe(false);
+    }, id)).toBe(false);
+});
+
+test('failed compressed settings saves preserve prior artwork across reload; confirmed saves retire it', async ({ page }) => {
+    test.setTimeout(90000);
+    await importSongs(page, ['保存失败保护']);
+    const enableCompression = () => page.evaluate(async () => {
+        const { setRequestCompressionConfig } = await import('/scripts/request-compression.js');
+        setRequestCompressionConfig({ enabled: true, minPayloadSize: 1, maxPayloadSize: 0, timeout: 5000 });
+    });
+    await enableCompression();
+    const gzipRequests = [];
+    page.on('request', request => { if (request.url().endsWith('/api/settings/save') && request.headers()['content-encoding'] === 'gzip') gzipRequests.push(request.url()); });
+    await playerPage(page, '曲库');
+    await page.getByRole('button', { name: '歌曲详情：保存失败保护', exact: true }).click();
+    const firstSaved = waitForPlayerSave(page, state => Boolean(state.tracks[0]?.coverId));
+    await page.locator('[data-role=song-cover-file]').setInputFiles(await imageFixture(page));
+    await firstSaved;
+    const old = await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0].coverId);
+    await page.route('**/api/settings/save', route => route.fulfill({ status: 500, body: 'injected settings failure' }));
+    const failed = page.waitForResponse(response => response.url().endsWith('/api/settings/save') && response.status() === 500);
+    await page.locator('[data-role=song-cover-file]').setInputFiles(await imageFixture(page));
+    await failed;
+    const has = id => page.evaluate(async id => { const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); return Boolean(await new LocalMusicStore().get(id)); }, id);
+    expect(await has(old)).toBe(true);
+    await page.reload();
+    await page.waitForFunction(() => !document.getElementById('preloader'));
+    await page.locator('#stm-launcher').click();
+    expect(await page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0].coverId)).toBe(old);
+    expect(await has(old)).toBe(true);
+    await page.unroute('**/api/settings/save');
+    await enableCompression();
+    await playerPage(page, '曲库');
+    await page.getByRole('button', { name: '歌曲详情：保存失败保护', exact: true }).click();
+    const committed = waitForPlayerSave(page, state => Boolean(state.tracks[0]?.coverId && state.tracks[0].coverId !== old));
+    await page.locator('[data-role=song-cover-file]').setInputFiles(await imageFixture(page));
+    await committed;
+    await expect.poll(() => has(old)).toBe(false);
+    expect(gzipRequests.length).toBeGreaterThanOrEqual(2);
 });
 
 test('filenames are rendered as text, and the player fits a small screen', async ({ page }) => {
@@ -824,7 +865,7 @@ test('cropping chooses the actual region, layers themes and materials, persists 
     await expect(page.locator('#stm-player')).toHaveAttribute('data-has-background', 'false');
     await expect(page.getByRole('button', { name: '清透', exact: true })).toBeDisabled();
     await expect(page.locator('#stm-player')).toHaveAttribute('data-surface', 'glass');
-    expect(await page.evaluate(async id => {
+    await expect.poll(() => page.evaluate(async id => {
         const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
         const store = new LocalMusicStore();
         return Boolean(await store.get(id) || await store.get(`${id}:original`));
@@ -1011,7 +1052,7 @@ test('missing art uses bundled images; manual cover and LRC imports persist and 
     const keys = await page.evaluate(() => { const track = SillyTavern.getContext().extensionSettings.riserein_music_player.tracks[0]; return [track.id, track.coverId]; });
     await playerPage(page, '曲库'); page.once('dialog', dialog => dialog.accept());
     await songAction(page, '删除：没有封面的歌');
-    expect(await page.evaluate(async keys => { const {LocalMusicStore} = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); const store=new LocalMusicStore(); return (await Promise.all(keys.map(key=>store.get(key)))).every(value=>!value); }, keys)).toBe(true);
+    await expect.poll(() => page.evaluate(async keys => { const {LocalMusicStore} = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); const store=new LocalMusicStore(); return (await Promise.all(keys.map(key=>store.get(key)))).every(value=>!value); }, keys)).toBe(true);
     await expect(page.locator('.stm-track')).toHaveCount(0);
 });
 
@@ -1070,7 +1111,7 @@ test('the bundled Poxiao font works offline, custom fonts persist, and font chan
     if (await page.locator('#stm-font-gallery').isHidden()) await page.locator('#stm-font').click();
     await page.getByRole('button', { name:'删除字体：PoxiaoPixel', exact:true }).click();
     await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', 'inherit');
-    expect(await page.evaluate(async id => { const {LocalMusicStore} = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); return Boolean(await new LocalMusicStore().get(id)); },id)).toBe(false);
+    await expect.poll(() => page.evaluate(async id => { const {LocalMusicStore} = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); return Boolean(await new LocalMusicStore().get(id)); },id)).toBe(false);
 });
 
 test('both compact bundled faces show their own previews, work without the font CDN, and support keyboard selection', async ({ page }) => {
@@ -1134,7 +1175,7 @@ test('batch font imports preserve both files, reject duplicates and invalid file
     await expect(page.locator('.stm-status')).toHaveClass(/stm-error/);
     await page.getByRole('button', { name: '删除字体：ChildFunSans', exact: true }).click();
     await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', fonts[0].id);
-    expect(await page.evaluate(async id => { const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); return Boolean(await new LocalMusicStore().get(id)); }, fonts[1].id)).toBe(false);
+    await expect.poll(() => page.evaluate(async id => { const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); return Boolean(await new LocalMusicStore().get(id)); }, fonts[1].id)).toBe(false);
     await selectFont(page, 'child');
     await page.getByRole('button', { name: '删除字体：PoxiaoPixel', exact: true }).click();
     await expect(page.locator('#stm-font')).toHaveAttribute('data-font-choice', 'child');
@@ -1375,7 +1416,7 @@ test('my music lists library first, creates an album from a song, and saves an i
     page.once('dialog', dialog => dialog.accept());
     await page.getByRole('button', { name: '删除歌单', exact: true }).click();
     await expect.poll(() => page.evaluate(() => SillyTavern.getContext().extensionSettings.riserein_music_player.playlists.length)).toBe(0);
-    expect(await page.evaluate(async ({coverId, audioId}) => {
+    await expect.poll(() => page.evaluate(async ({coverId, audioId}) => {
         const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); const store = new LocalMusicStore();
         return { cover: Boolean(await store.get(coverId)), audio: Boolean(await store.get(audioId)) };
     }, {coverId, audioId})).toEqual({cover:false, audio:true});

@@ -43,7 +43,7 @@ try {
         '--define:import.meta.url="https://rscp.invalid/index.js"',
     ]);
     const compiled = await readFile(join(temporary, 'shared.js'), 'utf8');
-    if (/indexedDB\.open|api\/extensions|createNativeCardExport/.test(compiled))
+    if (/indexedDB\.open|api\/extensions|createNativeCardExport|createAssetRetirement|api\/settings\/save/.test(compiled))
         throw new Error('Portable target still contains full-plugin storage or authoring entry');
     const css =
         (await readFile(join(root, 'style.css'), 'utf8')) +

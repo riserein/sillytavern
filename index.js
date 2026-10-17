@@ -25,6 +25,7 @@ import { createPlayerUI } from './player-ui.js';
 import { createPlaybackQueue } from './playback-queue.js';
 import { createNativeCardExport } from './card-player/native-export.js';
 import { createCardHandoff } from './card-player/handoff.js';
+import { createAssetRetirement } from './asset-retirement.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
 // Keep the build-time guard explicit at author-only branches: esbuild can then
@@ -348,9 +349,16 @@ export function initialize(options = {}) {
     const importTarget = query('#stm-import-playlist');
 
     function save() {
+        if (disposed) return;
         context.extensionSettings[SETTINGS_KEY] = settings;
         context.saveSettingsDebounced();
     }
+    const retirement = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : createAssetRetirement({
+        store, settings, scheduleSave: save,
+        onError: () => showStatus('设置已保存，但旧资源尚未清理；文件已保留，下次保存时会重试。', true),
+        onUnconfirmed: () => showStatus('酒馆没有确认设置已保存；旧资源已保留，请检查连接或服务器磁盘空间后重试。', true),
+    });
+    const retireAssets = ids => retirement ? retirement.retire(ids) : void store.deleteMany(ids).catch(() => {});
 
     const launcherDrag = makeDraggable(launcher, launcher, {
         getPosition: () => settings.positions.launcher,
@@ -554,7 +562,7 @@ export function initialize(options = {}) {
     applyAppearance();
 
     const fontPicker = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null
-        : createFontPicker({ panel, launcher, store, settings, save, showStatus, createId: createTrackId, availableFonts: options.availableFonts });
+        : createFontPicker({ panel, launcher, store, settings, save, showStatus, retireAssets, createId: createTrackId, availableFonts: options.availableFonts });
     if ((typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) query('.stm-font-section').remove();
     const mini = createMiniPlayer({
         panel, audio,
@@ -763,12 +771,13 @@ export function initialize(options = {}) {
             validateImageFile(file);
             const cover = await prepareCover(file);
             await store.put(key, cover);
+            if (disposed) { await store.delete(key); return; }
             const track = editableDetailsTrack(id);
             if (!track) { await store.delete(key); return; }
             const previous = track.coverId;
             track.coverId = key; save(); renderTracks();
             if (settings.currentId === id) void renderMedia(track);
-            if (previous) { forgetCover(previous); await store.delete(previous).catch(() => {}); }
+            if (previous) { forgetCover(previous); retireAssets([previous]); }
             showStatus('歌曲封面已更新。');
         } catch (error) { await store.delete(key).catch(() => {}); showStatus(error.message || '封面读取失败，请换一张图片。', true); }
     });
@@ -779,6 +788,7 @@ export function initialize(options = {}) {
         try {
             if (!/\.(lrc|txt)$/i.test(file.name) || !file.size || file.size > 512 * 1024) throw new Error('请选择 512 KB 以内的 LRC 或 TXT 歌词文件。');
             const text = (await file.text()).replace(/^\uFEFF/, '').trim();
+            if (disposed) return;
             if (!text || text.length > MAX_LYRICS) throw new Error('歌词不能为空，最多支持 50000 个字符。');
             const track = editableDetailsTrack(id);
             if (!track) return;
@@ -793,7 +803,7 @@ export function initialize(options = {}) {
         const previous = track.coverId;
         delete track.coverId; track.fallbackCover = randomCover(); save(); renderTracks();
         if (settings.currentId === track.id) void renderMedia(track);
-        if (previous) { forgetCover(previous); await store.delete(previous).catch(() => {}); }
+        if (previous) { forgetCover(previous); retireAssets([previous]); }
         showStatus('已恢复内置封面。');
     });
     query('[data-action="clear-song-lyrics"]').addEventListener('click', () => {
@@ -843,7 +853,7 @@ export function initialize(options = {}) {
             await restoreBackground();
             query('[data-role="background-status"]').textContent = '背景已保存，可重新裁剪；图片仅保存在当前浏览器。';
             showStatus();
-            await deleteBackgroundFiles(previous).catch(() => {});
+            if (previous) retireAssets([previous, `${previous}:original`]);
         },
         onError(error) {
             const message = error.name === 'QuotaExceededError' ? '浏览器存储空间不足，请释放空间后重试。' : error.message || '图片处理失败，请换一张图片。';
@@ -882,7 +892,7 @@ export function initialize(options = {}) {
         await restoreBackground();
         query('[data-role="background-status"]').textContent = '图片仅保存在当前浏览器。';
         showStatus('背景图片已移除，已恢复原有配色。');
-        await deleteBackgroundFiles(previous).catch(() => {});
+        if (previous) retireAssets([previous, `${previous}:original`]);
     });
     void restoreBackground();
 
@@ -1118,18 +1128,18 @@ export function initialize(options = {}) {
             validateImageFile(file);
             const image = await prepareCover(file);
             await store.put(id, image);
-            if (!settings.playlists.includes(playlist)) { await store.delete(id); return; }
+            if (disposed || !settings.playlists.includes(playlist)) { await store.delete(id); return; }
             const previous = playlist.coverId; playlist.coverId = id;
             save(); renderPlaylists();
-            if (previous) { forgetCover(previous); await store.delete(previous).catch(() => {}); }
+            if (previous) { forgetCover(previous); retireAssets([previous]); }
             showStatus('歌单封面已更新，图片保存在当前浏览器。');
         } catch (error) { await store.delete(id).catch(() => {}); showStatus(error.message || '歌单封面保存失败。', true); }
     });
     query('[data-action="clear-playlist-cover"]').addEventListener('click', async () => {
         const playlist = browsedPlaylist(); if (!playlist?.coverId) return;
         const previous = playlist.coverId;
-        try { await store.delete(previous); } catch { showStatus('封面删除失败，请重试。', true); return; }
         delete playlist.coverId; forgetCover(previous); save(); renderPlaylists(); showStatus('已恢复歌单默认封面。');
+        retireAssets([previous]);
     });
 
     function renderPlaylists() {
@@ -1504,18 +1514,13 @@ export function initialize(options = {}) {
         const track = findTrack(settings, id);
         if (!track) return;
         if (!confirmed && !window.confirm(`从总曲库删除「${track.title}」？\n这首歌也会从所有歌单中移除。`)) return;
-        try {
-            const keys = [...(track.kind === 'local' ? [id] : []), ...(track.coverId ? [track.coverId] : [])];
-            if (keys.length) await store.deleteMany(keys);
-        } catch {
-            showStatus('删除本地文件失败，请检查浏览器存储权限后重试。', true);
-            return;
-        }
+        const keys = [...(track.kind === 'local' ? [id] : []), ...(track.coverId ? [track.coverId] : [])];
         if (!findTrack(settings, id)) return;
         const liveIndex = playbackQueue.tracks().findIndex(item => item.id === id);
         const current = settings.currentId === id;
         const wasPlaying = !audio.paused;
         deleteTrackFromLibrary(settings, id);
+        retireAssets(keys);
         if (track.coverId) forgetCover(track.coverId);
         save();
         renderPlaylists();
@@ -1562,14 +1567,17 @@ export function initialize(options = {}) {
         const targetId = importTarget.value || null;
         const revision = viewRevision;
         for (const file of files) {
+            if (disposed) break;
             try {
                 if (settings.tracks.length >= MAX_TRACKS) throw new Error(`总曲库最多可添加 ${MAX_TRACKS} 首音乐。`);
                 validateAudioFile(file);
                 const metadata = await readEmbeddedMetadata(file).catch(() => ({}));
+                if (disposed) break;
                 const id = createTrackId();
                 await store.put(id, file);
-                if (settings.tracks.length >= MAX_TRACKS) {
+                if (disposed || settings.tracks.length >= MAX_TRACKS) {
                     await store.delete(id);
+                    if (disposed) break;
                     throw new Error(`总曲库最多可添加 ${MAX_TRACKS} 首音乐。`);
                 }
                 let coverId;
@@ -1577,6 +1585,7 @@ export function initialize(options = {}) {
                     const key = `cover:${createTrackId()}`;
                     try { await store.put(key, await prepareCover(metadata.cover)); coverId = key; } catch { /* Music remains usable with bundled artwork if storage is full. */ }
                 }
+                if (disposed) { await store.deleteMany([id, ...(coverId ? [coverId] : [])]).catch(() => {}); break; }
                 settings.tracks.push({ id, kind: 'local', title: metadata.title || file.name.replace(/\.[^.]+$/, '').slice(0, 160),
                     ...(metadata.artist ? { artist: metadata.artist } : {}), ...(metadata.lyrics ? { lyrics: metadata.lyrics } : {}), ...(coverId ? { coverId } : {}) });
                 addTrackToPlaylist(settings, targetId, id);
@@ -1586,6 +1595,7 @@ export function initialize(options = {}) {
                 problems.push(`${file.name}：${error.name === 'QuotaExceededError' ? '浏览器存储空间不足，请删除一些本地音乐后重试。' : (error.message || '本地存储失败。')}`);
             }
         }
+        if (disposed) { importing = false; return; }
         const target = added ? await finishImport(targetId, revision) : settings.playlists.find(item => item.id === targetId);
         if (!added) { renderPlaylists(); renderTracks(); }
         showStatus([added ? `已导入 ${added} 首音乐${target ? `，并加入「${target.name}」` : '到总曲库'}。` : '',
@@ -1666,8 +1676,7 @@ export function initialize(options = {}) {
         const selected = browsedPlaylist();
         if (!selected || !window.confirm(`删除歌单「${selected.name}」？\n歌曲将全部保留在总曲库，角色绑定会解除。`)) return;
         if (selected.coverId) {
-            try { await store.delete(selected.coverId); forgetCover(selected.coverId); }
-            catch { showStatus('封面删除失败，请重试。', true); return; }
+            retireAssets([selected.coverId]); forgetCover(selected.coverId);
         }
         const wasActive = settings.activePlaylistId === selected.id;
         deletePlaylist(settings, selected.id);
@@ -1677,6 +1686,10 @@ export function initialize(options = {}) {
         if (wasActive) await activatePlaylist(null);
         renderTracks();
         showStatus('歌单已删除，歌曲全部保留在总曲库。');
+        if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
+            try { await nativeExport.syncBindings(); }
+            catch (error) { showStatus(`歌单已删除，但随卡播放器未更新，原卡资源已保留：${error.message}`, true); }
+        }
     });
     query('[data-action="bind-roles"]').addEventListener('click', event => {
         const form = query('#stm-role-bindings');
@@ -1775,7 +1788,7 @@ export function initialize(options = {}) {
     function dispose() {
         if (disposed) return;
         disposed = true;
-        cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose();
+        cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose(); retirement?.dispose();
         ++loadSequence;
         pausePlayback(); audio.removeAttribute('src'); audio.load();
         for (const stop of hostStops.splice(0)) stop();

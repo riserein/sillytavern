@@ -1,0 +1,8 @@
+{
+  "label": "baseline",
+  "environment": "isolated desktop Chromium renderer with a 384 MiB V8 old-space limit (not a process-memory limit), not a physical phone",
+  "browser": "154.0.8037.57",
+  "embeddedAudioBytes": 30408704,
+  "status": "failed-or-renderer-crashed",
+  "error": "page.evaluate: AbortError: The play() request was interrupted by a new load request. https://goo.gl/LdLk22"
+}
