@@ -1,3 +1,4 @@
+import { boundedBytes } from '../bounded-response.js';
 export class MusicRequestError extends Error {
     constructor(message, code = 'NETWORK', retryAt = 0) {
         super(message);
@@ -5,7 +6,7 @@ export class MusicRequestError extends Error {
         this.retryAt = retryAt;
     }
 }
-export function createMusicRequest({ fetcher = globalThis.fetch, timeout = 12000, now = Date.now } = {}) {
+export function createMusicRequest({ fetcher = globalThis.fetch, timeout = 12000, maxBytes = 4 * 1024 * 1024, now = Date.now } = {}) {
     const cache = new Map(),
         cooldown = new Map();
     return async function request(value, { signal, cacheMs = 120000 } = {}) {
@@ -48,9 +49,10 @@ export function createMusicRequest({ fetcher = globalThis.fetch, timeout = 12000
                 throw new MusicRequestError(`音乐服务暂不可用（HTTP ${response.status}）。`, 'UNAVAILABLE');
             let data;
             try {
-                data = await response.json();
-            } catch {
-                throw new MusicRequestError('音乐服务返回了无法识别的数据。', 'RESPONSE');
+                data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(await boundedBytes(response, maxBytes, controller.signal)));
+            } catch (error) {
+                if (controller.signal.aborted) throw error;
+                throw new MusicRequestError(error.message?.includes('过大') ? error.message : '音乐服务返回了无法识别的数据。', 'RESPONSE');
             }
             if (signal?.aborted) throw new DOMException('请求已取消。', 'AbortError');
             if (cacheMs > 0) {

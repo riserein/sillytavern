@@ -395,7 +395,9 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
     async function wrappedFetch(input, init) {
         if (abort.signal.aborted) return previousFetch.call(this, input, init);
         const url = typeof input === 'string' ? input : input?.url || String(input);
-        if (new URL(url, location.href).pathname !== '/api/characters/export')
+        const target = new URL(url, location.href);
+        if (target.origin !== location.origin || target.pathname !== '/api/characters/export' ||
+            String(init?.method || input?.method || 'GET').toUpperCase() !== 'POST')
             return previousFetch.call(this, input, init);
         let body;
         try {

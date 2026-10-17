@@ -961,7 +961,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     applyDraft(saved);
                 } else {
                     if (name === 'project-delete') {
-                        await drafts.delete(projectId);
+                        await drafts.delete(projectId, draftRevisions.get(projectId));
                         recoveries.delete(projectId);
                         draftReady = false;
                         const remaining = await drafts.list();

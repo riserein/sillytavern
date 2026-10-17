@@ -188,3 +188,47 @@ test('a disposed native exporter retained by another fetch wrapper no longer int
         for (const [key, value] of Object.entries(previous)) { if (value === undefined) delete globalThis[key]; else globalThis[key] = value; }
     }
 });
+
+test('native export hook forwards cross-origin and non-POST requests untouched', async () => {
+    const previous = { window: globalThis.window, location: globalThis.location };
+    const calls = [];
+    globalThis.location = new URL('https://tavern.example.org/');
+    globalThis.window = { fetch: async (...args) => { calls.push(args); return new Response('original'); } };
+    const api = createNativeCardExport({ settings: { playlists: [] }, store: {}, getContext() { throw new Error('must not inspect context'); }, showStatus() {} });
+    try {
+        for (const [url, init] of [['https://other.example/api/characters/export', {method:'POST', body:'{}'}], ['/api/characters/export', {method:'GET'}]]) {
+            assert.equal(await (await window.fetch(url, init)).text(), 'original');
+            assert.equal(calls.at(-1)[0], url);
+            assert.equal(calls.at(-1)[1], init);
+        }
+    } finally {
+        api.dispose();
+        for (const [key,value] of Object.entries(previous)) { if (value === undefined) delete globalThis[key]; else globalThis[key] = value; }
+    }
+});
+
+test('platform JSON responses cancel oversized streams and do not cache partial data', async () => {
+    const { createMusicRequest } = await import('../platforms/request.js');
+    let cancelled = 0, calls = 0;
+    const request = createMusicRequest({maxBytes:128,fetcher:async()=>{
+        calls++;
+        return calls === 1 ? new Response(new ReadableStream({pull(c){c.enqueue(new Uint8Array(100));},cancel(){cancelled++;}})) : Response.json({ok:true});
+    }});
+    await assert.rejects(request('https://source.example/music'), error => error.code === 'RESPONSE' && error.message.includes('过大'));
+    assert.equal(cancelled,1);
+    assert.deepEqual(await request('https://source.example/music'),{ok:true});
+    assert.equal(calls,2);
+});
+
+test('platform cancellation and timeout interrupt a stalled response body', async () => {
+    const { createMusicRequest } = await import('../platforms/request.js');
+    for (const cancel of [false,true]) {
+        let stopped = 0;
+        const controller = new AbortController();
+        const request = createMusicRequest({timeout:15,fetcher:async()=>new Response(new ReadableStream({cancel(){stopped++;}}))});
+        const pending = request('https://source.example/music',{signal:controller.signal});
+        if(cancel) setTimeout(()=>controller.abort(),2);
+        await assert.rejects(pending,error=>cancel ? error.name==='AbortError' : error.code==='TIMEOUT');
+        assert.equal(stopped,1);
+    }
+});

@@ -82,8 +82,18 @@ export class CardProjectStore {
             rows.sort((a, b) => b.updatedAt - a.updatedAt),
         );
     }
-    delete(id) {
-        return this.run('readwrite', (store) => store.delete(id));
+    delete(id, expectedRevision) {
+        return this.run('readwrite', (store) => {
+            if (expectedRevision === undefined) return store.delete(id);
+            const request = store.get(id);
+            request.onsuccess = () => {
+                if (request.result?.revision !== expectedRevision) {
+                    store.transaction.projectError = new Error('项目已在另一页面更新或删除，请重新读取后确认删除。');
+                    store.transaction.abort();
+                } else store.delete(id);
+            };
+            return request;
+        });
     }
     async dispose() {
         await this.queue.catch(() => {});

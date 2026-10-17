@@ -223,3 +223,20 @@ test('export error notifications render untrusted song titles as text even when 
     await expect(page.locator('.toast-message img')).toHaveCount(0);
     expect(await page.evaluate(() => Boolean(window.auditToastInjected))).toBe(false);
 });
+
+test('stale project delete rolls back instead of removing a newer revision', async ({ page }) => {
+    const result = await page.evaluate(async prefix => {
+        const { CardProjectStore } = await import(prefix + 'card-player/project-store.js');
+        const a = new CardProjectStore(), b = new CardProjectStore();
+        const id = 'stale-' + crypto.randomUUID();
+        const old = await a.save({id,title:'old'},0);
+        const newer = await b.save({id,title:'new'},old.revision);
+        let rejected = false;
+        try { await a.delete(id,old.revision); } catch { rejected = true; }
+        const retained = await b.get(id);
+        await b.delete(id,newer.revision);
+        await a.dispose(); await b.dispose();
+        return {rejected,title:retained.title,revision:retained.revision};
+    }, prefix);
+    expect(result).toEqual({rejected:true,title:'new',revision:2});
+});
