@@ -1,0 +1,21 @@
+{
+  "baseline": "b879e430299970306a838f24f634f5849a5db95b",
+  "testedAt": "2026-10-17T07:13:59.028Z",
+  "results": {
+    "sameOriginStoreIsolation": {
+      "otherStoreReadPrivateTitle": "Private synthetic draft A",
+      "scope": "real IndexedDB, two store instances; real ST account switching not yet tested"
+    },
+    "staleProjectDelete": {
+      "firstRevision": 1,
+      "newerRevision": 2,
+      "deletedNewerVersion": true,
+      "scope": "real IndexedDB interleaving after UI save, before delete"
+    },
+    "crossOriginExport": {
+      "status": 422,
+      "body": "角色卡未导出：Cannot read properties of undefined (reading 'scripts')",
+      "forwarded": []
+    }
+  }
+}
