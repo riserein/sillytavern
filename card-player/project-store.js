@@ -1,13 +1,15 @@
+import { databaseName, getStorageScope } from '../data/identity.js';
 /** Separate database: never opens, upgrades or deletes the music library database. */
 export class CardProjectStore {
-    constructor(indexedDB = globalThis.indexedDB) {
+    constructor(indexedDB = globalThis.indexedDB, {scope=getStorageScope().key}={}) {
         this.indexedDB = indexedDB;
+        this.scope = scope;
         this.queue = Promise.resolve();
     }
     async open() {
         if (!this.db)
             this.db = new Promise((resolve, reject) => {
-                const request = this.indexedDB.open('riserein-card-player-projects', 1);
+                const request = this.indexedDB.open(databaseName('riserein-card-player-projects',this.scope), 1);
                 request.onupgradeneeded = () =>
                     request.result.createObjectStore('projects', { keyPath: 'id' });
                 request.onsuccess = () => {
@@ -74,6 +76,19 @@ export class CardProjectStore {
             return request;
         }).then(() => copy);
     }
+    putNew(projects) {
+        return this.run('readwrite',store=>{
+            for(const project of projects) {
+                const request=store.getKey(project.id);
+                request.onsuccess=()=>{
+                    if(request.result!==undefined) {store.transaction.projectError=new Error('草稿 ID 冲突，未覆盖旧项目。');store.transaction.abort();}
+                    else store.put({...project,revision:1,format:1,updatedAt:Date.now()});
+                };
+            }
+            return {result:undefined};
+        });
+    }
+    count() {return this.run('readonly',store=>store.count());}
     get(id) {
         return this.run('readonly', (store) => store.get(id));
     }

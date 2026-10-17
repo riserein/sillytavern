@@ -1,0 +1,20 @@
+{
+  "reader": "Python stdlib zipfile, independent from JS ZIP implementation",
+  "crc": "passed",
+  "sha256": "passed",
+  "entries": 5,
+  "assets": [
+    {
+      "path": "assets/23d8ca33746a96470665fd7fa6358ca8cefc20f09f2a8406f64c47806a18afa1.bin",
+      "bytes": 5
+    },
+    {
+      "path": "assets/2cea274d0bedc39ec4ab6ba9e59ec889e3ed6fb56a1cf088a64d9b383378dc97.bin",
+      "bytes": 7
+    },
+    {
+      "path": "assets/795ea3efa43d0872b63bf0067be97553b46983e4f075097669391e9d15388ecc.bin",
+      "bytes": 4
+    }
+  ]
+}

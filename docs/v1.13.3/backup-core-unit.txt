@@ -1,0 +1,24 @@
+✔ incremental SHA-256 and CRC match independent known implementations, including empty files (82.017323ms)
+✔ ZIP binary full backup round-trips all library and project bytes without Base64 (7.845189ms)
+✔ backup never exports settings credentials or unrelated host data and redacts known URL tokens (1.47248ms)
+✔ missing assets fail export and corruption fails import before any restore operation (4.045915ms)
+✔ unsupported manifest versions and duplicate/unsafe ZIP paths are rejected (4.866968ms)
+✔ hashing and backup verification respect cancellation (1.713653ms)
+✔ account identity follows authenticated server primary key and creation, never display name (34.335042ms)
+✔ missing, unauthenticated or unsupported identity refuses to guess an account (1.765651ms)
+✔ restore plans preserve originals, deduplicate actual audio bytes, map bindings and keep permanent order (21.000125ms)
+✔ missing mode repairs absent bytes without overwriting existing files and skips project conflicts (6.842333ms)
+✔ independent copy uses new IDs, and capacity overflow refuses before writing (7.038819ms)
+✔ successful restore publishes only after staging and verifies references (4.997714ms)
+✔ project stage failure rolls back only owned new bytes and preserves old data (4.017712ms)
+✔ rollback does not delete another operation asset/project created after the preview (6.725898ms)
+✔ ambiguous settings failures retain staged data; readback can confirm or roll back safely (6.336854ms)
+✔ changed settings or projects invalidate preview; unrelated remote changes never trigger automatic overwrite (2.213213ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 177.245164
