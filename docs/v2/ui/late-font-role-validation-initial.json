@@ -1,0 +1,26 @@
+{
+  "status": "incomplete-or-failed",
+  "version": "2.0.0-alpha.5",
+  "largeFixture": false,
+  "coverage": "partial-or-selected-tests; see runner report for overall status",
+  "verifiedAt": "2026-10-18T07:20:27.329Z",
+  "runtimeSha256": "70a4831794f2363b3567db723b4795d9d25b0e000cb82cf654a95db5588f2116",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "two designer-bound roles retain different layouts and selected fonts while sharing one playlist",
+      "status": "failed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [],
+  "performanceRecords": []
+}

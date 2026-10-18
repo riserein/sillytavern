@@ -48,9 +48,16 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 : config.appearance.font;
         const namespace = `riserein:card-native:v2:${encodeURIComponent(scope.roleId)}:${encodeURIComponent(scope.scriptId)}:${encodeURIComponent(config.id)}`;
         const store = embedded.store;
+        // Identical art is immutable. Share its ID/Blob so list thumbnails reuse
+        // one URL and one decoded image instead of decoding it per recording.
+        const covers=new Map();
+        const coverFor=value=>{
+            if(!value)return undefined;
+            if(!covers.has(value)){const id=`cover:${createTrackId(win.crypto)}`;embedded.setBlob(id,dataBlob(value,win));covers.set(value,id);}
+            return covers.get(value);
+        };
         const tracks = config.tracks.map((track) => {
-            const coverId = `cover:${createTrackId(win.crypto)}`;
-            embedded.setBlob(coverId, dataBlob(track.cover, win));
+            const coverId = coverFor(track.cover);
             const result = {
                 id: track.id,
                 title: track.title,
@@ -72,10 +79,10 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 characterAvatars: [avatar],
             };
         if (playlist.cover) {
-            playlist.coverId = `cover:${createTrackId(win.crypto)}`;
-            embedded.setBlob(playlist.coverId, dataBlob(playlist.cover, win));
+            playlist.coverId = coverFor(playlist.cover);
             delete playlist.cover;
         }
+        covers.clear();
         const settings = {
             ...payload.ui,
             tracks,

@@ -32,6 +32,7 @@ import { MaintenanceJournal } from './data/journal.js';
 import { createDataPanel } from './data/panel.js';
 import { createAudioTransitions } from './listening.js';
 import { createListeningPanel } from './listening-panel.js';
+import {unreferencedResourceIds} from './card-player/resource-references.js';
 import { normalizeDesign } from './ui/config.js';
 import { createDesignPresentation } from './ui/presentation.js';
 import { createDesignControls } from './ui/controls.js';
@@ -395,7 +396,7 @@ export function initialize(options = {}) {
         onError: () => showStatus('设置已保存，但旧资源尚未清理；文件已保留，下次保存时会重试。', true),
         onUnconfirmed: () => showStatus('酒馆没有确认设置已保存；旧资源已保留，请检查连接或服务器磁盘空间后重试。', true),
     });
-    const retireAssets = ids => retirement ? retirement.retire(ids) : void store.deleteMany(ids).catch(() => {});
+    const retireAssets = ids => retirement ? retirement.retire(ids) : void store.deleteMany(unreferencedResourceIds(settings,ids)).catch(() => {});
 
     const launcherDrag = makeDraggable(launcher, launcher, {
         getPosition: () => settings.positions.launcher,
@@ -602,7 +603,7 @@ export function initialize(options = {}) {
     applyAppearance();
 
     const fontPicker = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null
-        : createFontPicker({ panel, launcher, store, settings, save, showStatus, retireAssets, createId: createTrackId, availableFonts: options.availableFonts, onSelect(){const design=normalizeDesign(effectiveDesign());if(design.fontPreset!=='current'){design.fontPreset='current';applyUserDesign(design);}else refreshDesign();} });
+        : createFontPicker({ panel, launcher, store, settings, save, showStatus, retireAssets, createId: createTrackId, availableFonts: options.availableFonts, onApplied(){refreshDesign();}, getSelectionScope:()=>currentCharacterAvatar(options.context||globalThis.SillyTavern?.getContext?.()||context), onSelect(scope){if(scope!==currentCharacterAvatar(options.context||globalThis.SillyTavern?.getContext?.()||context)){refreshDesign();showStatus('默认字体已载入；角色已切换，未覆盖当前角色的专属字体。');return;}const design=normalizeDesign(effectiveDesign());if(design.fontPreset!=='current'){design.fontPreset='current';applyUserDesign(design);}else refreshDesign();} });
     if ((typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) query('.stm-font-section').remove();
     const mini = createMiniPlayer({
         panel, audio,

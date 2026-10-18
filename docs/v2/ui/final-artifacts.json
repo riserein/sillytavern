@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0-alpha.5",
+  "files": [
+    {
+      "path": "card-player/dist/native-runtime.js",
+      "bytes": 315814,
+      "sha256": "70a4831794f2363b3567db723b4795d9d25b0e000cb82cf654a95db5588f2116"
+    },
+    {
+      "path": "card-player/dist/shared-ui.js",
+      "bytes": 279764,
+      "sha256": "ca2b6195677bc8b0b6e3f6ab9181981fd5574952d367c771d28162357ea74373"
+    },
+    {
+      "path": "card-player/dist/runtime.js",
+      "bytes": 44448,
+      "sha256": "d5217ad88b2ac1b89e871c344ccef48077b93e162bd6acfabd885464c8abdaa9"
+    },
+    {
+      "path": "card-player/dist/demo.js",
+      "bytes": 1005815,
+      "sha256": "95fc7ee409141d6d9b7b2b544639c891f80c032d2a42349833bbd2577f81788a"
+    },
+    {
+      "path": "ui/layouts.css",
+      "bytes": 19834,
+      "sha256": "700a5edeae6bb09d445f675f2aa3eced8e2055cf87fb5eef2fc6f5330158e258"
+    },
+    {
+      "path": "ui/editor.css",
+      "bytes": 5900,
+      "sha256": "95731465372105bc99f8d7921138f595f1aeb4201a1bedca5411f34dbf7ad091"
+    }
+  ]
+}

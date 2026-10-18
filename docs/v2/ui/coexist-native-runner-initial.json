@@ -1,0 +1,152 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-native.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/v2/ui/coexist-native-runner.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/coexist",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-native.e2e.js"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-native.e2e.js",
+      "file": "card-native.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 12153,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m6\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m6\u001b[39m\n    at /workspace/sillytavern/tests/card-native.e2e.js:1156:783",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                      "column": 783,
+                      "line": 1156
+                    },
+                    "snippet": "  1154 |  test.setTimeout(90000);const{page,context}=await session(browser,{portable:true});const{nativeCardScript}=await import('../card-player/native-export.js'),{attachPlayerToCard}=await import('../card-player/export.js');const cover='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aH1sAAAAASUVORK5CYII=';\n  1155 |  const payload={version:1,runtimeVersion:PLAYER_BUILD,config:{id:'coexist-real',title:'Coexist fixture',tracks:[{id:'coexist-tone',title:'Original tone',src:'data:audio/mpeg;base64,'+tone.toString('base64'),cover}],appearance:{},volume:.3},ui:{fontPreset:'inherit',uiDesign:{uiVersion:1,layout:'vinyl'}},playlist:{id:'coexist-list',name:'Coexist'},assets:Object.fromEntries(['forest','moon','sunroom'].map(name=>['assets/covers/'+name+'.png',cover]))};const script=nativeCardScript(payload,(await readFile(new URL('../card-player/dist/native-runtime.js',import.meta.url))).toString(),'coexist-script');const card=attachPlayerToCard({spec:'chara_card_v2',spec_version:'2.0',data:{name:'RSCP_Test_Coexist_'+crypto.randomUUID().slice(0,8),description:'Original coexist fixture',first_mes:'Opening.',extensions:{}}},script,payload.config.id);const avatar=await importCard(page,Buffer.from(JSON.stringify(card)),'json');await selectCard(page,avatar);await page.getByText(/^(确认|Confirm)$/,{exact:true}).last().click();await expect(page.locator('[data-riserein-card-player]')).toHaveCount(1);await page.locator('[data-action=play]').click();await expect.poll(()=>page.locator('#stm-player audio').evaluate(a=>a.currentTime)).toBeGreaterThan(.2);await page.evaluate(()=>{window.beforeFullApi=document.querySelector('[data-riserein-card-player]').__risereinPlayer;window.beforeFullAudio=beforeFullApi.audio;});\n> 1156 |  await page.unroute('**/scripts/extensions/third-party/sillytavern/**');await page.evaluate(async()=>{SillyTavern.getContext().extensionSettings.disabledExtensions=[];await import('/scripts/extensions/third-party/sillytavern/index.js?coexist='+crypto.randomUUID());});await expect(page.locator('#stm-player:not([data-portable])')).toHaveCount(1);await expect(page.locator('[data-riserein-card-player]')).toHaveCount(0);expect(await page.evaluate(()=>beforeFullApi.disposed&&beforeFullAudio.paused&&!beforeFullAudio.getAttribute('src')&&Object.values(beforeFullApi.resourceCounts).every(n=>n===0))).toBe(true);expect(await page.evaluate(()=>TavernHelper.getScriptTrees({type:'character'}).some(row=>row.id==='coexist-script'))).toBe(true);expect(await page.locator('audio').count()).toBe(1);\n       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^\n  1157 | });\n  1158 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                        "column": 783,
+                        "line": 1156
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m6\u001b[39m\n\n  1154 |  test.setTimeout(90000);const{page,context}=await session(browser,{portable:true});const{nativeCardScript}=await import('../card-player/native-export.js'),{attachPlayerToCard}=await import('../card-player/export.js');const cover='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aH1sAAAAASUVORK5CYII=';\n  1155 |  const payload={version:1,runtimeVersion:PLAYER_BUILD,config:{id:'coexist-real',title:'Coexist fixture',tracks:[{id:'coexist-tone',title:'Original tone',src:'data:audio/mpeg;base64,'+tone.toString('base64'),cover}],appearance:{},volume:.3},ui:{fontPreset:'inherit',uiDesign:{uiVersion:1,layout:'vinyl'}},playlist:{id:'coexist-list',name:'Coexist'},assets:Object.fromEntries(['forest','moon','sunroom'].map(name=>['assets/covers/'+name+'.png',cover]))};const script=nativeCardScript(payload,(await readFile(new URL('../card-player/dist/native-runtime.js',import.meta.url))).toString(),'coexist-script');const card=attachPlayerToCard({spec:'chara_card_v2',spec_version:'2.0',data:{name:'RSCP_Test_Coexist_'+crypto.randomUUID().slice(0,8),description:'Original coexist fixture',first_mes:'Opening.',extensions:{}}},script,payload.config.id);const avatar=await importCard(page,Buffer.from(JSON.stringify(card)),'json');await selectCard(page,avatar);await page.getByText(/^(确认|Confirm)$/,{exact:true}).last().click();await expect(page.locator('[data-riserein-card-player]')).toHaveCount(1);await page.locator('[data-action=play]').click();await expect.poll(()=>page.locator('#stm-player audio').evaluate(a=>a.currentTime)).toBeGreaterThan(.2);await page.evaluate(()=>{window.beforeFullApi=document.querySelector('[data-riserein-card-player]').__risereinPlayer;window.beforeFullAudio=beforeFullApi.audio;});\n> 1156 |  await page.unroute('**/scripts/extensions/third-party/sillytavern/**');await page.evaluate(async()=>{SillyTavern.getContext().extensionSettings.disabledExtensions=[];await import('/scripts/extensions/third-party/sillytavern/index.js?coexist='+crypto.randomUUID());});await expect(page.locator('#stm-player:not([data-portable])')).toHaveCount(1);await expect(page.locator('[data-riserein-card-player]')).toHaveCount(0);expect(await page.evaluate(()=>beforeFullApi.disposed&&beforeFullAudio.paused&&!beforeFullAudio.getAttribute('src')&&Object.values(beforeFullApi.resourceCounts).every(n=>n===0))).toBe(true);expect(await page.evaluate(()=>TavernHelper.getScriptTrees({type:'character'}).some(row=>row.id==='coexist-script'))).toBe(true);expect(await page.locator('audio').count()).toBe(1);\n       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^\n  1157 | });\n  1158 |\n    at /workspace/sillytavern/tests/card-native.e2e.js:1156:783"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:10:03.965Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/coexist/card-native.e2e.js-actual--b719f-altering-the-foreign-script/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/coexist/card-native.e2e.js-actual--b719f-altering-the-foreign-script/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/coexist/card-native.e2e.js-actual--b719f-altering-the-foreign-script/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                    "column": 783,
+                    "line": 1156
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-04e18de597547ecedd53",
+          "file": "card-native.e2e.js",
+          "line": 1425,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T07:10:03.027Z",
+    "duration": 14234.238,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

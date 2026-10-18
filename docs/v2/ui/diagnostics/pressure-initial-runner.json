@@ -1,0 +1,148 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.design.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/design",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "ui-design.e2e.js"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "ui-design.e2e.js",
+      "file": "ui-design.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "200-track shared player handles large artwork, layout changes and repeated disposal with one audio",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 135000,
+              "annotations": [
+                {
+                  "type": "slow",
+                  "location": {
+                    "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                    "line": 97,
+                    "column": 7
+                  }
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 140010,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 135000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 135000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 135000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                        "column": 27,
+                        "line": 105
+                      },
+                      "message": "Error: page.evaluate: Test ended.\n\n  103 |  for(const layout of ['vinyl','cassette','pure','crystal']){await page.getByRole('tab',{name:'外观',exact:true}).click();await choose(page,'#stm-design-layout',layout);await page.getByRole('tab',{name:'播放',exact:true}).click();expect(await page.evaluate(()=>stressApi.audio===stressAudio)).toBe(true);}\n  104 |  await page.locator('[data-action=toggle-queue]').click();await expect(page.locator('.stm-queue-track')).toHaveCount(200);await page.getByRole('button',{name:'关闭播放列表',exact:true}).click();\n> 105 |  const cleanup=await page.evaluate(async()=>{stressApi.dispose();const disposedApis=[stressApi];const clean=()=>Object.values(stressApi.resourceCounts).every(n=>n===0);let all=clean();for(let i=0;i<10;i++){stressApi=RisereinNativePlayer.mountNativePlayer(stressPayload,{...stressScope,scriptId:'stress-'+i});const first=stressApi;const duplicate=RisereinNativePlayer.mountNativePlayer(stressPayload,{...stressScope,scriptId:'stress-'+i});all&&=first===duplicate;stressApi.dispose();disposedApis.push(stressApi);all&&=clean();}await new Promise(resolve=>setTimeout(resolve,200));all&&=disposedApis.every(api=>Object.values(api.resourceCounts).every(n=>n===0));return{all,roots:document.querySelectorAll('[data-riserein-card-player]').length,audios:document.querySelectorAll('audio').length,oldPaused:stressAudio.paused};});expect(cleanup).toEqual({all:true,roots:0,audios:0,oldPaused:true});\n      |                           ^\n  106 |  }finally{await context.close();}\n  107 | });\n  108 |\n    at /workspace/sillytavern/tests/ui-design.e2e.js:105:27"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T06:47:24.567Z",
+                  "annotations": [
+                    {
+                      "type": "slow",
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                        "line": 97,
+                        "column": 7
+                      }
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/design/ui-design.e2e.js-200-track-6a99b-ted-disposal-with-one-audio/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "bf29ce752169465daf5a-bd7627cd22eeb431ced7",
+          "file": "ui-design.e2e.js",
+          "line": 628,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T06:47:23.278Z",
+    "duration": 150316.11,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

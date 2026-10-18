@@ -1,0 +1,32 @@
+{
+  "label": "v2-vinyl",
+  "layout": "vinyl",
+  "environment": "isolated desktop Chromium renderer with a 384 MiB V8 old-space limit (not a process-memory limit), not a physical phone",
+  "browser": "154.0.8037.57",
+  "embeddedAudioBytes": 30408704,
+  "runtimeSha256": "70a4831794f2363b3567db723b4795d9d25b0e000cb82cf654a95db5588f2116",
+  "result": {
+    "beforeHeapBytes": 114004621,
+    "afterHeapBytes": 85392996,
+    "mountMilliseconds": 183.30000000074506,
+    "firstCanPlayMilliseconds": 523,
+    "maxHeartbeatGapMilliseconds": 207.90000000223517,
+    "progress": 0.248353,
+    "resourceCounts": {
+      "timers": 0,
+      "frames": 0,
+      "urls": 0,
+      "observers": 0,
+      "listeners": 0,
+      "requests": 0,
+      "fonts": 0,
+      "subscriptions": 0,
+      "blobs": 0,
+      "encodedAudio": 0,
+      "pendingDecodes": 0
+    },
+    "remainingRoots": 0
+  },
+  "milliseconds": 2009,
+  "status": "completed"
+}

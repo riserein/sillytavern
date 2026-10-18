@@ -1,0 +1,68 @@
+{
+  "note": "500ms samples across whole ST/Helper browser, not a peak, not player-only; RSS sums may count shared pages multiple times. firstDisplay is root DOM presence, not measured first visible paint.",
+  "memory": [
+    {
+      "side": "author",
+      "samples": 213,
+      "maximumObservedJSHeapMiB": 1508.6,
+      "maximumObservedSummedRssMiB": 4526.2,
+      "maximumRecordedLongTaskMilliseconds": 3650,
+      "roleTimings": [
+        {
+          "rootDomMilliseconds": null,
+          "audioReadyMilliseconds": null
+        }
+      ]
+    },
+    {
+      "side": "recipient",
+      "samples": 93,
+      "maximumObservedJSHeapMiB": 863.1,
+      "maximumObservedSummedRssMiB": 2300.7,
+      "maximumRecordedLongTaskMilliseconds": 833,
+      "roleTimings": [
+        {
+          "rootDomMilliseconds": 2285.7,
+          "audioReadyMilliseconds": 2920.3
+        },
+        {
+          "rootDomMilliseconds": 2727.8,
+          "audioReadyMilliseconds": 3528.9
+        }
+      ]
+    }
+  ],
+  "exportMetrics": [
+    {
+      "format": "json",
+      "bytes": 42054284,
+      "milliseconds": 24939
+    },
+    {
+      "format": "resource-breakdown",
+      "embeddedBytes": 31283226,
+      "scriptBytes": 42051977
+    },
+    {
+      "format": "png",
+      "bytes": 56147480,
+      "milliseconds": 55524
+    },
+    {
+      "rawPngBytes": 112218341,
+      "compactPngBytes": 56147480
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 56147480,
+      "milliseconds": 19040
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 41701247,
+      "milliseconds": 18251
+    }
+  ]
+}

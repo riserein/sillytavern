@@ -1,0 +1,152 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-native.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/v2/ui/late-font-role-runner.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/late-font-role",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-native.e2e.js"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-native.e2e.js",
+      "file": "card-native.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "two designer-bound roles retain different layouts and selected fonts while sharing one playlist",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 44204,
+                  "error": {
+                    "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: '外观', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button role=\"tab\" type=\"button\" tabindex=\"-1\" aria-label=\"外观\" aria-selected=\"false\" data-page=\"appearance\" id=\"stm-tab-appearance\" aria-controls=\"stm-appearance\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div role=\"dialog\" aria-modal=\"true\" class=\"TH-popup TH-custom-tailwind absolute! flex h-full w-full items-center justify-center vfm vfm--fixed vfm--inset\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div role=\"dialog\" aria-modal=\"true\" class=\"TH-popup TH-custom-tailwind absolute! flex h-full w-full items-center justify-center vfm vfm--fixed vfm--inset\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    35 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div role=\"dialog\" aria-modal=\"true\" class=\"TH-popup TH-custom-tailwind absolute! flex h-full w-full items-center justify-center vfm vfm--fixed vfm--inset\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                    "stack": "TimeoutError: locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: '外观', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button role=\"tab\" type=\"button\" tabindex=\"-1\" aria-label=\"外观\" aria-selected=\"false\" data-page=\"appearance\" id=\"stm-tab-appearance\" aria-controls=\"stm-appearance\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div role=\"dialog\" aria-modal=\"true\" class=\"TH-popup TH-custom-tailwind absolute! flex h-full w-full items-center justify-center vfm vfm--fixed vfm--inset\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div role=\"dialog\" aria-modal=\"true\" class=\"TH-popup TH-custom-tailwind absolute! flex h-full w-full items-center justify-center vfm vfm--fixed vfm--inset\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    35 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div role=\"dialog\" aria-modal=\"true\" class=\"TH-popup TH-custom-tailwind absolute! flex h-full w-full items-center justify-center vfm vfm--fixed vfm--inset\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /workspace/sillytavern/tests/card-native.e2e.js:1139:243",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                      "column": 243,
+                      "line": 1139
+                    },
+                    "snippet": "  1137 |   await selectCard(author,avatar);await author.getByRole('tab',{name:'外观',exact:true}).click();await author.locator('[data-action=open-designer]').click();const editor=author.locator('.stm-design-editor');await editor.locator('[data-field=layout]').selectOption(layout);await editor.locator('[data-field=fontPreset]').selectOption(font);await editor.locator('[data-field=launcher]').selectOption(launcher);await editor.locator('[data-bind-role]').selectOption(avatar);await editor.locator('[data-bind-playlist]').selectOption(playlist);await editor.locator('[data-bind]').click();await expect(editor.locator('[data-editor-status]')).toContainText('已绑定，并写入随卡播放器',{timeout:60000});await editor.locator('[data-editor-close]').click();\n  1138 |  }\n> 1139 |  await selectCard(author,a);await author.route('**/assets/fonts/PoxiaoPixel.woff2',async route=>{await author.waitForFunction(()=>window.releaseGlobalPick===true);await route.continue();});await author.getByRole('tab',{name:'外观',exact:true}).click();await author.locator('#stm-font').click();await author.locator('[role=radio][data-font-choice=poxiao]').click();await selectCard(author,b);await author.evaluate(()=>window.releaseGlobalPick=true);await expect.poll(()=>author.evaluate(()=>[...document.fonts].some(f=>f.family==='stm-poxiao'&&f.status==='loaded'))).toBe(true);expect(await author.evaluate(avatar=>SillyTavern.getContext().extensionSettings.riserein_music_player.roleDesigns.find(r=>r.avatar===avatar).config.fontPreset,b)).toBe('child');\n       |                                                                                                                                                                                                                                                   ^\n  1140 |  const exports=[];for(const [avatar,format,layout,font]of [[a,'json','cassette','song'],[b,'png','pure','child']]){\n  1141 |   const bytes=Buffer.from(await author.evaluate(async({avatar,format})=>{const response=await fetch('/api/characters/export',{method:'POST',headers:SillyTavern.getContext().getRequestHeaders(),body:JSON.stringify({avatar_url:avatar,format})});if(!response.ok)throw new Error(await response.text());return Array.from(new Uint8Array(await response.arrayBuffer()));},{avatar,format}));exports.push({bytes,format,layout,font});\n  1142 |  }"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                        "column": 243,
+                        "line": 1139
+                      },
+                      "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: '外观', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button role=\"tab\" type=\"button\" tabindex=\"-1\" aria-label=\"外观\" aria-selected=\"false\" data-page=\"appearance\" id=\"stm-tab-appearance\" aria-controls=\"stm-appearance\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div role=\"dialog\" aria-modal=\"true\" class=\"TH-popup TH-custom-tailwind absolute! flex h-full w-full items-center justify-center vfm vfm--fixed vfm--inset\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div role=\"dialog\" aria-modal=\"true\" class=\"TH-popup TH-custom-tailwind absolute! flex h-full w-full items-center justify-center vfm vfm--fixed vfm--inset\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    35 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div role=\"dialog\" aria-modal=\"true\" class=\"TH-popup TH-custom-tailwind absolute! flex h-full w-full items-center justify-center vfm vfm--fixed vfm--inset\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n  1137 |   await selectCard(author,avatar);await author.getByRole('tab',{name:'外观',exact:true}).click();await author.locator('[data-action=open-designer]').click();const editor=author.locator('.stm-design-editor');await editor.locator('[data-field=layout]').selectOption(layout);await editor.locator('[data-field=fontPreset]').selectOption(font);await editor.locator('[data-field=launcher]').selectOption(launcher);await editor.locator('[data-bind-role]').selectOption(avatar);await editor.locator('[data-bind-playlist]').selectOption(playlist);await editor.locator('[data-bind]').click();await expect(editor.locator('[data-editor-status]')).toContainText('已绑定，并写入随卡播放器',{timeout:60000});await editor.locator('[data-editor-close]').click();\n  1138 |  }\n> 1139 |  await selectCard(author,a);await author.route('**/assets/fonts/PoxiaoPixel.woff2',async route=>{await author.waitForFunction(()=>window.releaseGlobalPick===true);await route.continue();});await author.getByRole('tab',{name:'外观',exact:true}).click();await author.locator('#stm-font').click();await author.locator('[role=radio][data-font-choice=poxiao]').click();await selectCard(author,b);await author.evaluate(()=>window.releaseGlobalPick=true);await expect.poll(()=>author.evaluate(()=>[...document.fonts].some(f=>f.family==='stm-poxiao'&&f.status==='loaded'))).toBe(true);expect(await author.evaluate(avatar=>SillyTavern.getContext().extensionSettings.riserein_music_player.roleDesigns.find(r=>r.avatar===avatar).config.fontPreset,b)).toBe('child');\n       |                                                                                                                                                                                                                                                   ^\n  1140 |  const exports=[];for(const [avatar,format,layout,font]of [[a,'json','cassette','song'],[b,'png','pure','child']]){\n  1141 |   const bytes=Buffer.from(await author.evaluate(async({avatar,format})=>{const response=await fetch('/api/characters/export',{method:'POST',headers:SillyTavern.getContext().getRequestHeaders(),body:JSON.stringify({avatar_url:avatar,format})});if(!response.ok)throw new Error(await response.text());return Array.from(new Uint8Array(await response.arrayBuffer()));},{avatar,format}));exports.push({bytes,format,layout,font});\n  1142 |  }\n    at /workspace/sillytavern/tests/card-native.e2e.js:1139:243"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:19:42.852Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/late-font-role/card-native.e2e.js-two-des-e247c--while-sharing-one-playlist/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/late-font-role/card-native.e2e.js-two-des-e247c--while-sharing-one-playlist/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/late-font-role/card-native.e2e.js-two-des-e247c--while-sharing-one-playlist/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                    "column": 243,
+                    "line": 1139
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-743b95620a842a1fea34",
+          "file": "card-native.e2e.js",
+          "line": 1316,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T07:19:41.995Z",
+    "duration": 47190.352,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

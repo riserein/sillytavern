@@ -17,11 +17,14 @@ export function buildSharedCardExports(
   const config = normalizeCardConfig(input),
     selected = normalizeDesign(design);
   selected.customization.iconId = null;
+  // Explicit visual preference transport; never copy a host settings object.
+  const uiKeys=['theme','colorScheme','surface','maskOpacity','customColors','clickEffects','fontPreset','transitionDuration'];
+  const safeUi=Object.fromEntries(uiKeys.filter(key=>Object.hasOwn(ui,key)).map(key=>[key,structuredClone(ui[key])]));
   const payload = {
     version: 1,
     runtimeVersion: PLAYER_BUILD,
     config,
-    ui: { ...ui, uiDesign: selected },
+    ui: { ...safeUi, uiDesign: selected },
     fontFile: config.appearance.font ? fontFile || "maker-selected.woff2" : "",
     fontEncoding: "",
     fontOriginalBytes: 0,

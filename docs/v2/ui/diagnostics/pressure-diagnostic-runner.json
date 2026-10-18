@@ -1,0 +1,181 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.design.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/design",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "ui-design.e2e.js"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "ui-design.e2e.js",
+      "file": "ui-design.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "200-track shared player handles large artwork, layout changes and repeated disposal with one audio",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 135000,
+              "annotations": [
+                {
+                  "type": "slow",
+                  "location": {
+                    "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                    "line": 97,
+                    "column": 7
+                  }
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 80931,
+                  "error": {
+                    "message": "Error: browserContext.close: Target page, context or browser has been closed",
+                    "stack": "Error: browserContext.close: Target page, context or browser has been closed\n    at /workspace/sillytavern/tests/ui-design.e2e.js:106:11",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                      "column": 11,
+                      "line": 106
+                    },
+                    "snippet": "  104 |  await page.locator('[data-action=toggle-queue]').click();await expect(page.locator('.stm-queue-track')).toHaveCount(200);await page.getByRole('button',{name:'关闭播放列表',exact:true}).click();\n  105 |  const cleanup=await page.evaluate(async()=>{stressApi.dispose();const disposedApis=[stressApi];const clean=()=>Object.values(stressApi.resourceCounts).every(n=>n===0);let all=clean();for(let i=0;i<10;i++){console.log('stress-cycle start '+i);stressApi=RisereinNativePlayer.mountNativePlayer(stressPayload,{...stressScope,scriptId:'stress-'+i});const first=stressApi;const duplicate=RisereinNativePlayer.mountNativePlayer(stressPayload,{...stressScope,scriptId:'stress-'+i});all&&=first===duplicate;stressApi.dispose();console.log('stress-cycle end '+i);disposedApis.push(stressApi);all&&=clean();}await new Promise(resolve=>setTimeout(resolve,200));all&&=disposedApis.every(api=>Object.values(api.resourceCounts).every(n=>n===0));return{all,roots:document.querySelectorAll('[data-riserein-card-player]').length,audios:document.querySelectorAll('audio').length,oldPaused:stressAudio.paused};});expect(cleanup).toEqual({all:true,roots:0,audios:0,oldPaused:true});\n> 106 |  }finally{await context.close();}\n      |           ^\n  107 | });\n  108 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                        "column": 11,
+                        "line": 106
+                      },
+                      "message": "Error: browserContext.close: Target page, context or browser has been closed\n\n  104 |  await page.locator('[data-action=toggle-queue]').click();await expect(page.locator('.stm-queue-track')).toHaveCount(200);await page.getByRole('button',{name:'关闭播放列表',exact:true}).click();\n  105 |  const cleanup=await page.evaluate(async()=>{stressApi.dispose();const disposedApis=[stressApi];const clean=()=>Object.values(stressApi.resourceCounts).every(n=>n===0);let all=clean();for(let i=0;i<10;i++){console.log('stress-cycle start '+i);stressApi=RisereinNativePlayer.mountNativePlayer(stressPayload,{...stressScope,scriptId:'stress-'+i});const first=stressApi;const duplicate=RisereinNativePlayer.mountNativePlayer(stressPayload,{...stressScope,scriptId:'stress-'+i});all&&=first===duplicate;stressApi.dispose();console.log('stress-cycle end '+i);disposedApis.push(stressApi);all&&=clean();}await new Promise(resolve=>setTimeout(resolve,200));all&&=disposedApis.every(api=>Object.values(api.resourceCounts).every(n=>n===0));return{all,roots:document.querySelectorAll('[data-riserein-card-player]').length,audios:document.querySelectorAll('audio').length,oldPaused:stressAudio.paused};});expect(cleanup).toEqual({all:true,roots:0,audios:0,oldPaused:true});\n> 106 |  }finally{await context.close();}\n      |           ^\n  107 | });\n  108 |\n    at /workspace/sillytavern/tests/ui-design.e2e.js:106:11"
+                    },
+                    {
+                      "message": "Error: ENOENT: no such file or directory, unlink '/workspace/sillytavern/test-results/design/.playwright-artifacts-0/9e248ea1e805d10bfc1e5a65471dcf3e.zip'"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "stress-cycle start 0\n"
+                    },
+                    {
+                      "text": "stress-cycle end 0\n"
+                    },
+                    {
+                      "text": "stress-cycle start 1\n"
+                    },
+                    {
+                      "text": "stress-cycle end 1\n"
+                    },
+                    {
+                      "text": "stress-cycle start 2\n"
+                    },
+                    {
+                      "text": "stress-cycle end 2\n"
+                    },
+                    {
+                      "text": "stress-cycle start 3\n"
+                    },
+                    {
+                      "text": "stress-cycle end 3\n"
+                    },
+                    {
+                      "text": "stress-cycle start 4\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T06:55:54.041Z",
+                  "annotations": [
+                    {
+                      "type": "slow",
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                        "line": 97,
+                        "column": 7
+                      }
+                    }
+                  ],
+                  "attachments": [],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                    "column": 11,
+                    "line": 106
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "bf29ce752169465daf5a-bd7627cd22eeb431ced7",
+          "file": "ui-design.e2e.js",
+          "line": 628,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T06:55:53.049Z",
+    "duration": 83478.59400000001,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}
