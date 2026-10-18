@@ -22,7 +22,7 @@ export function createPlayerUI(panel, launcher, audio) {
     const animations = new WeakMap(), reduced = matchMedia('(prefers-reduced-motion:reduce)');
     const fade = event => {
         const image = event.currentTarget;
-        if (reduced.matches || !image.animate) return;
+        if (reduced.matches || panel.dataset.motion === 'off' || document.hidden || !image.animate) return;
         animations.get(image)?.cancel(); animations.set(image, image.animate([{opacity:.6},{opacity:1}], {duration:180,easing:'ease-out'}));
     };
     const images = [cover,query('.stm-mini-disc img'),disc.querySelector('img')].filter(Boolean);

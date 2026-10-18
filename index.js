@@ -32,6 +32,9 @@ import { MaintenanceJournal } from './data/journal.js';
 import { createDataPanel } from './data/panel.js';
 import { createAudioTransitions } from './listening.js';
 import { createListeningPanel } from './listening-panel.js';
+import { normalizeDesign } from './ui/config.js';
+import { createDesignPresentation } from './ui/presentation.js';
+import { createDesignControls } from './ui/controls.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
 // Keep the build-time guard explicit at author-only branches: esbuild can then
@@ -68,6 +71,7 @@ export function initialize(options = {}) {
     let dataPanel = null;
     let online = null;
     let listening = null;
+    let designPresentation = null, designControls = null, previewDesign = null;
     let platformLoadController = null;
     let objectUrl = null;
     let loadSequence = 0;
@@ -97,9 +101,9 @@ export function initialize(options = {}) {
     let detailsTrackId = null;
     const coverCache = new Map();
 
-    const launcher = document.createElement('button');
+    const launcher = document.createElement('div');
     launcher.id = 'stm-launcher';
-    launcher.type = 'button';
+    launcher.setAttribute('role', 'button'); launcher.tabIndex = 0;
     launcher.className = 'stm-launcher';
     launcher.textContent = '♫';
     launcher.title = '点击打开音乐播放器，拖动可移动';
@@ -110,6 +114,7 @@ export function initialize(options = {}) {
     const panel = document.createElement('section');
     panel.id = 'stm-player';
     panel.className = 'stm-player';
+    panel.dataset.page = 'playback';
     panel.hidden = true;
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', '音乐播放器');
@@ -410,6 +415,7 @@ export function initialize(options = {}) {
     function showPage(page, focus = false) {
         if (!query(`[data-view="${page}"]`)) return;
         currentPage = page;
+        panel.dataset.page = page;
         if (page !== 'import') online?.cancel();
         menus.close();
         setDetailsOpen(false);
@@ -548,6 +554,7 @@ export function initialize(options = {}) {
         query('[data-action="reset-mask"]').disabled = settings.surface === 'clear';
         query('#stm-click-effects').checked = settings.clickEffects;
         for (const button of panel.querySelectorAll('[data-scheme-choice]')) button.setAttribute('aria-pressed', String(button.dataset.schemeChoice === settings.colorScheme));
+        refreshDesign();
     }
     const onSystemScheme = () => { if (settings.colorScheme === 'system') applyAppearance(); };
     systemScheme.addEventListener('change', onSystemScheme);
@@ -647,6 +654,32 @@ export function initialize(options = {}) {
     });
     query('#stm-transition-duration').addEventListener('change', event => { settings.transitionDuration = Number(event.target.value); transitions.refresh(); save(); });
     menus.refresh();
+    designPresentation = createDesignPresentation({ panel, launcher, audio, readIcon: id => store.get(id), onPlay: toggleCurrent, onNext: () => advanceTrack(1), getTrackNumber: () => playbackQueue.tracks().findIndex(track => track.id === settings.currentId) + 1 });
+    designControls = createDesignControls({ panel, settings, getDesign: effectiveDesign, onChange: applyUserDesign,
+        onAccessibility() { refreshDesign(); save(); }, isPortable: (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) });
+    refreshDesign(); menus.refresh();
+    function effectiveDesign() {
+        if ((typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) return settings.uiDesign.allowRecipientLayout && settings.personalDesign ? settings.personalDesign : settings.uiDesign;
+        const avatar = currentCharacterAvatar(options.context || globalThis.SillyTavern?.getContext?.() || context);
+        return settings.roleDesigns.find(row => row.avatar === avatar)?.config || settings.uiDesign;
+    }
+    function refreshDesign() {
+        if (!designPresentation) return;
+        designPresentation.apply(previewDesign || effectiveDesign(), { motion: settings.visualMotion, accessible: settings.accessibleControls });
+        designControls?.refresh(); launcherDrag.refresh(); panelDrag.refresh();
+    }
+    function applyUserDesign(value) {
+        const config = normalizeDesign(value);
+        if ((typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
+            if (!settings.uiDesign.allowRecipientLayout) return;
+            settings.personalDesign = config;
+        } else {
+            const avatar = currentCharacterAvatar(options.context || globalThis.SillyTavern?.getContext?.() || context), bound = settings.roleDesigns.find(row => row.avatar === avatar);
+            if (bound) bound.config = config; else settings.uiDesign = config;
+            settings.visualMotion = null;
+        }
+        refreshDesign(); save();
+    }
     function updateMini() { mini.render(currentPage === 'playback' || panel.dataset.lyricsOpen === 'true'); }
 
 
@@ -670,7 +703,7 @@ export function initialize(options = {}) {
         }
         if (open) updateLyrics(true);
     }
-    query('[data-action="toggle-lyrics"]').addEventListener('click', () => setLyricsOpen(true));
+    query('[data-action="toggle-lyrics"]').addEventListener('click', () => { if (settings.accessibleControls || effectiveDesign().customization.showLyricsButton) setLyricsOpen(true); });
     let lyricPointer = null;
     const lyricView = query('.stm-lyrics-view');
     lyricView.addEventListener('pointerdown', event => { lyricPointer = { x: event.clientX, y: event.clientY, moved: false }; });
@@ -1251,6 +1284,7 @@ export function initialize(options = {}) {
         if (!force && avatar === lastRoleAvatar) { renderRoleStatus(); return; }
         const previous = lastRoleAvatar;
         lastRoleAvatar = avatar;
+        refreshDesign();
         const revision = ++roleRevision;
         viewRevision++;
         if (avatar) {
@@ -1395,6 +1429,7 @@ export function initialize(options = {}) {
         query('.stm-sheet-empty').hidden = queue.length > 0;
         query('[data-role="queue-count"]').textContent = ` · ${queue.length} 首`;
         query('[data-role="queue-source"]').textContent = `来自：${collectionName()}`;
+        designPresentation?.sync();
         updatePlayback();
     }
 
@@ -1669,6 +1704,7 @@ export function initialize(options = {}) {
     }
 
     launcher.addEventListener('click', () => setOpen(panel.hidden));
+    launcher.addEventListener('keydown', event => { if (event.target === launcher && ['Enter', ' '].includes(event.key)) { event.preventDefault(); setOpen(panel.hidden); } });
     query('[data-action="close"]').addEventListener('click', () => setOpen(false));
     panel.addEventListener('keydown', event => {
         if (event.key === 'Escape') { event.stopPropagation(); setOpen(false); }
@@ -1681,9 +1717,12 @@ export function initialize(options = {}) {
         else void play();
     }
     playButton.addEventListener('click', toggleCurrent);
+    function advanceTrack(direction) {
+        void selectTrack(nextTrackId(playbackQueue.tracks().filter(track => platformService.canPlay(track)), settings.currentId, settings.mode, { direction }), !audio.paused);
+    }
     for (const [action, direction] of [['previous', -1], ['next', 1]]) {
         query(`[data-action="${action}"]`).addEventListener('click', () => {
-            void selectTrack(nextTrackId(playbackQueue.tracks().filter(track => platformService.canPlay(track)), settings.currentId, settings.mode, { direction }), !audio.paused);
+            advanceTrack(direction);
         });
     }
     query('[data-action="import"]').addEventListener('click', () => fileInput.click());
@@ -1855,6 +1894,7 @@ export function initialize(options = {}) {
         if (disposed) return;
         disposed = true;
         listening?.dispose(); transitions.dispose();
+        designControls?.dispose(); designPresentation?.dispose();
         dataPanel?.dispose(); cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose(); retirement?.dispose(); options.onDispose?.();
         ++loadSequence;
         pausePlayback(); audio.removeAttribute('src'); audio.load();
@@ -1906,6 +1946,7 @@ export function initialize(options = {}) {
             onHost(context.eventTypes.CHARACTER_RENAMED, (oldAvatar, newAvatar) => {
                 if (typeof oldAvatar !== 'string' || typeof newAvatar !== 'string') return;
                 for (const playlist of settings.playlists) playlist.characterAvatars = playlist.characterAvatars.map(avatar => avatar === oldAvatar ? newAvatar : avatar);
+                for (const row of settings.roleDesigns) if (row.avatar === oldAvatar) row.avatar = newAvatar;
                 if (lastRoleAvatar === oldAvatar) lastRoleAvatar = newAvatar;
                 save(); renderPlaylists();
             });
@@ -1936,7 +1977,7 @@ export function initialize(options = {}) {
     renderTracks();
     if (settings.currentId) void selectTrack(settings.currentId);
     if (!document.getElementById('preloader')) void syncRole(true);
-    return { panel, launcher, audio, settings, dispose, setOpen };
+    return { panel, launcher, audio, settings, dispose, setOpen, setDesign: applyUserDesign, getDesign: effectiveDesign };
 }
 
 async function startFullPlayer() {

@@ -524,6 +524,9 @@ for (const mobile of [false, true])
             state.maskOpacity.glass = 0.7;
             state.tracks[0].lyrics = '[00:00.00]Shared UI lyric\n[00:02.00]Music stays with Amber';
         }, Array.from(image));
+        await author.getByRole('tab',{name:'外观',exact:true}).click();
+        await menu(author,'#stm-design-layout',mobile?'crystal':'vinyl');
+        await menu(author,'#stm-design-theme',mobile?'mist-blue':'walnut');
         await author.getByRole('tab', { name: '曲库', exact: true }).click();
         await author.getByRole('button', { name: '打开歌单：bill', exact: true }).click();
         await author.locator('[data-action=toggle-manager]').click();
@@ -625,6 +628,7 @@ for (const mobile of [false, true])
                 .last()
                 .click();
             await expect(recipient.locator(root)).toHaveCount(1);
+            await expect(recipient.locator('#stm-player')).toHaveAttribute('data-layout',mobile?'crystal':'vinyl');
             await expect(recipient.locator('#stm-player')).toBeVisible({
                 timeout: 30000,
             });

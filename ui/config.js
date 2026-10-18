@@ -18,6 +18,17 @@ export const DESIGN_THEMES = Object.freeze({
     blush: { name: '柔和烟粉', background: '#e8dce0', surface: '#f4ebed', text: '#42343c', muted: '#78616d', accent: '#93586f', border: '#bda1ad' },
 });
 export const MOTION_LEVELS = ['off', 'light', 'normal', 'rich'];
+const lightPalettes={
+    'mist-blue':{background:'#e2eced',surface:'#f3f8f7',text:'#22383f',muted:'#556e77',accent:'#396b80',border:'#abc2c7'},
+    walnut:{background:'#e9dfcf',surface:'#f5eedf',text:'#372c24',muted:'#78644f',accent:'#7d592d',border:'#c3ad8e'},
+    smoke:{background:'#e7e5df',surface:'#f5f3eb',text:'#303838',muted:'#626d68',accent:'#96603c',border:'#b9beb4'},
+    ink:{background:'#e3e6eb',surface:'#f3f4f6',text:'#28313d',muted:'#616e7e',accent:'#536e94',border:'#b3becd'},
+};
+const darkPalettes={
+    cream:{background:'#29251f',surface:'#3a342b',text:'#f2eadc',muted:'#bfb09a',accent:'#ddbf8a',border:'#6e604d'},
+    blush:{background:'#30242c',surface:'#44313c',text:'#f5e8ee',muted:'#c5a9b7',accent:'#e3adbf',border:'#775765'},
+};
+export function designPalette(theme,scheme){return (scheme==='light'?lightPalettes[theme]:darkPalettes[theme])||DESIGN_THEMES[theme]||{};}
 const color = (value, fallback = null) => /^#[a-f\d]{6}$/i.test(value) ? value.toLowerCase() : fallback;
 const number = (value, fallback, min, max) => typeof value === 'number' && Number.isFinite(value) ? Math.max(min, Math.min(max, value)) : fallback;
 const member = (value, choices, fallback) => choices.includes(value) ? value : fallback;

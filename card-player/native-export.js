@@ -17,6 +17,7 @@ import { fetchBlob, probeAudio } from './browser-resources.js';
 import { packFont } from './font-transport.js';
 import { MAX_PACKAGE_BYTES } from './config.js';
 import { compactNativeResponse } from './png-size.js';
+import { normalizeDesign } from '../ui/config.js';
 
 const LICENSES = {
     'PoxiaoPixel.woff2': ['OFL-PoxiaoPixel.txt'],
@@ -33,6 +34,7 @@ const UI_KEYS = [
     'panelSize',
     'positions',
     'transitionDuration',
+    'uiDesign',
 ];
 /** Same export_with semantics as the verified official Helper export hook. */
 export function helperExportSettings(settings) {
@@ -107,10 +109,11 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
     const read = (url, maxBytes) => fetchBlob(url, abort.signal, maxBytes ? { maxBytes } : undefined);
     const fallback = (index) =>
         memo(fixedImages, index, () => read(fallbackCoverUrl(index)).then(prepareCover));
-    const sourceSnapshot = (playlist) => ({
+    const designForAvatar = avatar => normalizeDesign(settings.roleDesigns?.find(row => row.avatar === avatar)?.config || settings.uiDesign);
+    const sourceSnapshot = (playlist, avatar) => ({
         playlist: structuredClone(playlist),
         tracks: structuredClone(getQueue(settings, playlist.id)),
-        ui: Object.fromEntries(UI_KEYS.map((key) => [key, structuredClone(settings[key])])),
+        ui: { ...Object.fromEntries(UI_KEYS.map((key) => [key, structuredClone(settings[key])])), uiDesign: designForAvatar(avatar) },
         fontPreset: settings.fontPreset,
         backgroundId: settings.backgroundId,
         volume: settings.volume,
@@ -122,11 +125,11 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         // Playback cursors and automatically assigned fallback art are view state;
         // role navigation can update them without an author editing the project.
         JSON.stringify(value, (key, entry) => (['lastTrackId', 'fallbackCover'].includes(key) ? undefined : entry));
-    const checkSource = (payload) => {
+    const checkSource = (payload, avatar) => {
         const previous = signatures.get(payload);
         const playlist = settings.playlists.find((item) => item.id === previous?.id);
         if (!previous || !playlist) throw new Error('检查期间歌单已改变，请重新导出；未替换旧随卡配置');
-        const current = sourceSignature(sourceSnapshot(playlist));
+        const current = sourceSignature(sourceSnapshot(playlist, avatar ?? previous.avatar));
         if (current !== previous.signature) {
             const before = JSON.parse(previous.signature), after = JSON.parse(current);
             const fields = Object.keys(before).filter(key => JSON.stringify(before[key]) !== JSON.stringify(after[key]));
@@ -134,8 +137,8 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
             throw new Error(`检查期间${fields.map(key => labels[key] || key).join('、')}已改变，请重新导出；未替换旧随卡配置`);
         }
     };
-    async function packagePlaylist(playlist) {
-        const author = sourceSnapshot(playlist),
+    async function packagePlaylist(playlist, avatar) {
+        const author = sourceSnapshot(playlist, avatar),
             signature = sourceSignature(author);
         playlist = author.playlist;
         const preset = FONT_PRESETS[author.fontPreset];
@@ -236,7 +239,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         showStatus(
             `资源 ${(analysis.embeddedBytes / 1048576).toFixed(2)} MB（含歌曲、封面、背景和字体），正在构建随卡播放器…`,
         );
-        signatures.set(payload, { id: playlist.id, signature });
+        signatures.set(payload, { id: playlist.id, avatar, signature });
         checkSource(payload);
         return payload;
     }
@@ -269,7 +272,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         }
         let next;
         if (playlist) {
-            const payload = prepared?.get(playlist.id) || (await packagePlaylist(playlist));
+            const payload = prepared?.get(avatar) || (await packagePlaylist(playlist, avatar));
             runtimePromise ||= read(new URL('./dist/native-runtime.js', import.meta.url))
                 .then((blob) => blob.text())
                 .catch((error) => {
@@ -277,7 +280,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                     throw error;
                 });
             const script = nativeCardScript(payload, await runtimePromise, old?.scriptId || createTrackId());
-            checkSource(payload);
+            checkSource(payload, avatar);
             // Preserve edits made to unrelated scripts while audio/font reads were in flight.
             card.data.extensions.tavern_helper = structuredClone(
                 character.data.extensions?.tavern_helper || {},
@@ -526,8 +529,17 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         syncBindings: () =>
             enqueue(async () => {
                 const prepared = new Map();
-                for (const playlist of settings.playlists.filter((item) => item.characterAvatars.length))
-                    prepared.set(playlist.id, await packagePlaylist(playlist));
+                for (const playlist of settings.playlists.filter((item) => item.characterAvatars.length)) {
+                    // UI-only variants share immutable encoded audio/font strings.
+                    // Do not re-encode a large playlist once for every bound role.
+                    const base=await packagePlaylist(playlist,playlist.characterAvatars[0]);
+                    for (const avatar of playlist.characterAvatars) {
+                        if(avatar===playlist.characterAvatars[0]){prepared.set(avatar,base);continue;}
+                        const ui={...base.ui,uiDesign:designForAvatar(avatar)},payload={...base,ui};
+                        signatures.set(payload,{id:playlist.id,avatar,signature:sourceSignature(sourceSnapshot(playlist,avatar))});
+                        assertCapacity(analyzePayload(payload));checkSource(payload,avatar);prepared.set(avatar,payload);
+                    }
+                }
                 const avatars = new Set(settings.playlists.flatMap((item) => item.characterAvatars));
                 for (const avatar of managedAvatars) avatars.add(avatar);
                 for (const avatar of avatars) {
