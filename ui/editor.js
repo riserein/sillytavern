@@ -82,7 +82,7 @@ export function createDesignEditor({
           ? working.customization[field.slice(2)]
           : working[field];
       if (element.type === "checkbox") element.checked = Boolean(value);
-      else element.value = String(value ?? "");
+      else element.value = String(value ?? (element.type==='color'?'#a8bec7':''));
     }
     q("[data-undo]").disabled = !history.canUndo;
     q("[data-redo]").disabled = !history.canRedo;
@@ -225,7 +225,7 @@ export function createDesignEditor({
     function field(
       label,
       id,
-      { options, min, max, step = 1, checkbox = false } = {},
+      { options, min, max, step = 1, checkbox = false, color = false } = {},
       parent = q("[data-detail-fields]"),
     ) {
       const wrap = doc.createElement("label");
@@ -236,6 +236,7 @@ export function createDesignEditor({
         for (const [value, name] of Object.entries(options))
           input.append(new Option(name, value));
       else if (checkbox) input.type = "checkbox";
+      else if(color)input.type="color";
       else {
         input.type = "range";
         input.min = min;
@@ -249,7 +250,7 @@ export function createDesignEditor({
           id,
           checkbox
             ? input.checked
-            : options
+            : options||color
               ? input.value
               : Number(input.value),
         ),
@@ -290,6 +291,7 @@ export function createDesignEditor({
     for (const [label, id, min, max, step] of [
       ["封面尺寸", "coverSize", 0.55, 1.15, 0.01],
       ["外壳圆角", "cornerRadius", 0, 36, 1],
+      ["磁带外壳透明度","tapeOpacity",.35,1,.01],
       ["背景透明度", "opacity", 0.3, 1, 0.01],
       ["模糊强度", "blur", 0, 24, 1],
       ["播放按钮尺寸", "buttonSize", 40, 68, 1],
@@ -326,6 +328,8 @@ export function createDesignEditor({
         },
       ],
       ["唱片外圈", "grooves", { fine: "细密", bold: "粗纹" }],
+      ["铭牌样式","nameplate",{engraved:"雕刻铭牌",plain:"简洁铭牌"}],
+      ["磁带转轴","reelStyle",{classic:"经典齿轮",spoke:"银色轮辐"}],
       ["极简方向", "orientation", { horizontal: "横向", vertical: "竖向" }],
       [
         "图标形状",
@@ -342,12 +346,14 @@ export function createDesignEditor({
       ["显示播放模式", "showMode"],
       ["显示队列", "showQueue"],
       ["显示装饰", "showDecorations"],
+      ["唱片旋转","rotate"],["装饰刻度","showScale"],
       ["显示背景图片", "showBackground"],
       ["显示磁带曲目编号", "showTrackNumber"],
       ["胶囊显示下一首", "showNext"],
       ["极简专注模式", "focus"],
     ])
       field(label, "c." + id, { checkbox: true });
+    field("唱臂颜色","c.tonearmColor",{color:true});field("磁带标签颜色","c.labelColor",{color:true});
     field("允许接收端修改布局", "allowRecipientLayout", { checkbox: true });
     for (const [key, name] of Object.entries({
       background: "主背景",

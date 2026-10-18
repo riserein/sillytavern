@@ -237,3 +237,13 @@ test('older imported M4A/OGG MIME aliases and empty MIME files keep their usable
     const result = await prepareCardPackage(make([{ ...local, title: '只有显示歌名', exportBlob: file }]), resources);
     assert.match(result.config.tracks[0].src, /^data:audio\/mpeg;base64,/);
 });
+
+test('shared designer exports retain known Helper format and selected UI without IDB image dependencies',async()=>{
+ const {buildSharedCardExports}=await import('../card-player/shared-export.js'),{readScriptPayload}=await import('../card-player/quality.js');
+ const input=(await prepareCardPackage(make(),resources)).config;
+ const design={layout:'cassette',fontPreset:'song',launcher:'custom',customization:{iconId:'cover:00000000-0000-4000-8000-000000000000'}};
+ input.appearance.launcherIcon='data:image/png;base64,aW1hZ2U=';
+ const files=buildSharedCardExports(input,'const RisereinNativePlayer={startNativeCharacterPlayer(){},startNativePreview(){}};','script-id',{design,ui:{fontPreset:'song'}}),payload=readScriptPayload(files.script.content);
+ assert.equal(files.script.type,'script');assert.equal(files.script.enabled,true);assert.equal(files.script.export_with.data,true);assert.equal(payload.ui.uiDesign.layout,'cassette');assert.equal(payload.ui.uiDesign.customization.iconId,null);assert.equal(payload.config.appearance.launcherIcon,input.appearance.launcherIcon);assert(files.preview.includes('startNativePreview'));assert(!files.javascript.includes('indexedDB.open'));assert.equal(files.analysis.rows.find(row=>row.kind==='launcher-icon').bytes,5);
+ assert.deepEqual(files.songs.design,payload.ui.uiDesign);assert.equal(files.songs.tracks.length,1);assert.throws(()=>buildSharedCardExports(input,'startNativeCharacterPlayer','id',{design}),/共享预览/);
+});

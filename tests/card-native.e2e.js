@@ -424,11 +424,11 @@ test.afterAll(async () => {
         JSON.stringify(
             {
                 status: results.length && results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
-                    ? (results.length === 5 ? 'passed' : 'selected-tests-passed')
+                    ? (results.length === 8 ? 'passed' : 'selected-tests-passed')
                     : 'incomplete-or-failed',
                 version: PLAYER_BUILD,
                 largeFixture,
-                coverage: results.length === 5 ? 'full-suite' : 'partial-or-selected-tests; see runner report for overall status',
+                coverage: results.length === 8 ? 'full-suite' : 'partial-or-selected-tests; see runner report for overall status',
                 verifiedAt: new Date().toISOString(),
                 runtimeSha256: createHash('sha256').update(runtime).digest('hex'),
                 sillyTavern: '1.19.0',
@@ -451,8 +451,8 @@ test.afterAll(async () => {
     );
 });
 
-for (const mobile of [false, true])
-    test(`native PNG and JSON carry the shared player to a clean ${mobile ? 'phone' : 'desktop'} recipient`, async ({
+for (const {mobile,layout} of [{mobile:false,layout:'vinyl'},{mobile:true,layout:'crystal'},{mobile:false,layout:'cassette'},{mobile:true,layout:'pure'}])
+    test(`native PNG and JSON carry the shared player to a clean ${mobile ? 'phone' : 'desktop'} recipient · ${layout}`, async ({
         browser,
     }) => {
         const { page: author, context: authorContext } = await session(browser);
@@ -525,7 +525,7 @@ for (const mobile of [false, true])
             state.tracks[0].lyrics = '[00:00.00]Shared UI lyric\n[00:02.00]Music stays with Amber';
         }, Array.from(image));
         await author.getByRole('tab',{name:'外观',exact:true}).click();
-        await menu(author,'#stm-design-layout',mobile?'crystal':'vinyl');
+        await menu(author,'#stm-design-layout',layout);
         await menu(author,'#stm-design-theme',mobile?'mist-blue':'walnut');
         if(mobile){const icon=Buffer.from(await author.evaluate(()=>{const c=document.createElement('canvas');c.width=64;c.height=64;const ctx=c.getContext('2d');ctx.fillStyle='#84b7cc';ctx.fillRect(0,0,64,64);return c.toDataURL('image/png').split(',')[1];}),'base64');await author.locator('[data-launcher-file]').setInputFiles({name:'own-icon.png',mimeType:'image/png',buffer:icon});await expect(author.locator('[data-launcher-status]')).toContainText('图标已保存');}
         await author.getByRole('tab', { name: '曲库', exact: true }).click();
@@ -629,7 +629,7 @@ for (const mobile of [false, true])
                 .last()
                 .click();
             await expect(recipient.locator(root)).toHaveCount(1);
-            await expect(recipient.locator('#stm-player')).toHaveAttribute('data-layout',mobile?'crystal':'vinyl');
+            await expect(recipient.locator('#stm-player')).toHaveAttribute('data-layout',layout);
             await expect(recipient.locator('#stm-player')).toBeVisible({
                 timeout: 30000,
             });
@@ -710,7 +710,7 @@ for (const mobile of [false, true])
                     }),
                 ).toBe(true);
                 await recipient.locator('#stm-player').screenshot({
-                    path: `${screenshotDir}/native-${mobile ? 'mobile' : 'desktop'}-playback.png`,
+                    path: `${screenshotDir}/native-${layout}-${mobile ? 'mobile' : 'desktop'}-playback.png`,
                 });
             }
             await recipient.locator('[data-action=close]').click();
@@ -802,7 +802,7 @@ for (const mobile of [false, true])
             await expect(recipient.locator('[data-view=recent] li')).toHaveCount(3);
             await mkdir(screenshotDir, { recursive: true });
             await recipient.locator('#stm-player').screenshot({
-                path: `${screenshotDir}/native-${mobile ? 'mobile' : 'desktop'}-${file.format}.png`,
+                path: `${screenshotDir}/native-${layout}-${mobile ? 'mobile' : 'desktop'}-${file.format}.png`,
             });
             await selectCard(recipient, blank);
             await expect(recipient.locator(root)).toHaveCount(0);
@@ -1128,4 +1128,24 @@ test('saving local bindings and exporting an imported card never remove its unre
     expect(cleared.data.extensions.riserein_card_player).toBeNull();
     const preserved = await serverCard(imported);
     expect(preserved.data.extensions.tavern_helper.scripts.find(script => script.id === original.scriptId).content).toBe(original.content);
+});
+
+test('two designer-bound roles retain different layouts and selected fonts while sharing one playlist',async({browser})=>{
+ test.setTimeout(240000);const{page:author,context:authorContext}=await session(browser);const a=await createCard(author,'DesignA'),b=await createCard(author,'DesignB');await selectCard(author,a);
+ await author.getByRole('tab',{name:'曲库',exact:true}).click();await author.locator('[data-action=new-playlist]').click();await author.locator('#stm-new-playlist').fill('共享歌曲与独立设计');await author.getByRole('button',{name:'新建',exact:true}).click();const playlist=await author.locator('#stm-library-playlist').inputValue();await author.getByRole('tab',{name:'导入',exact:true}).click();await menu(author,'#stm-import-playlist',playlist);await author.locator('[data-role=files]').setInputFiles({name:'one.mp3',mimeType:'audio/mpeg',buffer:tone});await expect(author.locator('.stm-status')).toContainText('已导入 1 首');
+ for(const [avatar,layout,font,launcher]of [[a,'cassette','song','cassette'],[b,'pure','child','cd']]){
+  await selectCard(author,avatar);await author.getByRole('tab',{name:'外观',exact:true}).click();await author.locator('[data-action=open-designer]').click();const editor=author.locator('.stm-design-editor');await editor.locator('[data-field=layout]').selectOption(layout);await editor.locator('[data-field=fontPreset]').selectOption(font);await editor.locator('[data-field=launcher]').selectOption(launcher);await editor.locator('[data-bind-role]').selectOption(avatar);await editor.locator('[data-bind-playlist]').selectOption(playlist);await editor.locator('[data-bind]').click();await expect(editor.locator('[data-editor-status]')).toContainText('已绑定，并写入随卡播放器',{timeout:60000});await editor.locator('[data-editor-close]').click();
+ }
+ const exports=[];for(const [avatar,format,layout,font]of [[a,'json','cassette','song'],[b,'png','pure','child']]){
+  const bytes=Buffer.from(await author.evaluate(async({avatar,format})=>{const response=await fetch('/api/characters/export',{method:'POST',headers:SillyTavern.getContext().getRequestHeaders(),body:JSON.stringify({avatar_url:avatar,format})});if(!response.ok)throw new Error(await response.text());return Array.from(new Uint8Array(await response.arrayBuffer()));},{avatar,format}));exports.push({bytes,format,layout,font});
+ }
+ await authorContext.close();const{page:recipient}=await session(browser,{portable:true});const imported=[];for(const file of exports)imported.push({...file,avatar:await importCard(recipient,file.bytes,file.format)});
+ for(const [index,file]of [...imported,imported[0]].entries()){
+  await selectCard(recipient,file.avatar);const confirm=recipient.getByText(/^(确认|Confirm)$/,{exact:true}).last();if(index<2)await confirm.click();await expect(recipient.locator('#stm-player')).toHaveAttribute('data-layout',file.layout);await expect(recipient.locator('[data-riserein-card-player]')).toHaveCount(1);await expect(recipient.locator('[data-action=open-designer]')).toHaveCount(0);
+  if(file.font==='child')await expect.poll(()=>recipient.evaluate(()=>[...document.fonts].some(f=>f.family==='stm-child'&&f.status==='loaded'))).toBe(true);
+  else await expect(recipient.locator('#stm-player')).toHaveCSS('font-family',/Songti|SimSun|Noto Serif/);
+  if(index)expect(await recipient.evaluate(()=>window.previousRoleAudio.paused&&!window.previousRoleAudio.isConnected&&!window.previousRoleAudio.getAttribute('src'))).toBe(true);
+  await recipient.locator('[data-action=play]').click();await expect.poll(()=>recipient.locator('#stm-player audio').evaluate(a=>a.currentTime)).toBeGreaterThan(.2);await recipient.evaluate(()=>window.previousRoleAudio=document.querySelector('#stm-player audio'));
+ }
+ await home(recipient);await expect(recipient.locator('[data-riserein-card-player]')).toHaveCount(0);expect(await recipient.evaluate(()=>window.previousRoleAudio.paused)).toBe(true);
 });

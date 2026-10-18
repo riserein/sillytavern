@@ -113,3 +113,11 @@
 .stm-player [data-design-component=progress] { accent-color:currentColor; }
 .stm-player [data-design-component=progress]::-webkit-slider-thumb { background:currentColor; }
 .stm-player [data-design-component=progress]::-moz-range-thumb { background:currentColor; }
+/* Design opacity changes the shell alone, never fades the song text. */
+.stm-player.stm-night-ui[data-layout][data-layout]:not([data-layout=night]) { background-color:color-mix(in srgb,var(--ui-bg) calc(var(--design-opacity) * 100%),transparent); }
+.stm-player[data-layout=vinyl][data-design-rotate=false] .stm-design-disc-art { animation-play-state:paused !important; }
+.stm-player[data-layout=vinyl][data-nameplate=plain] .stm-now { border:0; background:transparent; box-shadow:none; }
+.stm-player[data-layout=vinyl][data-hide-scale=true] #stm-seek::-webkit-slider-runnable-track {background:var(--stm-track);}
+.stm-player[data-layout=cassette] .stm-cover-stage { background:color-mix(in srgb,var(--ui-bg-secondary) calc(var(--design-tape-opacity) * 100%),transparent); }
+.stm-player[data-layout=cassette][data-reel-style=spoke] .stm-design-reels i {background:repeating-conic-gradient(#c8cfca 0deg 12deg,#4b5350 12deg 60deg);border-color:#788581;}
+.stm-player[data-layout=cassette][data-hide-scale=true] .stm-design-tape-caption {border-bottom-color:transparent;}

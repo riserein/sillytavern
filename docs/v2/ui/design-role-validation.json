@@ -1,0 +1,39 @@
+{
+  "status": "selected-tests-passed",
+  "version": "2.0.0-alpha.4",
+  "largeFixture": false,
+  "coverage": "partial-or-selected-tests; see runner report for overall status",
+  "verifiedAt": "2026-10-18T06:40:42.274Z",
+  "runtimeSha256": "51db531c745f836e87e0307a7d211c8cf0d76e11661a2835b9e5809c449b41cb",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "two designer-bound roles retain different layouts and selected fonts while sharing one playlist",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1120958,
+      "milliseconds": 803
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4299148,
+      "milliseconds": 1693
+    }
+  ],
+  "performanceRecords": []
+}

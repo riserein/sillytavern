@@ -1,3 +1,6 @@
+import {normalizeDesign} from './ui/config.js';
+import {prepareDesignIcon} from './ui/images.js';
+import {buildSharedCardExports} from './card-player/shared-export.js';
 import { createLyricsLookup } from './lyrics.js';
 import { preferenceKey } from './data/identity.js';
 import { CardProjectStore, captureProjectResources } from './card-player/project-store.js';
@@ -15,11 +18,11 @@ import { FONT_PRESETS } from './fonts.js';
 import { themePalette, resolveScheme } from './scheme.js';
 import { createSelectMenus } from './select-menu.js';
 import { CARD_THEMES, publicResource } from './card-player/config.js';
-import { prepareCardPackage, buildCardExports, attachPlayerToCard } from './card-player/export.js';
+import { prepareCardPackage, buildCardExports, attachPlayerToCard, blobData } from './card-player/export.js';
 import { fetchBlob, probeAudio } from './card-player/browser-resources.js';
 
 /** Authoring uses export-only copies. It never rewrites the music library or role bindings. */
-export function createCardMaker({ panel, settings, store, context, getCollectionId, pausePlayback }) {
+export function createCardMaker({ panel, settings, store, context, getCollectionId, pausePlayback, getDesign = () => settings.uiDesign }) {
     const element = document.createElement('section');
     element.className = 'stm-card-maker';
     element.hidden = true;
@@ -33,7 +36,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
     <p class="stm-hint">下方修改只影响导出副本。可编辑歌名、歌手、歌词与顺序，或替换音频、封面。</p>
     <button type="button" class="stm-secondary" data-maker="add">＋ 批量添加音频</button><input type="file" data-maker-file="audio" accept="audio/*,.mp3,.wav,.ogg,.m4a,.flac,.aac,.opus,.webm" multiple hidden>
     <ol class="stm-maker-tracks" aria-label="导出歌曲"></ol><section data-maker="lyrics-lookup" hidden></section>
-    <h4>2 · 设计播放器</h4><label for="stm-maker-theme">主题</label><select id="stm-maker-theme"><option value="current">使用当前配色</option>${Object.entries(
+    <h4>2 · 设计播放器</h4><label class="stm-check-label"><input type="checkbox" data-maker="shared-design">使用设计器布局与共享播放器界面</label><button type="button" class="stm-secondary" data-maker="capture-design">读取当前设计器配置</button><p class="stm-hint">勾选后携带当前角色的所选布局、主题和悬浮入口。原项目默认保留原布局；更改配色后需重新检查生成共享预览。</p><label for="stm-maker-theme">主题</label><select id="stm-maker-theme"><option value="current">使用当前配色</option>${Object.entries(
         CARD_THEMES,
     )
         .map(([id, theme]) => `<option value="${id}">${theme.name}</option>`)
@@ -80,7 +83,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         openGeneration = 0;
     const draftRevisions = new Map(),
         recoveries = new Map();
-    const sourceKeys = ['backgroundId', 'fontPreset', 'fontId', 'fontName', 'volume', 'mode', 'transitionDuration'];
+    const sourceKeys = ['backgroundId', 'fontPreset', 'fontId', 'fontName', 'volume', 'mode', 'transitionDuration', 'theme', 'colorScheme', 'surface', 'maskOpacity', 'customColors', 'clickEffects', 'uiDesign'];
     const formSnapshot = () =>
         Object.fromEntries(
             [
@@ -122,6 +125,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     snapshot.tracks,
                     {
                         imageId: snapshot.sourceSettings.backgroundId,
+                        iconId: snapshot.sourceSettings.uiDesign?.customization?.iconId,
                         fontId:
                             snapshot.sourceSettings.fontPreset === 'custom'
                                 ? snapshot.sourceSettings.fontId
@@ -134,6 +138,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                 snapshot.assets = {
                     imageBlob: resources.appearance.imageBlob,
                     fontBlob: resources.appearance.fontBlob,
+                    iconBlob: resources.appearance.iconBlob,
                 };
                 const saved = await drafts.save(snapshot, draftRevisions.get(snapshot.id) || 0);
                 draftRevisions.set(snapshot.id, saved.revision);
@@ -192,6 +197,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         tracks = project.tracks;
         collectionId = project.form['stm-maker-collection'] || '';
         sourceSettings = project.sourceSettings;
+        q('[data-maker=shared-design]').checked=project.form['shared-design']===true;
         projectAssets = project.assets || {};
         for (const node of element.querySelectorAll('input,textarea,select')) {
             const key = node.dataset.makerColor ? `color:${node.dataset.makerColor}` : node.id || node.dataset.maker;
@@ -302,6 +308,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
     function applyColors() {
         scheduleSave();
         if (!prepared) return;
+        if(prepared.shared){edits();message('共享设计配色已改变，请重新检查资源并生成预览。');return;}
         const { accent, background, text, surface, opacity } = appearance();
         prepared.config.appearance = {
             ...prepared.config.appearance,
@@ -507,6 +514,8 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         draftReady = false;
         projectId = `rscp:${createTrackId()}`;
         sourceSettings = Object.fromEntries(sourceKeys.map((key) => [key, structuredClone(settings[key])]));
+        sourceSettings.uiDesign=normalizeDesign(getDesign());
+        q('[data-maker=shared-design]').checked=false;
         projectAssets = {};
         returnFocus = document.activeElement;
         menus.close();
@@ -683,9 +692,23 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         '[data-maker-color],[data-maker=opacity],#stm-maker-surface',
     ))
         control.addEventListener('input', applyColors);
-    for (const name of ['background', 'font', 'collapsed', 'font-credit'])
+    for (const name of ['background', 'font', 'collapsed', 'font-credit', 'shared-design'])
         q(`[data-maker=${name}]`).addEventListener('change', edits);
     q('[data-maker=font-credit]').addEventListener('input', edits);
+    q('[data-maker=shared-design]').addEventListener('change',()=>{
+        if(!q('[data-maker=shared-design]').checked)return;
+        const font=normalizeDesign(sourceSettings.uiDesign).fontPreset;
+        if(font!=='current'&&font!==sourceSettings.fontPreset){sourceSettings.fontPreset=font;delete projectAssets.fontBlob;q('[data-maker=font]').checked=Boolean(FONT_PRESETS[font]?.file);q('[data-maker=font-credit-label]').hidden=true;edits();}
+    });
+    q('[data-maker=capture-design]').addEventListener('click',()=>{
+        sourceSettings.uiDesign=normalizeDesign(getDesign());
+        sourceSettings.fontPreset=sourceSettings.uiDesign.fontPreset==='current'?settings.fontPreset:sourceSettings.uiDesign.fontPreset;
+        sourceSettings.fontId=settings.fontId;sourceSettings.fontName=settings.fontName;
+        delete projectAssets.iconBlob;delete projectAssets.fontBlob;
+        q('[data-maker=shared-design]').checked=true;
+        q('[data-maker=font]').checked=Boolean(FONT_PRESETS[sourceSettings.fontPreset]?.file||sourceSettings.fontPreset==='custom');
+        q('[data-maker=font-credit-label]').hidden=sourceSettings.fontPreset!=='custom';edits();message('已读取当前设计，歌曲与现有草稿保留；请重新检查并试听。');
+    });
     q('[data-maker=add]').addEventListener('click', () => q('[data-maker-file=audio]').click());
     async function enrichTrack(track) {
         const id = projectId,
@@ -791,15 +814,33 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                         message(`正在检查 ${progress.index + 1}/${progress.total}：${progress.title}`),
                 },
             );
-            const response = await fetch(new URL('./card-player/dist/runtime.js', import.meta.url), {
+            const shared=q('[data-maker=shared-design]').checked;
+            const response = await fetch(new URL(shared?'./card-player/dist/native-runtime.js':'./card-player/dist/runtime.js', import.meta.url), {
                 signal: own.signal,
             });
             if (!response.ok) throw new Error('独立播放器文件读取失败，请更新插件后刷新。');
             const runtime = await response.text();
             own.signal.throwIfAborted();
             if (stamp !== revision || element.hidden) return;
-            prepared = { ...result, runtime, scriptId: createTrackId() };
-            const files = buildCardExports(prepared.config, runtime, prepared.scriptId);
+            const extras={};
+            if(shared){
+                const design=normalizeDesign(sourceSettings.uiDesign),id=design.customization.iconId;
+                if(design.launcher==='custom'){
+                    const image=projectAssets.iconBlob||(id?await store.get(id):null);
+                    if(!image)throw new Error('悬浮图标缺失，请重新读取设计或更换入口。');
+                    result.config.appearance.launcherIcon=await blobData(await prepareDesignIcon(image,{signal:own.signal,reencode:false}));
+                }
+                const assets={};for(const [i,name]of ['forest','moon','sunroom'].entries()){own.signal.throwIfAborted();const image=await fetchBlob(fallbackCoverUrl(i),own.signal,{maxBytes:10*1024*1024});assets['assets/covers/'+name+'.png']=await blobData(await prepareCover(image));}
+                extras.design=design;extras.assets=assets;
+                extras.ui=Object.fromEntries(['theme','colorScheme','surface','maskOpacity','customColors','clickEffects','fontPreset','transitionDuration'].filter(key=>sourceSettings[key]!==undefined).map(key=>[key,structuredClone(sourceSettings[key])]));
+                extras.ui.surface=result.config.appearance.surface;extras.ui.maskOpacity={matte:result.config.appearance.opacity,glass:result.config.appearance.opacity};
+                extras.ui.customColors={enabled:true,accent:result.config.appearance.accent,background:result.config.appearance.background,text:result.config.appearance.text};
+                extras.fontFile=FONT_PRESETS[sourceSettings.fontPreset]?.file||'';
+            }
+            own.signal.throwIfAborted();if(stamp!==revision||element.hidden)return;
+            prepared = { ...result, runtime, scriptId: createTrackId(),shared,extras };
+            const files = shared?buildSharedCardExports(prepared.config,runtime,prepared.scriptId,extras):buildCardExports(prepared.config, runtime, prepared.scriptId);
+            if(shared)result.embeddedBytes=files.analysis.embeddedBytes;
             showAnalysis({
                 ...files.analysis,
                 browser: validateAudio ? 'passed' : 'not-tested',
@@ -833,7 +874,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
     });
     const files = () => {
         if (!prepared) throw new Error('请先检查资源并生成预览。');
-        return buildCardExports(prepared.config, prepared.runtime, prepared.scriptId);
+        return prepared.shared?buildSharedCardExports(prepared.config,prepared.runtime,prepared.scriptId,prepared.extras):buildCardExports(prepared.config, prepared.runtime, prepared.scriptId);
     };
     const action = (name, fn) =>
         q(`[data-maker=${name}]`).addEventListener('click', async () => {
@@ -941,6 +982,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                         structuredClone(tracks),
                         {
                             imageId: sourceSettings.backgroundId,
+                            iconId: sourceSettings.uiDesign?.customization?.iconId,
                             fontId: sourceSettings.fontPreset === 'custom' ? sourceSettings.fontId : null,
                             ...projectAssets,
                         },
@@ -953,6 +995,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                         assets: {
                             imageBlob: resources.appearance.imageBlob,
                             fontBlob: resources.appearance.fontBlob,
+                    iconBlob: resources.appearance.iconBlob,
                         },
                         form: formSnapshot(),
                         runtimeVersion: PLAYER_BUILD,
@@ -980,6 +1023,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     sourceSettings = Object.fromEntries(
                         sourceKeys.map((key) => [key, structuredClone(settings[key])]),
                     );
+                    sourceSettings.uiDesign=normalizeDesign(getDesign());
                     chooseCollection();
                     draftReady = true;
                     await saveDraft();

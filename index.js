@@ -1992,7 +1992,7 @@ export function initialize(options = {}) {
     const nativeExport = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : createNativeCardExport({ settings, store, getContext: freshContext, showStatus });
     const handoff = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null : createCardHandoff(panel);
     if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
-        cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback});
+        cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback,getDesign:effectiveDesign});
         query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
         if(options.account){
             dataPanel=createDataPanel({panel,settings,store,journal:maintenanceJournal,context,account:options.account,assertAccount:options.assertAccount||(async()=>{throw new Error('账号身份未确认，请重新登录并刷新。');}),flushMaker:()=>cardMaker.flush(),pausePlayback,setMaintenanceBusy});

@@ -63,6 +63,7 @@ export function createDesignPresentation({ panel, launcher, audio, readIcon, onP
             root.dataset.layout=current.layout;root.dataset.designTheme=current.theme;root.dataset.launcher=current.launcher;
             root.dataset.accessibleControls=String(accessible);
             root.dataset.motion=motion||c.animationLevel;root.dataset.designMaterial=c.material;root.dataset.designBody=c.body;root.dataset.grooves=c.grooves;root.dataset.launcherShape=c.launcherShape;
+            root.dataset.designRotate=String(c.rotate);root.dataset.reelStyle=c.reelStyle;root.dataset.nameplate=c.nameplate;root.dataset.hideScale=String(!c.showScale);root.style.setProperty('--design-tape-opacity',String(c.tapeOpacity));
             root.dataset.designFocus=String(!accessible&&c.focus);root.dataset.designDecorations=String(c.showDecorations);
             for(const name of ['Artist','LyricsButton','Progress','Volume','Mode','Queue','Background','Next','TrackNumber'])root.dataset['hide'+name]=String(!accessible&&!c['show'+name]);
             const numbers={coverSize:c.coverSize,radius:c.cornerRadius+'px',opacity:c.opacity,blur:c.blur+'px',buttonSize:c.buttonSize+'px',titleSize:c.titleSize+'px',launcherSize:c.launcherSize+'px',launcherOpacity:c.launcherOpacity,launcherBorder:c.launcherBorder+'px'};

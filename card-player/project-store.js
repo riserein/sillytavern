@@ -141,5 +141,6 @@ export async function captureProjectResources(tracks, appearance, getBlob) {
         theme.fontBlob = await getBlob(theme.fontId);
         if (!theme.fontBlob) throw new Error('字体丢失，未覆盖旧草稿。');
     }
+    if(theme.iconId&&!theme.iconBlob){theme.iconBlob=await getBlob(theme.iconId);if(!theme.iconBlob)throw new Error('悬浮图标丢失，未覆盖旧草稿。');}
     return { tracks: copies, appearance: theme };
 }

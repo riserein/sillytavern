@@ -198,7 +198,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 });mounted.panel.querySelector('[data-view=appearance]').append(adopt);
             }
             const preset = FONT_PRESETS[settings.fontPreset] || FONT_PRESETS.inherit;
-            const family = preset.family;
+            const family = payload.fontFile && config.appearance.font ? `"stm-${settings.fontPreset}", ${config.appearance.fontFamily || 'serif'}` : preset.family;
             for (const element of [mounted.panel, mounted.launcher])
                 element.style.setProperty('--stm-font-family', family);
             if (payload.fontFile && config.appearance.font) {
@@ -291,4 +291,10 @@ export async function startNativeInScope(payload, scope) {
     });
     registry.set(key, task);
     return task.promise;
+}
+
+/** Independent HTML preview only; does not claim Tavern Helper lifecycle success. */
+export function startNativePreview(payload){
+ const noop=()=>()=>{};const api=mountNativePlayer(payload,{hostDocument:document,hostWindow:window,roleId:'preview',scriptId:payload.config.id,currentRole:()=> 'preview',onRoleChange:noop,onScriptExit:noop,onFrameRemoved:noop,onHostExit(handler){window.addEventListener('pagehide',handler);return()=>window.removeEventListener('pagehide',handler);}});
+ return api;
 }

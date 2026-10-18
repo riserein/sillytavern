@@ -245,7 +245,7 @@ test.afterAll(async () => {
         JSON.stringify(
             {
                 status:
-                    results.length === 3 &&
+                    results.length === 4 &&
                     results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
                         ? 'passed'
                         : 'incomplete-or-failed',
@@ -625,4 +625,13 @@ test('resource failures and edits prevent stale or partial exports without chang
     await expect(page.locator('.stm-maker-downloads')).toBeHidden();
     await page.locator('[data-maker=close]').click();
     await expect(page.locator('[data-action=card-maker]')).toBeEnabled();
+});
+
+test('maker shared design exports independent JS, HTML and Helper JSON then plays in a clean recipient',async({browser})=>{
+ test.setTimeout(180000);const{page:author,context:authorContext}=await session(browser),a=await createCard(author,'SharedStudio');await selectCard(author,a);await author.getByRole('tab',{name:'导入',exact:true}).click();await author.locator('[data-role=files]').setInputFiles({name:'shared.mp3',mimeType:'audio/mpeg',buffer:tone});await expect(author.locator('.stm-status')).toContainText('已导入 1 首');
+ await author.getByRole('tab',{name:'外观',exact:true}).click();await menu(author,'#stm-design-layout','cassette');await menu(author,'#stm-design-theme','smoke');await menu(author,'#stm-design-launcher','cd');
+ await author.getByRole('tab',{name:'曲库',exact:true}).click();await author.locator('[data-action=card-maker]').click();await author.locator('[data-maker=capture-design]').click();await expect(author.locator('[data-maker=shared-design]')).toBeChecked();await author.locator('[data-maker=prepare]').click();await expect(author.locator('.stm-maker-status')).toContainText('检查通过',{timeout:60000});
+ const preview=author.frameLocator('.stm-maker-preview');await expect(preview.locator('#stm-player')).toHaveAttribute('data-layout','cassette');await preview.locator('[data-action=play]').click();await expect.poll(()=>preview.locator('audio').evaluate(a=>a.currentTime)).toBeGreaterThan(.2);
+ for(const [action,expected]of [['javascript','startNativeCharacterPlayer'],['preview','startNativePreview'],['script-json','export_with']]){const pending=author.waitForEvent('download');await author.locator('[data-maker='+action+']').click();const file=await pending,content=await readFile(await file.path(),'utf8');expect(content).toContain(expected);expect(content).not.toContain('indexedDB.open');}
+ const pending=author.waitForEvent('download');await author.locator('[data-maker=export-current]').click();const file=await pending,bytes=await readFile(await file.path());await expect(author.locator('.stm-maker-status')).toContainText('已导出含播放器');await authorContext.close();const{page:recipient}=await session(browser,{portable:true});const imported=await importCard(recipient,bytes);await selectCard(recipient,imported);await enable(recipient);await expect(recipient.locator('#stm-player')).toHaveAttribute('data-layout','cassette');await expect(recipient.locator('#stm-launcher')).toHaveAttribute('data-launcher','cd');await expect(recipient.locator('[data-action=open-designer]')).toHaveCount(0);await recipient.locator('[data-action=play]').click();await expect.poll(()=>recipient.locator('#stm-player audio').evaluate(a=>a.currentTime)).toBeGreaterThan(.2);await remember(recipient);await home(recipient);await gone(recipient);
 });

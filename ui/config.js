@@ -171,6 +171,10 @@ export function normalizeDesign(raw = {}) {
     showDecorations: input.showDecorations !== false,
     showBackground: input.showBackground !== false,
     showNext: input.showNext !== false,
+    rotate: input.rotate !== false, showScale: input.showScale !== false,
+    tapeOpacity: number(input.tapeOpacity,.9,.35,1),
+    reelStyle: member(input.reelStyle,["classic","spoke"],"classic"),
+    nameplate: member(input.nameplate,["engraved","plain"],"engraved"),
     showTrackNumber: input.showTrackNumber !== false,
     animationLevel: member(input.animationLevel, MOTION_LEVELS, "normal"),
     orientation: member(
@@ -327,6 +331,7 @@ export function validateTemplate(raw) {
         "material",
         "body",
         "grooves",
+        "reelStyle", "nameplate",
         "launcherShape",
       ].includes(key) &&
       normalized.customization[key] !== value
@@ -355,7 +360,7 @@ export function validateTemplate(raw) {
     "titleSize",
     "launcherSize",
     "launcherOpacity",
-    "launcherBorder",
+    "launcherBorder", "tapeOpacity",
   ])
     if (
       Object.hasOwn(c, key) &&

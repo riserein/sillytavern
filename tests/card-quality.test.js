@@ -232,3 +232,5 @@ test('package, extension and carried runtime declare the same maintenance versio
 test('custom launcher bytes are counted and cannot bypass per-icon or combined export limits',()=>{
  const payload=make();payload.config.appearance.launcherIcon=data('image/png',4096);const report=analyzePayload(payload);assert.equal(report.rows.find(row=>row.kind==='launcher-icon').bytes,4096);payload.config.appearance.launcherIcon=data('image/png',1024*1024+1);assert.throws(()=>assertCapacity(analyzePayload(payload)),/1 MiB/);
 });
+test('static export inspection refuses a malformed launcher instead of silently dropping it',()=>{const payload=make();payload.config.appearance.launcherIcon='blob:missing';assert.throws(()=>readScriptPayload(payloadLiteral(payload)),/悬浮图标资源损坏/);});
+test('project resource capture retains offline icon bytes and blocks a missing icon without changing the old draft',async()=>{const blob=new Blob(['image']),resources=await captureProjectResources([],{iconId:'own-icon'},async()=>blob);assert.equal(await resources.appearance.iconBlob.text(),'image');await assert.rejects(captureProjectResources([],{iconId:'missing'},async()=>undefined),/未覆盖旧草稿/);});
