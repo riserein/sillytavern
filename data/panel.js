@@ -62,7 +62,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
     };
     function bindings(){
         bindingMenus?.dispose();q('bindings').replaceChildren();
-        const avatars=[...new Set(backup.manifest.settings.playlists.flatMap(list=>list.characterAvatars))];
+        const avatars=[...new Set([...backup.manifest.settings.playlists.flatMap(list=>list.characterAvatars),...(backup.manifest.settings.roleDesigns||[]).map(row=>row.avatar)])];
         const characters=context.characters||[];
         for(const [i,avatar]of avatars.entries()){
             const label=document.createElement('label');label.textContent=`原绑定：${avatar} → `;
@@ -81,7 +81,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
         const next=await makeRestorePlan({backup,current:settings,store,projects:await projects.list(),mode:q('mode').value,restorePreferences:q('preferences').checked,bindingMap,signal,onProgress:progress});
         const capacity=await checkCapacity(next.bytesToWrite,estimate);plan=next;
         const s=plan.summary;
-        q('preview-text').textContent=`备份：${backup.manifest.settings.tracks.length} 首 / ${backup.manifest.settings.playlists.length} 歌单 / ${backup.projects.length} 项目\n将新增：${s.tracksAdded} 首 / ${s.playlistsAdded} 歌单 / ${s.projectsAdded} 项目\n重复音频：${s.duplicateAudio}；歌曲 ID 冲突：${s.trackConflicts}；项目 ID 冲突：${s.projectConflicts}；按所选方式跳过已有项目：${s.skippedProjects}\n未映射或已有冲突的角色绑定：${s.bindingsUnmapped}\n暂存逻辑字节：${size(plan.bytesToWrite)}；${capacity.estimate?'空间估算已检查（仍可能发生配额错误）':'浏览器未提供配额估算，写入仍可能失败'}\n远程歌曲：${s.remoteTracks} 首，仅信息与 URL，不是离线音频\n${backup.manifest.warnings.join('\n')}\n仅在下方确认后写入。已有歌曲和草稿不会被清空或覆盖。`;
+        q('preview-text').textContent=`备份：${backup.manifest.settings.tracks.length} 首 / ${backup.manifest.settings.playlists.length} 歌单 / ${backup.projects.length} 项目\n将新增：${s.tracksAdded} 首 / ${s.playlistsAdded} 歌单 / ${s.projectsAdded} 项目 / ${s.designsAdded||0} 设计\n重复音频：${s.duplicateAudio}；歌曲 ID 冲突：${s.trackConflicts}；项目 ID 冲突：${s.projectConflicts}；按所选方式跳过已有项目：${s.skippedProjects}\n未映射或已有冲突的角色绑定：${s.bindingsUnmapped}\n暂存逻辑字节：${size(plan.bytesToWrite)}；${capacity.estimate?'空间估算已检查（仍可能发生配额错误）':'浏览器未提供配额估算，写入仍可能失败'}\n远程歌曲：${s.remoteTracks} 首，仅信息与 URL，不是离线音频\n${backup.manifest.warnings.join('\n')}\n仅在下方确认后写入。已有歌曲和草稿不会被清空或覆盖。`;
         q('apply').disabled=false;status('恢复计划已核对，请检查数量、恢复方式和角色映射后确认。');
     }
     listen('backup',()=>run(async signal=>{

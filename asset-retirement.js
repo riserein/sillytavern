@@ -1,4 +1,5 @@
 const SETTINGS_KEY = 'riserein_music_player';
+import { designReferences } from './ui/config.js';
 export function referencedAssets(settings) {
     if (!settings || !Array.isArray(settings.tracks)) return null;
     const ids = new Set();
@@ -10,6 +11,7 @@ export function referencedAssets(settings) {
     for (const font of settings.fonts || []) ids.add(font.id);
     if (settings.fontId) ids.add(settings.fontId);
     if (settings.backgroundId) { ids.add(settings.backgroundId); ids.add(`${settings.backgroundId}:original`); }
+    for (const id of designReferences(settings)) ids.add(id);
     return ids;
 }
 async function postedSettings(input, init) {

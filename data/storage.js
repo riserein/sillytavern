@@ -1,6 +1,7 @@
 import {referencedAssets} from '../asset-retirement.js';
 import {canonical} from './backup.js';
 import {hashText} from './checksum.js';
+import {designReferences} from '../ui/config.js';
 export function referenceGraph(settings,projects,operations=[]) {
     const refs=referencedAssets(settings);let unknown=false;
     for(const project of projects){
@@ -8,6 +9,7 @@ export function referenceGraph(settings,projects,operations=[]) {
         for(const track of project.tracks||[]){if(track.kind==='local')refs.add(track.id);if(track.coverId)refs.add(track.coverId);}
         const bg=project.sourceSettings?.backgroundId;if(bg){refs.add(bg);refs.add(bg+':original');}
         if(project.sourceSettings?.fontId)refs.add(project.sourceSettings.fontId);
+        for(const id of designReferences(project.sourceSettings))refs.add(id);
     }
     for(const op of operations)if(!['complete','rolled-back'].includes(op.stage)){
         for(const id of referencedAssets(op.before)||[])refs.add(id);
@@ -29,7 +31,7 @@ export async function storageSnapshot({settings,store,projects,journal,estimate=
         else if(id.startsWith('font:'))totals.fonts+=blob.size;
         else totals.unknown+=blob.size;
     }
-    for(const p of rows){for(const t of p.tracks||[])totals.drafts+=(t.exportBlob?.size||0)+(t.exportCover?.size||0);totals.drafts+=(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0);}
+    for(const p of rows){for(const t of p.tracks||[])totals.drafts+=(t.exportBlob?.size||0)+(t.exportCover?.size||0);totals.drafts+=(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0)+(p.assets?.iconBlob?.size||0);}
     const candidates=graph.unknown?[]:retired.filter(r=>r.confirmed===true&&!graph.refs.has(r.id)&&byId.get(r.id) instanceof Blob).map(r=>({id:r.id,bytes:byId.get(r.id).size}));
     return {totals,quota,candidates,unknownReferences:graph.unknown,pending:operations.filter(op=>!['complete','rolled-back'].includes(op.stage)),fingerprint:hashText(canonical({settings,projects:rows.map(p=>[p.id,p.revision]),retired,entries:entries.map(([id,b])=>[id,b.size||0])}))};
 }

@@ -4,10 +4,11 @@ import {checksum,hashText} from './checksum.js';
 import {zipBlob,readZip} from './zip.js';
 import {normalizePlatformTrack} from '../platforms/catalog.js';
 import {PLAYER_BUILD} from '../card-player/quality.js';
+import {normalizeDesign,designReferences} from '../ui/config.js';
 const encoder=new TextEncoder();
 const TRACK_KEYS=['id','kind','title','artist','album','url','coverId','lyrics','lyricsSource','fallbackCover','platform','platformTrackId','remoteId','sourceUrl','playback','cover','duration','metadataStatus','restriction'];
 const FORM_KEYS=['stm-maker-title','stm-maker-collection','stm-maker-theme','stm-maker-surface','accent','background','text','color:accent','color:background','color:text','opacity','font','font-credit','collapsed'];
-const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode','transitionDuration'];
+const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode','transitionDuration','uiDesign'];
 const pick=(object,keys)=>Object.fromEntries(keys.filter(key=>Object.hasOwn(object||{},key)).map(key=>[key,object[key]]));
 export const canonical=value=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)&&!(item instanceof Blob)?Object.fromEntries(Object.keys(item).sort().map(key=>[key,item[key]])):item);
 function cleanUrl(value,warnings) {
@@ -37,12 +38,13 @@ export function draftReferences(project) {
     for(const track of project.tracks||[]){if(track.kind==='local'&&!track.exportBlob&&!track.exportUrl)ids.add(track.id);if(track.coverId&&!track.exportCover)ids.add(track.coverId);}
     if(project.sourceSettings?.backgroundId&&!project.assets?.imageBlob)ids.add(project.sourceSettings.backgroundId);
     if(project.sourceSettings?.fontPreset==='custom'&&project.sourceSettings?.fontId&&!project.assets?.fontBlob)ids.add(project.sourceSettings.fontId);
+    if(!project.assets?.iconBlob)for(const id of designReferences(project.sourceSettings))ids.add(id);
     return ids;
 }
 export async function createBackup({settings,store,projects=[],version=PLAYER_BUILD,signal,onProgress=()=>{}}) {
     const warnings=new Set(),snapshot=safeSettings(settings,warnings),files=new Map(),resources=[];
     if(!Array.isArray(projects)||projects.length>10000)throw new Error('制作项目超过备份版本支持的数量，未生成部分备份。');
-    for(const key of ['tracks','playlists','fonts'])if(Array.isArray(settings[key])&&settings[key].length!==snapshot[key].length)throw new Error('当前资料包含超限、重复或无效条目，未静默删减生成备份；请先核对曲库。');
+    for(const key of ['tracks','playlists','fonts','designs','roleDesigns'])if(Array.isArray(settings[key])&&settings[key].length!==snapshot[key].length)throw new Error('当前资料包含超限、重复或无效条目，未静默删减生成备份；请先核对曲库和设计。');
     const all=new Map(await store.entries());
     const add=async(blob,label)=>{
         signal?.throwIfAborted();
@@ -74,6 +76,9 @@ export async function createBackup({settings,store,projects=[],version=PLAYER_BU
         if(original)copy.assets.imageOriginalBlob=await add(original,'项目背景原图');
         else if(image&&project.sourceSettings?.backgroundId)warnings.add('部分旧项目只有已保存的背景图，未找到早期原图；已存在的图片字节仍保留。');
         if(font)copy.assets.fontBlob=await add(font,'项目字体');
+        const iconId=project.sourceSettings?.uiDesign?.customization?.iconId;
+        const icon=project.assets?.iconBlob||(iconId?all.get(iconId):null);
+        if(icon)copy.assets.iconBlob=await add(icon,'项目悬浮图标');else if(iconId)throw new Error('项目悬浮图标缺失，未生成不完整备份。');
         if(project.sourceSettings?.backgroundId&&!image||project.sourceSettings?.fontPreset==='custom'&&!font)throw new Error('项目背景或字体缺失，未生成不完整备份。');
         drafts.push(copy);
         onProgress({phase:'projects',done:drafts.length,total:projects.length});
@@ -108,7 +113,7 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
         if(typeof project.id!=='string'||!project.id||projects.has(project.id)||!Array.isArray(project.tracks)||project.tracks.length>200||!plain(project.form)||!plain(project.sourceSettings))throw new Error('备份项目结构或 ID 无效。');
         projects.add(project.id);
         for(const track of project.tracks){if(track.exportBlob)expectResource(track.exportBlob);if(track.exportCover)expectResource(track.exportCover);}
-        for(const key of ['imageBlob','imageOriginalBlob','fontBlob'])if(project.assets?.[key])expectResource(project.assets[key]);
+        for(const key of ['imageBlob','imageOriginalBlob','fontBlob','iconBlob'])if(project.assets?.[key])expectResource(project.assets[key]);
     }
     if(entries.size!==referenced.size+2)throw new Error('ZIP 包含未在目录登记的文件，未导入。');
     let done=0;const verified=new Map();
@@ -124,7 +129,7 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
     const normalizedCatalog=manifest.catalog.map(normalizePlatformTrack);
     if(normalizedCatalog.some((track,i)=>!track||track.id!==manifest.catalog[i].id)||new Set(normalizedCatalog.map(t=>t.id)).size!==normalizedCatalog.length)throw new Error('默认来源记录无效或重复。');
     const safe=safeSettings(manifest.settings,warnings,{version:1,tracks:manifest.catalog});
-    if(safe.tracks.length!==manifest.settings.tracks.length||safe.playlists.length!==manifest.settings.playlists.length)throw new Error('备份包含无效或重复曲目/歌单，不能静默舍弃。');
+    if(safe.tracks.length!==manifest.settings.tracks.length||safe.playlists.length!==manifest.settings.playlists.length||['designs','roleDesigns'].some(key=>Array.isArray(manifest.settings[key])&&safe[key].length!==manifest.settings[key].length))throw new Error('备份包含无效或重复曲目/歌单/设计，不能静默舍弃。');
     if(resourceIds.size!==referencedAssets(safe).size)throw new Error('备份资源清单包含未知引用，未导入。');
     for(const id of referencedAssets(safe))if(!resourceIds.has(id))throw new Error('备份缺少有效曲库引用的资源。');
     const binary=row=>verified.get(row.path).slice(0,row.bytes,row.type);
@@ -134,7 +139,8 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
             for(const key of ['exportBlob','exportCover'])if(track[key])copy[key]=binary(track[key]);
             if(track.kind==='local'&&!copy.exportBlob&&!copy.exportUrl)throw new Error('项目音频引用不完整。');return copy;
         })};
-        for(const key of ['imageBlob','imageOriginalBlob','fontBlob'])if(project.assets?.[key])row.assets[key]=binary(project.assets[key]);
+        for(const key of ['imageBlob','imageOriginalBlob','fontBlob','iconBlob'])if(project.assets?.[key])row.assets[key]=binary(project.assets[key]);
+        if(row.sourceSettings.uiDesign)row.sourceSettings.uiDesign=normalizeDesign(row.sourceSettings.uiDesign);
         return row;
     });
     return {manifest:{...manifest,settings:safe,warnings:[...warnings]},projects:hydrated,assets:manifest.resources.map(row=>[row.id,binary(row)]),hash:digest.sha256,bytes:file.size,remoteTracks:safe.tracks.filter(t=>t.kind!=='local').length};

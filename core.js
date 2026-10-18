@@ -7,6 +7,7 @@ import { COVER_COUNT, MAX_LYRICS } from './media.js';
 import { normalizePanelSize } from './resizing.js';
 import { SCHEMES } from './scheme.js';
 import { normalizeFavorites, TRANSITION_DURATIONS } from './listening.js';
+import { normalizeDesign, normalizeDesigns, normalizeRoleDesigns, MOTION_LEVELS } from './ui/config.js';
 
 export const MAX_TRACKS = 200;
 export const MAX_PLAYLISTS = 50;
@@ -123,6 +124,12 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
         volume: Math.min(1, Math.max(0, volume)),
         favorites: normalizeFavorites(raw.favorites, allIds, now),
         transitionDuration: TRANSITION_DURATIONS.includes(raw.transitionDuration) ? raw.transitionDuration : 300,
+        uiDesign: normalizeDesign(raw.uiDesign),
+        designs: normalizeDesigns(raw.designs),
+        roleDesigns: normalizeRoleDesigns(raw.roleDesigns),
+        visualMotion: MOTION_LEVELS.includes(raw.visualMotion) ? raw.visualMotion : null,
+        accessibleControls: raw.accessibleControls === true,
+        personalDesign: raw.personalDesign && typeof raw.personalDesign === 'object' ? normalizeDesign(raw.personalDesign) : null,
         mode: PLAY_MODES.includes(raw.mode) ? raw.mode : 'list',
         currentId,
         theme: THEMES.includes(raw.theme) ? raw.theme : 'amber',

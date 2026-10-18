@@ -3,6 +3,7 @@ import {MAX_FONTS} from '../fonts.js';
 import {referencedAssets} from '../asset-retirement.js';
 import {canonical} from './backup.js';
 import {checksum,hashText} from './checksum.js';
+import {normalizeDesign} from '../ui/config.js';
 const cloneSettings=settings=>JSON.parse(JSON.stringify(normalizeSettings(settings)));
 export const settingsHash=settings=>hashText(canonical(cloneSettings(settings)));
 export const projectVersions=projects=>canonical(projects.map(p=>[p.id,p.revision||0]).sort(([a],[b])=>a.localeCompare(b)));
@@ -77,8 +78,24 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         if(existing&&mode!=='copy')assetIds.set(font.id,existing);
         else {const id=mappedAsset(font.id);after.fonts.push({...font,id,hash:row.sha256});fontHashes.set(row.sha256,id);}
     }
+    const mappedDesign=value=>{const copy=normalizeDesign(value);if(copy.customization.iconId)copy.customization.iconId=mappedAsset(copy.customization.iconId);return copy;};
+    summary.designsAdded=0;summary.designConflicts=0;
+    for(const design of incoming.designs||[]){
+        const conflict=after.designs.some(row=>row.id===design.id);if(conflict)summary.designConflicts++;
+        if(conflict&&mode==='missing')continue;
+        after.designs.push({id:conflict||mode==='copy'?'design:'+createTrackId():design.id,name:(design.name+(conflict?' · 恢复':'')).slice(0,80),config:mappedDesign(design.config)});summary.designsAdded++;
+    }
+    for(const row of incoming.roleDesigns||[]){
+        const avatar=Object.hasOwn(bindingMap,row.avatar)&&typeof bindingMap[row.avatar]==='string'?bindingMap[row.avatar]:null;
+        if(!avatar){summary.bindingsUnmapped++;continue;}
+        const old=after.roleDesigns.find(item=>item.avatar===avatar);
+        if(!old)after.roleDesigns.push({avatar,config:mappedDesign(row.config)});
+        else if(restorePreferences&&mode!=='missing')old.config=mappedDesign(row.config);
+    }
     if(restorePreferences){
-        for(const [key,value] of Object.entries(incoming))if(!['tracks','playlists','fonts','favorites','recentPlays','playEvents','backgroundId','fontId','fontName','fontPreset','activePlaylistId','currentId'].includes(key))after[key]=structuredClone(value);
+        for(const [key,value] of Object.entries(incoming))if(!['tracks','playlists','fonts','favorites','designs','roleDesigns','uiDesign','personalDesign','recentPlays','playEvents','backgroundId','fontId','fontName','fontPreset','activePlaylistId','currentId'].includes(key))after[key]=structuredClone(value);
+        after.uiDesign=mappedDesign(incoming.uiDesign);
+        after.personalDesign=incoming.personalDesign?mappedDesign(incoming.personalDesign):null;
         after.backgroundId=incoming.backgroundId?mappedAsset(incoming.backgroundId):null;
         after.fontId=incoming.fontId?mappedAsset(incoming.fontId):null;after.fontPreset=incoming.fontPreset;after.fontName=incoming.fontName;
         after.activePlaylistId=playlistIds.get(incoming.activePlaylistId)||null;after.currentId=trackIds.get(incoming.currentId)||after.tracks[0]?.id||null;
@@ -99,9 +116,11 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         copy.form['stm-maker-title']=copy.title;copy.form['stm-maker-collection']=playlistIds.get(copy.form['stm-maker-collection'])||copy.form['stm-maker-collection']||'';
         for(const track of copy.tracks){if(trackIds.has(track.id))track.id=trackIds.get(track.id);if(track.coverId&&assetIds.has(track.coverId))track.coverId=assetIds.get(track.coverId);}
         for(const key of ['backgroundId','fontId'])if(assetIds.has(copy.sourceSettings[key]))copy.sourceSettings[key]=assetIds.get(copy.sourceSettings[key]);
+        if(copy.sourceSettings.uiDesign)copy.sourceSettings.uiDesign=mappedDesign(copy.sourceSettings.uiDesign);
         projectWrites.push(copy);summary.projectsAdded++;
     }
     if(after.tracks.length>MAX_TRACKS||after.playlists.length>MAX_PLAYLISTS||after.fonts.length>MAX_FONTS)throw new Error(`恢复后将有 ${after.tracks.length} 首歌曲、${after.playlists.length} 个歌单、${after.fonts.length} 款字体，超过现有限制（200 / 50 / 20）；未写入或舍弃内容，请改选仅恢复缺失内容或调整后重试。`);
+    if(after.designs.length>30||after.roleDesigns.length>1000)throw new Error('恢复后设计数量超过当前支持范围，未写入或舍弃设计；请改选仅恢复缺失内容。');
     const assetWrites=[];
     // Plan before writing. Reused existing bytes are never overwritten or scheduled for rollback.
     const planned=new Map();for(const [old,id] of assetIds)if(source.has(old)&&!blobs.has(id))planned.set(id,source.get(old));
@@ -112,7 +131,7 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
     if(checked.tracks.length!==after.tracks.length||checked.playlists.length!==after.playlists.length||checked.fonts.length!==after.fonts.length)throw new Error('恢复计划会丢弃无效或冲突项目，已阻止执行。');
     const reusedAssets=[];
     for(const id of finalRefs)if(blobs.has(id))reusedAssets.push({id,bytes:blobs.get(id).size,sha256:existingDigests.get(id)||(await checksum(blobs.get(id),{signal})).sha256});
-    return {before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),reusedAssets,assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0),0)};
+    return {before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),reusedAssets,assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0)+(p.assets?.iconBlob?.size||0),0)};
 }
 export async function verifyReferences(settings,store,projects=[]) {
     const missing=[];
