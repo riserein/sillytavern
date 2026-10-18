@@ -114,8 +114,8 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
     const sourceSnapshot = (playlist, avatar) => ({
         playlist: structuredClone(playlist),
         tracks: structuredClone(getQueue(settings, playlist.id)),
-        ui: { ...Object.fromEntries(UI_KEYS.map((key) => [key, structuredClone(settings[key])])), uiDesign: designForAvatar(avatar) },
-        fontPreset: settings.fontPreset,
+        ui: { ...Object.fromEntries(UI_KEYS.map((key) => [key, structuredClone(settings[key])])), uiDesign: designForAvatar(avatar), fontPreset:designForAvatar(avatar).fontPreset==='current'?settings.fontPreset:designForAvatar(avatar).fontPreset },
+        fontPreset: designForAvatar(avatar).fontPreset==='current'?settings.fontPreset:designForAvatar(avatar).fontPreset,
         backgroundId: settings.backgroundId,
         volume: settings.volume,
         mode: settings.mode,
@@ -544,10 +544,11 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                 for (const playlist of settings.playlists.filter((item) => item.characterAvatars.length)) {
                     // UI-only variants share immutable encoded audio/font strings.
                     // Do not re-encode a large playlist once for every bound role.
-                    const base=await packagePlaylist(playlist,playlist.characterAvatars[0],icons);
+                    const fontVariants=new Map();
                     for (const avatar of playlist.characterAvatars) {
-                        if(avatar===playlist.characterAvatars[0]){prepared.set(avatar,base);continue;}
-                        const payload=await withDesign(base,designForAvatar(avatar),icons);
+                        const font=sourceSnapshot(playlist,avatar).fontPreset;
+                        if(!fontVariants.has(font)){const base=await packagePlaylist(playlist,avatar,icons);fontVariants.set(font,base);prepared.set(avatar,base);continue;}
+                        const payload=await withDesign(fontVariants.get(font),designForAvatar(avatar),icons);
                         signatures.set(payload,{id:playlist.id,avatar,signature:sourceSignature(sourceSnapshot(playlist,avatar))});
                         assertCapacity(analyzePayload(payload));checkSource(payload,avatar);prepared.set(avatar,payload);
                     }

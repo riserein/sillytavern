@@ -36,3 +36,9 @@ test('unused saved designs and authoring drafts protect their referenced icon by
  const id='cover:00000000-0000-4000-8000-000000000000',config=normalizeDesign({launcher:'custom',customization:{iconId:id}}),settings=normalizeSettings({});
  const graph=referenceGraph(settings,[{format:1,tracks:[],sourceSettings:{uiDesign:config}}]);assert(graph.refs.has(id));assert.equal(graph.unknown,false);
 });
+
+test('component styles are constrained and template validation rejects unsupported properties before mutation',()=>{
+ const config=normalizeDesign({components:{title:{size:999,color:'url(javascript:x)',position:'fixed'},cover:{visible:false}}});assert.equal(config.components.title.size,1.3);assert.equal(config.components.title.color,null);assert.equal(config.components.title.position,'auto');assert.equal(config.components.cover.visible,false);
+ const file={format:'riserein-player-design',version:1,config:normalizeDesign({fontPreset:'song',components:{title:{margin:12}}})};assert.equal(validateTemplate(file).config.components.title.margin,12);for(const bad of [{...file.config,components:{title:{position:'fixed'}}},{...file.config,fontPreset:'arbitraryFont'},{...file.config,customization:{...file.config.customization,material:'url(x)'}},{...file.config,launcher:'custom'}])assert.throws(()=>validateTemplate({...file,config:bad}));
+});
+test('random palette repairs contrast without changing locked text or background',async()=>{const {readableColors,contrastRatio}=await import('../ui/contrast.js');const input={background:'#eeeeee',text:'#eeeeee',accent:'#123456'};const fixed=readableColors(input);assert(contrastRatio(fixed.background,fixed.text)>=4.5);assert.equal(fixed.background,input.background);const locked=readableColors(input,new Set(['text']));assert.equal(locked.text,input.text);assert(contrastRatio(locked.background,locked.text)>=4.5);assert.deepEqual(readableColors(input,new Set(['text','background'])),input);});

@@ -1,0 +1,158 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.design.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/design",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "ui-design.e2e.js"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "ui-design.e2e.js",
+      "file": "ui-design.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "live designer previews one audio, preserves unapplied settings and manages safe templates on desktop and mobile",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 135000,
+              "annotations": [
+                {
+                  "type": "slow",
+                  "location": {
+                    "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                    "line": 81,
+                    "column": 7
+                  }
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 140433,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 135000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 135000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 135000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                        "column": 100,
+                        "line": 93
+                      },
+                      "message": "Error: locator.click: Test timeout of 135000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.stm-design-editor').locator('[data-step=properties]')\u001b[22m\n\u001b[2m    - locator resolved to <button data-step=\"properties\">3 · 属性</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div tabindex=\"0\" role=\"button\" title=\"Persona Management\" data-i18n=\"[title]Persona Management\" class=\"drawer-icon fa-solid fa-face-smile fa-fw closedIcon interactable\"></div> from <div id=\"top-settings-holder\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div tabindex=\"0\" role=\"button\" title=\"Persona Management\" data-i18n=\"[title]Persona Management\" class=\"drawer-icon fa-solid fa-face-smile fa-fw closedIcon interactable\"></div> from <div id=\"top-settings-holder\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    222 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m        - element is visible, enabled and stable\u001b[22m\n\u001b[2m        - scrolling into view if needed\u001b[22m\n\u001b[2m        - done scrolling\u001b[22m\n\u001b[2m        - <div tabindex=\"0\" role=\"button\" title=\"Persona Management\" data-i18n=\"[title]Persona Management\" class=\"drawer-icon fa-solid fa-face-smile fa-fw closedIcon interactable\"></div> from <div id=\"top-settings-holder\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m      - retrying click action\u001b[22m\n\u001b[2m        - waiting 500ms\u001b[22m\n\n\n  91 |  await studio.locator('[data-editor-close]').click();await expect(page.locator('#stm-player')).toHaveAttribute('data-layout','night');expect(await page.evaluate(()=>studioAudio===document.querySelector('#stm-player audio')&&!studioAudio.paused)).toBe(true);\n  92 |  await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('[data-action=open-designer]').click();await studio.locator('[data-templates]').selectOption(id);await studio.locator('[data-apply]').click();await expect(studio.locator('[data-editor-status]')).toContainText('已应用设计');\n> 93 |  await page.setViewportSize({width:390,height:844});await studio.locator('[data-step=properties]').click();await expect(page.locator('#stm-player')).toHaveCSS('visibility','hidden');await studio.locator('[data-step=preview]').click();await expect(page.locator('#stm-player')).toHaveCSS('visibility','visible');const rect=await page.locator('#stm-player').boundingBox();expect(rect.x).toBeGreaterThanOrEqual(0);expect(rect.x+rect.width).toBeLessThanOrEqual(391);await page.screenshot({path:'docs/v2/ui/editor/mobile.png'});\n     |                                                                                                    ^\n  94 |  await studio.locator('[data-editor-close]').click();await expect(page.locator('#stm-player')).toHaveAttribute('data-layout','vinyl');expect(await page.evaluate(()=>JSON.stringify(SillyTavern.getContext().extensionSettings.riserein_music_player.positions.panel)===studioPosition)).toBe(true);expect(await page.evaluate(()=>studioAudio===document.querySelector('#stm-player audio')&&!studioAudio.paused)).toBe(true);\n  95 | });\n  96 |\n    at /workspace/sillytavern/tests/ui-design.e2e.js:93:100"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T06:28:26.758Z",
+                  "annotations": [
+                    {
+                      "type": "slow",
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                        "line": 81,
+                        "column": 7
+                      }
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/design/ui-design.e2e.js-live-desi-25aae-lates-on-desktop-and-mobile/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/design/ui-design.e2e.js-live-desi-25aae-lates-on-desktop-and-mobile/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/design/ui-design.e2e.js-live-desi-25aae-lates-on-desktop-and-mobile/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "bf29ce752169465daf5a-537f332a2424da5751f7",
+          "file": "ui-design.e2e.js",
+          "line": 475,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T06:28:26.008Z",
+    "duration": 146523.476,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

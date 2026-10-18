@@ -100,3 +100,16 @@
     .stm-player[data-layout=crystal] { backdrop-filter:blur(8px) !important; }
 }
 .stm-player.stm-night-ui:where(:not([data-layout=night]))[data-layout][data-height=short] .stm-cover-stage { width:90px; margin:4px auto; }
+/* Component controls remain inside template regions. No arbitrary coordinates. */
+.stm-player [data-component-hidden=true] { display:none !important; }
+.stm-player [data-component-position=start] { align-self:start; justify-self:start; text-align:start; }
+.stm-player [data-component-position=center] { align-self:center; justify-self:center; text-align:center; }
+.stm-player [data-component-position=end] { align-self:end; justify-self:end; text-align:end; }
+.stm-player .stm-transport[data-component-position=end] { order:10; }
+.stm-player[data-component-background=false]::before,.stm-player[data-component-background=false]::after {display:none !important;}
+.stm-player[data-layout]:not([data-layout=night]) { border-radius:var(--component-bg-radius,var(--design-radius)); }
+.stm-player[data-component-bg-color=true] {background-color:var(--component-bg-color) !important;}
+.stm-player[data-component-bg-opacity=true]::before { opacity:var(--component-bg-opacity); }
+.stm-player [data-design-component=progress] { accent-color:currentColor; }
+.stm-player [data-design-component=progress]::-webkit-slider-thumb { background:currentColor; }
+.stm-player [data-design-component=progress]::-moz-range-thumb { background:currentColor; }

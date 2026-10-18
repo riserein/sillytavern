@@ -35,6 +35,8 @@ import { createListeningPanel } from './listening-panel.js';
 import { normalizeDesign } from './ui/config.js';
 import { createDesignPresentation } from './ui/presentation.js';
 import { createDesignControls } from './ui/controls.js';
+import {createDesignEditor} from './ui/editor.js';
+import {createDesignFontLayer} from './ui/font-layer.js';
 import { createLauncherControls } from './ui/launcher-controls.js';
 import { createLauncherAvoidance } from './ui/launcher-avoidance.js';
 import { prepareDesignIcon } from './ui/images.js';
@@ -74,6 +76,7 @@ export function initialize(options = {}) {
     let dataPanel = null;
     let online = null;
     let listening = null;
+    let designEditor = null, designFont = null;
     let designPresentation = null, designControls = null, launcherControls = null, launcherAvoidance = null, previewDesign = null;
     let platformLoadController = null;
     let objectUrl = null;
@@ -599,7 +602,7 @@ export function initialize(options = {}) {
     applyAppearance();
 
     const fontPicker = (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) ? null
-        : createFontPicker({ panel, launcher, store, settings, save, showStatus, retireAssets, createId: createTrackId, availableFonts: options.availableFonts });
+        : createFontPicker({ panel, launcher, store, settings, save, showStatus, retireAssets, createId: createTrackId, availableFonts: options.availableFonts, onSelect(){const design=normalizeDesign(effectiveDesign());if(design.fontPreset!=='current'){design.fontPreset='current';applyUserDesign(design);}else refreshDesign();} });
     if ((typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) query('.stm-font-section').remove();
     const mini = createMiniPlayer({
         panel, audio,
@@ -672,6 +675,22 @@ export function initialize(options = {}) {
         },
     });
     launcherAvoidance=createLauncherAvoidance(launcher,{getInput:options.getInputElement||(()=>document.querySelector('#send_form')),onMove(position){if(disposed||maintenanceBusy)return;settings.positions.launcher=position;save();}});
+    if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
+        designFont=createDesignFontLayer(panel,launcher,text=>showStatus(text,true));
+        designEditor=createDesignEditor({panel,launcher,settings,getDesign:effectiveDesign,getContext:()=>options.context||globalThis.SillyTavern?.getContext?.()||context,
+            preview(value){previewDesign=value;refreshDesign();},apply:applyUserDesign,save,readIcon:id=>store.get(id),retireAssets,showPage,setOpen,
+            async writeIcon(file,signal){const blob=await prepareDesignIcon(file,{signal}),id='cover:'+createTrackId();signal.throwIfAborted();await store.put(id,blob);if(signal.aborted){await store.delete(id).catch(()=>{});signal.throwIfAborted();}return id;},
+            async bind(avatar,playlistId,config){
+                const ctx=options.context||globalThis.SillyTavern?.getContext?.()||context;
+                if(!ctx.characters.some(card=>card.avatar===avatar))throw new Error('目标角色已不存在，未写入绑定。');
+                const playlist=settings.playlists.find(row=>row.id===playlistId);if(!playlist)throw new Error('目标歌单已不存在。');
+                const row=settings.roleDesigns.find(row=>row.avatar===avatar);if(!row&&settings.roleDesigns.length>=1000)throw new Error('角色设计数量已达上限。');
+                bindPlaylistCharacters(settings,playlistId,[...new Set([...playlist.characterAvatars,avatar])]);
+                if(row)row.config=normalizeDesign(config);else{if(settings.roleDesigns.length>=1000)throw new Error('角色设计数量已达上限。');settings.roleDesigns.push({avatar,config:normalizeDesign(config)});}
+                save();refreshDesign();renderPlaylists();await nativeExport.syncBindings();
+            },
+        });
+    }
     refreshDesign(); menus.refresh();
     function effectiveDesign() {
         if ((typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) return settings.uiDesign.allowRecipientLayout && settings.personalDesign ? settings.personalDesign : settings.uiDesign;
@@ -681,6 +700,7 @@ export function initialize(options = {}) {
     function refreshDesign() {
         if (!designPresentation) return;
         designPresentation.apply(previewDesign || effectiveDesign(), { motion: settings.visualMotion, accessible: settings.accessibleControls });
+        designFont?.set((previewDesign||effectiveDesign()).fontPreset);
         designControls?.refresh(); launcherControls?.refresh(); launcherDrag.refresh(); panelDrag.refresh(); launcherAvoidance?.refresh();
     }
     function applyUserDesign(value) {
@@ -1297,6 +1317,7 @@ export function initialize(options = {}) {
         if(maintenanceBusy)return;
         const avatar = currentCharacterAvatar(freshContext());
         if (!force && avatar === lastRoleAvatar) { renderRoleStatus(); return; }
+        designEditor?.close();
         const previous = lastRoleAvatar;
         lastRoleAvatar = avatar;
         refreshDesign();
@@ -1909,6 +1930,7 @@ export function initialize(options = {}) {
         if (disposed) return;
         disposed = true;
         listening?.dispose(); transitions.dispose();
+        designEditor?.dispose(); designFont?.dispose();
         launcherControls?.dispose(); launcherAvoidance?.dispose(); designControls?.dispose(); designPresentation?.dispose();
         dataPanel?.dispose(); cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose(); retirement?.dispose(); options.onDispose?.();
         ++loadSequence;

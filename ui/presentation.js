@@ -1,3 +1,4 @@
+import {applyComponents} from './components.js';
 import { normalizeDesign, designPalette } from './config.js';
 import { playSymbol } from '../player-components.js';
 
@@ -83,6 +84,7 @@ export function createDesignPresentation({ panel, launcher, audio, readIcon, onP
             if(c.tonearmColor)root.style.setProperty('--design-tonearm',c.tonearmColor);else root.style.removeProperty('--design-tonearm');
             if(c.labelColor)root.style.setProperty('--design-label',c.labelColor);else root.style.removeProperty('--design-label');
         }
+        applyComponents(panel,current,accessible);
         launcher.setAttribute('role',current.launcher==='capsule'?'group':'button');
         delete launcher.dataset.iconMissing;if(current.launcher==='custom'&&(!c.iconId||!iconUrl))launcher.dataset.iconMissing='true';void loadIcon(current.launcher==='custom'?c.iconId:null);sync();
     }

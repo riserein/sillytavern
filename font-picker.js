@@ -1,7 +1,7 @@
 import { FONT_PRESETS, MAX_FONTS, validateFontFile, decodeFont, loadBuiltinFont } from './fonts.js';
 
 /** A scoped, keyboard-accessible picker. Preview faces stay loaded while browsing. */
-export function createFontPicker({ panel, launcher, store, settings, save, showStatus, createId, availableFonts, retireAssets }) {
+export function createFontPicker({ panel, launcher, store, settings, save, showStatus, createId, availableFonts, retireAssets, onSelect }) {
     const query = selector => panel.querySelector(selector);
     const toggle = query('#stm-font');
     const gallery = query('#stm-font-gallery');
@@ -71,7 +71,7 @@ export function createFontPicker({ panel, launcher, store, settings, save, showS
             settings.fontPreset = entry.local ? 'custom' : entry.id;
             if (entry.local) { settings.fontId = entry.id; settings.fontName = entry.name; }
             apply(entry, face);
-            if (persist) save();
+            if (persist) { onSelect?.(); save(); }
             status.textContent = entry.local ? `当前使用：${entry.name} · 仅保存在当前浏览器。`
                 : entry.file ? `${entry.original} · 完整字库已内置，可离线使用。`
                     : '设备字体以实际显示为准；未安装时由系统回退。内置字体在各设备上均可使用。';
