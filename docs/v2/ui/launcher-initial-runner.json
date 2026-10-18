@@ -1,0 +1,166 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.design.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/design",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "ui-design.e2e.js"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "ui-design.e2e.js",
+      "file": "ui-design.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "five real host launchers drag, control one audio and keep custom icons above a mobile input",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 135000,
+              "annotations": [
+                {
+                  "type": "slow",
+                  "location": {
+                    "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                    "line": 63,
+                    "column": 7
+                  }
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 24581,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n    at /workspace/sillytavern/tests/ui-design.e2e.js:77:2",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                      "column": 2,
+                      "line": 77
+                    },
+                    "snippet": "  75 |  }\n  76 |  await page.locator('[data-action=close]').click();await page.locator('#send_form').evaluate(el=>Object.assign(el.style,{position:'fixed',bottom:'0px',left:'0px',width:'100%',height:'180px'}));await page.evaluate(()=>{const ball=document.querySelector('#stm-launcher');ball.style.top=(innerHeight-70)+'px';ball.style.left='150px';dispatchEvent(new Event('resize'));});\n> 77 |  await expect.poll(async()=>{const ball=await page.locator('#stm-launcher').boundingBox(),input=await page.locator('#send_form').boundingBox();return ball.y+ball.height<=input.y-7;}).toBe(true);expect(await page.evaluate(()=>keptAudio===document.querySelector('#stm-player audio')&&!keptAudio.paused)).toBe(true);\n     |  ^\n  78 |  await mkdir('docs/v2/ui/launchers',{recursive:true});await page.screenshot({path:'docs/v2/ui/launchers/mobile-input-avoidance.png'});\n  79 | });\n  80 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                        "column": 2,
+                        "line": 77
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate\n\n  75 |  }\n  76 |  await page.locator('[data-action=close]').click();await page.locator('#send_form').evaluate(el=>Object.assign(el.style,{position:'fixed',bottom:'0px',left:'0px',width:'100%',height:'180px'}));await page.evaluate(()=>{const ball=document.querySelector('#stm-launcher');ball.style.top=(innerHeight-70)+'px';ball.style.left='150px';dispatchEvent(new Event('resize'));});\n> 77 |  await expect.poll(async()=>{const ball=await page.locator('#stm-launcher').boundingBox(),input=await page.locator('#send_form').boundingBox();return ball.y+ball.height<=input.y-7;}).toBe(true);expect(await page.evaluate(()=>keptAudio===document.querySelector('#stm-player audio')&&!keptAudio.paused)).toBe(true);\n     |  ^\n  78 |  await mkdir('docs/v2/ui/launchers',{recursive:true});await page.screenshot({path:'docs/v2/ui/launchers/mobile-input-avoidance.png'});\n  79 | });\n  80 |\n    at /workspace/sillytavern/tests/ui-design.e2e.js:77:2"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T02:39:30.299Z",
+                  "annotations": [
+                    {
+                      "type": "slow",
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                        "line": 63,
+                        "column": 7
+                      }
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/design/ui-design.e2e.js-five-real-d755f--icons-above-a-mobile-input/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/design/ui-design.e2e.js-five-real-d755f--icons-above-a-mobile-input/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/design/ui-design.e2e.js-five-real-d755f--icons-above-a-mobile-input/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/ui-design.e2e.js",
+                    "column": 2,
+                    "line": 77
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "bf29ce752169465daf5a-c70ad498f2b1edecc131",
+          "file": "ui-design.e2e.js",
+          "line": 333,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T02:39:29.495Z",
+    "duration": 26900.224,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

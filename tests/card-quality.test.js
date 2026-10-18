@@ -228,3 +228,7 @@ test('package, extension and carried runtime declare the same maintenance versio
     const { card } = envelope();
     assert.equal(card.data.extensions.riserein_card_player.payloadFormat, PAYLOAD_FORMAT);
 });
+
+test('custom launcher bytes are counted and cannot bypass per-icon or combined export limits',()=>{
+ const payload=make();payload.config.appearance.launcherIcon=data('image/png',4096);const report=analyzePayload(payload);assert.equal(report.rows.find(row=>row.kind==='launcher-icon').bytes,4096);payload.config.appearance.launcherIcon=data('image/png',1024*1024+1);assert.throws(()=>assertCapacity(analyzePayload(payload)),/1 MiB/);
+});

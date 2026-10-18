@@ -1,7 +1,7 @@
 import { MAX_PACKAGE_BYTES, MAX_AUDIO_BYTES, jsonForScript, normalizeCardConfig } from './config.js';
 import { base64Bytes } from '../base64.js';
 
-export const PLAYER_BUILD = '2.0.0-alpha.2';
+export const PLAYER_BUILD = '2.0.0-alpha.3';
 export const PAYLOAD_FORMAT = 1;
 export const byteSize = (value) =>
     new TextEncoder().encode(typeof value === 'string' ? value : JSON.stringify(value)).length;
@@ -41,6 +41,7 @@ export function analyzePayload(payload, script) {
     }
     add('background', '背景', config.appearance?.image);
     add('font', config.appearance?.fontName || '字体', config.appearance?.font);
+    add('launcher-icon', '悬浮图标', config.appearance?.launcherIcon);
     add('playlist-cover', '歌单封面', payload.playlist?.cover);
     for (const [name, value] of Object.entries(payload.assets || {})) add('fallback', name, value);
     const embeddedBytes = rows
@@ -48,6 +49,7 @@ export function analyzePayload(payload, script) {
         .reduce((sum, row) => sum + row.bytes, 0);
     const problems = [];
     for (const row of rows) {
+        if(row.kind==='launcher-icon'&&row.bytes>1024*1024)problems.push('悬浮图标超过 1 MiB，请替换为较小的静态图片。');
         if (row.kind === 'audio' && row.bytes > MAX_AUDIO_BYTES)
             problems.push(`「${row.name}」超过单曲 20 MB；请降低音频码率或换成稳定公开直链。`);
         if (

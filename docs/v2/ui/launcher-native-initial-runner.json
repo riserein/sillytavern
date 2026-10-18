@@ -1,0 +1,152 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-native.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/v2/ui/launcher-native-runner.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/native",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-native.e2e.js"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-native.e2e.js",
+      "file": "card-native.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "native PNG and JSON carry the shared player to a clean phone recipient",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 33178,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-launcher-status]')\nExpected substring: \u001b[32m\"图标已保存\"\u001b[39m\nReceived string:    \u001b[31m\"请选择 1 MiB 以内的静态 PNG 或 WebP 图标。\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-launcher-status]')\u001b[22m\n\u001b[2m    9 × locator resolved to <p role=\"status\" class=\"stm-hint\" data-launcher-status=\"\">请选择 1 MiB 以内的静态 PNG 或 WebP 图标。</p>\u001b[22m\n\u001b[2m      - unexpected value \"请选择 1 MiB 以内的静态 PNG 或 WebP 图标。\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-launcher-status]')\nExpected substring: \u001b[32m\"图标已保存\"\u001b[39m\nReceived string:    \u001b[31m\"请选择 1 MiB 以内的静态 PNG 或 WebP 图标。\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-launcher-status]')\u001b[22m\n\u001b[2m    9 × locator resolved to <p role=\"status\" class=\"stm-hint\" data-launcher-status=\"\">请选择 1 MiB 以内的静态 PNG 或 WebP 图标。</p>\u001b[22m\n\u001b[2m      - unexpected value \"请选择 1 MiB 以内的静态 PNG 或 WebP 图标。\"\u001b[22m\n\n    at /workspace/sillytavern/tests/card-native.e2e.js:530:191",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                      "column": 191,
+                      "line": 530
+                    },
+                    "snippet": "  528 |         await menu(author,'#stm-design-layout',mobile?'crystal':'vinyl');\n  529 |         await menu(author,'#stm-design-theme',mobile?'mist-blue':'walnut');\n> 530 |         if(mobile){await author.locator('[data-launcher-file]').setInputFiles({name:'own-icon.png',mimeType:'image/png',buffer:image});await expect(author.locator('[data-launcher-status]')).toContainText('图标已保存');}\n      |                                                                                                                                                                                               ^\n  531 |         await author.getByRole('tab', { name: '曲库', exact: true }).click();\n  532 |         await author.getByRole('button', { name: '打开歌单：bill', exact: true }).click();\n  533 |         await author.locator('[data-action=toggle-manager]').click();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                        "column": 191,
+                        "line": 530
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-launcher-status]')\nExpected substring: \u001b[32m\"图标已保存\"\u001b[39m\nReceived string:    \u001b[31m\"请选择 1 MiB 以内的静态 PNG 或 WebP 图标。\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-launcher-status]')\u001b[22m\n\u001b[2m    9 × locator resolved to <p role=\"status\" class=\"stm-hint\" data-launcher-status=\"\">请选择 1 MiB 以内的静态 PNG 或 WebP 图标。</p>\u001b[22m\n\u001b[2m      - unexpected value \"请选择 1 MiB 以内的静态 PNG 或 WebP 图标。\"\u001b[22m\n\n\n  528 |         await menu(author,'#stm-design-layout',mobile?'crystal':'vinyl');\n  529 |         await menu(author,'#stm-design-theme',mobile?'mist-blue':'walnut');\n> 530 |         if(mobile){await author.locator('[data-launcher-file]').setInputFiles({name:'own-icon.png',mimeType:'image/png',buffer:image});await expect(author.locator('[data-launcher-status]')).toContainText('图标已保存');}\n      |                                                                                                                                                                                               ^\n  531 |         await author.getByRole('tab', { name: '曲库', exact: true }).click();\n  532 |         await author.getByRole('button', { name: '打开歌单：bill', exact: true }).click();\n  533 |         await author.locator('[data-action=toggle-manager]').click();\n    at /workspace/sillytavern/tests/card-native.e2e.js:530:191"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T06:21:12.100Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/native/card-native.e2e.js-native--0a3ee--to-a-clean-phone-recipient/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/native/card-native.e2e.js-native--0a3ee--to-a-clean-phone-recipient/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/native/card-native.e2e.js-native--0a3ee--to-a-clean-phone-recipient/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                    "column": 191,
+                    "line": 530
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-3b0e967b5abd8917012b",
+          "file": "card-native.e2e.js",
+          "line": 523,
+          "column": 37
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T06:21:11.170Z",
+    "duration": 36922.414,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

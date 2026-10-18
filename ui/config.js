@@ -40,7 +40,7 @@ export function normalizeDesign(raw = {}) {
         coverSize: number(input.coverSize, .85, .55, 1.15), cornerRadius: number(input.cornerRadius, 18, 0, 36),
         opacity: number(input.opacity, .94, .3, 1), blur: number(input.blur, 16, 0, 24),
         buttonSize: number(input.buttonSize, 54, 40, 68), titleSize: number(input.titleSize, 25, 16, 36),
-        launcherSize: number(input.launcherSize, 46, 40, 88), launcherOpacity: number(input.launcherOpacity, 1, .45, 1),
+        launcherSize: number(input.launcherSize, 46, 40, 88), launcherOpacity: number(input.launcherOpacity, 1, .45, 1), launcherBorder: number(input.launcherBorder, 1, 0, 4),
         showArtist: input.showArtist !== false, showLyricsButton: input.showLyricsButton !== false,
         showProgress: input.showProgress !== false, showVolume: input.showVolume !== false,
         showMode: input.showMode !== false, showQueue: input.showQueue !== false, showDecorations: input.showDecorations !== false,
@@ -70,7 +70,7 @@ export function validateTemplate(raw) {
     const c=raw.config.customization;
     if(!c||typeof c!=='object'||Array.isArray(c))throw new Error('设计属性无效。');
     const normalized=normalizeDesign(raw.config);
-    for(const key of ['coverSize','cornerRadius','opacity','blur','buttonSize','titleSize','launcherSize','launcherOpacity'])if(Object.hasOwn(c,key)&&(!Number.isFinite(c[key])||normalized.customization[key]!==c[key]))throw new Error(`设计的 ${key} 超出允许范围。`);
+    for(const key of ['coverSize','cornerRadius','opacity','blur','buttonSize','titleSize','launcherSize','launcherOpacity','launcherBorder'])if(Object.hasOwn(c,key)&&(!Number.isFinite(c[key])||normalized.customization[key]!==c[key]))throw new Error(`设计的 ${key} 超出允许范围。`);
     for(const key of ['background','surface','text','muted','accent','border'])if(c.colors?.[key]!==undefined&&c.colors[key]!==null&&!color(c.colors[key]))throw new Error('设计颜色需要是六位十六进制颜色。');
     if(raw.icon!==undefined&&(typeof raw.icon!=='string'||raw.icon.length>1500000||!/^data:image\/(?:png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(raw.icon)))throw new Error('设计图标格式或体积无效。');
     return {name:String(raw.name||'导入的设计').trim().slice(0,80)||'导入的设计',config:normalized,icon:raw.icon||null};

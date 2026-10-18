@@ -14,6 +14,7 @@ export function createDesignPresentation({ panel, launcher, audio, readIcon, onP
     const arm=doc.createElement('span');arm.className='stm-design-tonearm';arm.setAttribute('aria-hidden','true');stage.after(arm);
     const cassette=doc.createElement('span');cassette.className='stm-launch-cassette';cassette.setAttribute('aria-hidden','true');cassette.innerHTML='<i></i><i></i>';
     const custom=doc.createElement('img');custom.className='stm-launch-custom';custom.alt='';custom.hidden=true;
+    custom.addEventListener('error',()=>{if(disposed)return;custom.hidden=true;launcher.dataset.iconMissing='true';if(iconUrl)URL.revokeObjectURL(iconUrl);iconUrl=null;iconId=null;},{signal:abort.signal});
     const title=doc.createElement('span');title.className='stm-launch-title';
     const play=doc.createElement('button');play.type='button';play.className='stm-launch-play';
     const next=doc.createElement('button');next.type='button';next.className='stm-launch-next';next.textContent='›';next.setAttribute('aria-label','悬浮组件下一首');
@@ -37,8 +38,9 @@ export function createDesignPresentation({ panel, launcher, audio, readIcon, onP
         if(iconId===id)return;iconId=id;const stamp=++revision;
         custom.hidden=true;custom.removeAttribute('src');if(iconUrl)URL.revokeObjectURL(iconUrl);iconUrl=null;
         if(!id)return;
-        try{const blob=await readIcon(id);if(disposed||stamp!==revision)return;if(!blob)throw new Error('图标缺失');iconUrl=URL.createObjectURL(blob);custom.src=iconUrl;custom.hidden=false;}
-        catch{if(!disposed&&stamp===revision){custom.hidden=true;launcher.dataset.iconMissing='true';}}
+        launcher.dataset.iconMissing='true';
+        try{const blob=await readIcon(id);if(disposed||stamp!==revision)return;if(!blob)throw new Error('图标缺失');iconUrl=URL.createObjectURL(blob);custom.src=iconUrl;custom.hidden=false;delete launcher.dataset.iconMissing;}
+        catch{if(!disposed&&stamp===revision){custom.hidden=true;launcher.dataset.iconMissing='true';iconId=null;}}
     }
     function apply(input,{motion=null,accessible=false}={}) {
         current=normalizeDesign(input);const c=current.customization;
@@ -62,7 +64,7 @@ export function createDesignPresentation({ panel, launcher, audio, readIcon, onP
             root.dataset.motion=motion||c.animationLevel;root.dataset.designMaterial=c.material;root.dataset.designBody=c.body;root.dataset.grooves=c.grooves;root.dataset.launcherShape=c.launcherShape;
             root.dataset.designFocus=String(!accessible&&c.focus);root.dataset.designDecorations=String(c.showDecorations);
             for(const name of ['Artist','LyricsButton','Progress','Volume','Mode','Queue','Background','Next','TrackNumber'])root.dataset['hide'+name]=String(!accessible&&!c['show'+name]);
-            const numbers={coverSize:c.coverSize,radius:c.cornerRadius+'px',opacity:c.opacity,blur:c.blur+'px',buttonSize:c.buttonSize+'px',titleSize:c.titleSize+'px',launcherSize:c.launcherSize+'px',launcherOpacity:c.launcherOpacity};
+            const numbers={coverSize:c.coverSize,radius:c.cornerRadius+'px',opacity:c.opacity,blur:c.blur+'px',buttonSize:c.buttonSize+'px',titleSize:c.titleSize+'px',launcherSize:c.launcherSize+'px',launcherOpacity:c.launcherOpacity,launcherBorder:c.launcherBorder+'px'};
             for(const [key,value]of Object.entries(numbers))root.style.setProperty('--design-'+key.replace(/[A-Z]/g,c=>'-'+c.toLowerCase()),String(value));
             root.dataset.orientation=c.orientation;
             for(const key of ['background','surface','text','muted','accent','border']){
@@ -82,7 +84,7 @@ export function createDesignPresentation({ panel, launcher, audio, readIcon, onP
             if(c.labelColor)root.style.setProperty('--design-label',c.labelColor);else root.style.removeProperty('--design-label');
         }
         launcher.setAttribute('role',current.launcher==='capsule'?'group':'button');
-        delete launcher.dataset.iconMissing;void loadIcon(current.launcher==='custom'?c.iconId:null);sync();
+        delete launcher.dataset.iconMissing;if(current.launcher==='custom'&&(!c.iconId||!iconUrl))launcher.dataset.iconMissing='true';void loadIcon(current.launcher==='custom'?c.iconId:null);sync();
     }
     apply(current);
     return {apply,sync,get config(){return structuredClone(current);},dispose(){disposed=true;revision++;abort.abort();observer.disconnect();if(iconUrl)URL.revokeObjectURL(iconUrl);iconUrl=null;}};

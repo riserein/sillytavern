@@ -1,0 +1,19 @@
+import { LAUNCHERS, normalizeDesign } from './config.js';
+export function createLauncherControls({ panel, group, getDesign, onChange, onIcon, isPortable=false }) {
+ const doc=panel.ownerDocument,abort=new AbortController(),box=doc.createElement('div');
+ box.innerHTML='<label for="stm-design-launcher">悬浮组件</label><select id="stm-design-launcher"></select><label for="stm-design-launcher-size">悬浮组件尺寸</label><input id="stm-design-launcher-size" type="range" min="40" max="88" step="1"><label for="stm-design-launcher-shape">自定义图标形状</label><select id="stm-design-launcher-shape"><option value="circle">圆形</option><option value="rounded">圆角</option><option value="square">方形</option></select><label for="stm-design-launcher-border">图标边框粗细</label><input id="stm-design-launcher-border" type="range" min="0" max="4" step="1"><label for="stm-design-launcher-opacity">悬浮组件透明度</label><input id="stm-design-launcher-opacity" type="range" min="45" max="100" step="1"><label class="stm-check-label"><input type="checkbox" id="stm-design-launcher-next">胶囊显示下一首</label><div data-launcher-author><button type="button" class="stm-secondary" data-launcher-import>选择自定义图标</button><input type="file" accept="image/png,image/webp,.png,.webp" data-launcher-file hidden><p class="stm-hint">静态 PNG / WebP，1 MiB 以内，最长边 2048 像素；保存为播放器自己的图标副本。</p></div><p class="stm-hint" data-launcher-status role="status"></p>';
+ group.querySelector('[data-design-choices]').append(box);const q=s=>box.querySelector(s);
+ for(const [id,name]of Object.entries(LAUNCHERS))q('#stm-design-launcher').append(new Option(name,id));
+ const update=(field,value)=>{const next=normalizeDesign(getDesign());if(field==='launcher')next.launcher=value;else next.customization[field]=value;onChange(next);refresh();};
+ q('#stm-design-launcher').addEventListener('change',e=>update('launcher',e.target.value),{signal:abort.signal});
+ q('#stm-design-launcher-size').addEventListener('input',e=>update('launcherSize',Number(e.target.value)),{signal:abort.signal});
+ q('#stm-design-launcher-border').addEventListener('input',e=>update('launcherBorder',Number(e.target.value)),{signal:abort.signal});
+ q('#stm-design-launcher-opacity').addEventListener('input',e=>update('launcherOpacity',Number(e.target.value)/100),{signal:abort.signal});
+ q('#stm-design-launcher-shape').addEventListener('change',e=>update('launcherShape',e.target.value),{signal:abort.signal});
+ q('#stm-design-launcher-next').addEventListener('change',e=>update('showNext',e.target.checked),{signal:abort.signal});
+ if(isPortable)q('[data-launcher-author]').remove();else{
+ q('[data-launcher-import]').addEventListener('click',()=>q('[data-launcher-file]').click(),{signal:abort.signal});
+ q('[data-launcher-file]').addEventListener('change',async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;q('[data-launcher-import]').disabled=true;q('[data-launcher-status]').textContent='正在检查图标…';try{await onIcon(file,abort.signal);if(!abort.signal.aborted){q('[data-launcher-status]').textContent='图标已保存。';refresh();}}catch(error){if(!abort.signal.aborted)q('[data-launcher-status]').textContent=error.message||'图标保存失败，原图标保留。';}finally{if(!abort.signal.aborted)q('[data-launcher-import]').disabled=false;}},{signal:abort.signal});}
+ function refresh(){const d=normalizeDesign(getDesign()),c=d.customization;q('#stm-design-launcher').value=d.launcher;q('#stm-design-launcher-size').value=String(c.launcherSize);q('#stm-design-launcher-border').value=String(c.launcherBorder);q('#stm-design-launcher-opacity').value=String(c.launcherOpacity*100);q('#stm-design-launcher-shape').value=c.launcherShape;q('#stm-design-launcher-next').checked=c.showNext;const custom=[...q('#stm-design-launcher').options].find(o=>o.value==='custom');custom.disabled=isPortable&&!c.iconId;}
+ refresh();return {refresh,dispose(){abort.abort();box.remove();}};
+}

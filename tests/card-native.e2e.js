@@ -527,6 +527,7 @@ for (const mobile of [false, true])
         await author.getByRole('tab',{name:'外观',exact:true}).click();
         await menu(author,'#stm-design-layout',mobile?'crystal':'vinyl');
         await menu(author,'#stm-design-theme',mobile?'mist-blue':'walnut');
+        if(mobile){const icon=Buffer.from(await author.evaluate(()=>{const c=document.createElement('canvas');c.width=64;c.height=64;const ctx=c.getContext('2d');ctx.fillStyle='#84b7cc';ctx.fillRect(0,0,64,64);return c.toDataURL('image/png').split(',')[1];}),'base64');await author.locator('[data-launcher-file]').setInputFiles({name:'own-icon.png',mimeType:'image/png',buffer:icon});await expect(author.locator('[data-launcher-status]')).toContainText('图标已保存');}
         await author.getByRole('tab', { name: '曲库', exact: true }).click();
         await author.getByRole('button', { name: '打开歌单：bill', exact: true }).click();
         await author.locator('[data-action=toggle-manager]').click();
@@ -636,6 +637,7 @@ for (const mobile of [false, true])
             expect(await recipient.locator('#stm-launcher').getAttribute('class')).toContain(
                 'stm-vinyl-launcher',
             );
+            if(mobile){await expect(recipient.locator('#stm-launcher')).toHaveAttribute('data-launcher','custom');await expect.poll(()=>recipient.locator('.stm-launch-custom').evaluate(i=>i.naturalWidth)).toBeGreaterThan(0);await expect(recipient.locator('[data-launcher-author]')).toHaveCount(0);}
             await expect(recipient.getByRole('tab', { name: '导入', exact: true })).toHaveCount(0);
             await expect(recipient.locator('#stm-page-import')).toHaveCount(0);
             await expect(

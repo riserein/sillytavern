@@ -18,6 +18,7 @@ import { packFont } from './font-transport.js';
 import { MAX_PACKAGE_BYTES } from './config.js';
 import { compactNativeResponse } from './png-size.js';
 import { normalizeDesign } from '../ui/config.js';
+import { prepareDesignIcon } from '../ui/images.js';
 
 const LICENSES = {
     'PoxiaoPixel.woff2': ['OFL-PoxiaoPixel.txt'],
@@ -137,7 +138,18 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
             throw new Error(`检查期间${fields.map(key => labels[key] || key).join('、')}已改变，请重新导出；未替换旧随卡配置`);
         }
     };
-    async function packagePlaylist(playlist, avatar) {
+    async function withDesign(base,design,icons=new Map()) {
+        const uiDesign=normalizeDesign(design),appearance={...base.config.appearance};delete appearance.launcherIcon;
+        if(uiDesign.launcher==='custom'){
+            const id=uiDesign.customization.iconId;if(!id)throw new Error('自定义悬浮图标尚未添加，请先选择图片或换一种悬浮组件；原角色卡保留。');
+            appearance.launcherIcon=await memo(icons,id,async()=>{const blob=await store.get(id);if(!blob)throw new Error('自定义悬浮图标文件缺失，原角色卡保留。');return encodeBlob(await prepareDesignIcon(blob,{signal:abort.signal,reencode:false}));});
+        }
+        // A recipient gets actual image bytes and a new in-memory resource ID.
+        uiDesign.customization.iconId=null;
+        const payload={...base,ui:{...base.ui,uiDesign},config:{...base.config,appearance}};
+        payload.embeddedBytes=assertCapacity(analyzePayload(payload)).embeddedBytes;return payload;
+    }
+    async function packagePlaylist(playlist, avatar, icons) {
         const author = sourceSnapshot(playlist, avatar),
             signature = sourceSignature(author);
         playlist = author.playlist;
@@ -217,7 +229,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         if (playlist.coverId && !cover) throw new Error('歌单封面不在当前浏览器中，请重新选择封面');
         const playlistCover = cover ? await blobData(await prepareCover(cover)) : '';
         const ui = author.ui;
-        const payload = {
+        const payload = await withDesign({
             version: 1,
             runtimeVersion: PLAYER_BUILD,
             config,
@@ -233,7 +245,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
             },
             assets,
             embeddedBytes,
-        };
+        },author.ui.uiDesign,icons);
         const analysis = assertCapacity(analyzePayload(payload));
         payload.embeddedBytes = analysis.embeddedBytes;
         showStatus(
@@ -528,14 +540,14 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         rebuild: (avatar) => enqueue(() => syncAvatar(avatar)),
         syncBindings: () =>
             enqueue(async () => {
-                const prepared = new Map();
+                const prepared = new Map(), icons = new Map();
                 for (const playlist of settings.playlists.filter((item) => item.characterAvatars.length)) {
                     // UI-only variants share immutable encoded audio/font strings.
                     // Do not re-encode a large playlist once for every bound role.
-                    const base=await packagePlaylist(playlist,playlist.characterAvatars[0]);
+                    const base=await packagePlaylist(playlist,playlist.characterAvatars[0],icons);
                     for (const avatar of playlist.characterAvatars) {
                         if(avatar===playlist.characterAvatars[0]){prepared.set(avatar,base);continue;}
-                        const ui={...base.ui,uiDesign:designForAvatar(avatar)},payload={...base,ui};
+                        const payload=await withDesign(base,designForAvatar(avatar),icons);
                         signatures.set(payload,{id:playlist.id,avatar,signature:sourceSignature(sourceSnapshot(playlist,avatar))});
                         assertCapacity(analyzePayload(payload));checkSource(payload,avatar);prepared.set(avatar,payload);
                     }

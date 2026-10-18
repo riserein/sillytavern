@@ -10,6 +10,7 @@ import { FONT_PRESETS } from '../fonts.js';
 import { base64Bytes } from '../base64.js';
 import { rolePreferences } from './preferences.js';
 import { createEmbeddedStore } from './embedded-store.js';
+import { normalizeDesign } from '../ui/config.js';
 
 function dataBlob(value, win) {
     const comma = value.indexOf(',');
@@ -89,6 +90,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
             settings.backgroundId = `background:${createTrackId(win.crypto)}`;
             embedded.setBlob(settings.backgroundId, dataBlob(config.appearance.image, win));
         }
+        if(config.appearance.launcherIcon){const id='cover:'+createTrackId(win.crypto);embedded.setBlob(id,dataBlob(config.appearance.launcherIcon,win));settings.uiDesign=normalizeDesign(settings.uiDesign);settings.uiDesign.customization.iconId=id;}
         const allowedState = [
             'volume',
             'mode',
@@ -113,6 +115,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
         try {
             const saved = preferences.read();
             for (const key of allowedState) if (Object.hasOwn(saved, key)) settings[key] = saved[key];
+            if(settings.personalDesign){settings.personalDesign=normalizeDesign(settings.personalDesign);settings.personalDesign.customization.iconId=settings.uiDesign?.customization?.iconId||null;if(settings.personalDesign.launcher==='custom'&&!settings.personalDesign.customization.iconId)settings.personalDesign.launcher=settings.uiDesign?.launcher||'vinyl';}
         } catch {
             /* Browser may block local storage; the player still works. */
         }
@@ -178,6 +181,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 context,
                 store,
                 availableFonts: payload.fontFile ? [payload.fontFile] : [],
+                getInputElement:()=>doc.querySelector('#send_form'),
             });
             mounted.panel.dataset.portable = 'true';
             mounted.panel.dataset.runtimeVersion = api.runtimeVersion;

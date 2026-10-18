@@ -35,6 +35,9 @@ import { createListeningPanel } from './listening-panel.js';
 import { normalizeDesign } from './ui/config.js';
 import { createDesignPresentation } from './ui/presentation.js';
 import { createDesignControls } from './ui/controls.js';
+import { createLauncherControls } from './ui/launcher-controls.js';
+import { createLauncherAvoidance } from './ui/launcher-avoidance.js';
+import { prepareDesignIcon } from './ui/images.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
 // Keep the build-time guard explicit at author-only branches: esbuild can then
@@ -71,7 +74,7 @@ export function initialize(options = {}) {
     let dataPanel = null;
     let online = null;
     let listening = null;
-    let designPresentation = null, designControls = null, previewDesign = null;
+    let designPresentation = null, designControls = null, launcherControls = null, launcherAvoidance = null, previewDesign = null;
     let platformLoadController = null;
     let objectUrl = null;
     let loadSequence = 0;
@@ -657,6 +660,18 @@ export function initialize(options = {}) {
     designPresentation = createDesignPresentation({ panel, launcher, audio, readIcon: id => store.get(id), onPlay: toggleCurrent, onNext: () => advanceTrack(1), getTrackNumber: () => playbackQueue.tracks().findIndex(track => track.id === settings.currentId) + 1 });
     designControls = createDesignControls({ panel, settings, getDesign: effectiveDesign, onChange: applyUserDesign,
         onAccessibility() { refreshDesign(); save(); }, isPortable: (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) });
+    launcherControls=createLauncherControls({panel,group:designControls.group,getDesign:effectiveDesign,onChange:applyUserDesign,isPortable:(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__),
+        async onIcon(file,signal){
+            if((typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__))return;
+            const before=JSON.stringify(effectiveDesign()),avatar=currentCharacterAvatar(options.context||globalThis.SillyTavern?.getContext?.()||context);
+            const blob=await prepareDesignIcon(file,{signal}),id='cover:'+createTrackId();
+            signal.throwIfAborted();try{await store.put(id,blob);}catch(error){if(error.name==='QuotaExceededError')throw new Error('浏览器存储空间不足，原图标已保留。');throw error;}
+            if(disposed||signal.aborted||avatar!==currentCharacterAvatar(options.context||globalThis.SillyTavern?.getContext?.()||context)||before!==JSON.stringify(effectiveDesign())){await store.delete(id).catch(()=>{});if(!disposed&&!signal.aborted)throw new Error('处理期间角色或设计已改变，原图标保留；请重试。');return;}
+            const config=normalizeDesign(effectiveDesign()),previous=config.customization.iconId;config.customization.iconId=id;config.launcher='custom';applyUserDesign(config);
+            if(previous)retireAssets([previous]);
+        },
+    });
+    launcherAvoidance=createLauncherAvoidance(launcher,{getInput:options.getInputElement||(()=>document.querySelector('#send_form')),onMove(position){if(disposed||maintenanceBusy)return;settings.positions.launcher=position;save();}});
     refreshDesign(); menus.refresh();
     function effectiveDesign() {
         if ((typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) return settings.uiDesign.allowRecipientLayout && settings.personalDesign ? settings.personalDesign : settings.uiDesign;
@@ -666,7 +681,7 @@ export function initialize(options = {}) {
     function refreshDesign() {
         if (!designPresentation) return;
         designPresentation.apply(previewDesign || effectiveDesign(), { motion: settings.visualMotion, accessible: settings.accessibleControls });
-        designControls?.refresh(); launcherDrag.refresh(); panelDrag.refresh();
+        designControls?.refresh(); launcherControls?.refresh(); launcherDrag.refresh(); panelDrag.refresh(); launcherAvoidance?.refresh();
     }
     function applyUserDesign(value) {
         const config = normalizeDesign(value);
@@ -1894,7 +1909,7 @@ export function initialize(options = {}) {
         if (disposed) return;
         disposed = true;
         listening?.dispose(); transitions.dispose();
-        designControls?.dispose(); designPresentation?.dispose();
+        launcherControls?.dispose(); launcherAvoidance?.dispose(); designControls?.dispose(); designPresentation?.dispose();
         dataPanel?.dispose(); cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose(); retirement?.dispose(); options.onDispose?.();
         ++loadSequence;
         pausePlayback(); audio.removeAttribute('src'); audio.load();

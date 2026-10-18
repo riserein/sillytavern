@@ -72,6 +72,7 @@ export function normalizeAppearance(raw = {}) {
         result.font = raw.font;
     result.fontLicense = String(raw.fontLicense || '').slice(0, 30000);
     result.fontName = String(raw.fontName || '').slice(0, 120);
+    if(typeof raw.launcherIcon==='string'&&raw.launcherIcon.length<1500000&&/^data:image\/(?:png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(raw.launcherIcon))result.launcherIcon=raw.launcherIcon;
     return result;
 }
 export function normalizeCardConfig(raw) {
