@@ -78,12 +78,17 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         else {const id=mappedAsset(font.id);after.fonts.push({...font,id,hash:row.sha256});fontHashes.set(row.sha256,id);}
     }
     if(restorePreferences){
-        for(const [key,value] of Object.entries(incoming))if(!['tracks','playlists','fonts','recentPlays','playEvents','backgroundId','fontId','fontName','fontPreset','activePlaylistId','currentId'].includes(key))after[key]=structuredClone(value);
+        for(const [key,value] of Object.entries(incoming))if(!['tracks','playlists','fonts','favorites','recentPlays','playEvents','backgroundId','fontId','fontName','fontPreset','activePlaylistId','currentId'].includes(key))after[key]=structuredClone(value);
         after.backgroundId=incoming.backgroundId?mappedAsset(incoming.backgroundId):null;
         after.fontId=incoming.fontId?mappedAsset(incoming.fontId):null;after.fontPreset=incoming.fontPreset;after.fontName=incoming.fontName;
         after.activePlaylistId=playlistIds.get(incoming.activePlaylistId)||null;after.currentId=trackIds.get(incoming.currentId)||after.tracks[0]?.id||null;
     }
     for(const key of ['recentPlays','playEvents'])after[key]=[...after[key],...incoming[key].map(event=>({...event,trackId:trackIds.get(event.trackId)||event.trackId}))].filter((row,i,all)=>all.findIndex(other=>other.trackId===row.trackId&&other.at===row.at)===i);
+    // Merge through the actual restore ID map (including independent-copy and audio dedup).
+    for(const row of incoming.favorites || []) {
+        const trackId=trackIds.get(row.trackId)||row.trackId;
+        if(!after.favorites.some(item=>item.trackId===trackId))after.favorites.push({...row,trackId});
+    }
     const projectWrites=[];
     for(const project of backup.projects){
         const conflict=projects.some(p=>p.id===project.id);if(conflict)summary.projectConflicts++;

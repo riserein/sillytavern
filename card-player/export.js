@@ -54,7 +54,7 @@ function checkedImage(blob) {
 }
 /** Reads copies only. No writes to the library, playlist or IndexedDB. */
 export async function prepareCardPackage(
-    { id, title, tracks, appearance, volume, mode, startCollapsed },
+    { id, title, tracks, appearance, volume, mode, transitionDuration, startCollapsed },
     {
         getBlob,
         readFallback,
@@ -168,6 +168,7 @@ export async function prepareCardPackage(
         appearance: theme,
         volume,
         mode,
+        transitionDuration,
         startCollapsed,
     });
     return {

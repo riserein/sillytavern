@@ -1,6 +1,25 @@
 /* B · 夜航听音. Legacy feature components remain imported; all new rules are scoped. */
 @import url("./style.css");
 
+/* Listening tools share the existing player and bottom-sheet language. */
+.stm-player .stm-options { display: flex; align-items: center; gap: 3px; }
+.stm-player .stm-favorite-button,.stm-player .stm-sleep-button { display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 36px; min-height: 36px; padding: 7px; border: 0; background: transparent; color: var(--stm-muted); }
+.stm-player .stm-favorite-button svg,.stm-player .stm-sleep-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.stm-player .stm-favorite-button[aria-pressed=true] { color: var(--stm-accent); }
+.stm-player .stm-favorite-button[aria-pressed=true] svg { fill: currentColor; }
+.stm-player .stm-sleep-button[data-active=true] { color: var(--stm-accent); }
+.stm-player .stm-sleep-button small { font-size: 10px; font-variant-numeric: tabular-nums; }
+.stm-player .stm-favorites-entry { display: block; width: 100%; padding: 14px 3px; text-align: left; }
+.stm-player .stm-favorite-bulk,.stm-player .stm-sleep-custom,.stm-player .stm-sleep-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+.stm-player .stm-favorite-bulk label { font-size: 11px; }
+.stm-player .stm-sleep-presets { display: flex; gap: 8px; flex-wrap: wrap; }
+.stm-player .stm-sleep-custom input { width: 90px; }
+.stm-player .stm-favorite-list { padding: 0; }
+.stm-player .stm-favorite-list .stm-history-track { display: flex; align-items: center; }
+.stm-player .stm-favorite-list .stm-track-select { min-width: 0; flex: 1; }
+.stm-player .stm-favorite-list .stm-track-select span { overflow-wrap: anywhere; }
+@media(max-width:440px) { .stm-player .stm-options { float: none; justify-content: center; } .stm-player .stm-sleep-button { min-height: 44px; } }
+
 .stm-player.stm-night-ui {
     --ui-bg: var(--stm-solid); --ui-bg-secondary: var(--stm-subtle); --ui-layer: color-mix(in srgb,var(--stm-solid) 96%,transparent);
     --ui-text: var(--stm-body); --ui-text-secondary: var(--stm-muted); --ui-text-quiet: color-mix(in srgb,var(--stm-body) 58%,var(--stm-solid));

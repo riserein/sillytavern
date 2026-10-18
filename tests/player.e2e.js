@@ -1456,6 +1456,8 @@ test('vinyl mini bar animates only while playing and its queue uses two thirds o
     await expect(page.locator('.stm-mini-title')).toHaveClass(/stm-marquee/);
     expect(await page.locator('.stm-mini-disc').evaluate(element => getComputedStyle(element).animationPlayState)).toBe('running');
     await page.locator('.stm-mini-play').click();
+    // Soft pause now finishes its configured fade before the Audio stops.
+    await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(true);
     expect(await page.locator('.stm-mini-disc').evaluate(element => getComputedStyle(element).animationPlayState)).toBe('paused');
     for (const viewport of [{width:1280,height:900}, {width:375,height:667}]) {
         await page.setViewportSize(viewport);

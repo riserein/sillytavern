@@ -32,6 +32,7 @@ const UI_KEYS = [
     'fontPreset',
     'panelSize',
     'positions',
+    'transitionDuration',
 ];
 /** Same export_with semantics as the verified official Helper export hook. */
 export function helperExportSettings(settings) {
@@ -156,6 +157,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                 },
                 volume: author.volume,
                 mode: author.mode,
+                transitionDuration: author.ui.transitionDuration,
                 startCollapsed: false,
             },
             {

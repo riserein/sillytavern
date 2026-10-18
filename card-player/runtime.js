@@ -5,6 +5,7 @@ import { watchRoleLifetime } from './lifecycle.js';
 import { clampPosition } from '../floating.js';
 import { normalizeCardConfig, normalizeAppearance } from './config.js';
 import { rolePreferences } from './preferences.js';
+import { normalizeFavorites, toggleFavorite, createAudioTransitions, createSleepTimer, TRANSITION_DURATIONS } from '../listening.js';
 
 /** Host-owned audio survives message/chat changes; the role owns every resource. */
 export function mountCardPlayer(input, scope) {
@@ -61,10 +62,40 @@ export function mountCardPlayer(input, scope) {
         audio.volume = config.volume;
     }
     query('.volume input').value = String(Math.round(audio.volume * 100));
+    const saved = preferences.read();
+    const personal = { volume: audio.volume, favorites: normalizeFavorites(saved.favorites, new Set(config.tracks.map(track => track.id))), transitionDuration: TRANSITION_DURATIONS.includes(saved.transitionDuration) ? saved.transitionDuration : config.transitionDuration };
+    const transitions = createAudioTransitions(audio, { getVolume: () => personal.volume, getDuration: () => personal.transitionDuration });
+    const persist = () => { void preferences.write(personal).then(ok => { if (!disposed && (!ok || preferences.sessionOnly)) query('.status').textContent = '个人偏好仅在本次会话有效。'; }); };
     const listen = (target, name, handler, extra = {}) => {
         target.addEventListener(name, handler, { ...extra, signal: abort.signal });
         listeners++;
     };
+    const tools = doc.createElement('div'); tools.className = 'listening-tools';
+    tools.innerHTML = '<button class="favorite" aria-label="收藏当前歌曲">♡</button><button class="favorites-open">我喜欢的音乐</button><button class="sleep-open">睡眠定时</button><label>柔和过渡<select aria-label="角色音乐柔和过渡"><option value="0">关闭</option><option value="150">150 ms</option><option value="300">300 ms</option><option value="500">500 ms</option><option value="800">800 ms</option></select></label><section class="favorites" hidden><label>搜索收藏<input type="search" aria-label="搜索角色收藏"></label><div class="favorite-rows"></div></section><section class="sleep" hidden><p class="sleep-state"></p><label>分钟<input type="number" min="1" max="1440" value="30" aria-label="角色音乐定时分钟"></label><button class="sleep-start">开始</button><button class="sleep-end">本曲结束后停止</button><button class="sleep-pause">暂停倒计时</button><button class="sleep-cancel">取消</button></section>';
+    const toolsStyle = doc.createElement('style'); toolsStyle.textContent = '.listening-tools{display:flex;gap:8px;flex-wrap:wrap;font-size:11px}.listening-tools>button{min-height:36px}.listening-tools section{flex-basis:100%}.listening-tools input,.listening-tools select{max-width:125px;color:var(--text);background:var(--bg);border:1px solid var(--accent);border-radius:6px;padding:5px}.favorite-rows>div{display:flex;align-items:center}.favorite-rows button{min-height:36px}.favorite-rows button:first-child{flex:1;text-align:left}';
+    shadow.append(toolsStyle); query('.options').after(tools); query('.listening-tools select').value = String(personal.transitionDuration);
+    const sleep = createSleepTimer({ onExpire: () => { void transitions.pause(); }, onChange(state) { query('.sleep-state').textContent = state.mode === 'off' ? '未设置' : state.mode === 'track' ? '本曲结束后停止' : `${state.paused ? '已暂停' : '剩余'} ${formatTime(Math.ceil(state.remaining / 1000))}`; query('.sleep-pause').textContent = state.paused ? '继续倒计时' : '暂停倒计时'; } });
+    sleep.cancel();
+    const renderFavorites = () => {
+        const active = personal.favorites.some(row => row.trackId === config.tracks[selected].id);
+        query('.favorite').textContent = active ? '♥' : '♡'; query('.favorite').setAttribute('aria-pressed', String(active));
+        const term = query('.favorites input').value.toLocaleLowerCase(); query('.favorite-rows').replaceChildren();
+        for (const row of personal.favorites) { const track = config.tracks.find(track => track.id === row.trackId); if (!track || !`${track.title} ${track.artist}`.toLocaleLowerCase().includes(term)) continue;
+            const wrap = doc.createElement('div'), playButton = doc.createElement('button'), remove = doc.createElement('button');
+            playButton.textContent = track.title; remove.textContent = '♥'; remove.setAttribute('aria-label', `取消收藏：${track.title}`);
+            playButton.addEventListener('click', () => { const index=config.tracks.findIndex(item=>item.id===track.id); if (index === selected) { if (transitions.intent === 'playing' && !audio.ended) void transitions.pause(); else void play(); } else void select(index,true); });
+            remove.addEventListener('click', () => { toggleFavorite(personal,track.id);persist();renderFavorites(); });wrap.append(playButton,remove);query('.favorite-rows').append(wrap);
+        }
+    };
+    listen(query('.favorite'), 'click', () => { toggleFavorite(personal,config.tracks[selected].id);persist();renderFavorites(); });
+    listen(query('.favorites-open'), 'click', () => { query('.favorites').hidden = !query('.favorites').hidden;renderFavorites(); });
+    listen(query('.favorites input'), 'input', renderFavorites);
+    listen(query('.sleep-open'), 'click', () => { query('.sleep').hidden = !query('.sleep').hidden; });
+    listen(query('.sleep-start'), 'click', () => { try {sleep.start(Number(query('.sleep input').value));} catch(error) {query('.status').textContent=error.message;} });
+    listen(query('.sleep-end'), 'click', () => sleep.afterTrack());listen(query('.sleep-cancel'), 'click', () => sleep.cancel());listen(query('.sleep-pause'), 'click', () => sleep.snapshot().paused ? sleep.resume() : sleep.pause());
+    listen(doc, 'visibilitychange', () => sleep.check());
+    listen(query('.listening-tools select'), 'change', event => {personal.transitionDuration=Number(event.target.value);transitions.refresh();persist();});
+    let selectionRevision = 0, selectionPending = false;
     function updateAppearance(raw) {
         const theme = normalizeAppearance(raw);
         for (const key of ['accent', 'background', 'text'])
@@ -126,7 +157,7 @@ export function mountCardPlayer(input, scope) {
                 lifetime?.dispose();
                 return;
             }
-            await audio.play();
+            await transitions.play();
             if (!disposed) query('.status').textContent = '';
         } catch (error) {
             if (!disposed && error.name !== 'AbortError')
@@ -136,13 +167,17 @@ export function mountCardPlayer(input, scope) {
                         : '音频无法播放：请检查资源是否有效，以及浏览器是否支持这个格式。';
         }
     }
-    function select(index, shouldPlay = false) {
+    async function select(index, shouldPlay = false) {
         if (disposed) return;
+        const revision=++selectionRevision;
+        selectionPending=true; query('.seek').disabled=true;
+        if(shouldPlay&&!audio.paused&&!audio.ended){if(!await transitions.fadeOut()||disposed||revision!==selectionRevision){if(revision===selectionRevision){selectionPending=false;progress();}return;}}
         selected = index;
         live = false;
-        audio.pause();
+        transitions.stop();
         audio.src = config.tracks[index].src;
         audio.load();
+        selectionPending=false;
         const track = config.tracks[index];
         query('.title').textContent = track.title;
         query('.artist').textContent = track.artist;
@@ -177,6 +212,7 @@ export function mountCardPlayer(input, scope) {
             query('.lyrics').append(p);
         }
         render();
+        renderFavorites();
         if (shouldPlay) void play();
     }
     function advance(direction, ended = false) {
@@ -195,16 +231,16 @@ export function mountCardPlayer(input, scope) {
         button.setAttribute('aria-label', `${config.demo ? '选择测试曲' : '选择角色歌曲'}：${track.title}`);
         listen(button, 'click', () => {
             if (index === selected) {
-                if (audio.paused) void play();
-                else audio.pause();
+                if (transitions.intent !== 'playing' || audio.ended) void play();
+                else {selectionRevision++;selectionPending=false;progress();void transitions.pause();}
             } else select(index, true);
         });
         row.append(button);
         query('ol').append(row);
     });
     listen(query('.play'), 'click', () => {
-        if (audio.paused) void play();
-        else audio.pause();
+        if (transitions.intent !== 'playing' || audio.ended) void play();
+        else {selectionRevision++;selectionPending=false;progress();void transitions.pause();}
     });
     listen(query('.previous'), 'click', () => advance(-1));
     listen(query('.next'), 'click', () => advance(1));
@@ -216,7 +252,7 @@ export function mountCardPlayer(input, scope) {
         if (disposed) return;
         const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
         query('.seek').max = String(duration);
-        query('.seek').disabled = duration <= 0;
+        query('.seek').disabled = selectionPending || duration <= 0;
         query('.seek').value = String(audio.currentTime || 0);
         query('[data-time=elapsed]').textContent = formatTime(audio.currentTime);
         query('[data-time=duration]').textContent = formatTime(duration);
@@ -237,21 +273,22 @@ export function mountCardPlayer(input, scope) {
     for (const name of ['timeupdate', 'loadedmetadata', 'durationchange', 'emptied']) listen(audio, name, progress);
     for (const name of ['play', 'playing', 'pause', 'waiting', 'ended', 'error'])
         listen(audio, name, () => {
+            if (name === 'pause' && audio.paused || name === 'error') transitions.refresh();
             if (name === 'playing') live = true;
             else if (['pause', 'waiting', 'ended', 'error'].includes(name)) live = false;
             render();
         });
-    listen(audio, 'ended', () => advance(1, true));
+    listen(audio, 'ended', () => { if (!sleep.ended() && !selectionPending) advance(1, true); });
     listen(audio, 'error', () => {
         if (!disposed) query('.status').textContent = '音频加载失败：嵌入文件可能不受支持，或公开直链已失效。';
     });
     listen(query('.seek'), 'input', (event) => {
-        if (Number.isFinite(audio.duration)) audio.currentTime = Number(event.target.value);
+        if (!selectionPending && Number.isFinite(audio.duration)) audio.currentTime = Number(event.target.value);
     });
     listen(query('.volume input'), 'input', (event) => {
-        audio.volume = Number(event.target.value) / 100;
+        personal.volume = Number(event.target.value) / 100; transitions.refresh();
         try {
-            preferences.write({volume:audio.volume});
+            persist();
         } catch {
             /* Optional preference. */
         }
@@ -380,6 +417,7 @@ export function mountCardPlayer(input, scope) {
     lifetime = watchRoleLifetime(scope, () => {
         if (disposed) return;
         disposed = true;
+        selectionRevision++; sleep.dispose(); transitions.dispose();
         abort.abort();
         listeners = 0;
         live = false;

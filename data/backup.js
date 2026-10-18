@@ -3,10 +3,11 @@ import {referencedAssets} from '../asset-retirement.js';
 import {checksum,hashText} from './checksum.js';
 import {zipBlob,readZip} from './zip.js';
 import {normalizePlatformTrack} from '../platforms/catalog.js';
+import {PLAYER_BUILD} from '../card-player/quality.js';
 const encoder=new TextEncoder();
 const TRACK_KEYS=['id','kind','title','artist','album','url','coverId','lyrics','lyricsSource','fallbackCover','platform','platformTrackId','remoteId','sourceUrl','playback','cover','duration','metadataStatus','restriction'];
 const FORM_KEYS=['stm-maker-title','stm-maker-collection','stm-maker-theme','stm-maker-surface','accent','background','text','color:accent','color:background','color:text','opacity','font','font-credit','collapsed'];
-const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode'];
+const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode','transitionDuration'];
 const pick=(object,keys)=>Object.fromEntries(keys.filter(key=>Object.hasOwn(object||{},key)).map(key=>[key,object[key]]));
 export const canonical=value=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)&&!(item instanceof Blob)?Object.fromEntries(Object.keys(item).sort().map(key=>[key,item[key]])):item);
 function cleanUrl(value,warnings) {
@@ -38,7 +39,7 @@ export function draftReferences(project) {
     if(project.sourceSettings?.fontPreset==='custom'&&project.sourceSettings?.fontId&&!project.assets?.fontBlob)ids.add(project.sourceSettings.fontId);
     return ids;
 }
-export async function createBackup({settings,store,projects=[],version='1.13.3',signal,onProgress=()=>{}}) {
+export async function createBackup({settings,store,projects=[],version=PLAYER_BUILD,signal,onProgress=()=>{}}) {
     const warnings=new Set(),snapshot=safeSettings(settings,warnings),files=new Map(),resources=[];
     if(!Array.isArray(projects)||projects.length>10000)throw new Error('制作项目超过备份版本支持的数量，未生成部分备份。');
     for(const key of ['tracks','playlists','fonts'])if(Array.isArray(settings[key])&&settings[key].length!==snapshot[key].length)throw new Error('当前资料包含超限、重复或无效条目，未静默删减生成备份；请先核对曲库。');
@@ -77,7 +78,7 @@ export async function createBackup({settings,store,projects=[],version='1.13.3',
         drafts.push(copy);
         onProgress({phase:'projects',done:drafts.length,total:projects.length});
     }
-    const catalog=(settings.builtinCatalog?.tracks||[]).filter(track=>settings.currentId===track.id||settings.playlists.some(list=>list.trackIds.includes(track.id))).map(track=>trackMetadata(track,warnings));
+    const catalog=(settings.builtinCatalog?.tracks||[]).filter(track=>settings.currentId===track.id||settings.favorites?.some(row=>row.trackId===track.id)||settings.playlists.some(list=>list.trackIds.includes(track.id))).map(track=>trackMetadata(track,warnings));
     const manifest={format:'riserein-music-backup',version:1,appVersion:version,createdAt:new Date().toISOString(),settings:snapshot,catalog,projects:drafts,resources,warnings:[...warnings],remoteAudio:'metadata-and-URLs-only; not offline audio'};
     const manifestBlob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
     if(manifestBlob.size>64*1024*1024)throw new Error('备份目录超过 64 MiB 上限，未生成部分备份。');

@@ -6,6 +6,7 @@ import { normalizeFonts } from './fonts.js';
 import { COVER_COUNT, MAX_LYRICS } from './media.js';
 import { normalizePanelSize } from './resizing.js';
 import { SCHEMES } from './scheme.js';
+import { normalizeFavorites, TRANSITION_DURATIONS } from './listening.js';
 
 export const MAX_TRACKS = 200;
 export const MAX_PLAYLISTS = 50;
@@ -120,6 +121,8 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
         builtinHidden,
         activePlaylistId: activeId,
         volume: Math.min(1, Math.max(0, volume)),
+        favorites: normalizeFavorites(raw.favorites, allIds, now),
+        transitionDuration: TRANSITION_DURATIONS.includes(raw.transitionDuration) ? raw.transitionDuration : 300,
         mode: PLAY_MODES.includes(raw.mode) ? raw.mode : 'list',
         currentId,
         theme: THEMES.includes(raw.theme) ? raw.theme : 'amber',
@@ -203,6 +206,7 @@ export function deleteTrackFromLibrary(settings, trackId) {
     if (settings.currentId === trackId) settings.currentId = null;
     settings.recentPlays = settings.recentPlays.filter(item => item.trackId !== trackId);
     settings.playEvents = settings.playEvents.filter(item => item.trackId !== trackId);
+    settings.favorites = (settings.favorites || []).filter(item => item.trackId !== trackId);
 }
 
 function normalizeHistory(raw, ids, now) {

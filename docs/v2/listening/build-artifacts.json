@@ -1,0 +1,27 @@
+{
+  "helperVersion": "4.11.3",
+  "helperRevision": "333e8a13dfabca359d0105cd0f3c90e9d341ea52",
+  "files": [
+    {
+      "path": "card-player/dist/native-runtime.js",
+      "bytes": 263054,
+      "baselineBytes": 245952,
+      "addedBytes": 17102,
+      "sha256": "6efd9fefdf6a3609c49246d1e715d8c5c788a83ed5cb73ac74318a7e17577217"
+    },
+    {
+      "path": "card-player/dist/runtime.js",
+      "bytes": 41944,
+      "baselineBytes": 34709,
+      "addedBytes": 7235,
+      "sha256": "6578ea0d5bf72b0d1dd9239da956a00b6d83d18b7bb17ad5a9a1713070c146c4"
+    },
+    {
+      "path": "card-player/dist/shared-ui.js",
+      "bytes": 233053,
+      "baselineBytes": 216524,
+      "addedBytes": 16529,
+      "sha256": "3461c0fca81d483609f56b1fd68fe4b5eba8a446237dbe8bc4df1b2f9a46c989"
+    }
+  ]
+}

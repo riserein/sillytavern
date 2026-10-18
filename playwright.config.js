@@ -2,6 +2,8 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
     testDir: './tests',
+    // Independent suites must not erase each other's trace recordings.
+    outputDir: 'test-results/full',
     testMatch: '*.e2e.js',
     // The independent card suite needs a real, separately installed Tavern Helper.
     testIgnore: '**/card-*.e2e.js',

@@ -80,7 +80,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         openGeneration = 0;
     const draftRevisions = new Map(),
         recoveries = new Map();
-    const sourceKeys = ['backgroundId', 'fontPreset', 'fontId', 'fontName', 'volume', 'mode'];
+    const sourceKeys = ['backgroundId', 'fontPreset', 'fontId', 'fontName', 'volume', 'mode', 'transitionDuration'];
     const formSnapshot = () =>
         Object.fromEntries(
             [
@@ -749,6 +749,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     appearance: appearance(),
                     volume: sourceSettings.volume,
                     mode: sourceSettings.mode,
+                    transitionDuration: sourceSettings.transitionDuration,
                     startCollapsed: q('[data-maker=collapsed]').checked,
                 },
                 {

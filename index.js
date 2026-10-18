@@ -30,6 +30,8 @@ import { createAssetRetirement } from './asset-retirement.js';
 import { identifyAccount, setStorageScope, createAccountGuard } from './data/identity.js';
 import { MaintenanceJournal } from './data/journal.js';
 import { createDataPanel } from './data/panel.js';
+import { createAudioTransitions } from './listening.js';
+import { createListeningPanel } from './listening-panel.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
 // Keep the build-time guard explicit at author-only branches: esbuild can then
@@ -65,9 +67,11 @@ export function initialize(options = {}) {
     }
     let dataPanel = null;
     let online = null;
+    let listening = null;
     let platformLoadController = null;
     let objectUrl = null;
     let loadSequence = 0;
+    let selectionPending = false;
     let importing = false;
     let viewRevision = 0;
     let lastRoleAvatar = null;
@@ -351,6 +355,7 @@ export function initialize(options = {}) {
 
     const query = selector => panel.querySelector(selector);
     const audio = query('audio');
+    const transitions = createAudioTransitions(audio, { getVolume: () => settings.volume, getDuration: () => settings.transitionDuration });
     const officialPlayer = createOfficialPlayer(query('[data-role="official-player"]'), { beforeOpen: pausePlayback });
     const officialList = createOfficialPlayer(query('[data-online="official-list-player"]'), { beforeOpen: pausePlayback });
     let playbackTimer;
@@ -411,7 +416,7 @@ export function initialize(options = {}) {
         if (page !== 'playback') { setQueueOpen(false); setLyricsOpen(false); }
         for (const section of panel.querySelectorAll('[data-view]')) section.hidden = section.dataset.view !== page;
         for (const button of panel.querySelectorAll('[data-page]')) {
-            const selected = button.dataset.page === page;
+            const selected = button.dataset.page === page || page === 'favorites' && button.dataset.page === 'library';
             button.setAttribute('aria-selected', String(selected));
             button.tabIndex = selected ? 0 : -1;
             if (selected && focus) button.focus();
@@ -434,6 +439,7 @@ export function initialize(options = {}) {
         const active = [...panel.querySelectorAll(':scope > .stm-queue-overlay')].find(sheet => !sheet.hidden);
         for (const child of panel.children) if (child !== status && !child.classList.contains('stm-click-effects')) child.inert = Boolean(active && child !== active);
         for (const button of panel.querySelectorAll('[data-action="toggle-queue"], .stm-mini-queue')) button.setAttribute('aria-expanded', String(!query('#stm-queue').hidden));
+        query('.stm-sleep-button')?.setAttribute('aria-expanded', String(!query('#stm-sleep')?.hidden));
         if (open) overlay.querySelector('button').focus({ preventScroll: true });
         else if (restoreFocus) {
             const previous = sheetReturnFocus.get(selector);
@@ -629,6 +635,18 @@ export function initialize(options = {}) {
         save(); renderPlaylists(); renderTracks();
     });
     const playerUI = createPlayerUI(panel, launcher, audio);
+    listening = createListeningPanel({ panel, settings, audio, getTrack: id => findTrack(settings, id), save, showPage, setSheetOpen,
+        canPlay: track => platformService.canPlay(track),
+        onPlay: id => void toggleTrack(id), onStop: () => void softPause(),
+        onAdd(target, ids) {
+            if (!settings.playlists.some(list => list.id === target)) throw new Error('请先创建一个歌单，再选择加入目标。');
+            if (settings.tracks.length + ids.filter(id => !settings.tracks.some(track => track.id === id)).length > MAX_TRACKS) throw new Error('加入后会超过总曲库容量，请减少选择；未加入或舍弃歌曲。');
+            let added = 0; for (const id of ids) if (addTrackToPlaylist(settings, target, id)) added++;
+            save(); renderPlaylists(); renderTracks(); showStatus(`已将 ${added} 首收藏加入歌单。`);
+        },
+    });
+    query('#stm-transition-duration').addEventListener('change', event => { settings.transitionDuration = Number(event.target.value); transitions.refresh(); save(); });
+    menus.refresh();
     function updateMini() { mini.render(currentPage === 'playback' || panel.dataset.lyricsOpen === 'true'); }
 
 
@@ -732,6 +750,7 @@ export function initialize(options = {}) {
     function renderSongDetails() {
         const track = findTrack(settings, detailsTrackId);
         if (!track) return;
+        listening?.detail(track.id);
         query('[data-role="details-title"]').textContent = track.title;
         query('[data-role="details-source"]').textContent = track.artist || (track.kind === 'local' ? '本地音乐' : '在线音乐');
         const image = query('.stm-details-cover');
@@ -928,7 +947,7 @@ export function initialize(options = {}) {
         panel.hidden = !open;
         launcher.setAttribute('aria-expanded', String(open));
         if (open) { resizer.refresh(); panelDrag.refresh(); if (focus) (panel.dataset.lyricsOpen === 'true' ? query('.stm-lyrics-view') : query('[data-action="close"]')).focus(); }
-        else { menus.close(); setQueueOpen(false); setDetailsOpen(false); officialList.close(); if (panel.contains(document.activeElement)) launcher.focus(); }
+        else { menus.close(); setSheetOpen('#stm-sleep', false); setQueueOpen(false); setDetailsOpen(false); officialList.close(); if (panel.contains(document.activeElement)) launcher.focus(); }
     }
 
     const activePlaylist = () => settings.playlists.find(item => item.id === settings.activePlaylistId);
@@ -1215,8 +1234,15 @@ export function initialize(options = {}) {
         clearTimeout(playbackTimer); officialPlayer.close(); officialList.close();
         platformLoadController?.abort(); platformLoadController = null;
         loadSequence++;
+        selectionPending = false; updateProgress();
         canAutoAdvance = false;
-        audio.pause();
+        transitions.stop();
+    }
+    function softPause() {
+        playerUI.setResolving(false);
+        clearTimeout(playbackTimer); platformLoadController?.abort(); platformLoadController = null;
+        loadSequence++; selectionPending = false; updateProgress(); canAutoAdvance = false;
+        return transitions.pause();
     }
 
     async function syncRole(force = false) {
@@ -1285,6 +1311,7 @@ export function initialize(options = {}) {
                 detailsTrackId = track.id; setDetailsOpen(true);
             });
             row.append(details);
+            row.append(listening.button(track.id));
             if (browsedPlaylist() && panel.dataset.orderEditing === 'true') {
                 for (const [direction, caption] of [[-1,'上移'],[1,'下移']]) {
                     const move = document.createElement('button'); move.type = 'button'; move.className = 'stm-icon stm-move-song'; move.textContent = direction < 0 ? '↑' : '↓'; move.setAttribute('aria-label', `${caption}歌曲：${track.title}`);
@@ -1314,6 +1341,7 @@ export function initialize(options = {}) {
         else if (!query('#stm-details').hidden) renderSongDetails();
         renderQueue();
         renderHistory();
+        listening.render();
         updatePlayback();
     }
 
@@ -1375,7 +1403,7 @@ export function initialize(options = {}) {
         if (!selected) return;
         if (!platformService.canPlay(selected)) { detailsTrackId = id; setDetailsOpen(true); if (platformService.canEmbed(selected)) officialPlayer.open(selected); else showStatus('此歌曲仅支持前往官方平台收听。'); return; }
         if (settings.currentId === id && audio.getAttribute('src') && !audio.error) {
-            if (!audio.paused && !audio.ended) audio.pause(); else await play();
+            if (transitions.intent === 'playing' && !audio.ended) await softPause(); else await play();
             return;
         }
         const destination = sourceId === undefined ? (settings.builtinCatalog.tracks.some(track => track.id === id) && !settings.tracks.some(track => track.id === id) ? BUILTIN_ID : null) : sourceId;
@@ -1421,7 +1449,7 @@ export function initialize(options = {}) {
 
     function updateProgress() {
         const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
-        seek.disabled = duration <= 0;
+        seek.disabled = selectionPending || duration <= 0;
         seek.max = String(duration);
         seek.value = String(audio.currentTime || 0);
         query('[data-role="elapsed"]').textContent = formatTime(audio.currentTime);
@@ -1441,6 +1469,7 @@ export function initialize(options = {}) {
             button.closest('li')?.classList.toggle('stm-active', active);
         }
         updateMini();
+        listening?.update();
         playButton.setAttribute('aria-label', playing ? '暂停' : '播放');
         playButton.title = playing ? '暂停' : '播放';
         panel.classList.toggle('stm-is-playing', playing);
@@ -1454,7 +1483,7 @@ export function initialize(options = {}) {
         playerUI.setResolving(false);
         clearTimeout(playbackTimer); officialPlayer.close(); officialList.close();
         platformLoadController?.abort(); platformLoadController = null;
-        audio.pause();
+        transitions.stop();
         audio.removeAttribute('src');
         audio.load();
         if (objectUrl) URL.revokeObjectURL(objectUrl);
@@ -1473,7 +1502,7 @@ export function initialize(options = {}) {
             showStatus('音频加载超过 20 秒，请检查网络或稍后再点播放以重新获取音源。', true);
         }, 20000);
         try {
-            await audio.play();
+            await transitions.play();
             if (sequence === loadSequence) showStatus();
         } catch (error) {
             clearTimeout(playbackTimer);
@@ -1486,6 +1515,14 @@ export function initialize(options = {}) {
 
     async function selectTrack(id, shouldPlay = false) {
         const sequence = ++loadSequence;
+        canAutoAdvance = false;
+        selectionPending = true; updateProgress();
+        try {
+        if (shouldPlay && !audio.paused && !audio.ended) {
+            const completed = await transitions.fadeOut();
+            if (!completed || sequence !== loadSequence || disposed) return;
+        }
+        if (disposed || sequence !== loadSequence) return;
         playSession++;
         canAutoAdvance = true;
         releaseSource();
@@ -1530,6 +1567,9 @@ export function initialize(options = {}) {
             if (sequence === loadSequence) showStatus(error.message || '读取音乐失败，请重新导入。', true);
         } finally {
             if (sequence === loadSequence) playerUI.setResolving(false);
+        }
+        } finally {
+            if (sequence === loadSequence) { selectionPending = false; updateProgress(); }
         }
     }
 
@@ -1636,7 +1676,7 @@ export function initialize(options = {}) {
     function toggleCurrent() {
         const current = findTrack(settings, settings.currentId);
         if (!current || !platformService.canPlay(current)) { void selectTrack(playbackQueue.tracks().find(track => platformService.canPlay(track))?.id, true); return; }
-        if (!audio.paused) audio.pause();
+        if (transitions.intent === 'playing' && !audio.ended) void softPause();
         else if (!audio.getAttribute('src') || audio.error) void selectTrack(settings.currentId || playbackQueue.tracks()[0]?.id, true);
         else void play();
     }
@@ -1757,7 +1797,7 @@ export function initialize(options = {}) {
     mode.addEventListener('click', () => { settings.mode = PLAY_MODES[(PLAY_MODES.indexOf(settings.mode) + 1) % PLAY_MODES.length]; renderMode(); save(); showStatus(`播放模式：${modeLabels[settings.mode]}`); });
     renderMode();
     function updateVolume() {
-        volume.value = String(Math.round(audio.volume * 100));
+        volume.value = String(Math.round(settings.volume * 100));
         query('[data-role="volume"]').textContent = audio.muted ? '静音' : `${volume.value}%`;
         const muteButton = query('[data-action="mute"]');
         muteButton.textContent = audio.muted ? '⊘' : '♪';
@@ -1767,18 +1807,20 @@ export function initialize(options = {}) {
     audio.volume = settings.volume;
     updateVolume();
     volume.addEventListener('input', () => {
-        audio.volume = Number(volume.value) / 100;
+        settings.volume = Number(volume.value) / 100;
+        transitions.refresh();
         audio.muted = false;
-        settings.volume = audio.volume;
         updateVolume();
         save();
     });
-    query('[data-action="mute"]').addEventListener('click', () => { audio.muted = !audio.muted; updateVolume(); });
+    query('[data-action="mute"]').addEventListener('click', () => { audio.muted = !audio.muted; transitions.refresh(); updateVolume(); });
     seek.addEventListener('input', () => {
-        if (Number.isFinite(audio.duration) && audio.duration > 0) audio.currentTime = Number(seek.value);
+        if (!selectionPending && Number.isFinite(audio.duration) && audio.duration > 0) audio.currentTime = Number(seek.value);
     });
     for (const event of ['timeupdate', 'loadedmetadata', 'durationchange', 'emptied']) audio.addEventListener(event, updateProgress);
     for (const event of ['play', 'playing', 'waiting', 'stalled', 'pause', 'ended', 'error']) audio.addEventListener(event, updatePlayback);
+    audio.addEventListener('pause', () => { if (audio.paused) transitions.refresh(); });
+    audio.addEventListener('error', () => transitions.refresh());
     audio.addEventListener('playing', () => {
         clearTimeout(playbackTimer);
         if (audio.paused || !settings.currentId || countedSession === playSession) return;
@@ -1792,6 +1834,7 @@ export function initialize(options = {}) {
         if (!panel.hidden && (currentPage === 'ranking' || currentPage === 'recent')) renderHistory();
     }, 60000);
     audio.addEventListener('ended', () => {
+        if (listening.timer.ended()) return;
         if (!canAutoAdvance) return;
         const nextId = nextTrackId(playbackQueue.tracks().filter(track => platformService.canPlay(track)), settings.currentId, settings.mode, { ended: true });
         if (nextId) void selectTrack(nextId, true);
@@ -1811,6 +1854,7 @@ export function initialize(options = {}) {
     function dispose() {
         if (disposed) return;
         disposed = true;
+        listening?.dispose(); transitions.dispose();
         dataPanel?.dispose(); cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose(); retirement?.dispose(); options.onDispose?.();
         ++loadSequence;
         pausePlayback(); audio.removeAttribute('src'); audio.load();

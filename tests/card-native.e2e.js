@@ -267,6 +267,7 @@ async function session(browser, { portable = false, mobile = false } = {}) {
             body = await response.json(),
             data = JSON.parse(body.settings);
         data.firstRun = false;
+        data.main_api = 'kobold'; data.api_server = 'http://fixture.invalid';
         data.extension_settings ||= {};
         data.extension_settings.disabledExtensions = portable ? ['third-party/sillytavern'] : [];
         data.extension_settings.riserein_music_player = {
@@ -666,6 +667,15 @@ for (const mobile of [false, true])
                     }),
             );
             if (file.format === 'json') {
+                await recipient.locator('.stm-options [data-favorite-id]').click();
+                await expect(recipient.locator('.stm-options [data-favorite-id]')).toHaveAttribute('aria-pressed','true');
+                await recipient.getByRole('tab',{name:'曲库',exact:true}).click();
+                await recipient.locator('.stm-favorites-entry').click();
+                await expect(recipient.locator('.stm-favorite-list li')).toHaveCount(1);
+                await recipient.getByRole('tab',{name:'播放',exact:true}).click();
+                await recipient.locator('.stm-sleep-button').click();
+                await recipient.locator('[data-sleep-minutes="15"]').click();
+                await recipient.getByRole('button',{name:'关闭睡眠定时器',exact:true}).click();
                 await recipient.locator('[data-action=toggle-lyrics]').click();
                 await expect(recipient.locator('.stm-lyrics-view')).toContainText('Shared UI lyric');
                 await recipient.locator('.stm-lyrics-view').click();
@@ -803,6 +813,12 @@ for (const mobile of [false, true])
             ).toBe(true);
             await selectCard(recipient, avatar);
             await expect(recipient.locator(root)).toHaveCount(1);
+            if (file.format === 'json') {
+                await expect(recipient.locator('.stm-sleep-button')).toHaveAttribute('data-active','false');
+                await recipient.getByRole('tab',{name:'曲库',exact:true}).click();
+                await recipient.locator('.stm-favorites-entry').click();
+                await expect(recipient.locator('.stm-favorite-list li')).toHaveCount(1);
+            }
             await recipient.getByRole('tab', { name: '最近播放', exact: true }).click();
             await expect(recipient.locator('[data-view=recent] li')).toHaveCount(3);
             await selectCard(recipient, blank);

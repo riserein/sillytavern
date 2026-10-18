@@ -1,0 +1,331 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-native.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/v2/listening/native-runner.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-native.e2e.js"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-native.e2e.js",
+      "file": "card-native.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "compact selected font stays fixed after native export and changes only on a new author export",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 360000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 45859,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T01:42:45.932Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-e9107af2b2724da5c32b",
+          "file": "card-native.e2e.js",
+          "line": 32,
+          "column": 1
+        },
+        {
+          "title": "native PNG and JSON carry the shared player to a clean desktop recipient",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 70164,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#chat .mes_text').last()\nExpected substring: \u001b[32m\"\u001b[7mRegenerated native respons\u001b[27me.\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7mNative lifecycle fixtur\u001b[27me.\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#chat .mes_text').last()\u001b[22m\n\u001b[2m    9 × locator resolved to <div class=\"mes_text\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"Native lifecycle fixture.\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#chat .mes_text').last()\nExpected substring: \u001b[32m\"\u001b[7mRegenerated native respons\u001b[27me.\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7mNative lifecycle fixtur\u001b[27me.\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#chat .mes_text').last()\u001b[22m\n\u001b[2m    9 × locator resolved to <div class=\"mes_text\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"Native lifecycle fixture.\"\u001b[22m\n\n    at /workspace/sillytavern/tests/card-native.e2e.js:757:75",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                      "column": 75,
+                      "line": 757
+                    },
+                    "snippet": "  755 |                     await Generate('regenerate');\n  756 |                 });\n> 757 |                 await expect(recipient.locator('#chat .mes_text').last()).toContainText(\n      |                                                                           ^\n  758 |                     'Regenerated native response.',\n  759 |                 );\n  760 |                 await continuous();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                        "column": 75,
+                        "line": 757
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#chat .mes_text').last()\nExpected substring: \u001b[32m\"\u001b[7mRegenerated native respons\u001b[27me.\"\u001b[39m\nReceived string:    \u001b[31m\"\u001b[7mNative lifecycle fixtur\u001b[27me.\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#chat .mes_text').last()\u001b[22m\n\u001b[2m    9 × locator resolved to <div class=\"mes_text\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"Native lifecycle fixture.\"\u001b[22m\n\n\n  755 |                     await Generate('regenerate');\n  756 |                 });\n> 757 |                 await expect(recipient.locator('#chat .mes_text').last()).toContainText(\n      |                                                                           ^\n  758 |                     'Regenerated native response.',\n  759 |                 );\n  760 |                 await continuous();\n    at /workspace/sillytavern/tests/card-native.e2e.js:757:75"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T01:43:32.075Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/card-native.e2e.js-native--3a313-o-a-clean-desktop-recipient/test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/card-native.e2e.js-native--3a313-o-a-clean-desktop-recipient/test-failed-2.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/card-native.e2e.js-native--3a313-o-a-clean-desktop-recipient/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/card-native.e2e.js-native--3a313-o-a-clean-desktop-recipient/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                    "column": 75,
+                    "line": 757
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-a77c8f72e05bf1c6959c",
+          "file": "card-native.e2e.js",
+          "line": 521,
+          "column": 37
+        },
+        {
+          "title": "native PNG and JSON carry the shared player to a clean phone recipient",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 42998,
+                  "error": {
+                    "message": "Error: apiRequestContext._wrapApiCall: file data stream has unexpected number of bytes",
+                    "stack": "Error: apiRequestContext._wrapApiCall: file data stream has unexpected number of bytes\n    at /workspace/sillytavern/tests/card-native.e2e.js:612:29",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                      "column": 29,
+                      "line": 612
+                    },
+                    "snippet": "  610 |                     request.onblocked = () => reject(new Error('DB blocked'));\n  611 |                 }),\n> 612 |         );\n      |           ^\n  613 |         await authorContext.close();\n  614 |         const { page: recipient } = await session(browser, {\n  615 |             portable: true,"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                        "column": 29,
+                        "line": 612
+                      },
+                      "message": "Error: apiRequestContext._wrapApiCall: file data stream has unexpected number of bytes\n\n  610 |                     request.onblocked = () => reject(new Error('DB blocked'));\n  611 |                 }),\n> 612 |         );\n      |           ^\n  613 |         await authorContext.close();\n  614 |         const { page: recipient } = await session(browser, {\n  615 |             portable: true,\n    at /workspace/sillytavern/tests/card-native.e2e.js:612:29"
+                    },
+                    {
+                      "message": "Error: End of central directory record signature not found. Either not a zip file, or file is truncated."
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T01:44:52.142Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/card-native.e2e.js-native--0a3ee--to-a-clean-phone-recipient/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/card-native.e2e.js-native--0a3ee--to-a-clean-phone-recipient/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                    "column": 29,
+                    "line": 612
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-3b0e967b5abd8917012b",
+          "file": "card-native.e2e.js",
+          "line": 521,
+          "column": 37
+        },
+        {
+          "title": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 18453,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T01:45:39.361Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-0b69860e3a5942b7e52e",
+          "file": "card-native.e2e.js",
+          "line": 946,
+          "column": 1
+        },
+        {
+          "title": "saving local bindings and exporting an imported card never remove its unrelated carried player",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 17115,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T01:45:58.187Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-9201350a0a4651f44034",
+          "file": "card-native.e2e.js",
+          "line": 1138,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T01:42:44.833Z",
+    "duration": 210613.369,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

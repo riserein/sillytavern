@@ -95,6 +95,8 @@ export function mountNativePlayer(payload, scope, options = {}) {
             'currentId',
             'recentPlays',
             'playEvents',
+            'favorites',
+            'transitionDuration',
             'theme',
             'colorScheme',
             'surface',
@@ -111,6 +113,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
         } catch {
             /* Browser may block local storage; the player still works. */
         }
+        let warnedPreferences = false;
         const context = {
             extensionSettings: { riserein_music_player: settings },
             characters: [{ avatar, name: config.title }],
@@ -118,7 +121,12 @@ export function mountNativePlayer(payload, scope, options = {}) {
             saveSettingsDebounced() {
                 const state = context.extensionSettings.riserein_music_player;
                 try {
-                    preferences.write(Object.fromEntries(allowedState.map((key) => [key, state[key]])));
+                    void preferences.write(Object.fromEntries(allowedState.map((key) => [key, state[key]]))).then(saved => {
+                        if (!disposed && (!saved || preferences.sessionOnly) && !warnedPreferences) {
+                            warnedPreferences = true;
+                            win.toastr?.warning('当前环境无法持久保存个人偏好，收藏等设置仅在本次会话有效。');
+                        }
+                    });
                 } catch {
                     /* Optional preferences. */
                 }

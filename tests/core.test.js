@@ -6,7 +6,7 @@ const tracks = ['a', 'b', 'c'].map(id => ({ id, kind: 'local', title: id }));
 
 test('new playlists have safe playback defaults', () => {
     assert.deepEqual(normalizeSettings(), {
-        tracks: [], volume: 0.6, mode: 'list', currentId: null,
+        tracks: [], volume: 0.6, mode: 'list', currentId: null, favorites: [], transitionDuration: 300,
         playlists: [], activePlaylistId: null, builtinHidden: false,
         backgroundId: null, recentPlays: [], playEvents: [],
         customColors: { enabled: false, accent: '#dbc291', background: '#25211e', text: '#f0e9dc' },

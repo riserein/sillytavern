@@ -1,4 +1,5 @@
 /** Portable data only: never accept browser storage keys or executable configuration. */
+import { TRANSITION_DURATIONS } from '../listening.js';
 export const MAX_PACKAGE_BYTES = 30 * 1024 * 1024;
 export const MAX_AUDIO_BYTES = 20 * 1024 * 1024;
 export const CARD_THEMES = Object.freeze({
@@ -104,6 +105,7 @@ export function normalizeCardConfig(raw) {
         appearance: normalizeAppearance(raw.appearance),
         volume: Number.isFinite(raw.volume) ? Math.min(1, Math.max(0, raw.volume)) : 0.2,
         mode: ['sequence', 'list', 'single', 'shuffle'].includes(raw.mode) ? raw.mode : 'list',
+        transitionDuration: TRANSITION_DURATIONS.includes(raw.transitionDuration) ? raw.transitionDuration : 300,
         startCollapsed: raw.startCollapsed === true,
     };
 }

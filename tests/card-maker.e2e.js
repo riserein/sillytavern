@@ -61,6 +61,7 @@ async function session(browser, { portable = false, mobile = false } = {}) {
             body = await response.json(),
             data = JSON.parse(body.settings);
         data.firstRun = false;
+        data.main_api = 'kobold'; data.api_server = 'http://fixture.invalid';
         data.extension_settings ||= {};
         data.extension_settings.disabledExtensions = portable ? ['third-party/sillytavern'] : [];
         data.extension_settings.riserein_music_player = {
@@ -478,6 +479,9 @@ for (const mobile of [false, true])
             ),
         ).toBe(true);
         await recipient.getByRole('button', { name: '选择角色歌曲：第一首测试音乐', exact: true }).click();
+        // Switching now fades the old track first. Its advancing time cannot prove
+        // the new recording is loaded; wait for the actual selected title.
+        await expect(recipient.locator(root + ' .title')).toHaveText('第一首测试音乐');
         await expect
             .poll(() => recipient.locator(root + ' audio').evaluate((audio) => audio.currentTime))
             .toBeGreaterThan(0.1);

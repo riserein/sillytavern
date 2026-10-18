@@ -43,7 +43,8 @@ export function createSelectMenus(panel, {controlsRoot=panel}={}) {
         }
         position(control);
     }
-    for (const select of controlsRoot.querySelectorAll('select:not([data-no-menu])')) {
+    function enhance() { for (const select of controlsRoot.querySelectorAll('select:not([data-no-menu])')) {
+        if (select.closest('.stm-select')) continue;
         const wrapper = document.createElement('div'); wrapper.className = 'stm-select'; wrapper.id = `${select.id}-control`;
         const button = document.createElement('button'); button.type = 'button'; button.className = 'stm-select-trigger';
         button.id = `${select.id}-trigger`; button.setAttribute('role', 'combobox'); button.setAttribute('aria-haspopup', 'listbox');
@@ -81,7 +82,8 @@ export function createSelectMenus(panel, {controlsRoot=panel}={}) {
         const observer = new MutationObserver(() => refresh(control));
         observer.observe(select, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['disabled', 'selected'] });
         control.observer = observer; refresh(control);
-    }
+    } }
+    enhance();
     const outside = event => { if (opened && !opened.button.contains(event.target) && !opened.menu.contains(event.target)) close(); };
     const scroll = event => {
         if (!opened || opened.menu.contains(event.target)) return;
@@ -101,7 +103,7 @@ export function createSelectMenus(panel, {controlsRoot=panel}={}) {
     window.addEventListener('resize', resize);
     return {
         close,
-        refresh() { for (const control of controls) refresh(control); },
+        refresh() { enhance(); for (const control of controls) refresh(control); },
         dispose() { close(); controls.forEach(control => {control.observer.disconnect();control.menu.remove();}); document.removeEventListener('pointerdown', outside, true); panel.removeEventListener('scroll', scroll, true);panel.removeEventListener('wheel',userScroll,true);panel.removeEventListener('touchmove',userScroll,true); window.removeEventListener('resize', resize); },
     };
 }
