@@ -1,0 +1,427 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.mobile-virtual.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/mobile-virtual",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-small-320",
+        "name": "chromium-small-320",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-virtual.e2e.js"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/workspace/sillytavern/test-results/mobile-virtual",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-iphone-geometry-390",
+        "name": "chromium-iphone-geometry-390",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-virtual.e2e.js"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/workspace/sillytavern/test-results/mobile-virtual",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-android-geometry-412",
+        "name": "chromium-android-geometry-412",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-virtual.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "mobile-virtual.e2e.js",
+      "file": "mobile-virtual.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "real host: touch import/play, four layouts, rotation, lyrics, queue, seeking and floating drag",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-small-320",
+              "projectName": "chromium-small-320",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10955,
+                  "error": {
+                    "message": "Error: locator.evaluate: Error: strict mode violation: locator('audio') resolved to 6 elements:\n    1) <audio hidden=\"\" id=\"audio_message_sound\" src=\"sounds/message.mp3\"></audio> aka locator('#audio_message_sound')\n    2) <audio controls=\"\"></audio> aka locator('audio').nth(1)\n    3) <audio controls=\"\"></audio> aka locator('audio').nth(2)\n    4) <audio hidden=\"\" preload=\"auto\" class=\"mes_audio\"></audio> aka locator('#message_audio_template audio')\n    5) <audio src=\"\" autoplay=\"\" preload=\"auto\" id=\"tts_audio\"></audio> aka locator('#tts_audio')\n    6) <audio preload=\"metadata\" src=\"blob:http://127.0.0.1:8000/200be121-9b2b-46aa-8e86-08edf267cc42\"></audio> aka getByRole('dialog', { name: '音乐播放器' }).locator('audio')\n\nCall log:\n\u001b[2m  - waiting for locator('audio')\u001b[22m\n",
+                    "stack": "Error: locator.evaluate: Error: strict mode violation: locator('audio') resolved to 6 elements:\n    1) <audio hidden=\"\" id=\"audio_message_sound\" src=\"sounds/message.mp3\"></audio> aka locator('#audio_message_sound')\n    2) <audio controls=\"\"></audio> aka locator('audio').nth(1)\n    3) <audio controls=\"\"></audio> aka locator('audio').nth(2)\n    4) <audio hidden=\"\" preload=\"auto\" class=\"mes_audio\"></audio> aka locator('#message_audio_template audio')\n    5) <audio src=\"\" autoplay=\"\" preload=\"auto\" id=\"tts_audio\"></audio> aka locator('#tts_audio')\n    6) <audio preload=\"metadata\" src=\"blob:http://127.0.0.1:8000/200be121-9b2b-46aa-8e86-08edf267cc42\"></audio> aka getByRole('dialog', { name: '音乐播放器' }).locator('audio')\n\nCall log:\n\u001b[2m  - waiting for locator('audio')\u001b[22m\n\n    at /workspace/sillytavern/tests/mobile-virtual.e2e.js:76:56",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/mobile-virtual.e2e.js",
+                      "column": 56,
+                      "line": 76
+                    },
+                    "snippet": "  74 |         await expect(page.locator('#stm-player')).toHaveAttribute('data-layout', layout);\n  75 |         for (const size of [portrait, { width: portrait.height, height: portrait.width }]) {\n> 76 |             const before = await page.locator('audio').evaluate(a => a.currentTime);\n     |                                                        ^\n  77 |             await page.setViewportSize(size);\n  78 |             await inViewport(page, page.locator('#stm-player'));\n  79 |             expect(await page.evaluate(() => mobileAudio === document.querySelector('#stm-player audio') && mobileAudio.src === mobileSource && !mobileAudio.paused)).toBe(true);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/mobile-virtual.e2e.js",
+                        "column": 56,
+                        "line": 76
+                      },
+                      "message": "Error: locator.evaluate: Error: strict mode violation: locator('audio') resolved to 6 elements:\n    1) <audio hidden=\"\" id=\"audio_message_sound\" src=\"sounds/message.mp3\"></audio> aka locator('#audio_message_sound')\n    2) <audio controls=\"\"></audio> aka locator('audio').nth(1)\n    3) <audio controls=\"\"></audio> aka locator('audio').nth(2)\n    4) <audio hidden=\"\" preload=\"auto\" class=\"mes_audio\"></audio> aka locator('#message_audio_template audio')\n    5) <audio src=\"\" autoplay=\"\" preload=\"auto\" id=\"tts_audio\"></audio> aka locator('#tts_audio')\n    6) <audio preload=\"metadata\" src=\"blob:http://127.0.0.1:8000/200be121-9b2b-46aa-8e86-08edf267cc42\"></audio> aka getByRole('dialog', { name: '音乐播放器' }).locator('audio')\n\nCall log:\n\u001b[2m  - waiting for locator('audio')\u001b[22m\n\n\n  74 |         await expect(page.locator('#stm-player')).toHaveAttribute('data-layout', layout);\n  75 |         for (const size of [portrait, { width: portrait.height, height: portrait.width }]) {\n> 76 |             const before = await page.locator('audio').evaluate(a => a.currentTime);\n     |                                                        ^\n  77 |             await page.setViewportSize(size);\n  78 |             await inViewport(page, page.locator('#stm-player'));\n  79 |             expect(await page.evaluate(() => mobileAudio === document.querySelector('#stm-player audio') && mobileAudio.src === mobileSource && !mobileAudio.paused)).toBe(true);\n    at /workspace/sillytavern/tests/mobile-virtual.e2e.js:76:56"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:48:20.305Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/mobile-virtual/mobile-virtual.e2e.js-real-894b1-e-seeking-and-floating-drag-chromium-small-320/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/mobile-virtual/mobile-virtual.e2e.js-real-894b1-e-seeking-and-floating-drag-chromium-small-320/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/mobile-virtual/mobile-virtual.e2e.js-real-894b1-e-seeking-and-floating-drag-chromium-small-320/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/mobile-virtual.e2e.js",
+                    "column": 56,
+                    "line": 76
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-5ff254b84101f73de4a3",
+          "file": "mobile-virtual.e2e.js",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "standalone carried runtime: touch playback and duplicate/role exit cleanup with simulated lifecycle",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-small-320",
+              "projectName": "chromium-small-320",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1184,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:48:32.986Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-17206bc18b2dcc231637",
+          "file": "mobile-virtual.e2e.js",
+          "line": 114,
+          "column": 1
+        },
+        {
+          "title": "real host: touch import/play, four layouts, rotation, lyrics, queue, seeking and floating drag",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-iphone-geometry-390",
+              "projectName": "chromium-iphone-geometry-390",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 11844,
+                  "error": {
+                    "message": "Error: locator.evaluate: Error: strict mode violation: locator('audio') resolved to 6 elements:\n    1) <audio hidden=\"\" id=\"audio_message_sound\" src=\"sounds/message.mp3\"></audio> aka locator('#audio_message_sound')\n    2) <audio controls=\"\"></audio> aka locator('audio').nth(1)\n    3) <audio controls=\"\"></audio> aka locator('audio').nth(2)\n    4) <audio hidden=\"\" preload=\"auto\" class=\"mes_audio\"></audio> aka locator('#message_audio_template audio')\n    5) <audio src=\"\" autoplay=\"\" preload=\"auto\" id=\"tts_audio\"></audio> aka locator('#tts_audio')\n    6) <audio preload=\"metadata\" src=\"blob:http://127.0.0.1:8000/4be3efe3-d76a-475a-9e08-65e3391df255\"></audio> aka getByRole('dialog', { name: '音乐播放器' }).locator('audio')\n\nCall log:\n\u001b[2m  - waiting for locator('audio')\u001b[22m\n",
+                    "stack": "Error: locator.evaluate: Error: strict mode violation: locator('audio') resolved to 6 elements:\n    1) <audio hidden=\"\" id=\"audio_message_sound\" src=\"sounds/message.mp3\"></audio> aka locator('#audio_message_sound')\n    2) <audio controls=\"\"></audio> aka locator('audio').nth(1)\n    3) <audio controls=\"\"></audio> aka locator('audio').nth(2)\n    4) <audio hidden=\"\" preload=\"auto\" class=\"mes_audio\"></audio> aka locator('#message_audio_template audio')\n    5) <audio src=\"\" autoplay=\"\" preload=\"auto\" id=\"tts_audio\"></audio> aka locator('#tts_audio')\n    6) <audio preload=\"metadata\" src=\"blob:http://127.0.0.1:8000/4be3efe3-d76a-475a-9e08-65e3391df255\"></audio> aka getByRole('dialog', { name: '音乐播放器' }).locator('audio')\n\nCall log:\n\u001b[2m  - waiting for locator('audio')\u001b[22m\n\n    at /workspace/sillytavern/tests/mobile-virtual.e2e.js:76:56",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/mobile-virtual.e2e.js",
+                      "column": 56,
+                      "line": 76
+                    },
+                    "snippet": "  74 |         await expect(page.locator('#stm-player')).toHaveAttribute('data-layout', layout);\n  75 |         for (const size of [portrait, { width: portrait.height, height: portrait.width }]) {\n> 76 |             const before = await page.locator('audio').evaluate(a => a.currentTime);\n     |                                                        ^\n  77 |             await page.setViewportSize(size);\n  78 |             await inViewport(page, page.locator('#stm-player'));\n  79 |             expect(await page.evaluate(() => mobileAudio === document.querySelector('#stm-player audio') && mobileAudio.src === mobileSource && !mobileAudio.paused)).toBe(true);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/mobile-virtual.e2e.js",
+                        "column": 56,
+                        "line": 76
+                      },
+                      "message": "Error: locator.evaluate: Error: strict mode violation: locator('audio') resolved to 6 elements:\n    1) <audio hidden=\"\" id=\"audio_message_sound\" src=\"sounds/message.mp3\"></audio> aka locator('#audio_message_sound')\n    2) <audio controls=\"\"></audio> aka locator('audio').nth(1)\n    3) <audio controls=\"\"></audio> aka locator('audio').nth(2)\n    4) <audio hidden=\"\" preload=\"auto\" class=\"mes_audio\"></audio> aka locator('#message_audio_template audio')\n    5) <audio src=\"\" autoplay=\"\" preload=\"auto\" id=\"tts_audio\"></audio> aka locator('#tts_audio')\n    6) <audio preload=\"metadata\" src=\"blob:http://127.0.0.1:8000/4be3efe3-d76a-475a-9e08-65e3391df255\"></audio> aka getByRole('dialog', { name: '音乐播放器' }).locator('audio')\n\nCall log:\n\u001b[2m  - waiting for locator('audio')\u001b[22m\n\n\n  74 |         await expect(page.locator('#stm-player')).toHaveAttribute('data-layout', layout);\n  75 |         for (const size of [portrait, { width: portrait.height, height: portrait.width }]) {\n> 76 |             const before = await page.locator('audio').evaluate(a => a.currentTime);\n     |                                                        ^\n  77 |             await page.setViewportSize(size);\n  78 |             await inViewport(page, page.locator('#stm-player'));\n  79 |             expect(await page.evaluate(() => mobileAudio === document.querySelector('#stm-player audio') && mobileAudio.src === mobileSource && !mobileAudio.paused)).toBe(true);\n    at /workspace/sillytavern/tests/mobile-virtual.e2e.js:76:56"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:48:34.909Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/mobile-virtual/mobile-virtual.e2e.js-real-894b1-e-seeking-and-floating-drag-chromium-iphone-geometry-390/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/mobile-virtual/mobile-virtual.e2e.js-real-894b1-e-seeking-and-floating-drag-chromium-iphone-geometry-390/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/mobile-virtual/mobile-virtual.e2e.js-real-894b1-e-seeking-and-floating-drag-chromium-iphone-geometry-390/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/mobile-virtual.e2e.js",
+                    "column": 56,
+                    "line": 76
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-ff1f77f9d81ea29c4b13",
+          "file": "mobile-virtual.e2e.js",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "standalone carried runtime: touch playback and duplicate/role exit cleanup with simulated lifecycle",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-iphone-geometry-390",
+              "projectName": "chromium-iphone-geometry-390",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1151,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:48:48.461Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-2d8c7703685725dc8ece",
+          "file": "mobile-virtual.e2e.js",
+          "line": 114,
+          "column": 1
+        },
+        {
+          "title": "real host: touch import/play, four layouts, rotation, lyrics, queue, seeking and floating drag",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-android-geometry-412",
+              "projectName": "chromium-android-geometry-412",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10912,
+                  "error": {
+                    "message": "Error: locator.evaluate: Error: strict mode violation: locator('audio') resolved to 6 elements:\n    1) <audio hidden=\"\" id=\"audio_message_sound\" src=\"sounds/message.mp3\"></audio> aka locator('#audio_message_sound')\n    2) <audio controls=\"\"></audio> aka locator('audio').nth(1)\n    3) <audio controls=\"\"></audio> aka locator('audio').nth(2)\n    4) <audio hidden=\"\" preload=\"auto\" class=\"mes_audio\"></audio> aka locator('#message_audio_template audio')\n    5) <audio src=\"\" autoplay=\"\" preload=\"auto\" id=\"tts_audio\"></audio> aka locator('#tts_audio')\n    6) <audio preload=\"metadata\" src=\"blob:http://127.0.0.1:8000/9c60223e-ad22-40f2-8880-d5299148145d\"></audio> aka getByRole('dialog', { name: '音乐播放器' }).locator('audio')\n\nCall log:\n\u001b[2m  - waiting for locator('audio')\u001b[22m\n",
+                    "stack": "Error: locator.evaluate: Error: strict mode violation: locator('audio') resolved to 6 elements:\n    1) <audio hidden=\"\" id=\"audio_message_sound\" src=\"sounds/message.mp3\"></audio> aka locator('#audio_message_sound')\n    2) <audio controls=\"\"></audio> aka locator('audio').nth(1)\n    3) <audio controls=\"\"></audio> aka locator('audio').nth(2)\n    4) <audio hidden=\"\" preload=\"auto\" class=\"mes_audio\"></audio> aka locator('#message_audio_template audio')\n    5) <audio src=\"\" autoplay=\"\" preload=\"auto\" id=\"tts_audio\"></audio> aka locator('#tts_audio')\n    6) <audio preload=\"metadata\" src=\"blob:http://127.0.0.1:8000/9c60223e-ad22-40f2-8880-d5299148145d\"></audio> aka getByRole('dialog', { name: '音乐播放器' }).locator('audio')\n\nCall log:\n\u001b[2m  - waiting for locator('audio')\u001b[22m\n\n    at /workspace/sillytavern/tests/mobile-virtual.e2e.js:76:56",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/mobile-virtual.e2e.js",
+                      "column": 56,
+                      "line": 76
+                    },
+                    "snippet": "  74 |         await expect(page.locator('#stm-player')).toHaveAttribute('data-layout', layout);\n  75 |         for (const size of [portrait, { width: portrait.height, height: portrait.width }]) {\n> 76 |             const before = await page.locator('audio').evaluate(a => a.currentTime);\n     |                                                        ^\n  77 |             await page.setViewportSize(size);\n  78 |             await inViewport(page, page.locator('#stm-player'));\n  79 |             expect(await page.evaluate(() => mobileAudio === document.querySelector('#stm-player audio') && mobileAudio.src === mobileSource && !mobileAudio.paused)).toBe(true);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/mobile-virtual.e2e.js",
+                        "column": 56,
+                        "line": 76
+                      },
+                      "message": "Error: locator.evaluate: Error: strict mode violation: locator('audio') resolved to 6 elements:\n    1) <audio hidden=\"\" id=\"audio_message_sound\" src=\"sounds/message.mp3\"></audio> aka locator('#audio_message_sound')\n    2) <audio controls=\"\"></audio> aka locator('audio').nth(1)\n    3) <audio controls=\"\"></audio> aka locator('audio').nth(2)\n    4) <audio hidden=\"\" preload=\"auto\" class=\"mes_audio\"></audio> aka locator('#message_audio_template audio')\n    5) <audio src=\"\" autoplay=\"\" preload=\"auto\" id=\"tts_audio\"></audio> aka locator('#tts_audio')\n    6) <audio preload=\"metadata\" src=\"blob:http://127.0.0.1:8000/9c60223e-ad22-40f2-8880-d5299148145d\"></audio> aka getByRole('dialog', { name: '音乐播放器' }).locator('audio')\n\nCall log:\n\u001b[2m  - waiting for locator('audio')\u001b[22m\n\n\n  74 |         await expect(page.locator('#stm-player')).toHaveAttribute('data-layout', layout);\n  75 |         for (const size of [portrait, { width: portrait.height, height: portrait.width }]) {\n> 76 |             const before = await page.locator('audio').evaluate(a => a.currentTime);\n     |                                                        ^\n  77 |             await page.setViewportSize(size);\n  78 |             await inViewport(page, page.locator('#stm-player'));\n  79 |             expect(await page.evaluate(() => mobileAudio === document.querySelector('#stm-player audio') && mobileAudio.src === mobileSource && !mobileAudio.paused)).toBe(true);\n    at /workspace/sillytavern/tests/mobile-virtual.e2e.js:76:56"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:48:50.380Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/mobile-virtual/mobile-virtual.e2e.js-real-894b1-e-seeking-and-floating-drag-chromium-android-geometry-412/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/mobile-virtual/mobile-virtual.e2e.js-real-894b1-e-seeking-and-floating-drag-chromium-android-geometry-412/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/mobile-virtual/mobile-virtual.e2e.js-real-894b1-e-seeking-and-floating-drag-chromium-android-geometry-412/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/mobile-virtual.e2e.js",
+                    "column": 56,
+                    "line": 76
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-59282a0e5251bb895b08",
+          "file": "mobile-virtual.e2e.js",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "standalone carried runtime: touch playback and duplicate/role exit cleanup with simulated lifecycle",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-android-geometry-412",
+              "projectName": "chromium-android-geometry-412",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1184,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:49:02.902Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-396599a182bc2a1605e4",
+          "file": "mobile-virtual.e2e.js",
+          "line": 114,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T07:48:19.704Z",
+    "duration": 44638.068,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

@@ -5,8 +5,8 @@ export default defineConfig({
     // Independent suites must not erase each other's trace recordings.
     outputDir: 'test-results/full',
     testMatch: '*.e2e.js',
-    // The independent card suite needs a real, separately installed Tavern Helper.
-    testIgnore: '**/card-*.e2e.js',
+    // Card tests need Tavern Helper; virtual-mobile tests need touch projects.
+    testIgnore: ['**/card-*.e2e.js', '**/mobile-virtual.e2e.js'],
     workers: 1,
     timeout: 45000,
     use: {

@@ -1,0 +1,307 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.mobile-virtual.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/mobile-virtual",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-small-320",
+        "name": "chromium-small-320",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-virtual.e2e.js"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/workspace/sillytavern/test-results/mobile-virtual",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-iphone-geometry-390",
+        "name": "chromium-iphone-geometry-390",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-virtual.e2e.js"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/workspace/sillytavern/test-results/mobile-virtual",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-android-geometry-412",
+        "name": "chromium-android-geometry-412",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "mobile-virtual.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "mobile-virtual.e2e.js",
+      "file": "mobile-virtual.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "real host: touch import/play, four layouts, rotation, lyrics, queue, seeking and floating drag",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-small-320",
+              "projectName": "chromium-small-320",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 30591,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:49:19.505Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-5ff254b84101f73de4a3",
+          "file": "mobile-virtual.e2e.js",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "standalone carried runtime: touch playback and duplicate/role exit cleanup with simulated lifecycle",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-small-320",
+              "projectName": "chromium-small-320",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1098,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:49:50.285Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-17206bc18b2dcc231637",
+          "file": "mobile-virtual.e2e.js",
+          "line": 114,
+          "column": 1
+        },
+        {
+          "title": "real host: touch import/play, four layouts, rotation, lyrics, queue, seeking and floating drag",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-iphone-geometry-390",
+              "projectName": "chromium-iphone-geometry-390",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 31780,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:49:52.006Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-ff1f77f9d81ea29c4b13",
+          "file": "mobile-virtual.e2e.js",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "standalone carried runtime: touch playback and duplicate/role exit cleanup with simulated lifecycle",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-iphone-geometry-390",
+              "projectName": "chromium-iphone-geometry-390",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1195,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:50:23.979Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-2d8c7703685725dc8ece",
+          "file": "mobile-virtual.e2e.js",
+          "line": 114,
+          "column": 1
+        },
+        {
+          "title": "real host: touch import/play, four layouts, rotation, lyrics, queue, seeking and floating drag",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-android-geometry-412",
+              "projectName": "chromium-android-geometry-412",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 35499,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:50:25.860Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-59282a0e5251bb895b08",
+          "file": "mobile-virtual.e2e.js",
+          "line": 35,
+          "column": 1
+        },
+        {
+          "title": "standalone carried runtime: touch playback and duplicate/role exit cleanup with simulated lifecycle",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-android-geometry-412",
+              "projectName": "chromium-android-geometry-412",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1171,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-18T07:51:01.605Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "b84791afc79ddd82f369-396599a182bc2a1605e4",
+          "file": "mobile-virtual.e2e.js",
+          "line": 114,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-18T07:49:18.821Z",
+    "duration": 104076.89700000001,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
