@@ -82,6 +82,7 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
             title: String(item.title || '未命名音乐').slice(0, 160),
             ...(url ? { url } : {}),
             ...(typeof item.artist === 'string' && item.artist ? { artist: item.artist.slice(0, 120) } : {}),
+            ...(typeof item.album === 'string' && item.album ? { album: item.album.slice(0, 160) } : {}),
             ...(typeof item.coverId === 'string' && /^cover:[a-f0-9-]{36}$/.test(item.coverId) ? { coverId: item.coverId } : {}),
             ...(Number.isFinite(item.lyricOffsetMs) ? {lyricOffsetMs: Math.max(-60000,Math.min(60000,Math.round(item.lyricOffsetMs)))} : {}),
             ...(typeof item.lyrics === 'string' && item.lyrics ? { lyrics: item.lyrics.slice(0, MAX_LYRICS) } : {}),

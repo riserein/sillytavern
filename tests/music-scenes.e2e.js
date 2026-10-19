@@ -59,3 +59,14 @@ test('journal reuses music controls and lyric DOM across real book pages and eve
  await page.evaluate(()=>app.setDesign({layout:'journal'}));await turn('notes');
  expect(await page.locator('[data-journal-note]').evaluate(n=>getComputedStyle(n).backgroundColor)).toBe('rgba(0, 0, 0, 0)');await page.evaluate(()=>app.dispose());expect(await page.evaluate(()=>originalAudio.paused&&liveURLs.size===0)).toBe(true);
 });
+test('author song notes render as text, follow the current song and can be hidden without deletion',async({page},info)=>{
+ await fixture(page);await page.evaluate(()=>app.openScenes());const manager=page.locator('.stm-scene-manager'),unsafe='<img src=x onerror="window.noteInjected=1">\n只属于歌曲 a 的手记';
+ await manager.locator('[data-scene-note-wrap=a] summary').click();await manager.locator('[data-scene-note=a]').fill(unsafe);
+ await manager.locator('[data-scene-note-wrap=b] summary').click();await manager.locator('[data-scene-note=b]').fill('歌曲 b：写给旧日的信。');
+ await manager.locator('[data-scene-field=description]').fill('窗外下着雨，书房里只有低缓的钢琴声。');await manager.locator('[data-scene-action=save]').click();await expect(manager.locator('[data-scene-save-status]')).toContainText('酒馆保存');
+ await mkdir('docs/music-journal/notes',{recursive:true});await manager.screenshot({path:`docs/music-journal/notes/editor-${info.project.name}.png`});await manager.locator('[data-scene-action=close]').click();
+ await page.evaluate(()=>app.setDesign({layout:'journal'}));await page.locator('button[data-journal-page=notes]').click();await expect(page.locator('[data-journal-note]')).toHaveText(unsafe);await expect(page.locator('[data-journal-note] img')).toHaveCount(0);expect(await page.evaluate(()=>window.noteInjected)).toBeUndefined();await expect(page.locator('[data-journal-description]')).toContainText('窗外下着雨');
+ await page.locator('button[data-journal-page=collection]').click();await page.locator('[data-journal-track=b]').click();await page.locator('button[data-journal-page=notes]').click();await expect(page.locator('[data-journal-note]')).toHaveText('歌曲 b：写给旧日的信。');
+ await page.evaluate(()=>app.openScenes());await manager.locator('[data-scene-show-notes]').uncheck();await manager.locator('[data-scene-action=save]').click();await expect(manager.locator('[data-scene-save-status]')).toContainText('酒馆保存');await manager.locator('[data-scene-action=close]').click();await expect(page.locator('[data-journal-note]')).toHaveText('');expect(await page.evaluate(()=>app.settings.roleScenes[0].notes.length)).toBe(2);
+ expect(await page.locator('[data-journal-note]').evaluate(n=>getComputedStyle(n).backgroundColor)).toBe('rgba(0, 0, 0, 0)');await page.evaluate(()=>app.dispose());
+});

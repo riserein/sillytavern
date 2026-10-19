@@ -43,6 +43,7 @@ export function createSceneManager({panel,settings,store,getContext,save,onSaved
     const q=s=>root.querySelector(s),current=()=>draft?.scenes.find(s=>s.id===selected);
     for(const [id,theme] of Object.entries(DESIGN_THEMES))q('[data-scene-field=themeId]').append(new Option(theme.name,id));
     q('[data-scene-role]').id='stm-scene-role';q('[data-scene-field=themeId]').id='stm-scene-theme';const menus=createSelectMenus(panel,{controlsRoot:root});
+    const noteSetting=doc.createElement('label');noteSetting.className='stm-check-label';noteSetting.innerHTML='<input type="checkbox" data-scene-show-notes>在手账中显示歌曲手记';q('[data-scene-selected]').before(noteSetting);
     function roles(){return (getContext().characters||[]).filter(c=>c.avatar&&c.avatar!=='none');}
     function load(target){
         avatar=target;const group=roleSceneGroup(settings,avatar);baseline=JSON.stringify(group);draft=normalizeSceneSet(group||{});dirty=false;staged.clear();
@@ -56,26 +57,32 @@ export function createSceneManager({panel,settings,store,getContext,save,onSaved
         const s=current();if(!s){menus.refresh();return;}
         for(const key of ['name','description','themeId'])q(`[data-scene-field=${key}]`).value=s[key];
         q('[data-scene-field=default]').checked=draft.defaultSceneId===s.id;q('[data-scene-field=included]').checked=s.included;
+        q('[data-scene-show-notes]').checked=draft.showNotes;
         q('[data-scene-counter]').value=textLength(s.description)+' / 300';
         q('[data-scene-resources]').textContent=`封面：${s.coverId?'已选择':'沿用歌曲'} · 背景：${s.backgroundId?'已选择':'沿用播放器'}`;
         renderTracks();menus.refresh();
     }
     function renderTracks(){
         const s=current();if(!s)return;const tracks=allTracks(settings),byId=new Map(tracks.map(t=>[t.id,t])),chosen=q('[data-scene-selected]');chosen.replaceChildren();
-        for(const id of s.trackIds){const row=doc.createElement('div');row.className='stm-scene-editor-row';const title=doc.createElement('span');title.textContent=byId.get(id)?.title||'缺少歌曲：'+id;row.append(title,button(doc,'↑','track-up',id),button(doc,'↓','track-down',id),button(doc,'移除','track-remove',id));chosen.append(row);}
+        for(const id of s.trackIds){const row=doc.createElement('div');row.className='stm-scene-editor-row';const title=doc.createElement('span');title.textContent=byId.get(id)?.title||'缺少歌曲：'+id;row.append(title,button(doc,'↑','track-up',id),button(doc,'↓','track-down',id),button(doc,'移除','track-remove',id));chosen.append(row);
+            const wrap=doc.createElement('details'),summary=doc.createElement('summary'),field=doc.createElement('textarea'),count=doc.createElement('output');
+            wrap.dataset.sceneNoteWrap=id;summary.textContent='歌曲手记 · '+(byId.get(id)?.title||id);field.dataset.sceneNote=id;field.rows=3;field.maxLength=1000;field.setAttribute('aria-label','歌曲手记：'+(byId.get(id)?.title||id));field.value=draft.notes.find(n=>n.trackId===id)?.text||'';count.textContent=textLength(field.value)+' / 500';wrap.append(summary,field,count);chosen.append(wrap);
+        }
         const library=q('[data-scene-library]');library.replaceChildren();
         for(const track of tracks){const label=doc.createElement('label');label.className='stm-check-label';const box=doc.createElement('input');box.type='checkbox';box.dataset.sceneTrack=track.id;box.checked=s.trackIds.includes(track.id);box.disabled=track.kind==='platform'&&!['full','preview'].includes(track.playback);label.append(box,doc.createTextNode(track.title+(box.disabled?' · 仅来源记录':'')));library.append(label);}
         q('[data-scene-issues]').textContent=sceneIssues(s,tracks).join('；');
     }
     function close(force=false){if(saving&&!force)return;epoch++;root.hidden=true;menus.close();staged.clear();void onPreview?.(null);draft=null;dirty=false;}
     function open(target){epoch++;q('[data-scene-role]').replaceChildren(...roles().map(c=>new Option(c.name||c.avatar,c.avatar)));const list=roles();if(!list.length){onError(new Error('请先创建或导入一个单人角色。'));return;}root.hidden=false;load(target&&list.some(c=>c.avatar===target)?target:list[0].avatar);}
-    root.addEventListener('input',e=>{const s=current(),field=e.target.dataset.sceneField;if(!s||!field)return;
+    root.addEventListener('input',e=>{if(e.target.dataset.sceneNote){const id=e.target.dataset.sceneNote,value=e.target.value;e.target.setCustomValidity(textLength(value)>500?'歌曲手记最多 500 字':'');draft.notes=draft.notes.filter(n=>n.trackId!==id);if(value.trim())draft.notes.push({trackId:id,text:value});e.target.nextElementSibling.textContent=textLength(value)+' / 500';dirty=true;return;}
+        const s=current(),field=e.target.dataset.sceneField;if(!s||!field)return;
         if(['name','description'].includes(field)){s[field]=e.target.value;const max=field==='name'?80:300;e.target.setCustomValidity(textLength(s[field])>max?`最多 ${max} 字`:'');dirty=true;if(field==='description')q('[data-scene-counter]').value=textLength(s.description)+' / 300';}
     },{signal:abort.signal});
     root.addEventListener('change',async e=>{
         try{
             if(e.target.matches('[data-scene-role]')){if(dirty&&!doc.defaultView.confirm('放弃尚未保存的场景修改？')){e.target.value=avatar;return;}epoch++;void onPreview?.(null);load(e.target.value);return;}
             const s=current();if(!s)return;const field=e.target.dataset.sceneField;
+            if(e.target.matches('[data-scene-show-notes]'))draft.showNotes=e.target.checked;
             if(field==='themeId')s.themeId=e.target.value;if(field==='default'&&e.target.checked)draft.defaultSceneId=s.id;if(field==='included')s.included=e.target.checked;
             if(e.target.dataset.sceneTrack){const id=e.target.dataset.sceneTrack;if(e.target.checked&&!s.trackIds.includes(id))s.trackIds.push(id);else if(!e.target.checked)s.trackIds=s.trackIds.filter(x=>x!==id);renderTracks();}
             if(e.target.dataset.sceneFile){const key=e.target.dataset.sceneFile,file=e.target.files[0],token=epoch,sceneId=s.id;e.target.value='';if(!file)return;validateImageFile(file);let blob;processing++;try{blob=await prepareCover(file);}finally{processing--;}if(token!==epoch||root.hidden||current()?.id!==sceneId)return;const id=(key==='coverId'?'cover:':'background:')+createTrackId();staged.set(id,blob);if(key==='backgroundId')staged.set(id+':original',file);s[key]=id;render();}
