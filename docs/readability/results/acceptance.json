@@ -1,0 +1,116 @@
+{
+  "version": "2.0.0-alpha.6",
+  "baseCommit": "e3d5c4ec06e8eccc6563ea2757bf9dc20b14c6dd",
+  "runtimeBytes": 334018,
+  "runtimeSha256": "00fae3a7f9c4de15cc3db748e824a834c7c1127079392ddf311164c67184be20",
+  "nodePassed": 172,
+  "browserCasesPassed": 52,
+  "browserSuites": [
+    {
+      "stage": "reading",
+      "passed": 18,
+      "failed": 0,
+      "report": "browser-runner.json"
+    },
+    {
+      "stage": "native",
+      "passed": 4,
+      "failed": 0,
+      "report": "native-runner.json"
+    },
+    {
+      "stage": "maker",
+      "passed": 4,
+      "failed": 0,
+      "report": "maker-runner.json"
+    },
+    {
+      "stage": "coexist",
+      "passed": 1,
+      "failed": 0,
+      "report": "coexist-runner.json"
+    },
+    {
+      "stage": "design",
+      "passed": 6,
+      "failed": 0,
+      "report": "design-runner.json"
+    },
+    {
+      "stage": "data",
+      "passed": 10,
+      "failed": 0,
+      "report": "data-runner.json"
+    },
+    {
+      "stage": "legacy",
+      "passed": 9,
+      "failed": 0,
+      "report": "legacy-runner.json"
+    }
+  ],
+  "serialPipeline": [
+    {
+      "stage": "reading",
+      "status": "passed",
+      "startedAt": 1792378615.8936768,
+      "log": "/tmp/stm-reading-accepted.json",
+      "exitCode": 0,
+      "seconds": 81.75
+    },
+    {
+      "stage": "native",
+      "status": "passed",
+      "startedAt": 1792378697.6404834,
+      "log": "/tmp/stm-reading-native-accepted.log",
+      "exitCode": 0,
+      "seconds": 354.21
+    },
+    {
+      "stage": "maker",
+      "status": "passed",
+      "startedAt": 1792379051.8556209,
+      "log": "/tmp/stm-reading-maker-accepted.log",
+      "exitCode": 0,
+      "seconds": 206.81
+    },
+    {
+      "stage": "coexist",
+      "status": "passed",
+      "startedAt": 1792379258.6615567,
+      "log": "/tmp/stm-reading-coexist-accepted.log",
+      "exitCode": 0,
+      "seconds": 11.24
+    },
+    {
+      "stage": "design",
+      "status": "passed",
+      "startedAt": 1792379269.9016569,
+      "log": "/tmp/stm-reading-design-accepted.json",
+      "exitCode": 0,
+      "seconds": 103.19
+    },
+    {
+      "stage": "data",
+      "status": "passed",
+      "startedAt": 1792379373.08969,
+      "log": "/tmp/stm-reading-data-accepted.json",
+      "exitCode": 0,
+      "seconds": 45.98
+    },
+    {
+      "stage": "legacy",
+      "status": "passed",
+      "startedAt": 1792379419.073517,
+      "log": "/tmp/stm-reading-legacy-accepted.log",
+      "exitCode": 0,
+      "seconds": 116.01
+    }
+  ],
+  "host": "SillyTavern 1.19.0 / official Tavern Helper 4.11.3",
+  "browser": "Linux Chromium 154.0.8037.57 / Playwright 1.56.1",
+  "physicalDevicesVerified": false,
+  "firefoxWebkitVerified": false,
+  "realExternalMusicVerifiedThisRound": false,
+  "scope": "Selected named suites, not every historical test or every UI pixel."
+}

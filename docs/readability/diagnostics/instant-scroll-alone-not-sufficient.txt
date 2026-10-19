@@ -1,0 +1,15 @@
+[
+  { type: 'focus', top: 0, follow: 'true', t: 755.0999999940395 },
+  { type: 'keydown', top: 0, follow: 'true', t: 767.0999999940395 },
+  { type: 'scroll', top: 20, follow: 'false', t: 791.6999999880791 },
+  { type: 'scroll', top: 64, follow: 'false', t: 808.8999999910593 },
+  { type: 'focus', top: 0, follow: 'true', t: 817.6999999880791 },
+  { type: 'resume', top: 0, follow: 'true', t: 817.8999999910593 },
+  { type: 'scroll', top: 69, follow: 'false', t: 825.3999999910593 },
+  { type: 'scroll', top: 154, follow: 'false', t: 842.1999999880791 },
+  { type: 'scroll', top: 242, follow: 'false', t: 858.1999999880791 },
+  { type: 'scroll', top: 318, follow: 'false', t: 875.2999999970198 },
+  { type: 'scroll', top: 372, follow: 'false', t: 891.5 },
+  { type: 'scroll', top: 400, follow: 'false', t: 908.2999999970198 },
+  { type: 'scroll', top: 405, follow: 'false', t: 925 }
+]

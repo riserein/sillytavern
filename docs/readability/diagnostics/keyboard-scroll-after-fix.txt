@@ -1,0 +1,8 @@
+[
+  { type: 'focus', top: 0, follow: 'true', t: 727.0999999940395 },
+  { type: 'keydown', top: 0, follow: 'true', t: 747.7000000029802 },
+  { type: 'scroll', top: 483, follow: 'false', t: 749.5999999940395 },
+  { type: 'focus', top: 0, follow: 'true', t: 789.5 },
+  { type: 'resume', top: 0, follow: 'true', t: 789.9000000059605 },
+  { type: 'scroll', top: 0, follow: 'true', t: 798.2999999970198 }
+]

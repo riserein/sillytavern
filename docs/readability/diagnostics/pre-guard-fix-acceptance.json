@@ -1,0 +1,42 @@
+[
+  {
+    "stage": "reading",
+    "status": "passed",
+    "startedAt": 1792375732.3535676,
+    "log": "/tmp/stm-reading-accepted.json",
+    "exitCode": 0,
+    "seconds": 75.23
+  },
+  {
+    "stage": "native",
+    "status": "passed",
+    "startedAt": 1792375807.5876377,
+    "log": "/tmp/stm-reading-native-accepted.log",
+    "exitCode": 0,
+    "seconds": 353.17
+  },
+  {
+    "stage": "maker",
+    "status": "passed",
+    "startedAt": 1792376160.76216,
+    "log": "/tmp/stm-reading-maker-accepted.log",
+    "exitCode": 0,
+    "seconds": 206.94
+  },
+  {
+    "stage": "coexist",
+    "status": "passed",
+    "startedAt": 1792376367.7021413,
+    "log": "/tmp/stm-reading-coexist-accepted.log",
+    "exitCode": 0,
+    "seconds": 12.43
+  },
+  {
+    "stage": "design",
+    "status": "passed",
+    "startedAt": 1792376380.1372616,
+    "log": "/tmp/stm-reading-design-accepted.json",
+    "exitCode": 0,
+    "seconds": 107.39
+  }
+]

@@ -1,0 +1,225 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.reading.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/reading-guard-before",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "reading.e2e.js"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "/workspace/sillytavern/test-results/reading-guard-before",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile-chromium-emulation",
+        "name": "mobile-chromium-emulation",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "reading.e2e.js"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "reading.e2e.js",
+      "file": "reading.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "disposed role guard forwards an in-flight same-account host save through another extension wrapper",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 689,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"result\": \"ok\",\u001b[39m\n\u001b[31m+   \"error\": \"Cannot read properties of undefined (reading 'json')\",\u001b[39m\n\u001b[2m  }\u001b[22m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"result\": \"ok\",\u001b[39m\n\u001b[31m+   \"error\": \"Cannot read properties of undefined (reading 'json')\",\u001b[39m\n\u001b[2m  }\u001b[22m\n    at /workspace/sillytavern/tests/reading.e2e.js:144:53",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                      "column": 53,
+                      "line": 144
+                    },
+                    "snippet": "  142 |     await page.waitForFunction(() => window.guardWaiting);\n  143 |     await page.evaluate(() => { const f = document.getElementById('guard-frame'); f.contentWindow.fixtureGuard.dispose(); f.remove(); });\n> 144 |     expect(await page.evaluate(() => guardPending)).toEqual({ result: 'ok' });\n      |                                                     ^\n  145 |     expect(await page.evaluate(async () => { try { return await (await fetch('/api/settings/save', { method: 'POST' })).json(); } catch (e) { return { error: e.message }; } })).toEqual({ result: 'ok' });\n  146 |     expect(await page.evaluate(() => guardSaveCount)).toBe(2);\n  147 | });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                        "column": 53,
+                        "line": 144
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"result\": \"ok\",\u001b[39m\n\u001b[31m+   \"error\": \"Cannot read properties of undefined (reading 'json')\",\u001b[39m\n\u001b[2m  }\u001b[22m\n\n  142 |     await page.waitForFunction(() => window.guardWaiting);\n  143 |     await page.evaluate(() => { const f = document.getElementById('guard-frame'); f.contentWindow.fixtureGuard.dispose(); f.remove(); });\n> 144 |     expect(await page.evaluate(() => guardPending)).toEqual({ result: 'ok' });\n      |                                                     ^\n  145 |     expect(await page.evaluate(async () => { try { return await (await fetch('/api/settings/save', { method: 'POST' })).json(); } catch (e) { return { error: e.message }; } })).toEqual({ result: 'ok' });\n  146 |     expect(await page.evaluate(() => guardSaveCount)).toBe(2);\n  147 | });\n    at /workspace/sillytavern/tests/reading.e2e.js:144:53"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T02:20:10.145Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/reading-guard-before/reading.e2e.js-disposed-ro-e03f1-h-another-extension-wrapper-desktop/test-failed-1.png"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/reading-guard-before/reading.e2e.js-disposed-ro-e03f1-h-another-extension-wrapper-desktop/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                    "column": 53,
+                    "line": 144
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-57dda323874c98112011",
+          "file": "reading.e2e.js",
+          "line": 118,
+          "column": 1
+        },
+        {
+          "title": "disposed role guard forwards an in-flight same-account host save through another extension wrapper",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 695,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"result\": \"ok\",\u001b[39m\n\u001b[31m+   \"error\": \"Cannot read properties of undefined (reading 'json')\",\u001b[39m\n\u001b[2m  }\u001b[22m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"result\": \"ok\",\u001b[39m\n\u001b[31m+   \"error\": \"Cannot read properties of undefined (reading 'json')\",\u001b[39m\n\u001b[2m  }\u001b[22m\n    at /workspace/sillytavern/tests/reading.e2e.js:144:53",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                      "column": 53,
+                      "line": 144
+                    },
+                    "snippet": "  142 |     await page.waitForFunction(() => window.guardWaiting);\n  143 |     await page.evaluate(() => { const f = document.getElementById('guard-frame'); f.contentWindow.fixtureGuard.dispose(); f.remove(); });\n> 144 |     expect(await page.evaluate(() => guardPending)).toEqual({ result: 'ok' });\n      |                                                     ^\n  145 |     expect(await page.evaluate(async () => { try { return await (await fetch('/api/settings/save', { method: 'POST' })).json(); } catch (e) { return { error: e.message }; } })).toEqual({ result: 'ok' });\n  146 |     expect(await page.evaluate(() => guardSaveCount)).toBe(2);\n  147 | });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                        "column": 53,
+                        "line": 144
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"result\": \"ok\",\u001b[39m\n\u001b[31m+   \"error\": \"Cannot read properties of undefined (reading 'json')\",\u001b[39m\n\u001b[2m  }\u001b[22m\n\n  142 |     await page.waitForFunction(() => window.guardWaiting);\n  143 |     await page.evaluate(() => { const f = document.getElementById('guard-frame'); f.contentWindow.fixtureGuard.dispose(); f.remove(); });\n> 144 |     expect(await page.evaluate(() => guardPending)).toEqual({ result: 'ok' });\n      |                                                     ^\n  145 |     expect(await page.evaluate(async () => { try { return await (await fetch('/api/settings/save', { method: 'POST' })).json(); } catch (e) { return { error: e.message }; } })).toEqual({ result: 'ok' });\n  146 |     expect(await page.evaluate(() => guardSaveCount)).toBe(2);\n  147 | });\n    at /workspace/sillytavern/tests/reading.e2e.js:144:53"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T02:20:11.879Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/reading-guard-before/reading.e2e.js-disposed-ro-e03f1-h-another-extension-wrapper-mobile-chromium-emulation/test-failed-1.png"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/reading-guard-before/reading.e2e.js-disposed-ro-e03f1-h-another-extension-wrapper-mobile-chromium-emulation/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                    "column": 53,
+                    "line": 144
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-e0b9ce123dce5d16cb56",
+          "file": "reading.e2e.js",
+          "line": 118,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-19T02:20:09.201Z",
+    "duration": 3788.61,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

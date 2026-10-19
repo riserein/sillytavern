@@ -1,0 +1,90 @@
+
+Running 4 tests using 1 worker
+
+(node:127282) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:127282) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/card-native.e2e.js:538:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl (2.2m)
+Internal error: step id not found: fixture@258
+  ✘  2 tests/card-native.e2e.js:538:5 › native PNG and JSON carry the shared player to a clean phone recipient · crystal (1.5m)
+(node:130729) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:130729) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 tests/card-native.e2e.js:538:5 › native PNG and JSON carry the shared player to a clean desktop recipient · cassette (1.5m)
+  ✓  4 tests/card-native.e2e.js:538:5 › native PNG and JSON carry the shared player to a clean phone recipient · pure (1.5m)
+
+
+  1) tests/card-native.e2e.js:538:5 › native PNG and JSON carry the shared player to a clean phone recipient · crystal
+
+    TimeoutError: locator.click: Timeout 20000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('tab', { name: '曲库', exact: true })[22m
+    [2m    - locator resolved to <button role="tab" type="button" tabindex="-1" aria-label="曲库" data-page="library" id="stm-tab-library" aria-selected="false" aria-controls="stm-page-library">…</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="0" role="status" title="Tap to close" aria-live="assertive" class="toast toast-error interactable">…</div> from <div id="toast-container" class="toast-top-center">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="0" role="status" title="Tap to close" aria-live="assertive" class="toast toast-error interactable">…</div> from <div id="toast-container" class="toast-top-center">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    6 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="0" role="status" title="Tap to close" aria-live="assertive" class="toast toast-error interactable">…</div> from <div id="toast-container" class="toast-top-center">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 500ms[22m
+    [2m    28 × waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <div class="toast-message">Check the server connection and reload the page t…</div> from <div id="toast-container" class="toast-top-center">…</div> subtree intercepts pointer events[22m
+    [2m     - retrying click action[22m
+    [2m       - waiting 500ms[22m
+
+
+      841 |             if (file.format === 'json') {
+      842 |                 await expect(recipient.locator('.stm-sleep-button')).toHaveAttribute('data-active','false');
+    > 843 |                 await recipient.getByRole('tab',{name:'曲库',exact:true}).click();
+          |                                                                         ^
+      844 |                 await recipient.locator('.stm-favorites-entry').click();
+      845 |                 await expect(recipient.locator('.stm-favorite-list li')).toHaveCount(1);
+      846 |             }
+        at /workspace/sillytavern/tests/card-native.e2e.js:843:73
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-native--7f753-n-phone-recipient-·-crystal/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-native--7f753-n-phone-recipient-·-crystal/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-native--7f753-n-phone-recipient-·-crystal/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-native--7f753-n-phone-recipient-·-crystal/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-native--7f753-n-phone-recipient-·-crystal/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/card-native.e2e.js:538:5 › native PNG and JSON carry the shared player to a clean phone recipient · crystal
+  3 passed (6.9m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

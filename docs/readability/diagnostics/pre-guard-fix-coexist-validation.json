@@ -1,0 +1,33 @@
+{
+  "status": "selected-tests-passed",
+  "version": "2.0.0-alpha.6",
+  "largeFixture": false,
+  "coverage": "partial-or-selected-tests; see runner report for overall status",
+  "verifiedAt": "2026-10-19T02:19:40.027Z",
+  "runtimeSha256": "a6c6926d9f809b75e525543c7ca3acf7cf8f809ac990a0fb9a838cb72da80fe5",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 670588,
+      "milliseconds": 531
+    }
+  ],
+  "performanceRecords": []
+}

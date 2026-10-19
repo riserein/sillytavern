@@ -1,0 +1,58 @@
+[
+  {
+    "stage": "reading",
+    "status": "passed",
+    "startedAt": 1792376702.9712512,
+    "log": "/tmp/stm-reading-accepted.json",
+    "exitCode": 0,
+    "seconds": 77.75
+  },
+  {
+    "stage": "native",
+    "status": "passed",
+    "startedAt": 1792376780.7179556,
+    "log": "/tmp/stm-reading-native-accepted.log",
+    "exitCode": 0,
+    "seconds": 350.86
+  },
+  {
+    "stage": "maker",
+    "status": "passed",
+    "startedAt": 1792377131.574715,
+    "log": "/tmp/stm-reading-maker-accepted.log",
+    "exitCode": 0,
+    "seconds": 205.5
+  },
+  {
+    "stage": "coexist",
+    "status": "passed",
+    "startedAt": 1792377337.0766184,
+    "log": "/tmp/stm-reading-coexist-accepted.log",
+    "exitCode": 0,
+    "seconds": 12.36
+  },
+  {
+    "stage": "design",
+    "status": "passed",
+    "startedAt": 1792377349.4364884,
+    "log": "/tmp/stm-reading-design-accepted.json",
+    "exitCode": 0,
+    "seconds": 102.01
+  },
+  {
+    "stage": "data",
+    "status": "passed",
+    "startedAt": 1792377451.4480252,
+    "log": "/tmp/stm-reading-data-accepted.json",
+    "exitCode": 0,
+    "seconds": 46.53
+  },
+  {
+    "stage": "legacy",
+    "status": "passed",
+    "startedAt": 1792377497.9771354,
+    "log": "/tmp/stm-reading-legacy-accepted.log",
+    "exitCode": 0,
+    "seconds": 119.79
+  }
+]

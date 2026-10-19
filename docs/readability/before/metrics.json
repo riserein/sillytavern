@@ -1,0 +1,434 @@
+[
+  {
+    "theme": "night",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(212, 222, 211)",
+    "normalOpacity": "0.668279",
+    "activeColor": "rgb(198, 211, 196)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "night",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(41, 55, 46)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(71, 103, 82)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "amber",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(240, 233, 220)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(219, 194, 145)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "amber",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(58, 48, 35)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(147, 102, 45)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "ocean",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(228, 242, 252)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(139, 202, 238)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "ocean",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(32, 55, 70)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(50, 125, 165)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "forest",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(228, 245, 233)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(162, 215, 183)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "forest",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(41, 64, 52)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(74, 126, 90)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "rose",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(255, 237, 240)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(239, 173, 195)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "rose",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(73, 49, 60)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(163, 88, 119)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "lavender",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(240, 234, 254)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(197, 179, 237)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "lavender",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(61, 50, 81)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(128, 96, 165)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "pearl",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(246, 237, 244)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(207, 183, 202)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "pearl",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(48, 47, 54)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(138, 100, 128)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "crystal",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(239, 245, 245)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(156, 204, 217)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "crystal",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(34, 56, 63)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(57, 107, 128)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "vinyl",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(243, 230, 208)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(214, 181, 120)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "vinyl",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(55, 44, 36)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(125, 89, 45)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "cassette",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(244, 238, 228)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(233, 170, 119)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "cassette",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(48, 56, 56)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(150, 96, 60)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "pure",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(242, 234, 220)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(221, 191, 138)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "pure",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(53, 51, 47)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(131, 97, 62)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "custom",
+    "scheme": "dark",
+    "mobile": false,
+    "normalColor": "rgb(147, 147, 147)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(137, 137, 137)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "custom",
+    "scheme": "light",
+    "mobile": false,
+    "normalColor": "rgb(147, 147, 147)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(137, 137, 137)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "night",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(232, 238, 230)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(178, 195, 177)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "night",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(41, 55, 46)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(71, 103, 82)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "amber",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(240, 233, 220)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(219, 194, 145)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "amber",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(58, 48, 35)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(147, 102, 45)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "ocean",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(228, 242, 252)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(139, 202, 238)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "ocean",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(32, 55, 70)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(50, 125, 165)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "forest",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(228, 245, 233)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(162, 215, 183)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "forest",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(41, 64, 52)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(74, 126, 90)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "rose",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(255, 237, 240)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(239, 173, 195)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "rose",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(73, 49, 60)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(163, 88, 119)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "lavender",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(240, 234, 254)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(197, 179, 237)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "lavender",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(61, 50, 81)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(128, 96, 165)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "pearl",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(246, 237, 244)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(207, 183, 202)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "pearl",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(48, 47, 54)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(138, 100, 128)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "crystal",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(239, 245, 245)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(156, 204, 217)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "crystal",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(34, 56, 63)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(57, 107, 128)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "vinyl",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(243, 230, 208)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(214, 181, 120)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "vinyl",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(55, 44, 36)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(125, 89, 45)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "cassette",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(244, 238, 228)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(233, 170, 119)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "cassette",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(48, 56, 56)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(150, 96, 60)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "pure",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(242, 234, 220)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(221, 191, 138)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "pure",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(53, 51, 47)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(131, 97, 62)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "custom",
+    "scheme": "dark",
+    "mobile": true,
+    "normalColor": "rgb(147, 147, 147)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(137, 137, 137)",
+    "fontSize": "18px"
+  },
+  {
+    "theme": "custom",
+    "scheme": "light",
+    "mobile": true,
+    "normalColor": "rgb(147, 147, 147)",
+    "normalOpacity": "0.48",
+    "activeColor": "rgb(137, 137, 137)",
+    "fontSize": "18px"
+  }
+]

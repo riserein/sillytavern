@@ -1,0 +1,439 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.reading.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/reading",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "reading.e2e.js"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "/workspace/sillytavern/test-results/reading",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile-chromium-emulation",
+        "name": "mobile-chromium-emulation",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "reading.e2e.js"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "reading.e2e.js",
+      "file": "reading.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "rendered contrast matrix: all old palettes and all new layouts, schemes, surfaces and image extremes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13835,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T01:42:26.861Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-a5d16117d41c51faf99d",
+          "file": "reading.e2e.js",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "manual reading survives new LRC lines; resume, text clicks, keys, reopening and song changes preserve audio",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2495,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T01:42:40.911Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-9727df83cb169a6548da",
+          "file": "reading.e2e.js",
+          "line": 65,
+          "column": 1
+        },
+        {
+          "title": "reading preferences persist through real IndexedDB binary ZIP restore including maker drafts",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2032,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T01:42:43.417Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-fc003f58c85b441a2b1d",
+          "file": "reading.e2e.js",
+          "line": 98,
+          "column": 1
+        },
+        {
+          "title": "actual host reading controls, designer contrast warnings and layout changes retain one playing Audio",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 13778,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stm-design-editor').locator('[data-color-warning]')\nExpected substring: \u001b[32m\"低对比度\"\u001b[39m\nReceived string:    \u001b[31m\"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-design-editor').locator('[data-color-warning]')\u001b[22m\n\u001b[2m    9 × locator resolved to <p role=\"status\" data-color-warning=\"\">正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 …</p>\u001b[22m\n\u001b[2m      - unexpected value \"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stm-design-editor').locator('[data-color-warning]')\nExpected substring: \u001b[32m\"低对比度\"\u001b[39m\nReceived string:    \u001b[31m\"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-design-editor').locator('[data-color-warning]')\u001b[22m\n\u001b[2m    9 × locator resolved to <p role=\"status\" data-color-warning=\"\">正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 …</p>\u001b[22m\n\u001b[2m      - unexpected value \"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[22m\n\n    at /workspace/sillytavern/tests/reading.e2e.js:142:58",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                      "column": 58,
+                      "line": 142
+                    },
+                    "snippet": "  140 |     await expect(studio.locator('[data-color-warning]')).toContainText('辅助文字');\n  141 |     await expect(studio.locator('[data-color-warning]')).toContainText('歌词');\n> 142 |     await expect(studio.locator('[data-color-warning]')).toContainText('低对比度');\n      |                                                          ^\n  143 |     for (const key of ['background', 'text', 'muted', 'accent']) { const label = studio.locator('[data-color=' + key + ']').locator('..'); await label.locator('input[type=checkbox]').check(); }\n  144 |     await studio.locator('[data-random]').click();\n  145 |     for (const key of ['background', 'text', 'muted', 'accent']) await expect(studio.locator('[data-color=' + key + ']')).toHaveValue('#858585');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                        "column": 58,
+                        "line": 142
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stm-design-editor').locator('[data-color-warning]')\nExpected substring: \u001b[32m\"低对比度\"\u001b[39m\nReceived string:    \u001b[31m\"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-design-editor').locator('[data-color-warning]')\u001b[22m\n\u001b[2m    9 × locator resolved to <p role=\"status\" data-color-warning=\"\">正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 …</p>\u001b[22m\n\u001b[2m      - unexpected value \"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[22m\n\n\n  140 |     await expect(studio.locator('[data-color-warning]')).toContainText('辅助文字');\n  141 |     await expect(studio.locator('[data-color-warning]')).toContainText('歌词');\n> 142 |     await expect(studio.locator('[data-color-warning]')).toContainText('低对比度');\n      |                                                          ^\n  143 |     for (const key of ['background', 'text', 'muted', 'accent']) { const label = studio.locator('[data-color=' + key + ']').locator('..'); await label.locator('input[type=checkbox]').check(); }\n  144 |     await studio.locator('[data-random]').click();\n  145 |     for (const key of ['background', 'text', 'muted', 'accent']) await expect(studio.locator('[data-color=' + key + ']')).toHaveValue('#858585');\n    at /workspace/sillytavern/tests/reading.e2e.js:142:58"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T01:42:45.465Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-actual-host-6275c-es-retain-one-playing-Audio-desktop/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-actual-host-6275c-es-retain-one-playing-Audio-desktop/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-actual-host-6275c-es-retain-one-playing-Audio-desktop/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                    "column": 58,
+                    "line": 142
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-641537cef5db376bfe42",
+          "file": "reading.e2e.js",
+          "line": 123,
+          "column": 1
+        },
+        {
+          "title": "rendered contrast matrix: all old palettes and all new layouts, schemes, surfaces and image extremes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 14068,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T01:43:00.640Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-13b94543ddffd6e0d7c1",
+          "file": "reading.e2e.js",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "manual reading survives new LRC lines; resume, text clicks, keys, reopening and song changes preserve audio",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2502,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T01:43:14.909Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-82d85961b1eff4eacf1a",
+          "file": "reading.e2e.js",
+          "line": 65,
+          "column": 1
+        },
+        {
+          "title": "reading preferences persist through real IndexedDB binary ZIP restore including maker drafts",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1838,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T01:43:17.427Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-3eb4caae91ac554855a6",
+          "file": "reading.e2e.js",
+          "line": 98,
+          "column": 1
+        },
+        {
+          "title": "actual host reading controls, designer contrast warnings and layout changes retain one playing Audio",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 13224,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stm-design-editor').locator('[data-color-warning]')\nExpected substring: \u001b[32m\"低对比度\"\u001b[39m\nReceived string:    \u001b[31m\"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-design-editor').locator('[data-color-warning]')\u001b[22m\n\u001b[2m    9 × locator resolved to <p role=\"status\" data-color-warning=\"\">正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 …</p>\u001b[22m\n\u001b[2m      - unexpected value \"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stm-design-editor').locator('[data-color-warning]')\nExpected substring: \u001b[32m\"低对比度\"\u001b[39m\nReceived string:    \u001b[31m\"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-design-editor').locator('[data-color-warning]')\u001b[22m\n\u001b[2m    9 × locator resolved to <p role=\"status\" data-color-warning=\"\">正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 …</p>\u001b[22m\n\u001b[2m      - unexpected value \"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[22m\n\n    at /workspace/sillytavern/tests/reading.e2e.js:142:58",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                      "column": 58,
+                      "line": 142
+                    },
+                    "snippet": "  140 |     await expect(studio.locator('[data-color-warning]')).toContainText('辅助文字');\n  141 |     await expect(studio.locator('[data-color-warning]')).toContainText('歌词');\n> 142 |     await expect(studio.locator('[data-color-warning]')).toContainText('低对比度');\n      |                                                          ^\n  143 |     for (const key of ['background', 'text', 'muted', 'accent']) { const label = studio.locator('[data-color=' + key + ']').locator('..'); await label.locator('input[type=checkbox]').check(); }\n  144 |     await studio.locator('[data-random]').click();\n  145 |     for (const key of ['background', 'text', 'muted', 'accent']) await expect(studio.locator('[data-color=' + key + ']')).toHaveValue('#858585');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                        "column": 58,
+                        "line": 142
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.stm-design-editor').locator('[data-color-warning]')\nExpected substring: \u001b[32m\"低对比度\"\u001b[39m\nReceived string:    \u001b[31m\"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-design-editor').locator('[data-color-warning]')\u001b[22m\n\u001b[2m    9 × locator resolved to <p role=\"status\" data-color-warning=\"\">正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 …</p>\u001b[22m\n\u001b[2m      - unexpected value \"正文 13.82:1 · 辅助文字 8.32:1 · 歌词 13.82:1 · 强调色与当前歌词 8.80:1 · 按钮文字 4.56:1。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。\"\u001b[22m\n\n\n  140 |     await expect(studio.locator('[data-color-warning]')).toContainText('辅助文字');\n  141 |     await expect(studio.locator('[data-color-warning]')).toContainText('歌词');\n> 142 |     await expect(studio.locator('[data-color-warning]')).toContainText('低对比度');\n      |                                                          ^\n  143 |     for (const key of ['background', 'text', 'muted', 'accent']) { const label = studio.locator('[data-color=' + key + ']').locator('..'); await label.locator('input[type=checkbox]').check(); }\n  144 |     await studio.locator('[data-random]').click();\n  145 |     for (const key of ['background', 'text', 'muted', 'accent']) await expect(studio.locator('[data-color=' + key + ']')).toHaveValue('#858585');\n    at /workspace/sillytavern/tests/reading.e2e.js:142:58"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T01:43:19.277Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-actual-host-6275c-es-retain-one-playing-Audio-mobile-chromium-emulation/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-actual-host-6275c-es-retain-one-playing-Audio-mobile-chromium-emulation/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-actual-host-6275c-es-retain-one-playing-Audio-mobile-chromium-emulation/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                    "column": 58,
+                    "line": 142
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-f25dc944fab64539095b",
+          "file": "reading.e2e.js",
+          "line": 123,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-19T01:42:26.252Z",
+    "duration": 66957.78,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

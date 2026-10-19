@@ -1,0 +1,15 @@
+✔ account identity follows authenticated server primary key and creation, never display name (31.3308ms)
+✔ missing, unauthenticated or unsupported identity refuses to guess an account (1.403086ms)
+✔ official account response may include an ordinary avatar larger than 64 KiB but remains bounded (2.613473ms)
+✔ role/script preferences stay in the official account store; old global preferences require explicit adoption (0.795971ms)
+✔ account preference writes require current authorization and a late older result cannot overwrite a newer edit (7.304675ms)
+✔ opaque-origin maker preview still runs when merely accessing localStorage throws SecurityError (0.324059ms)
+✔ a confirmed account mismatch stays blocked after disposal under a retained extension wrapper (2.252859ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 111.480819
