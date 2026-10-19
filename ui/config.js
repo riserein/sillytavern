@@ -72,9 +72,17 @@ export const DESIGN_THEMES = Object.freeze({
     accent: "#93586f",
     border: "#bda1ad",
   },
+  'journal-parchment': {name:'Vintage Parchment｜复古羊皮纸',background:'#302820',surface:'#3b3127',text:'#f3e9d8',muted:'#c4b59f',accent:'#dfbc84',border:'#78634b'},
+  'journal-archive': {name:'Cold Archive｜冷灰档案',background:'#252c30',surface:'#303b40',text:'#e7edef',muted:'#afc0c7',accent:'#a7c7d3',border:'#657c84'},
+  'journal-midnight': {name:'Midnight Journal｜午夜手账',background:'#1e2432',surface:'#2a3143',text:'#e9e9f2',muted:'#b2b7d0',accent:'#c6b8e2',border:'#646d89'},
+  'journal-editorial': {name:'Modern Editorial｜现代极简杂志',background:'#282827',surface:'#343432',text:'#f2f0e9',muted:'#c0beb3',accent:'#d6c8aa',border:'#75736b'},
 });
 export const MOTION_LEVELS = ["off", "light", "normal", "rich"];
 const lightPalettes = {
+  'journal-parchment': {background:'#eee5d2',surface:'#f8f0df',text:'#3b3127',muted:'#75644d',accent:'#815d32',border:'#b9a17b'},
+  'journal-archive': {background:'#e1e8e9',surface:'#f1f5f4',text:'#2c3d43',muted:'#586d73',accent:'#3b6a7b',border:'#a4babe'},
+  'journal-midnight': {background:'#e0e4ef',surface:'#f0f0f8',text:'#303449',muted:'#626a85',accent:'#665b92',border:'#adb3ca'},
+  'journal-editorial': {background:'#f0eee7',surface:'#faf9f4',text:'#30302d',muted:'#6c6b60',accent:'#776343',border:'#c4bdac'},
   "mist-blue": {
     background: "#e2eced",
     surface: "#f3f8f7",
@@ -154,6 +162,15 @@ export function normalizeDesign(raw = {}) {
     raw = {};
   const input = raw.customization || {};
   const customization = {
+    journalTexture:number(input.journalTexture,.025,0,.08),
+    journalPadding:number(input.journalPadding,16,12,28),
+    journalRatio:number(input.journalRatio,.5,.35,.65),
+    journalWeight:number(input.journalWeight,600,400,800),
+    journalDuration:number(input.journalDuration,320,250,450),
+    journalEdges:input.journalEdges!==false,journalFlip:input.journalFlip!==false,
+    journalBinding:member(input.journalBinding,['stitch','ring','none'],'stitch'),
+    journalTab:member(input.journalTab,['lyrics','notes','collection'],'lyrics'),
+    journalLine:color(input.journalLine),
     coverSize: number(input.coverSize, 0.85, 0.55, 1.15),
     cornerRadius: number(input.cornerRadius, 18, 0, 36),
     opacity: number(input.opacity, 0.94, 0.3, 1),
@@ -333,14 +350,14 @@ export function validateTemplate(raw) {
         "material",
         "body",
         "grooves",
-        "reelStyle", "nameplate",
+        "reelStyle", "nameplate", "journalBinding", "journalTab",
         "launcherShape",
       ].includes(key) &&
       normalized.customization[key] !== value
     )
       throw new Error("设计选项不受支持。");
     if (
-      ["tonearmColor", "labelColor"].includes(key) &&
+      ["tonearmColor", "labelColor", "journalLine"].includes(key) &&
       value !== null &&
       !color(value)
     )
@@ -362,7 +379,7 @@ export function validateTemplate(raw) {
     "titleSize",
     "launcherSize",
     "launcherOpacity",
-    "launcherBorder", "tapeOpacity",
+    "launcherBorder", "tapeOpacity", "journalTexture", "journalPadding", "journalRatio", "journalWeight", "journalDuration",
   ])
     if (
       Object.hasOwn(c, key) &&

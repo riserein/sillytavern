@@ -695,6 +695,7 @@ export function initialize(options = {}) {
     if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
         designFont=createDesignFontLayer(panel,launcher,text=>showStatus(text,true));
         designEditor=createDesignEditor({panel,launcher,settings,getDesign:effectiveDesign,getContext:()=>options.context||globalThis.SillyTavern?.getContext?.()||context,
+            getScenes:()=>sceneGroupForCurrent()?.scenes.filter(s=>s.playable)||[],previewScene:id=>{const avatar=currentCharacterAvatar(freshContext()),group=roleSceneGroup(settings,avatar);return previewScene(id&&group?{avatar,group:structuredClone(group),sceneId:id}:null);},
             preview(value){previewDesign=value;refreshDesign();},apply:applyUserDesign,save,readIcon:id=>store.get(id),retireAssets,showPage,setOpen,
             async writeIcon(file,signal){const blob=await prepareDesignIcon(file,{signal}),id='cover:'+createTrackId();signal.throwIfAborted();await store.put(id,blob);if(signal.aborted){await store.delete(id).catch(()=>{});signal.throwIfAborted();}return id;},
             async bind(avatar,playlistId,config){

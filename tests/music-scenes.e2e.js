@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {mkdir} from 'node:fs/promises';
+import {mkdir,writeFile} from 'node:fs/promises';
 const prefix='/scripts/extensions/third-party/sillytavern/';
 async function fixture(page){
  await page.route('**/scene-fixture',r=>r.fulfill({contentType:'text/html',body:`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="${prefix}ui/player.css"><body></body>`}));await page.goto('/scene-fixture');
@@ -69,4 +69,37 @@ test('author song notes render as text, follow the current song and can be hidde
  await page.locator('button[data-journal-page=collection]').click();await page.locator('[data-journal-track=b]').click();await page.locator('button[data-journal-page=notes]').click();await expect(page.locator('[data-journal-note]')).toHaveText('歌曲 b：写给旧日的信。');
  await page.evaluate(()=>app.openScenes());await manager.locator('[data-scene-show-notes]').uncheck();await manager.locator('[data-scene-action=save]').click();await expect(manager.locator('[data-scene-save-status]')).toContainText('酒馆保存');await manager.locator('[data-scene-action=close]').click();await expect(page.locator('[data-journal-note]')).toHaveText('');expect(await page.evaluate(()=>app.settings.roleScenes[0].notes.length)).toBe(2);
  expect(await page.locator('[data-journal-note]').evaluate(n=>getComputedStyle(n).backgroundColor)).toBe('rgba(0, 0, 0, 0)');await page.evaluate(()=>app.dispose());
+});
+test('four journal themes keep unframed readable text across schemes, materials and actual image layers',async({page},info)=>{
+ await fixture(page);await page.locator('[data-action=play]').click();await page.evaluate(()=>{app.settings.roleScenes[0].notes=[{trackId:'a',text:'把今天的旋律，写进私人的音乐手账。'}];app.settings.roleScenes[0].scenes[0].description='窗外下着雨，书房里只有低缓的钢琴声。';});
+ await mkdir('docs/music-journal/themes',{recursive:true});const records=[];
+ for(const theme of ['journal-parchment','journal-archive','journal-midnight','journal-editorial'])for(const scheme of ['dark','light']){
+  for(const material of ['matte','glass','clear'])for(const image of [false,true]){
+   const row=await page.evaluate(async({prefix,theme,scheme,material,image})=>{
+    const {sampleReadingInk}=await import(prefix+'tests/rendered-reading.js'),{colorChannels}=await import(prefix+'ui/contrast.js');
+    app.settings.surface=material;document.querySelector(`[data-scheme-choice=${scheme}]`).click();app.setDesign({layout:'journal',theme});
+    const p=document.querySelector('#stm-player');p.dataset.hasBackground=String(image);const c=document.createElement('canvas');c.width=c.height=80;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,80,80);ctx.fillStyle='#000';ctx.fillRect(0,0,40,80);p.style.setProperty('--stm-background-image',image?`url("${c.toDataURL()}")`:'none');p.style.setProperty('--stm-mask-opacity','0');
+    document.querySelector('button[data-journal-page=notes]').click();await new Promise(requestAnimationFrame);
+    const samples=['[data-role=title]','[data-role=source]','[data-journal-note]','[data-journal-description]'].map(s=>{const n=p.querySelector(s);return {selector:s,...sampleReadingInk(n),boxAlpha:colorChannels(getComputedStyle(n).backgroundColor)[3]};});
+    document.querySelector('button[data-journal-page=lyrics]').click();await new Promise(requestAnimationFrame);
+    for(const n of p.querySelectorAll('.stm-lyrics-lines p'))samples.push({...sampleReadingInk(n),selector:'lyrics',boxAlpha:colorChannels(getComputedStyle(n).backgroundColor)[3]});
+    return {theme,scheme,material,image,samples};
+   },{prefix,theme,scheme,material,image});records.push(row);
+   for(const s of row.samples){expect(s.ratio,JSON.stringify(row)).toBeGreaterThanOrEqual(4.5);expect(s.boxAlpha).toBe(0);}
+  }
+  if(info.project.name!=='desktop')await page.locator('button[data-journal-page=player]').tap();
+  await page.locator('#stm-player').screenshot({path:`docs/music-journal/themes/${theme}-${scheme}-${info.project.name}.png`});
+ }
+ await writeFile(`docs/music-journal/results/journal-colors-${info.project.name}.json`,JSON.stringify(records,null,2));await page.evaluate(()=>app.dispose());
+});
+test('journal editor properties, scene preview and undo do not overwrite saved designs or recreate audio',async({page},info)=>{
+ await fixture(page);await page.evaluate(()=>app.setDesign({layout:'journal'}));await page.locator('[data-action=play]').click();await page.evaluate(()=>{window.savedAuthor=JSON.stringify({design:app.settings.uiDesign,scenes:app.settings.roleScenes,preferences:app.settings.scenePreferences});});
+ await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('[data-action=open-designer]').click();const editor=page.locator('.stm-design-editor');
+ if(info.project.name!=='desktop')await editor.locator('[data-step=properties]').click();
+ await editor.locator('[data-field="c.journalBinding"]').selectOption('ring');await editor.locator('[data-field="c.journalRatio"]').evaluate(n=>{n.value='.4';n.dispatchEvent(new Event('change'));});
+ await expect(page.locator('.stm-journal')).toHaveAttribute('data-binding','ring');await editor.locator('[data-undo]').click();await editor.locator('[data-redo]').click();
+ await editor.locator('[data-editor-scene]').selectOption('morning');await expect.poll(()=>page.evaluate(()=>app.getScene()?.id)).toBe('morning');
+ expect(await page.evaluate(()=>app.audio===originalAudio)).toBe(true);expect(await page.evaluate(()=>JSON.stringify({design:app.settings.uiDesign,scenes:app.settings.roleScenes,preferences:app.settings.scenePreferences}))).toBe(await page.evaluate(()=>savedAuthor));
+ await editor.locator('[data-editor-close]').click();await expect.poll(()=>page.evaluate(()=>app.getScene()?.id)).toBe('rain');
+ expect(await page.evaluate(()=>app.getDesign().customization.journalBinding)).toBe('stitch');await page.evaluate(()=>app.dispose());
 });

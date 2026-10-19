@@ -58,7 +58,8 @@ export function createDesignPresentation({ panel, launcher, audio, readIcon, onP
             }
             const computed=getComputedStyle(root);
             const fallbacks={background:'--stm-solid',surface:'--stm-subtle',text:'--stm-body',muted:'--stm-muted',accent:'--stm-accent',border:'--stm-line'};
-            const theme=designPalette(current.theme,root.dataset.colorScheme);
+            const paletteTheme=current.layout==='journal'&&current.theme==='inherit'?'journal-parchment':current.theme;
+            const theme=designPalette(paletteTheme,root.dataset.colorScheme);
             const palette=Object.fromEntries(Object.entries(fallbacks).map(([key,token])=>[key,c.colors[key]||theme[key]||computed.getPropertyValue(token).trim()]));
             root.dataset.layout=current.layout;root.dataset.designTheme=current.theme;root.dataset.launcher=current.launcher;
             root.dataset.accessibleControls=String(accessible);
@@ -73,7 +74,7 @@ export function createDesignPresentation({ panel, launcher, audio, readIcon, onP
                 const value=palette[key];
                 if(value)root.style.setProperty('--design-'+key,value);else root.style.removeProperty('--design-'+key);
             }
-            root.dataset.designColors=String(current.theme!=='inherit'||Object.values(c.colors).some(Boolean));
+            root.dataset.designColors=String(paletteTheme!=='inherit'||Object.values(c.colors).some(Boolean));
             if(root.dataset.designColors==='true'){
                 root.style.setProperty('--design-glass','color-mix(in srgb,var(--design-background) 80%,transparent)');
                 root.style.setProperty('--design-selected','color-mix(in srgb,var(--design-accent) 15%,transparent)');
@@ -84,6 +85,8 @@ export function createDesignPresentation({ panel, launcher, audio, readIcon, onP
             }
             if(c.tonearmColor)root.style.setProperty('--design-tonearm',c.tonearmColor);else root.style.removeProperty('--design-tonearm');
             if(c.labelColor)root.style.setProperty('--design-label',c.labelColor);else root.style.removeProperty('--design-label');
+            root.style.setProperty('--journal-texture',String(c.journalTexture));root.style.setProperty('--journal-padding',c.journalPadding+'px');root.style.setProperty('--journal-ratio',String(c.journalRatio/(1-c.journalRatio))+'fr');root.style.setProperty('--journal-weight',String(c.journalWeight));
+            if(c.journalLine)root.style.setProperty('--journal-line',c.journalLine);else root.style.removeProperty('--journal-line');
         }
         applyComponents(panel,current,accessible);
         launcher.setAttribute('role',current.launcher==='capsule'?'group':'button');

@@ -5,6 +5,8 @@ import { normalizeSceneSet, selectedScene, saveRoleScenes, rememberScene, sceneI
 import { referencedAssets } from '../asset-retirement.js';
 import { createBackup, inspectBackup } from '../data/backup.js';
 import { makeRestorePlan } from '../data/restore.js';
+import { normalizeDesign, validateTemplate, designPalette } from '../ui/config.js';
+import { readingPalette, contrastRatio, compositeColor } from '../ui/contrast.js';
 const tracks = [{id:'a',kind:'url',title:'A',url:'https://example.com/a.mp3'},{id:'b',kind:'local',title:'B'}];
 const scene = (id,ids=['a']) => ({id,name:id,description:'',trackIds:ids});
 
@@ -53,4 +55,14 @@ test('portable ZIP contains shared audio once and restores scene/track/role IDs 
     assert.notEqual(group.scenes[0].trackIds[0],'b');assert.equal(group.scenes[0].trackIds[0],group.scenes[1].trackIds[0]);assert.equal(group.notes[0].trackId,group.scenes[0].trackIds[0]);
     assert.equal(plan.after.scenePreferences.find(p=>p.avatar==='new.png').sceneId,group.scenes[0].id);assert.equal(JSON.stringify(settings),before);
     await assert.rejects(makeRestorePlan({backup:read,current:normalizeSettings(),store:{entries:async()=>[]}}),/尚未映射/);
+});
+test('journal presets and bounded settings share readable palette and template validation',()=>{
+    for(const theme of ['journal-parchment','journal-archive','journal-midnight','journal-editorial'])for(const scheme of ['light','dark']){
+        const source=designPalette(theme,scheme),p=readingPalette(source);
+        for(const bg of [p.surface,...['#000000','#ffffff'].map(b=>compositeColor(p.surface+'e5',b))])for(const ink of [p.body,p.secondary,p.accent])assert(contrastRatio(ink,bg)>=4.5);
+    }
+    const design=normalizeDesign({layout:'journal',customization:{journalRatio:100,journalTexture:1,journalBinding:'<script>',journalPadding:-4,journalDuration:999}});
+    assert.equal(design.customization.journalRatio,.65);assert.equal(design.customization.journalTexture,.08);assert.equal(design.customization.journalPadding,12);assert.equal(design.customization.journalBinding,'stitch');
+    assert.equal(validateTemplate({format:'riserein-player-design',version:1,name:'valid',config:design}).config.layout,'journal');
+    assert.throws(()=>validateTemplate({format:'riserein-player-design',version:1,name:'bad',config:{...design,customization:{...design.customization,journalDuration:999}}}));
 });

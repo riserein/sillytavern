@@ -28,6 +28,8 @@ export function createDesignEditor({
   retireAssets,
   showPage,
   setOpen,
+  getScenes = () => [],
+  previewScene,
 }) {
   const doc = panel.ownerDocument,
     win = doc.defaultView,
@@ -77,6 +79,7 @@ export function createDesignEditor({
   }
   function refresh() {
     if (!root) return;
+    const journalFields=q('[data-journal-fields]');if(journalFields)journalFields.hidden=working.layout!=='journal';
     for (const element of root.querySelectorAll("[data-field]")) {
       const field = element.dataset.field,
         value = field.startsWith("c.")
@@ -114,11 +117,11 @@ export function createDesignEditor({
     const source = sourceReadingPalette(panel), checks = readabilityReport(source, working.components);
     const protectedColors = readingPalette(source, settings.reading?.level);
     const p=protectedColors,lyricBases=['#000000','#ffffff'].map(bg=>compositeColor(p.lyricSurface+'e5',bg));
-    const protectedChecks=[['正文',p.body,[p.surface]],['辅助文字',p.secondary,[p.surface]],['歌词',p.lyrics,lyricBases],['当前歌词',p.current,lyricBases],['按钮文字',p.onAction,[p.action]],['选中项',p.accent,[p.surface,p.selected]]].map(([name,ink,bgs])=>({name,ratio:Math.min(...bgs.map(bg=>contrastRatio(ink,bg)))}));
+    const protectedChecks=[['正文',p.body,[p.surface,...lyricBases]],['辅助文字',p.secondary,[p.surface,...lyricBases]],['歌词',p.lyrics,lyricBases],['当前歌词',p.current,lyricBases],['按钮文字',p.onAction,[p.action]],['选中项',p.accent,[p.surface,p.selected,...lyricBases]]].map(([name,ink,bgs])=>({name,ratio:Math.min(...bgs.map(bg=>contrastRatio(ink,bg)))}));
     const low = checks.filter(check => check.ratio < check.target);
     q('[data-color-warning]').textContent = '原始配色：' + checks.map(check => `${check.name} ${check.ratio.toFixed(2)}:1`).join(' · ') +
-      '。局部衬底与显示保护后：' + protectedChecks.map(check => `${check.name} ${check.ratio.toFixed(2)}:1`).join(' · ') +
-      (low.length ? '。原始配色有低对比度项：' + low.map(c => c.name).join('、') + '。显示层已使用可读性色和局部衬底；建议调整相应颜色或解锁后随机配色。锁定色不会被改写。' : '。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。');
+      '。整体阅读遮罩与显示保护后：' + protectedChecks.map(check => `${check.name} ${check.ratio.toFixed(2)}:1`).join(' · ') +
+      (low.length ? '。原始配色有低对比度项：' + low.map(c => c.name).join('、') + '。显示层已使用可读性色和整体阅读遮罩；建议调整相应颜色或解锁后随机配色。锁定色不会被改写。' : '。原始文字配色达标；透明和图片区域依靠整体阅读遮罩保护，未进行全图像素达标声明。');
   }
   function layout() {
     if (!root) return;
@@ -196,6 +199,7 @@ export function createDesignEditor({
     for (const key of ["left", "top", "width", "height"])
       panel.style.removeProperty("--editor-" + key);
     launcher.hidden = launchHidden;
+    void previewScene?.(null);
     preview(null);
     root.remove();
     root = null;
@@ -358,9 +362,14 @@ export function createDesignEditor({
     ])
       field(label, "c." + id, { checkbox: true });
     field("唱臂颜色","c.tonearmColor",{color:true});field("磁带标签颜色","c.labelColor",{color:true});
+    const journalFields=doc.createElement('details');journalFields.dataset.journalFields='';journalFields.open=true;
+    const journalHeading=doc.createElement('summary');journalHeading.textContent='私人音乐手账';journalFields.append(journalHeading);q('[data-detail-fields]').append(journalFields);
+    for(const [label,id,min,max,step] of [['纸张纹理','journalTexture',0,.08,.005],['页面留白','journalPadding',12,28,1],['双页左页比例','journalRatio',.35,.65,.01],['标题字重','journalWeight',400,800,50],['翻页时长','journalDuration',250,450,10]])field(label,'c.'+id,{min,max,step},journalFields);
+    field('书页边缘','c.journalEdges',{checkbox:true},journalFields);field('柔和翻页','c.journalFlip',{checkbox:true},journalFields);field('装订线','c.journalBinding',{options:{stitch:'细线装订',ring:'金属双线',none:'无装订线'}},journalFields);field('默认右页','c.journalTab',{options:{lyrics:'歌词',notes:'角色手记',collection:'曲目目录'}},journalFields);field('装饰线颜色','c.journalLine',{color:true},journalFields);
+    const sceneChoices=getScenes();if(sceneChoices.length){const label=doc.createElement('label'),select=doc.createElement('select');label.textContent='联合预览音乐场景';select.dataset.editorScene='';select.append(new Option('当前场景',''));for(const scene of sceneChoices)select.append(new Option(scene.name,scene.id));label.append(select);journalFields.append(label);listen(select,'change',()=>{void action(async()=>{const token=epoch;guard();await previewScene?.(select.value||null);if(root&&token===epoch){preview(working);notice('仅预览此场景；未覆盖保存的场景、个人选择或设计。');}});});}
     field("允许接收端修改布局", "allowRecipientLayout", { checkbox: true });
     for (const [key, name] of Object.entries({
-      background: "主背景",
+      background: "纸张 / 主背景",
       surface: "次级背景",
       text: "文字",
       muted: "辅助文字",
