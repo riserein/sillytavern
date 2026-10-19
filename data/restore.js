@@ -4,6 +4,7 @@ import {referencedAssets} from '../asset-retirement.js';
 import {canonical} from './backup.js';
 import {checksum,hashText} from './checksum.js';
 import {normalizeDesign} from '../ui/config.js';
+import { remapSceneSet, sceneIssues, MAX_SCENES, MAX_SCENE_ROLES, MAX_SCENE_TRACKS } from '../music-scenes.js';
 const cloneSettings=settings=>JSON.parse(JSON.stringify(normalizeSettings(settings)));
 export const settingsHash=settings=>hashText(canonical(cloneSettings(settings)));
 export const projectVersions=projects=>canonical(projects.map(p=>[p.id,p.revision||0]).sort(([a],[b])=>a.localeCompare(b)));
@@ -92,8 +93,38 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         if(!old)after.roleDesigns.push({avatar,config:mappedDesign(row.config)});
         else if(restorePreferences&&mode!=='missing')old.config=mappedDesign(row.config);
     }
+    summary.scenesAdded=0; summary.sceneConflicts=0; summary.draftScenes=0;
+    const sceneIds=new Map();
+    for(const group of incoming.roleScenes||[]) {
+        const avatar=Object.hasOwn(bindingMap,group.avatar)&&typeof bindingMap[group.avatar]==='string'?bindingMap[group.avatar]:null;
+        if(!avatar)throw new Error('音乐场景的角色尚未映射，请在恢复预览中为 '+group.avatar+' 选择角色；未写入任何数据。');
+        const old=after.roleScenes.find(row=>row.avatar===avatar);
+        if(old&&mode==='missing')continue;
+        const used=new Set(old?.scenes.map(s=>s.id)||[]);
+        const copy=remapSceneSet(group,{trackId:id=>trackIds.get(id)||id,assetId:mappedAsset,sceneId:id=>{
+            const conflict=used.has(id);if(conflict)summary.sceneConflicts++;
+            const next=conflict||mode==='copy'?'scene:'+createTrackId():id;used.add(next);sceneIds.set(group.avatar+'\n'+id,next);return next;
+        }});
+        // Intentional unfinished drafts keep missing IDs and remain drafts.
+        // Registered local resources are checked by finalRefs below as usual.
+        summary.draftScenes+=copy.scenes.filter(s=>sceneIssues(s,after.tracks.concat(current.builtinCatalog?.tracks||[])).length).length;
+        if(old) {
+            if(old.scenes.length+copy.scenes.length>MAX_SCENES)throw new Error('合并后角色场景超过 12 个，请选择仅恢复缺失内容或先整理。');
+            old.scenes.push(...copy.scenes);
+            for(const note of copy.notes){const at=old.notes.findIndex(n=>n.trackId===note.trackId);if(at<0)old.notes.push(note);else if(restorePreferences)old.notes[at]=note;}
+            if(old.notes.length>MAX_SCENE_TRACKS)throw new Error('合并后角色歌曲手记超过 200 首，未舍弃手记。');
+            if(restorePreferences)old.defaultSceneId=copy.defaultSceneId;
+        } else after.roleScenes.push({avatar,...copy});
+        summary.scenesAdded+=copy.scenes.length;
+    }
+    if(after.roleScenes.length>MAX_SCENE_ROLES)throw new Error('恢复后角色场景配置超过 200 个，未写入或舍弃内容。');
+    if(restorePreferences)for(const pref of incoming.scenePreferences||[]) {
+        const avatar=bindingMap[pref.avatar],sceneId=sceneIds.get(pref.avatar+'\n'+pref.sceneId);
+        if(!avatar||!sceneId)continue;
+        const old=after.scenePreferences.find(p=>p.avatar===avatar);if(old)old.sceneId=sceneId;else after.scenePreferences.push({avatar,sceneId});
+    }
     if(restorePreferences){
-        for(const [key,value] of Object.entries(incoming))if(!['tracks','playlists','fonts','favorites','designs','roleDesigns','uiDesign','personalDesign','recentPlays','playEvents','backgroundId','fontId','fontName','fontPreset','activePlaylistId','currentId'].includes(key))after[key]=structuredClone(value);
+        for(const [key,value] of Object.entries(incoming))if(!['tracks','playlists','fonts','favorites','designs','roleDesigns','roleScenes','scenePreferences','uiDesign','personalDesign','recentPlays','playEvents','backgroundId','fontId','fontName','fontPreset','activePlaylistId','currentId'].includes(key))after[key]=structuredClone(value);
         after.lyricOffsets={...before.lyricOffsets,...Object.fromEntries(Object.entries(incoming.lyricOffsets||{}).map(([id,value])=>[trackIds.get(id)||id,value]))};
         if(after.visibility?.resume)after.visibility.resume.id=trackIds.get(after.visibility.resume.id)||after.visibility.resume.id;
         after.uiDesign=mappedDesign(incoming.uiDesign);

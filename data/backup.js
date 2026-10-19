@@ -33,6 +33,15 @@ export function safeSettings(raw,warnings=new Set(),catalog=raw?.builtinCatalog)
     for(const list of safe.playlists)if(list.source){list.source=pick(list.source,['platform','id','url','name','author','total','cover']);for(const key of ['url','cover'])if(list.source[key])list.source[key]=cleanUrl(list.source[key],warnings);}
     return safe;
 }
+function assertScenesPreserved(raw,safe) {
+    if(!Array.isArray(raw.roleScenes))return;
+    if(raw.roleScenes.length!==safe.roleScenes.length)throw new Error('角色场景包含重复、无效或超限配置，未生成或恢复部分数据。');
+    for(const group of raw.roleScenes){
+        const copy=safe.roleScenes.find(g=>g.avatar===group.avatar);
+        if(!copy||!Array.isArray(group.scenes)||group.scenes.length!==copy.scenes.length||group.scenes.some(s=>{const next=copy.scenes.find(n=>n.id===s.id);return !next||!Array.isArray(s.trackIds)||s.trackIds.some(id=>!next.trackIds.includes(id));}))throw new Error('音乐场景包含超限或无效歌曲引用，未舍弃场景。');
+        for(const note of group.notes||[])if(note.text?.trim()&&copy.notes.find(n=>n.trackId===note.trackId)?.text!==note.text)throw new Error('歌曲手记超限或重复，未截短保存备份。');
+    }
+}
 export function draftReferences(project) {
     const ids=new Set();
     for(const track of project.tracks||[]){if(track.kind==='local'&&!track.exportBlob&&!track.exportUrl)ids.add(track.id);if(track.coverId&&!track.exportCover)ids.add(track.coverId);}
@@ -43,6 +52,7 @@ export function draftReferences(project) {
 }
 export async function createBackup({settings,store,projects=[],version=PLAYER_BUILD,signal,onProgress=()=>{}}) {
     const warnings=new Set(),snapshot=safeSettings(settings,warnings),files=new Map(),resources=[];
+    assertScenesPreserved(settings,snapshot);
     if(!Array.isArray(projects)||projects.length>10000)throw new Error('制作项目超过备份版本支持的数量，未生成部分备份。');
     for(const key of ['tracks','playlists','fonts','designs','roleDesigns'])if(Array.isArray(settings[key])&&settings[key].length!==snapshot[key].length)throw new Error('当前资料包含超限、重复或无效条目，未静默删减生成备份；请先核对曲库和设计。');
     const all=new Map(await store.entries());
@@ -129,6 +139,7 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
     const normalizedCatalog=manifest.catalog.map(normalizePlatformTrack);
     if(normalizedCatalog.some((track,i)=>!track||track.id!==manifest.catalog[i].id)||new Set(normalizedCatalog.map(t=>t.id)).size!==normalizedCatalog.length)throw new Error('默认来源记录无效或重复。');
     const safe=safeSettings(manifest.settings,warnings,{version:1,tracks:manifest.catalog});
+    assertScenesPreserved(manifest.settings,safe);
     if(safe.tracks.length!==manifest.settings.tracks.length||safe.playlists.length!==manifest.settings.playlists.length||['designs','roleDesigns'].some(key=>Array.isArray(manifest.settings[key])&&safe[key].length!==manifest.settings[key].length))throw new Error('备份包含无效或重复曲目/歌单/设计，不能静默舍弃。');
     if(resourceIds.size!==referencedAssets(safe).size)throw new Error('备份资源清单包含未知引用，未导入。');
     for(const id of referencedAssets(safe))if(!resourceIds.has(id))throw new Error('备份缺少有效曲库引用的资源。');

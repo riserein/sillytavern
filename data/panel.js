@@ -62,7 +62,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
     };
     function bindings(){
         bindingMenus?.dispose();q('bindings').replaceChildren();
-        const avatars=[...new Set([...backup.manifest.settings.playlists.flatMap(list=>list.characterAvatars),...(backup.manifest.settings.roleDesigns||[]).map(row=>row.avatar)])];
+        const avatars=[...new Set([...backup.manifest.settings.playlists.flatMap(list=>list.characterAvatars),...(backup.manifest.settings.roleDesigns||[]).map(row=>row.avatar),...(backup.manifest.settings.roleScenes||[]).map(row=>row.avatar)])];
         const characters=context.characters||[];
         for(const [i,avatar]of avatars.entries()){
             const label=document.createElement('label');label.textContent=`原绑定：${avatar} → `;

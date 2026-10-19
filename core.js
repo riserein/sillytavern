@@ -11,6 +11,7 @@ import { SCHEMES } from './scheme.js';
 import { normalizeFavorites, TRANSITION_DURATIONS } from './listening.js';
 import { normalizeDesign, normalizeDesigns, normalizeRoleDesigns, MOTION_LEVELS } from './ui/config.js';
 import { normalizeReading } from './ui/reading.js';
+import { normalizeRoleScenes, normalizeScenePreferences } from './music-scenes.js';
 
 export const MAX_TRACKS = 200;
 export const MAX_PLAYLISTS = 50;
@@ -131,6 +132,8 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
         uiDesign: normalizeDesign(raw.uiDesign),
         designs: normalizeDesigns(raw.designs),
         roleDesigns: normalizeRoleDesigns(raw.roleDesigns),
+        roleScenes: normalizeRoleScenes(raw.roleScenes),
+        scenePreferences: normalizeScenePreferences(raw.scenePreferences),
         visualMotion: MOTION_LEVELS.includes(raw.visualMotion) ? raw.visualMotion : null,
         accessibleControls: raw.accessibleControls === true,
         reading: normalizeReading(raw.reading),
