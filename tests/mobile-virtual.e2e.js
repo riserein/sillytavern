@@ -80,7 +80,7 @@ test('real host: touch import/play, four layouts, rotation, lyrics, queue, seeki
             await expect.poll(() => page.locator('#stm-player audio').evaluate(a => a.currentTime)).toBeGreaterThan(before);
             await page.locator('[data-action=toggle-lyrics]').tap();
             await expect(page.locator('.stm-lyrics-view')).toContainText('旋转后音乐继续');
-            await page.getByRole('button', { name: '显示封面', exact: true }).tap();
+            await page.getByRole('button', { name: '返回封面', exact: true }).tap();
             await page.locator('[data-action=toggle-queue]').tap();
             await expect(page.locator('.stm-queue-track')).toHaveCount(2);
             await page.getByRole('button', { name: '关闭播放列表', exact: true }).tap();

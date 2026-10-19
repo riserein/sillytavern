@@ -1,4 +1,6 @@
 import { createLyricsLookup } from './lyrics.js';
+import { applyReading, createReadingControls } from './ui/reading.js';
+import { createLyricReader } from './ui/lyric-reader.js';
 import { createCardMaker } from './card-maker.js';
 import { createPlatformService } from './platforms/service.js';
 import { PLATFORM_NAMES } from './platforms/catalog.js';
@@ -78,7 +80,7 @@ export function initialize(options = {}) {
     let online = null;
     let listening = null;
     let designEditor = null, designFont = null;
-    let designPresentation = null, designControls = null, launcherControls = null, launcherAvoidance = null, previewDesign = null;
+    let designPresentation = null, designControls = null, readingControls = null, lyricReader = null, launcherControls = null, launcherAvoidance = null, previewDesign = null;
     let platformLoadController = null;
     let objectUrl = null;
     let loadSequence = 0;
@@ -348,7 +350,7 @@ export function initialize(options = {}) {
                 </div>
             </section>
         </div>
-        <div class="stm-lyrics-view" role="button" tabindex="0" aria-label="显示封面" hidden><div class="stm-lyrics-lines"></div><span class="stm-lyrics-tip">轻点返回封面</span></div>
+        <section class="stm-lyrics-view" aria-label="歌词阅读" hidden><header class="stm-lyrics-toolbar"><button type="button" class="stm-secondary" data-action="back-cover" aria-label="返回封面">返回封面</button><strong data-lyric-title></strong><span data-lyric-status></span><button type="button" class="stm-secondary" data-action="resume-lyrics" hidden>回到当前歌词</button></header><div class="stm-lyrics-scroll" tabindex="0" role="region" aria-label="歌词正文"><div class="stm-lyrics-lines"></div></div></section>
         <button type="button" class="stm-resize-handle" aria-label="调整播放器大小" title="拖动调整大小，也可用方向键微调"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 16 8-8M13 16l3-3"/></svg></button>
         <section class="stm-crop-editor" role="dialog" aria-modal="true" aria-label="裁剪背景图片" hidden>
             <div class="stm-page-heading"><h3>裁剪背景图片</h3><span>拖动图片，留下喜欢的区域</span></div>
@@ -412,7 +414,7 @@ export function initialize(options = {}) {
         onLayout: () => {
             panelDrag.refresh();
             if (panel.dataset.lyricsOpen === 'true') {
-                const view = query('.stm-lyrics-view');
+                const view = query('.stm-lyrics-scroll');
                 view.style.setProperty('--stm-lyrics-half-height', `${view.clientHeight / 2}px`);
                 updateLyrics(true);
             }
@@ -664,6 +666,12 @@ export function initialize(options = {}) {
     designPresentation = createDesignPresentation({ panel, launcher, audio, readIcon: id => store.get(id), onPlay: toggleCurrent, onNext: () => advanceTrack(1), getTrackNumber: () => playbackQueue.tracks().findIndex(track => track.id === settings.currentId) + 1 });
     designControls = createDesignControls({ panel, settings, getDesign: effectiveDesign, onChange: applyUserDesign,
         onAccessibility() { refreshDesign(); save(); }, isPortable: (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) });
+    readingControls = createReadingControls({ panel, settings, onChange(key) {
+        refreshDesign(); menus.refresh();
+        if (key === 'autoFollow') { lyricReader?.reset(); lyricReader?.center(); }
+        else lyricReader?.center();
+        save();
+    } });
     launcherControls=createLauncherControls({panel,group:designControls.group,getDesign:effectiveDesign,onChange:applyUserDesign,isPortable:(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__),
         async onIcon(file,signal){
             if((typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__))return;
@@ -701,8 +709,9 @@ export function initialize(options = {}) {
     function refreshDesign() {
         if (!designPresentation) return;
         designPresentation.apply(previewDesign || effectiveDesign(), { motion: settings.visualMotion, accessible: settings.accessibleControls });
+        applyReading(panel, launcher, settings.reading, previewDesign || effectiveDesign());
         designFont?.set((previewDesign||effectiveDesign()).fontPreset);
-        designControls?.refresh(); launcherControls?.refresh(); launcherDrag.refresh(); panelDrag.refresh(); launcherAvoidance?.refresh();
+        designControls?.refresh(); readingControls?.refresh(); launcherControls?.refresh(); launcherDrag.refresh(); panelDrag.refresh(); launcherAvoidance?.refresh();
     }
     function applyUserDesign(value) {
         const config = normalizeDesign(value);
@@ -733,24 +742,21 @@ export function initialize(options = {}) {
         query('.stm-cover-tip').hidden = open;
         query('[data-action="toggle-lyrics"]').setAttribute('aria-pressed', String(open));
         if (open) {
-            const view = query('.stm-lyrics-view');
+            const view = query('.stm-lyrics-scroll');
             view.style.setProperty('--stm-lyrics-half-height', `${view.clientHeight / 2}px`);
+            lyricReader?.reset();
             view.focus({ preventScroll: true });
         }
         if (open) updateLyrics(true);
     }
     query('[data-action="toggle-lyrics"]').addEventListener('click', () => { if (settings.accessibleControls || effectiveDesign().customization.showLyricsButton) setLyricsOpen(true); });
-    let lyricPointer = null;
     const lyricView = query('.stm-lyrics-view');
-    lyricView.addEventListener('pointerdown', event => { lyricPointer = { x: event.clientX, y: event.clientY, moved: false }; });
-    lyricView.addEventListener('pointermove', event => { if (lyricPointer && Math.hypot(event.clientX - lyricPointer.x, event.clientY - lyricPointer.y) > 6) lyricPointer.moved = true; });
-    lyricView.addEventListener('pointercancel', () => { if (lyricPointer) lyricPointer.moved = true; });
     const leaveLyrics = () => { setLyricsOpen(false); query('[data-action="toggle-lyrics"]').focus({ preventScroll: true }); };
-    lyricView.addEventListener('click', event => { if (event.detail && lyricPointer?.moved) return; leaveLyrics(); });
-    lyricView.addEventListener('keydown', event => { if (['Enter', ' ', 'Escape'].includes(event.key)) { event.preventDefault(); event.stopPropagation(); leaveLyrics(); } });
+    lyricReader = createLyricReader({ view: lyricView, scroller: query('.stm-lyrics-scroll'), lines: query('.stm-lyrics-lines'), getDefaultFollow: () => settings.reading.autoFollow, getCurrent: () => activeLyric, getTitle: () => findTrack(settings, settings.currentId)?.title, onBack: leaveLyrics });
     function renderLyrics(track) {
         lyricData = parseLyrics(track?.lyrics || '');
         activeLyric = -1;
+        lyricReader.reset();
         const target = query('.stm-lyrics-lines'); target.replaceChildren();
         if (!track?.lyrics?.trim()) {
             const empty = document.createElement('p'); empty.className = 'stm-no-lyrics';
@@ -778,10 +784,9 @@ export function initialize(options = {}) {
         activeLyric = next;
         const lines = query('.stm-lyrics-lines').children;
         Array.from(lines).forEach((line, index) => line.classList.toggle('stm-current-lyric', index === next));
+        lyricReader.refresh();
         if (next >= 0 && !query('.stm-lyrics-view').hidden && currentPage === 'playback' && !panel.hidden) {
-            const target = lines[next];
-            const container = query('.stm-lyrics-view');
-            container.scrollTop += target.getBoundingClientRect().top - container.getBoundingClientRect().top - container.clientHeight / 2 + target.clientHeight / 2;
+            lyricReader.center();
         }
     }
     async function renderMedia(track) {
@@ -1013,9 +1018,14 @@ export function initialize(options = {}) {
     }
 
     function setOpen(open, focus = true) {
+        const wasHidden = panel.hidden;
         panel.hidden = !open;
         launcher.setAttribute('aria-expanded', String(open));
-        if (open) { resizer.refresh(); panelDrag.refresh(); if (focus) (panel.dataset.lyricsOpen === 'true' ? query('.stm-lyrics-view') : query('[data-action="close"]')).focus(); }
+        if (open) {
+            resizer.refresh(); panelDrag.refresh();
+            if (wasHidden && panel.dataset.lyricsOpen === 'true') { lyricReader?.reset(); updateLyrics(true); }
+            if (focus) (panel.dataset.lyricsOpen === 'true' ? query('.stm-lyrics-scroll') : query('[data-action="close"]')).focus({ preventScroll: true });
+        }
         else { menus.close(); setSheetOpen('#stm-sleep', false); setQueueOpen(false); setDetailsOpen(false); officialList.close(); if (panel.contains(document.activeElement)) launcher.focus(); }
     }
 
@@ -1932,7 +1942,7 @@ export function initialize(options = {}) {
         disposed = true;
         listening?.dispose(); transitions.dispose();
         designEditor?.dispose(); designFont?.dispose();
-        launcherControls?.dispose(); launcherAvoidance?.dispose(); designControls?.dispose(); designPresentation?.dispose();
+        lyricReader?.dispose(); readingControls?.dispose(); launcherControls?.dispose(); launcherAvoidance?.dispose(); designControls?.dispose(); designPresentation?.dispose();
         dataPanel?.dispose(); cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose(); retirement?.dispose(); options.onDispose?.();
         ++loadSequence;
         pausePlayback(); audio.removeAttribute('src'); audio.load();

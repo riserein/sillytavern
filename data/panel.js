@@ -13,7 +13,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
     <button type="button" class="stm-secondary" data-data="backup">导出完整备份 ZIP</button>
     <button type="button" class="stm-secondary" data-data="choose">选择备份文件</button><input type="file" data-data="file" accept=".zip,application/zip" hidden>
     <section data-data="restore" hidden><label>恢复方式<select id="stm-restore-mode" data-data="mode"><option value="merge">合并：保留已有信息，补入新内容</option><option value="missing">仅恢复缺失：不覆盖已有条目</option><option value="copy">独立副本：新歌曲、歌单和项目 ID</option></select></label>
-    <label class="stm-check-label"><input type="checkbox" data-data="preferences">同时恢复备份中的外观、音量、模式和窗口位置</label>
+    <label class="stm-check-label"><input type="checkbox" data-data="preferences">同时恢复备份中的外观、阅读偏好、音量、模式和窗口位置</label>
     <p class="stm-hint">重复音频按真实字节识别；合并保留现有歌曲信息，要保留两份不同编辑请选择独立副本。同一平台歌曲按平台标识复用。角色绑定须在下方核对，不按旧编号自动绑定。</p>
     <div data-data="bindings"></div><button type="button" class="stm-secondary" data-data="preview">核对恢复计划</button><pre class="stm-hint" data-data="preview-text"></pre><button type="button" class="stm-primary" data-data="apply" disabled>确认恢复</button></section>
     <details><summary>旧设备数据归属确认</summary><p class="stm-hint" data-data="legacy-count">正在检查旧库…</p><label class="stm-check-label"><input type="checkbox" data-data="ownership">我确认旧库中待选择的数据属于当前账号</label><button type="button" class="stm-secondary" data-data="legacy-preview">显示旧草稿并选择</button><div data-data="legacy-projects"></div><button type="button" class="stm-secondary" data-data="legacy-copy" disabled>预览复制到当前账号</button><p class="stm-hint">只复制所选旧草稿及当前曲库所引用的文件。原数据库不删除、不改名、不清空；其他账号数据不会自动认领。</p></details>

@@ -108,6 +108,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
             'transitionDuration',
             'visualMotion',
             'accessibleControls',
+            'reading',
             'personalDesign',
             'theme',
             'colorScheme',

@@ -6,7 +6,7 @@
     "js": "index.js",
     "css": "ui/player.css",
     "author": "riserein",
-    "version": "2.0.0-alpha.5",
+    "version": "2.0.0-alpha.6",
     "homePage": "https://github.com/riserein/sillytavern",
     "auto_update": false
 }

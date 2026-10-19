@@ -1,3 +1,4 @@
+import { luminance } from './ui/contrast.js';
 export const DEFAULT_CUSTOM_COLORS = { enabled: false, accent: '#dbc291', background: '#25211e', text: '#f0e9dc' };
 export const CUSTOM_PROPERTIES = ['--stm-accent', '--stm-on-accent', '--stm-body', '--stm-muted', '--stm-solid', '--stm-matte', '--stm-glass', '--stm-line', '--stm-subtle', '--stm-hover', '--stm-active', '--stm-track', '--stm-image-text-shadow'];
 
@@ -12,12 +13,6 @@ export function normalizeCustomColors(raw) {
 export function hexRgba(hex, alpha) {
     const rgb = [1, 3, 5].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
     return `rgba(${rgb.join(', ')}, ${alpha})`;
-}
-
-function luminance(hex) {
-    const rgb = [1, 3, 5].map(offset => parseInt(hex.slice(offset, offset + 2), 16) / 255)
-        .map(value => value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4);
-    return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722;
 }
 
 export function customPalette(colors) {

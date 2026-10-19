@@ -6,6 +6,9 @@ import { clampPosition } from '../floating.js';
 import { normalizeCardConfig, normalizeAppearance } from './config.js';
 import { rolePreferences } from './preferences.js';
 import { normalizeFavorites, toggleFavorite, createAudioTransitions, createSleepTimer, TRANSITION_DURATIONS } from '../listening.js';
+import { normalizeReading, createReadingControls } from '../ui/reading.js';
+import { readingPalette, readableColor } from '../ui/contrast.js';
+import { createLyricReader } from '../ui/lyric-reader.js';
 
 /** Host-owned audio survives message/chat changes; the role owns every resource. */
 export function mountCardPlayer(input, scope) {
@@ -28,9 +31,9 @@ export function mountCardPlayer(input, scope) {
         :host{position:fixed;display:block;width:max-content;right:18px;bottom:88px;z-index:3100;--accent:#b2c3b1;--bg:#182220;--text:#e8eee6;color:var(--text);font:14px/1.5 system-ui,sans-serif;max-width:calc(100vw - 24px)}
         *{box-sizing:border-box}button,input{font:inherit}button{cursor:pointer;border:0;color:inherit;background:transparent}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}[hidden]{display:none!important}
         .ball{position:relative;width:48px;height:48px;border:1px solid var(--accent);border-radius:50%;display:grid;place-items:center;padding:0;touch-action:none}.ball::before{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,#151817 0 2px,#343b36 2px 3px);animation:spin 18s linear infinite;animation-play-state:paused;pointer-events:none}.ball span{position:relative;display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:15px;overflow:hidden;pointer-events:none}.ball img{width:100%;height:100%;object-fit:cover}
-        :host([data-playing=true]) .ball::before{animation-play-state:running}.panel{position:relative;width:340px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 100px);overflow:auto;padding:16px 18px;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);border-radius:16px;background:linear-gradient(var(--mask),var(--mask)),var(--image) center/cover,var(--bg);box-shadow:0 8px 24px #0003;backdrop-filter:blur(var(--blur,0px))}.head{display:flex;align-items:center;justify-content:space-between;gap:8px;touch-action:none;cursor:move}.head strong{font-size:13px;font-weight:500}.head button{width:36px;height:36px;font-size:22px}p{margin:10px 0;font-size:12px;opacity:.8}.cover{display:block;width:156px;height:156px;border-radius:12px;overflow:hidden;padding:0;margin:12px auto;background:linear-gradient(145deg,var(--accent),var(--bg))}.cover img{width:100%;height:100%;object-fit:cover}.cover img:not([src]),.ball img:not([src]){display:none}.title{display:block;text-align:center;font-size:19px;overflow-wrap:anywhere;margin:10px 0 0}.artist{text-align:center;margin:2px 0 10px;font-size:12px;opacity:.7}input{accent-color:var(--accent)}.seek{width:100%}.time{display:flex;justify-content:space-between;font-size:11px;opacity:.7}.transport{display:flex;align-items:center;justify-content:center;gap:22px}.transport>button{min-width:40px;min-height:44px;font-size:22px}.play{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--accent);color:var(--bg);margin:10px 0}.play svg{width:23px;height:23px;fill:currentColor}.options{display:flex;align-items:center;gap:10px}.mode{min-width:42px;min-height:40px;font-size:18px}.volume{display:flex;align-items:center;gap:8px;font-size:12px;flex:1;min-width:0;white-space:nowrap}.volume input{min-width:0;width:0;flex:1}ol{list-style:none;margin:12px 0 0;padding:0;max-height:180px;overflow:auto}li button{width:100%;text-align:left;min-height:44px;padding:10px 6px;border-top:1px solid color-mix(in srgb,var(--accent) 20%,transparent);overflow-wrap:anywhere}li button[aria-current=true]{color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,transparent)}.status{min-height:16px;font-size:11px}.hint{font-size:11px;opacity:.65}.lyrics{position:absolute;inset:56px 14px 18px;z-index:2;overflow:auto;text-align:center;cursor:pointer;backdrop-filter:blur(14px);border-radius:10px;padding:20px;background:color-mix(in srgb,var(--bg) 35%,transparent)}.lyrics p{font-size:16px;line-height:2;opacity:.6;margin:18px 0}.lyrics .active{opacity:1;color:var(--accent);font-weight:600}small{display:block;font-size:10px;opacity:.7;overflow-wrap:anywhere}a{color:var(--accent)}*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--accent) 35%,transparent) transparent}
+        :host([data-playing=true]) .ball::before{animation-play-state:running}.panel{position:relative;width:340px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 100px);overflow:auto;padding:16px 18px;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);border-radius:16px;background:linear-gradient(var(--mask),var(--mask)),var(--image) center/cover,var(--bg);box-shadow:0 8px 24px #0003;backdrop-filter:blur(var(--blur,0px))}.head{display:flex;align-items:center;justify-content:space-between;gap:8px;touch-action:none;cursor:move}.head strong{font-size:13px;font-weight:500}.head button{width:36px;height:36px;font-size:22px}p{margin:10px 0;font-size:12px;opacity:.8}.cover{display:block;width:156px;height:156px;border-radius:12px;overflow:hidden;padding:0;margin:12px auto;background:linear-gradient(145deg,var(--accent),var(--bg))}.cover img{width:100%;height:100%;object-fit:cover}.cover img:not([src]),.ball img:not([src]){display:none}.title{display:block;text-align:center;font-size:19px;overflow-wrap:anywhere;margin:10px 0 0}.artist{text-align:center;margin:2px 0 10px;font-size:12px;opacity:.7}input{accent-color:var(--accent)}.seek{width:100%}.time{display:flex;justify-content:space-between;font-size:12px;opacity:.7}.transport{display:flex;align-items:center;justify-content:center;gap:22px}.transport>button{min-width:40px;min-height:44px;font-size:22px}.play{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--accent);color:var(--bg);margin:10px 0}.play svg{width:23px;height:23px;fill:currentColor}.options{display:flex;align-items:center;gap:10px}.mode{min-width:42px;min-height:40px;font-size:18px}.volume{display:flex;align-items:center;gap:8px;font-size:12px;flex:1;min-width:0;white-space:nowrap}.volume input{min-width:0;width:0;flex:1}ol{list-style:none;margin:12px 0 0;padding:0;max-height:180px;overflow:auto}li button{width:100%;text-align:left;min-height:44px;padding:10px 6px;border-top:1px solid color-mix(in srgb,var(--accent) 20%,transparent);overflow-wrap:anywhere}li button[aria-current=true]{color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,transparent)}.status{min-height:16px;font-size:12px}.hint{font-size:12px;opacity:.65}.lyrics{position:absolute;inset:56px 14px 18px;z-index:2;overflow:auto;text-align:center;cursor:pointer;backdrop-filter:blur(14px);border-radius:10px;padding:20px;background:color-mix(in srgb,var(--bg) 35%,transparent)}.lyrics p{font-size:16px;line-height:2;opacity:.6;margin:18px 0}.lyrics .active{opacity:1;color:var(--accent);font-weight:600}small{display:block;font-size:12px;opacity:.7;overflow-wrap:anywhere}a{color:var(--accent)}*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--accent) 35%,transparent) transparent}
         @keyframes spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.ball::before{animation:none}}@media(max-height:600px){.cover{width:110px;height:110px}.panel{max-height:calc(100dvh - 24px)}}
-    </style><style class="font-style"></style><button class="ball" aria-label="展开角色音乐播放器" aria-expanded="true"><span><img alt=""><i>♪</i></span></button><section class="panel" role="region" aria-label="角色专属音乐播放器"><header class="head" tabindex="0" aria-label="拖动角色播放器"><strong></strong><button aria-label="收起角色播放器">×</button></header><p class="demo-hint" hidden>三首原创合成测试音，不是正式曲库。</p><button class="cover" aria-label="显示角色音乐歌词"><img alt="歌曲封面"></button><strong class="title"></strong><p class="artist"></p><label class="hint" for="rscp-seek">播放进度</label><input id="rscp-seek" class="seek" type="range" min="0" max="0" step="0.1" value="0" disabled><div class="time"><span data-time="elapsed">0:00</span><span data-time="duration">0:00</span></div><div class="transport"><button class="previous" aria-label="角色音乐上一首">‹</button><button class="play" aria-label="播放角色音乐"></button><button class="next" aria-label="角色音乐下一首">›</button></div><div class="options"><button class="mode"></button><label class="volume">音量<input type="range" min="0" max="100" value="20" aria-label="角色音乐音量"></label></div><ol aria-label="角色歌单"></ol><small class="credit"></small><details class="licenses" hidden><summary>字体许可</summary><pre style="white-space:pre-wrap;font:10px/1.5 system-ui;overflow-wrap:anywhere"></pre></details><p class="status" role="status"></p><div class="lyrics" role="button" tabindex="0" aria-label="返回角色音乐封面" hidden></div></section>`;
+    </style><style class="font-style"></style><button class="ball" aria-label="展开角色音乐播放器" aria-expanded="true"><span><img alt=""><i>♪</i></span></button><section class="panel" role="region" aria-label="角色专属音乐播放器"><header class="head" tabindex="0" aria-label="拖动角色播放器"><strong></strong><button aria-label="收起角色播放器">×</button></header><p class="demo-hint" hidden>三首原创合成测试音，不是正式曲库。</p><button class="cover" aria-label="显示角色音乐歌词"><img alt="歌曲封面"></button><strong class="title"></strong><p class="artist"></p><label class="hint" for="rscp-seek">播放进度</label><input id="rscp-seek" class="seek" type="range" min="0" max="0" step="0.1" value="0" disabled><div class="time"><span data-time="elapsed">0:00</span><span data-time="duration">0:00</span></div><div class="transport"><button class="previous" aria-label="角色音乐上一首">‹</button><button class="play" aria-label="播放角色音乐"></button><button class="next" aria-label="角色音乐下一首">›</button></div><div class="options"><button class="mode"></button><label class="volume">音量<input type="range" min="0" max="100" value="20" aria-label="角色音乐音量"></label></div><ol aria-label="角色歌单"></ol><small class="credit"></small><details class="licenses" hidden><summary>字体许可</summary><pre style="white-space:pre-wrap;font:12px/1.5 system-ui;overflow-wrap:anywhere"></pre></details><p class="status" role="status"></p><div class="lyrics" role="button" tabindex="0" aria-label="返回角色音乐封面" hidden></div></section>`;
     const audio = doc.createElement('audio');
     audio.preload = 'metadata';
     shadow.append(audio);
@@ -63,7 +66,7 @@ export function mountCardPlayer(input, scope) {
     }
     query('.volume input').value = String(Math.round(audio.volume * 100));
     const saved = preferences.read();
-    const personal = { volume: audio.volume, favorites: normalizeFavorites(saved.favorites, new Set(config.tracks.map(track => track.id))), transitionDuration: TRANSITION_DURATIONS.includes(saved.transitionDuration) ? saved.transitionDuration : config.transitionDuration };
+    const personal = { volume: audio.volume, reading: normalizeReading(saved.reading || config.reading), favorites: normalizeFavorites(saved.favorites, new Set(config.tracks.map(track => track.id))), transitionDuration: TRANSITION_DURATIONS.includes(saved.transitionDuration) ? saved.transitionDuration : config.transitionDuration };
     const transitions = createAudioTransitions(audio, { getVolume: () => personal.volume, getDuration: () => personal.transitionDuration });
     const persist = () => { void preferences.write(personal).then(ok => { if (!disposed && (!ok || preferences.sessionOnly)) query('.status').textContent = '个人偏好仅在本次会话有效。'; }); };
     const listen = (target, name, handler, extra = {}) => {
@@ -72,7 +75,7 @@ export function mountCardPlayer(input, scope) {
     };
     const tools = doc.createElement('div'); tools.className = 'listening-tools';
     tools.innerHTML = '<button class="favorite" aria-label="收藏当前歌曲">♡</button><button class="favorites-open">我喜欢的音乐</button><button class="sleep-open">睡眠定时</button><label>柔和过渡<select aria-label="角色音乐柔和过渡"><option value="0">关闭</option><option value="150">150 ms</option><option value="300">300 ms</option><option value="500">500 ms</option><option value="800">800 ms</option></select></label><section class="favorites" hidden><label>搜索收藏<input type="search" aria-label="搜索角色收藏"></label><div class="favorite-rows"></div></section><section class="sleep" hidden><p class="sleep-state"></p><label>分钟<input type="number" min="1" max="1440" value="30" aria-label="角色音乐定时分钟"></label><button class="sleep-start">开始</button><button class="sleep-end">本曲结束后停止</button><button class="sleep-pause">暂停倒计时</button><button class="sleep-cancel">取消</button></section>';
-    const toolsStyle = doc.createElement('style'); toolsStyle.textContent = '.listening-tools{display:flex;gap:8px;flex-wrap:wrap;font-size:11px}.listening-tools>button{min-height:36px}.listening-tools section{flex-basis:100%}.listening-tools input,.listening-tools select{max-width:125px;color:var(--text);background:var(--bg);border:1px solid var(--accent);border-radius:6px;padding:5px}.favorite-rows>div{display:flex;align-items:center}.favorite-rows button{min-height:36px}.favorite-rows button:first-child{flex:1;text-align:left}';
+    const toolsStyle = doc.createElement('style'); toolsStyle.textContent = '.listening-tools{display:flex;gap:8px;flex-wrap:wrap;font-size:12px}.listening-tools>button{min-height:36px}.listening-tools section{flex-basis:100%}.listening-tools input,.listening-tools select{max-width:125px;color:var(--text);background:var(--bg);border:1px solid var(--accent);border-radius:6px;padding:5px}.favorite-rows>div{display:flex;align-items:center}.favorite-rows button{min-height:36px}.favorite-rows button:first-child{flex:1;text-align:left}';
     shadow.append(toolsStyle); query('.options').after(tools); query('.listening-tools select').value = String(personal.transitionDuration);
     const sleep = createSleepTimer({ onExpire: () => { void transitions.pause(); }, onChange(state) { query('.sleep-state').textContent = state.mode === 'off' ? '未设置' : state.mode === 'track' ? '本曲结束后停止' : `${state.paused ? '已暂停' : '剩余'} ${formatTime(Math.ceil(state.remaining / 1000))}`; query('.sleep-pause').textContent = state.paused ? '继续倒计时' : '暂停倒计时'; } });
     sleep.cancel();
@@ -96,10 +99,22 @@ export function mountCardPlayer(input, scope) {
     listen(doc, 'visibilitychange', () => sleep.check());
     listen(query('.listening-tools select'), 'change', event => {personal.transitionDuration=Number(event.target.value);transitions.refresh();persist();});
     let selectionRevision = 0, selectionPending = false;
+    const lyricView = query('.lyrics');
+    lyricView.setAttribute('role', 'region'); lyricView.setAttribute('aria-label', '角色歌词阅读'); lyricView.removeAttribute('tabindex');
+    lyricView.innerHTML = '<header class="lyric-toolbar"><button data-action="back-cover" aria-label="返回角色音乐封面">返回封面</button><strong data-lyric-title></strong><span data-lyric-status></span><button data-action="resume-lyrics" hidden>回到当前歌词</button></header><div class="lyric-scroll" tabindex="0" role="region" aria-label="角色歌词正文"><div class="lyric-lines"></div></div>';
+    const reader = createLyricReader({ view: lyricView, scroller: query('.lyric-scroll'), lines: query('.lyric-lines'), getDefaultFollow: () => personal.reading.autoFollow, getCurrent: () => lyricIndex, getTitle: () => config.tracks[selected]?.title, onBack: () => { lyricView.hidden = true; query('.cover').focus({ preventScroll: true }); } });
+    const readingControls = createReadingControls({ panel: shadow, mount: query('.panel'), settings: personal, onChange(key) { updateAppearance(config.appearance); if (key === 'autoFollow') reader.reset(); reader.center(); persist(); } });
+    readingControls.group.open = false; query('.panel').append(readingControls.group);
+    const readingStyle = doc.createElement('style');
+    readingStyle.textContent = '.head,.title,.artist,.time,.transport,.options,.listening-tools,.credit,.status,.hint,ol,.stm-reading-settings{background:var(--plate);border-radius:7px}p,.artist,.time,.hint,small{opacity:1}small,.time,.status,.hint,.listening-tools{font-size:12px}.artist,.time,.hint,small{color:var(--muted)}.play{color:var(--on-action)}.stm-reading-settings{padding:8px;margin:12px 0}.stm-reading-settings label{display:block;margin-top:8px;font-size:13px}.stm-reading-settings select{max-width:100%;color:var(--text);background:var(--plate);min-height:36px}.stm-reading-settings input[type=range]{width:100%}.stm-reading-settings output{float:right}.lyrics{display:flex;flex-direction:column;overflow:hidden;cursor:default;padding:0;background:transparent}.lyric-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px;background:var(--plate)}.lyric-toolbar button{min-height:36px;font-size:13px}.lyric-toolbar strong{flex:1;min-width:0;font-size:14px}.lyric-toolbar span{font-size:12px;color:var(--muted)}.lyric-scroll{flex:1;min-height:0;overflow:auto;touch-action:pan-y;overscroll-behavior:contain;background:color-mix(in srgb,var(--plate) 85%,transparent)}:host([data-lyric-background=transparent]) .lyric-scroll{background:transparent}.lyric-lines{padding:100px 8px}.lyrics .lyric-lines p{opacity:1;font-size:var(--lyric-size,20px);line-height:var(--lyric-height,1.9);color:var(--text);background:var(--plate);padding:3px 8px;border-radius:6px}.lyrics .lyric-lines .active{color:var(--accent);font-weight:650}';
+    shadow.append(readingStyle);
     function updateAppearance(raw) {
         const theme = normalizeAppearance(raw);
+        const reading = readingPalette({ background: theme.background, text: theme.text, accent: theme.accent }, personal.reading.level);
         for (const key of ['accent', 'background', 'text'])
-            root.style.setProperty(key === 'background' ? '--bg' : `--${key}`, theme[key]);
+            root.style.setProperty(key === 'background' ? '--bg' : `--${key}`, key === 'text' ? reading.body : key === 'accent' ? reading.accent : theme[key]);
+        root.style.setProperty('--plate', reading.surface); root.style.setProperty('--muted', reading.secondary); root.style.setProperty('--on-action', readableColor('#ffffff', [reading.accent]));
+        root.style.setProperty('--lyric-size', personal.reading.lyricSize + 'px'); root.style.setProperty('--lyric-height', String(personal.reading.lineHeight)); root.dataset.lyricBackground = personal.reading.lyricBackground;
         const color = theme.background;
         const opacity = theme.image ? (theme.surface === 'clear' ? 0 : theme.opacity) : 1;
         root.style.setProperty(
@@ -200,16 +215,16 @@ export function mountCardPlayer(input, scope) {
         lyricData = parseLyrics(track.lyrics);
         lyricIndex = -1;
         query('.lyrics').hidden = true;
-        query('.lyrics').replaceChildren();
+        query('.lyric-lines').replaceChildren(); reader.reset();
         for (const line of lyricData.lines) {
             const p = doc.createElement('p');
             p.textContent = line.text;
-            query('.lyrics').append(p);
+            query('.lyric-lines').append(p);
         }
         if (!track.lyrics.trim()) {
             const p = doc.createElement('p');
-            p.textContent = '暂无歌词 · 轻点返回封面';
-            query('.lyrics').append(p);
+            p.textContent = '暂无歌词';
+            query('.lyric-lines').append(p);
         }
         render();
         renderFavorites();
@@ -258,15 +273,14 @@ export function mountCardPlayer(input, scope) {
         query('[data-time=duration]').textContent = formatTime(duration);
         if (lyricData?.synced) {
             const next = currentLyricIndex(lyricData.lines, audio.currentTime);
-            const lines = query('.lyrics').children;
+            const lines = query('.lyric-lines').children;
             if (next !== lyricIndex) {
                 if (lines[lyricIndex]) lines[lyricIndex].classList.remove('active');
                 if (lines[next]) {
                     lines[next].classList.add('active');
-                    if (!query('.lyrics').hidden)
-                        query('.lyrics').scrollTop = lines[next].offsetTop - query('.lyrics').clientHeight / 2;
                 }
                 lyricIndex = next;
+                reader.refresh(); reader.center();
             }
         }
     };
@@ -295,16 +309,7 @@ export function mountCardPlayer(input, scope) {
     });
     listen(query('.cover'), 'click', () => {
         query('.lyrics').hidden = false;
-        progress();
-    });
-    listen(query('.lyrics'), 'click', () => {
-        query('.lyrics').hidden = true;
-    });
-    listen(query('.lyrics'), 'keydown', (event) => {
-        if (['Escape', 'Enter', ' '].includes(event.key)) {
-            event.preventDefault();
-            query('.lyrics').hidden = true;
-        }
+        reader.reset(); progress(); reader.center(); query('.lyric-scroll').focus({ preventScroll: true });
     });
     function place() {
         if (disposed) return;
@@ -323,6 +328,7 @@ export function mountCardPlayer(input, scope) {
         query('.ball').hidden = value;
         query('.ball').setAttribute('aria-expanded', String(value));
         place();
+        if (value && !query('.lyrics').hidden) { reader.reset(); reader.center(); query('.lyric-scroll').focus({ preventScroll: true }); }
     }
     listen(win, 'resize', place);
     for (const handle of [query('.head'), query('.ball')]) {
@@ -417,7 +423,7 @@ export function mountCardPlayer(input, scope) {
     lifetime = watchRoleLifetime(scope, () => {
         if (disposed) return;
         disposed = true;
-        selectionRevision++; sleep.dispose(); transitions.dispose();
+        selectionRevision++; sleep.dispose(); transitions.dispose(); reader.dispose(); readingControls.dispose();
         abort.abort();
         listeners = 0;
         live = false;

@@ -8,6 +8,7 @@ import { normalizePanelSize } from './resizing.js';
 import { SCHEMES } from './scheme.js';
 import { normalizeFavorites, TRANSITION_DURATIONS } from './listening.js';
 import { normalizeDesign, normalizeDesigns, normalizeRoleDesigns, MOTION_LEVELS } from './ui/config.js';
+import { normalizeReading } from './ui/reading.js';
 
 export const MAX_TRACKS = 200;
 export const MAX_PLAYLISTS = 50;
@@ -129,6 +130,7 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
         roleDesigns: normalizeRoleDesigns(raw.roleDesigns),
         visualMotion: MOTION_LEVELS.includes(raw.visualMotion) ? raw.visualMotion : null,
         accessibleControls: raw.accessibleControls === true,
+        reading: normalizeReading(raw.reading),
         personalDesign: raw.personalDesign && typeof raw.personalDesign === 'object' ? normalizeDesign(raw.personalDesign) : null,
         mode: PLAY_MODES.includes(raw.mode) ? raw.mode : 'list',
         currentId,

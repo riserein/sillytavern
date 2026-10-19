@@ -1,4 +1,5 @@
 import { readScriptPayload, analyzePayload, PLAYER_BUILD } from '../card-player/quality.js';
+import { contrastRatio, colorChannels } from '../ui/contrast.js';
 import { test, expect } from '@playwright/test';
 import { readFile, mkdir, writeFile, mkdtemp, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -527,6 +528,7 @@ for (const {mobile,layout} of [{mobile:false,layout:'vinyl'},{mobile:true,layout
         await author.getByRole('tab',{name:'外观',exact:true}).click();
         await menu(author,'#stm-design-layout',layout);
         await menu(author,'#stm-design-theme',mobile?'mist-blue':'walnut');
+        await author.locator('#stm-lyric-size').evaluate(n=>{n.value='23';n.dispatchEvent(new Event('input'));});
         if(mobile){const icon=Buffer.from(await author.evaluate(()=>{const c=document.createElement('canvas');c.width=64;c.height=64;const ctx=c.getContext('2d');ctx.fillStyle='#84b7cc';ctx.fillRect(0,0,64,64);return c.toDataURL('image/png').split(',')[1];}),'base64');await author.locator('[data-launcher-file]').setInputFiles({name:'own-icon.png',mimeType:'image/png',buffer:icon});await expect(author.locator('[data-launcher-status]')).toContainText('图标已保存');}
         await author.getByRole('tab', { name: '曲库', exact: true }).click();
         await author.getByRole('button', { name: '打开歌单：bill', exact: true }).click();
@@ -660,6 +662,31 @@ for (const {mobile,layout} of [{mobile:false,layout:'vinyl'},{mobile:true,layout
             expect(
                 await recipient.locator('#stm-player').evaluate((node) => node.dataset.hasBackground),
             ).toBe('true');
+            const authorScriptBeforeReading = await recipient.evaluate(()=>{
+                const data=SillyTavern.getContext().characters[SillyTavern.getContext().characterId].data;
+                return data.extensions.tavern_helper.scripts.find(s=>s.id===data.extensions.riserein_card_player.scriptId).content;
+            });
+            const renderedTitle = await recipient.locator('[data-role=title]').evaluate(node=>{
+                const plate=getComputedStyle(node.closest('.stm-now-info')),text=getComputedStyle(node);
+                return {text:text.color,background:plate.backgroundColor,display:plate.display,opacity:text.opacity};
+            });
+            expect(renderedTitle.display).not.toBe('contents');expect(colorChannels(renderedTitle.background)[3]).toBe(1);
+            expect(contrastRatio(renderedTitle.text,renderedTitle.background)).toBeGreaterThanOrEqual(4.5);expect(renderedTitle.opacity).toBe('1');
+            await recipient.locator('[data-action=toggle-lyrics]').click();
+            await expect(recipient.locator('.stm-lyrics-lines p').first()).toHaveCSS('opacity','1');
+            await expect(recipient.locator('.stm-lyrics-lines p').first()).toHaveCSS('font-size','23px');
+            const renderedLyric=await recipient.locator('.stm-lyrics-lines p').first().evaluate(node=>{const css=getComputedStyle(node);return {text:css.color,background:css.backgroundColor};});
+            expect(colorChannels(renderedLyric.background)[3]).toBe(1);expect(contrastRatio(renderedLyric.text,renderedLyric.background)).toBeGreaterThanOrEqual(4.5);
+            await recipient.locator('.stm-lyrics-lines p').first().evaluate(n=>n.click());
+            await expect(recipient.locator('.stm-lyrics-view')).toBeVisible();
+            await recipient.locator('[data-action=back-cover]').click();
+            await recipient.getByRole('tab',{name:'外观',exact:true}).click();
+            await recipient.locator('#stm-lyric-size').evaluate(n=>{n.value='27';n.dispatchEvent(new Event('input'));});
+            await recipient.getByRole('tab',{name:'播放',exact:true}).click();
+            expect(await recipient.evaluate(()=>{
+                const data=SillyTavern.getContext().characters[SillyTavern.getContext().characterId].data;
+                return data.extensions.tavern_helper.scripts.find(s=>s.id===data.extensions.riserein_card_player.scriptId).content;
+            })).toBe(authorScriptBeforeReading);
             await recipient.locator('[data-action=play]').click();
             await expect
                 .poll(() => recipient.locator(root + ' audio').evaluate((audio) => audio.currentTime))
@@ -684,7 +711,8 @@ for (const {mobile,layout} of [{mobile:false,layout:'vinyl'},{mobile:true,layout
                 await recipient.getByRole('button',{name:'关闭睡眠定时器',exact:true}).click();
                 await recipient.locator('[data-action=toggle-lyrics]').click();
                 await expect(recipient.locator('.stm-lyrics-view')).toContainText('Shared UI lyric');
-                await recipient.locator('.stm-lyrics-view').click();
+                await expect(recipient.locator('.stm-lyrics-lines p').first()).toHaveCSS('font-size','27px');
+                await recipient.locator('[data-action=back-cover]').click();
                 await recipient.locator('#stm-volume').evaluate((input) => {
                     input.value = '43';
                     input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -865,6 +893,7 @@ for (const {mobile,layout} of [{mobile:false,layout:'vinyl'},{mobile:true,layout
                     TavernHelper.replaceScriptTrees(scripts, { type: 'character' });
                 });
                 await expect(recipient.locator(root)).toHaveCount(1);
+                await expect(recipient.locator('#stm-lyric-size')).toHaveValue('27');
                 await selectCard(recipient, blank);
                 await expect(recipient.locator(root)).toHaveCount(0);
             }

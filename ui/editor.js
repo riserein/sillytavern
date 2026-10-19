@@ -9,7 +9,8 @@ import {
   randomColors,
 } from "./config.js";
 import { COMPONENTS } from "./components.js";
-import { contrastRatio, readableColors } from "./contrast.js";
+import { readableColors, readabilityReport, readingPalette } from "./contrast.js";
+import { sourceReadingPalette } from './reading.js';
 import { FONT_PRESETS } from "../fonts.js";
 /** Author-only editor. The preview is the live player, never a second Audio or iframe. */
 export function createDesignEditor({
@@ -110,12 +111,13 @@ export function createDesignEditor({
       input.disabled =
         selected === "background" &&
         ["size", "margin", "position"].includes(input.dataset.prop);
-    q("[data-color-warning]").textContent =
-      colors.background &&
-      colors.text &&
-      contrastRatio(colors.background, colors.text) < 4.5
-        ? "文字与背景对比度偏低，可调整颜色或解锁文字色后随机配色。"
-        : "";
+    const source = sourceReadingPalette(panel), checks = readabilityReport(source, working.components);
+    const protectedColors = readingPalette(source, settings.reading?.level);
+    const protectedChecks = readabilityReport({ background: protectedColors.surface, text: protectedColors.body, muted: protectedColors.secondary, accent: protectedColors.current });
+    const low = checks.filter(check => check.ratio < check.target);
+    q('[data-color-warning]').textContent = '原始配色：' + checks.map(check => `${check.name} ${check.ratio.toFixed(2)}:1`).join(' · ') +
+      '。局部衬底与显示保护后：' + protectedChecks.map(check => `${check.name} ${check.ratio.toFixed(2)}:1`).join(' · ') +
+      (low.length ? '。原始配色有低对比度项：' + low.map(c => c.name).join('、') + '。显示层已使用可读性色和局部衬底；建议调整相应颜色或解锁后随机配色。锁定色不会被改写。' : '。原始文字配色达标；透明和图片区域依靠局部衬底保护，未进行全图像素达标声明。');
   }
   function layout() {
     if (!root) return;

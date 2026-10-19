@@ -16,7 +16,7 @@ function wav(seconds = 8) {
 }
 
 async function playerPage(page, name) {
-    if (await page.locator('.stm-lyrics-view').isVisible()) await page.getByRole('button', { name: '显示封面', exact: true }).click();
+    if (await page.locator('.stm-lyrics-view').isVisible()) await page.getByRole('button', { name: '返回封面', exact: true }).click();
     if (await page.locator('#stm-queue').isVisible()) await page.getByRole('button', { name: '关闭播放列表', exact: true }).click();
     if (await page.locator('#stm-details').isVisible()) await page.getByRole('button', { name: '关闭歌曲详情', exact: true }).click();
     await page.getByRole('tab', { name, exact: true }).click();
@@ -1021,7 +1021,7 @@ test('library and import are independent, and covers switch to synchronized embe
     await expect(page.locator('.stm-lyrics-lines p')).toHaveText(['第一句', '第二句', '第三句']);
     await page.locator('#stm-player audio').evaluate(audio => { audio.currentTime = 3; });
     await expect(page.locator('.stm-current-lyric')).toHaveText('第二句');
-    await page.getByRole('button', { name: '显示封面', exact: true }).click();
+    await page.getByRole('button', { name: '返回封面', exact: true }).click();
     await expect(page.locator('.stm-lyrics-view')).toBeHidden();
     await expect.poll(() => page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
     const saved = waitForPlayerSave(page, settings => settings.fontPreset === 'song' && settings.tracks?.[0]?.coverId);
@@ -1223,7 +1223,7 @@ test('font previews fit mobile and failed bundled downloads keep the current fon
     await expect(row.locator('.stm-font-sample')).toBeVisible();
 });
 
-test('lyrics occupy the transparent full panel, preserve playback, and return with a click or Escape', async ({ page }) => {
+test('lyrics occupy the transparent full panel, preserve playback, and return with an explicit button or Escape', async ({ page }) => {
     await importSongs(page, ['透明歌词']);
     await playerPage(page, '曲库');
     await page.getByRole('button', { name: '歌曲详情：透明歌词', exact: true }).click();
@@ -1240,7 +1240,7 @@ test('lyrics occupy the transparent full panel, preserve playback, and return wi
     await page.keyboard.press('Escape');
     await expect(lyrics).toBeHidden(); await expect(page.locator('#stm-player')).toBeVisible();
     await page.getByRole('button', { name: '显示歌词', exact: true }).click();
-    await page.getByRole('button', { name: '显示封面', exact: true }).click({ position: { x: 20, y: 20 } });
+    await page.getByRole('button', { name: '返回封面', exact: true }).click({ position: { x: 20, y: 20 } });
     await expect(page.locator('.stm-cover-stage')).toBeVisible();
     expect(await page.locator('#stm-player audio').evaluate(audio => audio.paused)).toBe(false);
 });

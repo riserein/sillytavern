@@ -36,6 +36,7 @@ const UI_KEYS = [
     'positions',
     'transitionDuration',
     'uiDesign',
+    'reading',
 ];
 /** Same export_with semantics as the verified official Helper export hook. */
 export function helperExportSettings(settings) {

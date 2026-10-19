@@ -1,7 +1,7 @@
 import { MAX_PACKAGE_BYTES, MAX_AUDIO_BYTES, jsonForScript, normalizeCardConfig } from './config.js';
 import { base64Bytes } from '../base64.js';
 
-export const PLAYER_BUILD = '2.0.0-alpha.5';
+export const PLAYER_BUILD = '2.0.0-alpha.6';
 export const PAYLOAD_FORMAT = 1;
 export const byteSize = (value) =>
     new TextEncoder().encode(typeof value === 'string' ? value : JSON.stringify(value)).length;
