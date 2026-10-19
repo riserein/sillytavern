@@ -1,0 +1,16 @@
+.stm-scene-bar { margin-bottom:12px; }
+.stm-scene-bar .stm-hint { margin:0 0 8px; }
+.stm-scene-choices { overflow:auto; display:flex; flex-direction:column; gap:8px; }
+.stm-scene-choices > button { text-align:left; white-space:normal; min-height:48px; }
+.stm-scene-choices small { display:block; color:var(--read-secondary); }
+.stm-scene-manager { position:absolute; inset:0; z-index:45; overflow:hidden; border-radius:inherit; background:var(--read-surface); color:var(--read-body); --stm-body:var(--read-body); --stm-muted:var(--read-secondary); }
+.stm-scene-manager > .stm-maker-scroll { height:100%; overflow:auto; overscroll-behavior:contain; padding:18px 22px 28px; }
+.stm-scene-manager .stm-maker-header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.stm-scene-manager label { display:block; margin:10px 0 4px; }
+.stm-scene-manager input:not([type=checkbox]),.stm-scene-manager textarea { width:100%; }
+.stm-player #stm-scene-role-menu,.stm-player #stm-scene-theme-menu { z-index:46; }
+.stm-scene-editor-row { display:flex; align-items:center; gap:5px; border-bottom:1px solid var(--ui-divider); padding:5px 0; }
+.stm-scene-editor-row > :first-child { flex:1; min-width:0; white-space:normal; overflow-wrap:anywhere; }
+.stm-scene-manager [data-scene-selected] { margin-bottom:16px; }
+.stm-scene-manager textarea { font:inherit; color:var(--read-body); }
+.stm-scene-manager [data-scene-save-status] { min-height:1.5em; }

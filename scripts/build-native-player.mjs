@@ -50,6 +50,7 @@ try {
         '\n' +
         (await readFile(join(root, 'night-ui.css'), 'utf8')).replace(/@import\s+url\("\.\/style.css"\);/, '').replace(/@import\s+url\("\.\/ui\/layouts.css"\);/, '') +
         '\n' + (await readFile(join(root, 'ui/layouts.css'), 'utf8')) +
+        '\n' + (await readFile(join(root, 'ui/scenes.css'), 'utf8')) +
         '\n' + (await readFile(join(root, 'ui/reading.css'), 'utf8'));
     const bindings =
         'document,window,globalThis,URL,ResizeObserver,MutationObserver,setTimeout,setInterval,clearTimeout,clearInterval,requestAnimationFrame,cancelAnimationFrame,getComputedStyle,matchMedia,Image,FontFace,fetch,location';
