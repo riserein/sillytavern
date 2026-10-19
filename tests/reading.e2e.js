@@ -27,21 +27,7 @@ test('rendered contrast matrix: all old palettes and all new layouts, schemes, s
         rows.push({ layout: 'crystal', theme: 'night', designTheme: 'inherit', custom: true });
         const canvas = document.createElement('canvas'); canvas.width = canvas.height = 80;
         const c = canvas.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, 80, 80); c.fillStyle = '#000'; c.fillRect(0, 0, 40, 40); c.fillRect(40, 40, 40, 40); const image = canvas.toDataURL();
-        function sample(node) {
-            const css = getComputedStyle(node), layers = []; let parent=node, opaque=false, opacity=1;
-            while(parent && parent!==document.body){
-                const style=getComputedStyle(parent);if(style.display==='contents'){parent=parent.parentElement;continue;}
-                opacity*=Number(style.opacity);
-                // An image may cover its element's background color. Bound it
-                // conservatively rather than pretend that HEX is the image.
-                if(style.backgroundImage!=='none')break;
-                const color=style.backgroundColor,rgba=colorChannels(color);if(rgba)layers.push(color);
-                if(rgba?.[3]===1){opaque=true;break;}parent=parent.parentElement;
-            }
-            const bases=opaque?[layers.pop()]:['#000000','#ffffff'];
-            const backgrounds=bases.map(base=>layers.toReversed().reduce((bg,layer)=>compositeColor(layer,bg),base));
-            return {safe:true,ratio:Math.min(...backgrounds.map(bg=>contrastRatio(compositeColor(css.color,bg),bg))),opacity,size:parseFloat(css.fontSize),foreground:css.color,backgrounds,basis:opaque?'painted-opaque-box':'black-white-image-bounds'};
-        }
+        const { sampleReadingInk: sample } = await import(prefix + 'tests/rendered-reading.js');
         for (const row of rows) for (const scheme of ['dark', 'light']) for (const surface of ['matte', 'glass', 'clear']) for (const hasImage of [false, true]) {
             Object.assign(app.settings, { theme: row.theme, surface, colorScheme: scheme, customColors: row.custom ? { enabled: true, background: '#858585', text: '#898989', accent: '#888888' } : { ...app.settings.customColors, enabled: false } });
             document.querySelector('[data-scheme-choice=' + scheme + ']').click();
@@ -101,20 +87,22 @@ test('manual reading survives new LRC lines; resume, text clicks, keys, reopenin
     expect(await page.evaluate(() => app.settings.tracks[0].lyrics)).toContain('[00:00]歌词原文 1');
 });
 
-test('component background overrides and text opacity cannot defeat painted reading plates', async ({ page }) => {
+test('component background overrides retain unframed text and cannot defeat the shared reading surface', async ({ page }) => {
     await fixture(page);
     const checks = await page.evaluate(async prefix => {
-        const { contrastRatio, colorChannels } = await import(prefix + 'ui/contrast.js');
+        const { colorChannels } = await import(prefix + 'ui/contrast.js');
+        const { sampleReadingInk } = await import(prefix + 'tests/rendered-reading.js');
         const result = [];
         for (const layout of ['night', 'crystal', 'vinyl', 'cassette', 'pure']) for (const visible of [true, false]) for (const color of ['#ffffff', '#000000']) {
             app.setDesign({ layout, theme: 'inherit', customization: { colors: { background: '#858585', text: '#858585', muted: '#858585', accent: '#858585' } }, components: { background: { color, opacity: .5, visible }, title: { color: '#858585', opacity: .5, size: .65 }, artist: { color: '#858585', opacity: .5, size: .65 } } });
             await new Promise(requestAnimationFrame);
             const title = document.querySelector('[data-role=title]'), artist = document.querySelector('[data-role=source]'), plate = getComputedStyle(document.querySelector('.stm-now-info'));
-            result.push({ layout, visible, color, plateAlpha: colorChannels(plate.backgroundColor)?.[3], painted: plate.display !== 'contents', title: contrastRatio(getComputedStyle(title).color, plate.backgroundColor), artist: contrastRatio(getComputedStyle(artist).color, plate.backgroundColor), opacity: getComputedStyle(title).opacity, savedOpacity: app.getDesign().components.title.opacity });
+            const veil=getComputedStyle(document.querySelector('#stm-player'),'::after');
+            result.push({ layout, visible, color, plateAlpha: colorChannels(plate.backgroundColor)?.[3], painted: plate.display !== 'contents', veilDisplay:veil.display,veilAlpha:colorChannels(veil.backgroundColor)?.[3],title: sampleReadingInk(title).ratio, artist: sampleReadingInk(artist).ratio, opacity: getComputedStyle(title).opacity, savedOpacity: app.getDesign().components.title.opacity });
         }
         return result;
     }, prefix);
-    for (const row of checks) { expect(row.plateAlpha).toBe(1); expect(row.painted).toBe(true); expect(row.title).toBeGreaterThanOrEqual(4.5); expect(row.artist).toBeGreaterThanOrEqual(4.5); expect(row.opacity).toBe('1'); expect(row.savedOpacity).toBe(.5); }
+    for (const row of checks) { expect(row.plateAlpha).toBe(0); expect(row.painted).toBe(true);expect(row.veilDisplay).not.toBe('none');expect(row.veilAlpha).toBeGreaterThanOrEqual(.89); expect(row.title,JSON.stringify(row)).toBeGreaterThanOrEqual(4.5); expect(row.artist,JSON.stringify(row)).toBeGreaterThanOrEqual(4.5); expect(row.opacity).toBe('1'); expect(row.savedOpacity).toBe(.5); }
 });
 
 test('destructive, error and warning text retain semantic contrast, including pressed buttons', async ({ page }) => {
@@ -122,12 +110,12 @@ test('destructive, error and warning text retain semantic contrast, including pr
     await page.getByRole('tab', { name: '曲库', exact: true }).click(); await page.locator('.stm-collection-open[data-collection-id=""]').click();
     await page.getByRole('button', { name: '歌曲详情：阅读 A', exact: true }).click();
     const results = await page.evaluate(async prefix => {
-        const { contrastRatio } = await import(prefix + 'ui/contrast.js'), panel = document.querySelector('#stm-player');
+        const { sampleReadingInk } = await import(prefix + 'tests/rendered-reading.js'), panel = document.querySelector('#stm-player');
         const error = document.createElement('p'), warning = document.createElement('p'); error.className = 'stm-error'; warning.className = 'stm-warning'; error.textContent = '测试错误'; warning.textContent = '测试警告'; panel.querySelector('.stm-details-summary').append(error, warning);
         const rows = [];
         for (const scheme of ['light', 'dark']) {
             panel.querySelector('[data-scheme-choice=' + scheme + ']').click();
-            for (const node of [error, warning, panel.querySelector('[data-action=detail-delete]')]) { const css = getComputedStyle(node); rows.push({ color: css.color, ratio: contrastRatio(css.color, css.backgroundColor) }); }
+            for (const node of [error, warning, panel.querySelector('[data-action=detail-delete]')]) { const css = getComputedStyle(node); rows.push({ color: css.color, ratio: sampleReadingInk(node).ratio }); }
         }
         return rows;
     }, prefix);

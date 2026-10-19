@@ -1,5 +1,6 @@
 import { test,expect } from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
+const reportRoot = process.env.ST_MODES_REPORT_DIR || 'docs/lyrics-modes';
 const prefix='/scripts/extensions/third-party/sillytavern/';
 async function fixture(page){
  await page.route('**/modes-fixture',r=>r.fulfill({contentType:'text/html',body:`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="${prefix}ui/player.css"><style>body{margin:0;background:repeating-conic-gradient(#fff 0 25%,#000 0 50%) 0/70px 70px}</style>`}));
@@ -39,7 +40,7 @@ test('three modes, continuous motion, immediate highlight, calibration and free 
    await page.locator('[data-action=resume-lyrics]').click();await expect(page.locator('.stm-lyrics-view')).toHaveAttribute('data-follow','true');
   }
   expect(await page.locator('.stm-lyrics-lines p').first().evaluate(n=>getComputedStyle(n).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
-  await mkdir('docs/lyrics-modes/screenshots',{recursive:true});await page.locator('#stm-player').screenshot({path:`docs/lyrics-modes/screenshots/${value}-${info.project.name}.png`});
+  await mkdir(`${reportRoot}/screenshots`,{recursive:true});await page.locator('#stm-player').screenshot({path:`${reportRoot}/screenshots/${value}-${info.project.name}.png`});
   if(await page.locator('.stm-lyric-calibration').getAttribute('open')===null)await page.locator('.stm-lyric-calibration summary').click();await page.locator('[data-offset="100"]').click();await expect(page.locator('.stm-lyric-calibration output')).toHaveText('0.1 秒');
   expect(await page.evaluate(()=>app.settings.lyricOffsets.a)).toBe(100);
   await page.locator('[data-offset=reset]').click();await page.locator('[data-action=back-cover]').click();
@@ -47,7 +48,7 @@ test('three modes, continuous motion, immediate highlight, calibration and free 
  }
  await page.getByRole('tab',{name:'曲库',exact:true}).click();await page.getByRole('button',{name:'打开歌单：总曲库',exact:true}).click();await page.locator('.stm-track-list [data-track-toggle=b]').click();await page.getByRole('tab',{name:'播放',exact:true}).click();await page.locator('[data-action=toggle-lyrics]').click();await expect(page.locator('.stm-lyrics-scroll')).toBeVisible();await expect(page.locator('[data-lyric-status]')).toHaveText('无时间轴 · 阅读原文');await expect(page.locator('.stm-lyric-immersive')).toBeHidden();await page.locator('[data-action=back-cover]').click();
  await page.evaluate(()=>{app.dispose()});await expect(page.locator('#stm-player')).toHaveCount(0);expect(await page.evaluate(()=>originalAudio.paused)).toBe(true);
- await writeFile(`docs/lyrics-modes/motion-${info.project.name}.json`,JSON.stringify(evidence,null,2));
+ await writeFile(`${reportRoot}/motion-${info.project.name}.json`,JSON.stringify(evidence,null,2));
 });
 
 test('hidden pauses immediately, cancels sleep, keeps progress and recovers paused; no recovery degrades to dock',async({page},info)=>{
@@ -60,7 +61,7 @@ test('hidden pauses immediately, cancels sleep, keeps progress and recovers paus
  await page.locator('.rscp-preview-recovery').click();await expect(page.locator('.stm-launcher')).toBeVisible();expect(await page.evaluate(()=>app.audio.paused)).toBe(true);
  await page.locator('.stm-launcher').click();await expect(page.locator('#stm-player')).toBeVisible();
  await page.locator('.stm-visibility-controls [data-display-dock]').click();await expect(page.locator('.stm-launcher')).toHaveAttribute('data-display','docked');
- await page.locator('.stm-launcher').screenshot({path:`docs/lyrics-modes/screenshots/docked-${info.project.name}.png`});
+ await page.locator('.stm-launcher').screenshot({path:`${reportRoot}/screenshots/docked-${info.project.name}.png`});
  await page.locator('.stm-launcher').click();await expect(page.locator('#stm-player')).toBeVisible();
  await page.evaluate(()=>{document.querySelector('.rscp-preview-recovery').remove();app.dispose();ctx.extensionSettings.riserein_music_player.visibility={state:'hidden'};});
  await page.evaluate(async prefix=>{const {initialize}=await import(prefix+'index.js');window.app=initialize({context:ctx});},prefix);
@@ -78,7 +79,7 @@ test('left and right snapping, 320px and landscape/keyboard-sized viewports keep
    const box=await page.locator('.stm-launcher').boundingBox();await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(edge==='left'?12:viewport.width-12,Math.max(80,box.y),{steps:12});await page.mouse.up();
    await expect(page.locator('.stm-launcher')).toHaveAttribute('data-display','docked');
    const b=await page.locator('.stm-launcher').boundingBox();expect(b.x).toBeGreaterThanOrEqual(0);expect(b.x+b.width).toBeLessThanOrEqual(viewport.width);expect(b.y+b.height).toBeLessThanOrEqual(viewport.height);
-   await page.screenshot({path:`docs/lyrics-modes/screenshots/${edge}-${viewport.width}-${info.project.name}.png`});await page.locator('.stm-launcher').click();await page.evaluate(()=>app.setOpen(false));
+   await page.screenshot({path:`${reportRoot}/screenshots/${edge}-${viewport.width}-${info.project.name}.png`});await page.locator('.stm-launcher').click();await page.evaluate(()=>app.setOpen(false));
   }
  }
  await page.evaluate(()=>app.dispose());
@@ -100,10 +101,10 @@ test('unframed lyrics remain readable in every layout, mode, scheme and scrim on
   return checks;
  },prefix);
  expect(result).toHaveLength(180*2);expect(result.filter(r=>r.ratio<4.5||r.boxAlpha!==0)).toEqual([]);
- await mkdir('docs/lyrics-modes/results',{recursive:true});await writeFile(`docs/lyrics-modes/results/modes-contrast-${info.project.name}.json`,JSON.stringify(result,null,2));
+ await mkdir(`${reportRoot}/results`,{recursive:true});await writeFile(`${reportRoot}/results/modes-contrast-${info.project.name}.json`,JSON.stringify(result,null,2));
  for(const scheme of ['dark','light'])for(const displayMode of ['flow','centered','immersive']){
   await page.evaluate(({scheme,displayMode})=>{document.querySelector('[data-scheme-choice='+scheme+']').click();app.settings.reading.displayMode=displayMode;app.settings.reading.lyricBackground='auto';app.setDesign({layout:'crystal',theme:'mist-blue'});app.panel.style.backgroundImage='linear-gradient(110deg,#fff,#000)';document.querySelector('[data-action=toggle-lyrics]').click();app.audio.currentTime=9;app.audio.dispatchEvent(new Event('timeupdate'));},{scheme,displayMode});
-  await page.locator('#stm-player').screenshot({path:`docs/lyrics-modes/screenshots/${displayMode}-${scheme}-${info.project.name}.png`});await page.locator('[data-action=back-cover]').click();
+  await page.locator('#stm-player').screenshot({path:`${reportRoot}/screenshots/${displayMode}-${scheme}-${info.project.name}.png`});await page.locator('[data-action=back-cover]').click();
  }
  await page.evaluate(()=>app.dispose());
 });
@@ -118,7 +119,7 @@ test('classic standalone runtime supports author-docked entry, personal hiding a
  await page.locator('.stm-visibility-controls [data-display-hide]').click();const hiddenTime=await page.evaluate(()=>legacyApp.audio.currentTime);await page.evaluate(()=>legacyApp.audio.dispatchEvent(new Event('ended')));await page.waitForTimeout(100);expect(await page.evaluate(()=>legacyApp.audio.currentTime)).toBe(hiddenTime);await expect(page.locator('.ball')).toBeHidden();await expect(page.locator('.panel')).toBeHidden();expect(await page.evaluate(()=>legacyApp.audio.paused)).toBe(true);
  await page.locator('.rscp-preview-recovery').click();await expect(page.locator('.ball')).toBeVisible();expect(await page.evaluate(()=>legacyApp.audio.paused)).toBe(true);
  await page.locator('.ball').click();await page.locator('.stm-reading-settings summary').click();await page.locator('#stm-lyric-mode').selectOption('immersive');await page.locator('.cover').click();await expect(page.locator('.lyrics')).toHaveAttribute('data-lyric-mode','immersive');
- await page.screenshot({path:`docs/lyrics-modes/screenshots/classic-${info.project.name}.png`});await page.evaluate(()=>legacyApp.dispose());await expect(page.locator('[data-riserein-recovery]')).toHaveCount(0);expect(await page.evaluate(()=>legacyApp.audio.paused)).toBe(true);
+ await page.screenshot({path:`${reportRoot}/screenshots/classic-${info.project.name}.png`});await page.evaluate(()=>legacyApp.dispose());await expect(page.locator('[data-riserein-recovery]')).toHaveCount(0);expect(await page.evaluate(()=>legacyApp.audio.paused)).toBe(true);
 });
 
 test('late ended events while hidden cannot switch the selected song',async({page})=>{

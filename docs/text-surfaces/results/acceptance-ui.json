@@ -1,0 +1,64 @@
+[
+  {
+    "stage": "text-surfaces",
+    "status": "passed",
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.text-surfaces.config.js",
+      "--reporter=json"
+    ],
+    "runtimeSha256": "9504f949b7021b6a10de9856344bd22b82a6fcf631ec7d59eced011666f528ac",
+    "exitCode": 0,
+    "seconds": 206.17
+  },
+  {
+    "stage": "reading",
+    "status": "passed",
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.reading.config.js",
+      "--reporter=json"
+    ],
+    "runtimeSha256": "9504f949b7021b6a10de9856344bd22b82a6fcf631ec7d59eced011666f528ac",
+    "exitCode": 0,
+    "seconds": 108.73
+  },
+  {
+    "stage": "modes",
+    "status": "passed",
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.modes.config.js",
+      "--reporter=json"
+    ],
+    "runtimeSha256": "9504f949b7021b6a10de9856344bd22b82a6fcf631ec7d59eced011666f528ac",
+    "exitCode": 0,
+    "seconds": 82.91
+  },
+  {
+    "stage": "data",
+    "status": "passed",
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.data.config.js",
+      "--output",
+      "test-results/text-data",
+      "--reporter=json"
+    ],
+    "runtimeSha256": "9504f949b7021b6a10de9856344bd22b82a6fcf631ec7d59eced011666f528ac",
+    "exitCode": 0,
+    "seconds": 49.42
+  }
+]

@@ -1,6 +1,6 @@
 {
     "name": "sillytavern-music-player",
-    "version": "2.0.0-alpha.7",
+    "version": "2.0.0-alpha.8",
     "private": true,
     "type": "module",
     "description": "A built-in music player extension for SillyTavern",
@@ -22,6 +22,7 @@
         "test:accounts": "playwright test --config playwright.accounts.config.js",
         "test:design": "playwright test --config playwright.design.config.js",
         "test:reading": "playwright test --config playwright.reading.config.js",
+        "test:text-surfaces": "playwright test --config playwright.text-surfaces.config.js",
         "test:modes": "playwright test --config playwright.modes.config.js"
     },
     "engines": {

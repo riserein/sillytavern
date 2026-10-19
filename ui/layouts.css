@@ -38,7 +38,7 @@
 .stm-player[data-layout=vinyl] .stm-design-tonearm::before { content:''; position:absolute; width:24px; height:24px; border-radius:50%; top:-8px; left:-8px; background:radial-gradient(circle,#7d8079 0 4px,#252724 5px 9px,#92958d 10px 12px); }
 .stm-player[data-layout=vinyl] .stm-design-tonearm::after { content:''; position:absolute; width:15px; height:27px; bottom:-16px; left:-3px; background:#2b2d2b; border:1px solid #aaa9; border-radius:3px; }
 .stm-player[data-layout=vinyl][data-audio-state=playing] .stm-design-tonearm { transform:rotate(20deg); }
-.stm-player.stm-night-ui[data-layout=vinyl] .stm-now { padding:9px 15px; margin:0 auto 12px; max-width:90%; background:linear-gradient(135deg,#ffffff0e,#00000018); border:1px solid var(--ui-border); border-radius:3px; box-shadow:inset 0 1px #ffffff12; }
+.stm-player.stm-night-ui[data-layout=vinyl] .stm-now { padding:9px 15px; margin:0 auto 12px; max-width:90%; }
 .stm-player[data-layout=vinyl] #stm-seek::-webkit-slider-runnable-track { background:repeating-linear-gradient(90deg,var(--ui-border) 0 1px,transparent 1px 6px),var(--stm-track); height:5px; }
 .stm-player[data-layout=vinyl][data-design-body=metal] { background:linear-gradient(120deg,#ffffff14,transparent,#ffffff09),var(--ui-bg); }
 .stm-player[data-layout=vinyl][data-design-body=ceramic] { background:linear-gradient(130deg,#ffffff28,transparent),var(--ui-bg); box-shadow:inset 0 1px 8px #ffffff30,0 12px 25px #0002; }
@@ -64,7 +64,7 @@
 .stm-player.stm-night-ui[data-layout=pure][data-orientation=horizontal] .stm-player-controls { display:block; grid-column:2; grid-row:1; }
 .stm-player.stm-night-ui[data-layout=pure][data-orientation=horizontal] :is(.stm-library-nav,.stm-role-status,.stm-queue-empty,.stm-divider) { grid-column:1/-1; }
 .stm-player[data-design-focus=true][data-page=playback] .stm-tabs,.stm-player[data-design-focus=true] :is(.stm-eyebrow,.stm-options,.stm-volume,.stm-role-status,.stm-library-nav,.stm-playback-state,[data-role=source],[data-action=previous]) { display:none !important; }
-.stm-player[data-hide-artist=true] [data-role=source],.stm-player[data-hide-lyrics-button=true] .stm-cover-tip,.stm-player[data-hide-progress=true] :is(#stm-seek,.stm-time,label[for=stm-seek]),.stm-player[data-hide-volume=true] .stm-volume,.stm-player[data-hide-mode=true] #stm-mode,.stm-player[data-hide-queue=true] :is([data-action=toggle-queue],.stm-mini-queue),.stm-player[data-hide-background=true]::before,.stm-player[data-hide-background=true]::after { display:none !important; }
+.stm-player[data-hide-artist=true] [data-role=source],.stm-player[data-hide-lyrics-button=true] .stm-cover-tip,.stm-player[data-hide-progress=true] :is(#stm-seek,.stm-time,label[for=stm-seek]),.stm-player[data-hide-volume=true] .stm-volume,.stm-player[data-hide-mode=true] #stm-mode,.stm-player[data-hide-queue=true] :is([data-action=toggle-queue],.stm-mini-queue),.stm-player[data-hide-background=true]::before { display:none !important; }
 .stm-player[data-design-decorations=false] :is(.stm-design-tonearm,.stm-eyebrow) { display:none !important; }
 .stm-player[data-audio-state=playing] :is(.stm-design-disc-art,.stm-design-reels i),.stm-launcher[data-audio-state=playing] .stm-launch-cassette i { animation-play-state:running; }
 .stm-launcher[data-launcher] { width:var(--design-launcher-size); height:var(--design-launcher-size); opacity:var(--design-launcher-opacity); }
@@ -106,7 +106,7 @@
 .stm-player [data-component-position=center] { align-self:center; justify-self:center; text-align:center; }
 .stm-player [data-component-position=end] { align-self:end; justify-self:end; text-align:end; }
 .stm-player .stm-transport[data-component-position=end] { order:10; }
-.stm-player[data-component-background=false]::before,.stm-player[data-component-background=false]::after {display:none !important;}
+.stm-player[data-component-background=false]::before {display:none !important;}
 .stm-player[data-layout]:not([data-layout=night]) { border-radius:var(--component-bg-radius,var(--design-radius)); }
 .stm-player[data-component-bg-color=true] {background-color:var(--component-bg-color) !important;}
 .stm-player[data-component-bg-opacity=true]::before { opacity:var(--component-bg-opacity); }

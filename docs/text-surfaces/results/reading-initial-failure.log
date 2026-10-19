@@ -1,0 +1,784 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.reading.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/reading",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "reading.e2e.js"
+        ],
+        "timeout": 180000
+      },
+      {
+        "outputDir": "/workspace/sillytavern/test-results/reading",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile-chromium-emulation",
+        "name": "mobile-chromium-emulation",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "reading.e2e.js"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "reading.e2e.js",
+      "file": "reading.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "rendered contrast matrix: all old palettes and all new layouts, schemes, surfaces and image extremes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 19126,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:34:01.482Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-a5d16117d41c51faf99d",
+          "file": "reading.e2e.js",
+          "line": 20,
+          "column": 1
+        },
+        {
+          "title": "manual reading survives new LRC lines; resume, text clicks, keys, reopening and song changes preserve audio",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4009,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:34:20.840Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-9727df83cb169a6548da",
+          "file": "reading.e2e.js",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "component background overrides retain unframed text and cannot defeat the shared reading surface",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2215,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m4.5\u001b[39m\nReceived:    \u001b[31m1.5464178327814981\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m4.5\u001b[39m\nReceived:    \u001b[31m1.5464178327814981\u001b[39m\n    at /workspace/sillytavern/tests/reading.e2e.js:104:115",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                      "column": 115,
+                      "line": 104
+                    },
+                    "snippet": "  102 |         return result;\n  103 |     }, prefix);\n> 104 |     for (const row of checks) { expect(row.plateAlpha).toBe(0); expect(row.painted).toBe(true); expect(row.title).toBeGreaterThanOrEqual(4.5); expect(row.artist).toBeGreaterThanOrEqual(4.5); expect(row.opacity).toBe('1'); expect(row.savedOpacity).toBe(.5); }\n      |                                                                                                                   ^\n  105 | });\n  106 |\n  107 | test('destructive, error and warning text retain semantic contrast, including pressed buttons', async ({ page }) => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                        "column": 115,
+                        "line": 104
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m4.5\u001b[39m\nReceived:    \u001b[31m1.5464178327814981\u001b[39m\n\n  102 |         return result;\n  103 |     }, prefix);\n> 104 |     for (const row of checks) { expect(row.plateAlpha).toBe(0); expect(row.painted).toBe(true); expect(row.title).toBeGreaterThanOrEqual(4.5); expect(row.artist).toBeGreaterThanOrEqual(4.5); expect(row.opacity).toBe('1'); expect(row.savedOpacity).toBe(.5); }\n      |                                                                                                                   ^\n  105 | });\n  106 |\n  107 | test('destructive, error and warning text retain semantic contrast, including pressed buttons', async ({ page }) => {\n    at /workspace/sillytavern/tests/reading.e2e.js:104:115"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:34:24.869Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-component-b-addc1--the-shared-reading-surface-desktop/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-component-b-addc1--the-shared-reading-surface-desktop/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-component-b-addc1--the-shared-reading-surface-desktop/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                    "column": 115,
+                    "line": 104
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-717db8c36e4e4a88fba8",
+          "file": "reading.e2e.js",
+          "line": 90,
+          "column": 1
+        },
+        {
+          "title": "destructive, error and warning text retain semantic contrast, including pressed buttons",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2160,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:34:28.140Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-17149fe2d872ea1ee2f9",
+          "file": "reading.e2e.js",
+          "line": 107,
+          "column": 1
+        },
+        {
+          "title": "disposed role guard forwards an in-flight same-account host save through another extension wrapper",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 625,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:34:30.534Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-57dda323874c98112011",
+          "file": "reading.e2e.js",
+          "line": 130,
+          "column": 1
+        },
+        {
+          "title": "all reading levels and lyric backgrounds protect custom colors; real touch swipes suspend follow",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4534,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:34:31.173Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-6438ecbfbfa52864f0cb",
+          "file": "reading.e2e.js",
+          "line": 178,
+          "column": 1
+        },
+        {
+          "title": "old maker standalone preview uses the same readable colors and explicit lyric reader",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1594,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:34:35.732Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-84abc992863b9dbe30c6",
+          "file": "reading.e2e.js",
+          "line": 210,
+          "column": 1
+        },
+        {
+          "title": "reading preferences persist through real IndexedDB binary ZIP restore including maker drafts",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2316,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:34:37.346Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-fc003f58c85b441a2b1d",
+          "file": "reading.e2e.js",
+          "line": 234,
+          "column": 1
+        },
+        {
+          "title": "actual host reading controls, designer contrast warnings and layout changes retain one playing Audio",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 17826,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:34:39.674Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-641537cef5db376bfe42",
+          "file": "reading.e2e.js",
+          "line": 260,
+          "column": 1
+        },
+        {
+          "title": "rendered contrast matrix: all old palettes and all new layouts, schemes, surfaces and image extremes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 20153,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:34:58.232Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-13b94543ddffd6e0d7c1",
+          "file": "reading.e2e.js",
+          "line": 20,
+          "column": 1
+        },
+        {
+          "title": "manual reading survives new LRC lines; resume, text clicks, keys, reopening and song changes preserve audio",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3380,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:35:18.657Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-82d85961b1eff4eacf1a",
+          "file": "reading.e2e.js",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "component background overrides retain unframed text and cannot defeat the shared reading surface",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2111,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m4.5\u001b[39m\nReceived:    \u001b[31m1.5464178327814981\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m4.5\u001b[39m\nReceived:    \u001b[31m1.5464178327814981\u001b[39m\n    at /workspace/sillytavern/tests/reading.e2e.js:104:115",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                      "column": 115,
+                      "line": 104
+                    },
+                    "snippet": "  102 |         return result;\n  103 |     }, prefix);\n> 104 |     for (const row of checks) { expect(row.plateAlpha).toBe(0); expect(row.painted).toBe(true); expect(row.title).toBeGreaterThanOrEqual(4.5); expect(row.artist).toBeGreaterThanOrEqual(4.5); expect(row.opacity).toBe('1'); expect(row.savedOpacity).toBe(.5); }\n      |                                                                                                                   ^\n  105 | });\n  106 |\n  107 | test('destructive, error and warning text retain semantic contrast, including pressed buttons', async ({ page }) => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                        "column": 115,
+                        "line": 104
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m4.5\u001b[39m\nReceived:    \u001b[31m1.5464178327814981\u001b[39m\n\n  102 |         return result;\n  103 |     }, prefix);\n> 104 |     for (const row of checks) { expect(row.plateAlpha).toBe(0); expect(row.painted).toBe(true); expect(row.title).toBeGreaterThanOrEqual(4.5); expect(row.artist).toBeGreaterThanOrEqual(4.5); expect(row.opacity).toBe('1'); expect(row.savedOpacity).toBe(.5); }\n      |                                                                                                                   ^\n  105 | });\n  106 |\n  107 | test('destructive, error and warning text retain semantic contrast, including pressed buttons', async ({ page }) => {\n    at /workspace/sillytavern/tests/reading.e2e.js:104:115"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:35:22.064Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-component-b-addc1--the-shared-reading-surface-mobile-chromium-emulation/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-component-b-addc1--the-shared-reading-surface-mobile-chromium-emulation/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/reading/reading.e2e.js-component-b-addc1--the-shared-reading-surface-mobile-chromium-emulation/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/reading.e2e.js",
+                    "column": 115,
+                    "line": 104
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-76c2e1005b007550267e",
+          "file": "reading.e2e.js",
+          "line": 90,
+          "column": 1
+        },
+        {
+          "title": "destructive, error and warning text retain semantic contrast, including pressed buttons",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2053,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:35:25.392Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-1f284cd557fb74fd21cb",
+          "file": "reading.e2e.js",
+          "line": 107,
+          "column": 1
+        },
+        {
+          "title": "disposed role guard forwards an in-flight same-account host save through another extension wrapper",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 628,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:35:27.714Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-e0b9ce123dce5d16cb56",
+          "file": "reading.e2e.js",
+          "line": 130,
+          "column": 1
+        },
+        {
+          "title": "all reading levels and lyric backgrounds protect custom colors; real touch swipes suspend follow",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4001,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:35:28.373Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-49d8c6f8362dc0e2ad9d",
+          "file": "reading.e2e.js",
+          "line": 178,
+          "column": 1
+        },
+        {
+          "title": "old maker standalone preview uses the same readable colors and explicit lyric reader",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1539,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:35:32.399Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-b340f4e074dcb1604e6f",
+          "file": "reading.e2e.js",
+          "line": 210,
+          "column": 1
+        },
+        {
+          "title": "reading preferences persist through real IndexedDB binary ZIP restore including maker drafts",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2732,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:35:33.953Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-3eb4caae91ac554855a6",
+          "file": "reading.e2e.js",
+          "line": 234,
+          "column": 1
+        },
+        {
+          "title": "actual host reading controls, designer contrast warnings and layout changes retain one playing Audio",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 16263,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T08:35:36.722Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "128361bf8c39be6bf29f-f25dc944fab64539095b",
+          "file": "reading.e2e.js",
+          "line": 260,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-19T08:34:00.335Z",
+    "duration": 112807.492,
+    "expected": 16,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

@@ -44,21 +44,23 @@ export function readingPalette(source, level = 'clear') {
     surface = readableColor(background, [ink], 9);
   }
   const target = level === 'high' ? 9 : level === 'standard' ? 4.5 : 7;
-  const body = readableColor(source.text, [surface], target);
-  const secondary = readableColor(source.muted || source.text, [surface], level === 'high' ? 7 : 4.5);
-  const accent = readableColor(source.accent, [surface], level === 'high' ? 7 : 4.5);
-  const selected = mixColor(surface, accent, .1);
-  // One continuous scrim, not a rectangle behind each line. Bound arbitrary
-  // image pixels by both black and white under the least opaque (90%) scrim.
-  let lyricSurface = surface;
+  // Both the shell and lyric region use a continuous >=90% veil. Include its
+  // black/white pixel bounds AND opaque control surfaces in every ink check.
   const lyricBackgrounds = color => ['#000000', '#ffffff'].map(bg => compositeColor(color + 'e5', bg));
   const score = (ink, color) => Math.min(...lyricBackgrounds(color).map(bg => contrastRatio(ink, bg)));
   const ink = score('#000000', surface) >= score('#ffffff', surface) ? '#000000' : '#ffffff';
   const end = ink === '#000000' ? '#ffffff' : '#000000';
-  for (let step = 0; step <= 100 && score(ink, lyricSurface) < target; step++) lyricSurface = mixColor(surface, end, step / 100);
+  const originalSurface = surface;
+  for (let step = 0; step <= 100 && score(ink, surface) < target; step++) surface = mixColor(originalSurface, end, step / 100);
+  const backgrounds = [surface, ...lyricBackgrounds(surface)];
+  const body = readableColor(source.text, backgrounds, target);
+  const secondary = readableColor(source.muted || source.text, backgrounds, level === 'high' ? 7 : 4.5);
+  const accent = readableColor(source.accent, backgrounds, level === 'high' ? 7 : 4.5);
+  const selected = mixColor(surface, accent, .1);
+  const lyricSurface = surface;
   const lyrics = readableColor(source.text, lyricBackgrounds(lyricSurface), target);
   const current = readableColor(source.accent, lyricBackgrounds(lyricSurface), level === 'high' ? 7 : 4.5);
-  return { background, surface, lyricSurface, title: body, body, secondary, hint: secondary, button: body, disabled: mixColor(body, surface, .45), lyrics, current, accent: readableColor(accent, [surface, selected], 4.5), selected, action: accent, onAction: readableColor('#ffffff', [accent], 4.5), error: readableColor('#dc555c', [surface], 4.5), warning: readableColor('#b57b35', [surface], 4.5) };
+  return { background, surface, lyricSurface, title: body, body, secondary, hint: secondary, button: body, disabled: mixColor(body, surface, .45), lyrics, current, accent: readableColor(accent, [...backgrounds, selected], 4.5), selected, action: accent, onAction: readableColor('#ffffff', [accent], 4.5), error: readableColor('#dc555c', backgrounds, 4.5), warning: readableColor('#b57b35', backgrounds, 4.5) };
 }
 export function readabilityReport(source, components = {}) {
   const bg = compositeColor(source.background, '#ffffff');

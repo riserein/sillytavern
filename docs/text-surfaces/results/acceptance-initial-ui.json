@@ -1,0 +1,32 @@
+[
+  {
+    "stage": "text-surfaces",
+    "status": "passed",
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.text-surfaces.config.js",
+      "--reporter=json"
+    ],
+    "runtimeSha256": "4483ccbde3a27628392b15c44ac99b7602ddd4e526b2ed99d1be9637d7a014fa",
+    "exitCode": 0,
+    "seconds": 198.33
+  },
+  {
+    "stage": "reading",
+    "status": "failed",
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.reading.config.js",
+      "--reporter=json"
+    ],
+    "runtimeSha256": "4483ccbde3a27628392b15c44ac99b7602ddd4e526b2ed99d1be9637d7a014fa",
+    "exitCode": 1,
+    "seconds": 113.95
+  }
+]

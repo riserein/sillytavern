@@ -1,6 +1,6 @@
 # 音乐播放器
 
-当前开发版本 **v2.0.0-alpha.7**：新增连续滚动、居中阅读、单句沉浸，歌曲级歌词校准，以及接收端隐藏 / 恢复和左右贴边。见[使用说明与验收](docs/lyrics-modes/README.md)；[文字可读性专项](docs/readability/README.md)保留。保留收藏、睡眠定时、柔和过渡；四种播放器布局、五种悬浮入口；实时设计器、「我的设计」及安全 JSON 分享；角色独立 UI/字体与原生 PNG/JSON 分发。旧用户默认仍是夜航。在「外观 → 播放器形态」打开设计器，制作页可选择共享布局。见[设计器使用](docs/v2/ui/editor.md)、[随卡导出](docs/v2/ui/shared-export.md)、[悬浮组件](docs/v2/ui/launchers.md)及[音乐功能](docs/v2/listening/README.md)。这是分阶段开发的预发布版本，真实设备等未验证边界会在最终报告中单独列明。
+当前开发版本 **v2.0.0-alpha.8**：移除普通文字及正文容器的矩形底块，以整体遮罩保留玻璃和图片背景下的可读性。见[修复与前后截图](docs/text-surfaces/README.md)。新增连续滚动、居中阅读、单句沉浸，歌曲级歌词校准，以及接收端隐藏 / 恢复和左右贴边。见[使用说明与验收](docs/lyrics-modes/README.md)；[文字可读性专项](docs/readability/README.md)保留。保留收藏、睡眠定时、柔和过渡；四种播放器布局、五种悬浮入口；实时设计器、「我的设计」及安全 JSON 分享；角色独立 UI/字体与原生 PNG/JSON 分发。旧用户默认仍是夜航。在「外观 → 播放器形态」打开设计器，制作页可选择共享布局。见[设计器使用](docs/v2/ui/editor.md)、[随卡导出](docs/v2/ui/shared-export.md)、[悬浮组件](docs/v2/ui/launchers.md)及[音乐功能](docs/v2/listening/README.md)。这是分阶段开发的预发布版本，真实设备等未验证边界会在最终报告中单独列明。
 
 已发布稳定基线 **v1.13.3** 的[中文质量审计与测试边界](docs/quality-audit-v1.13.3.md)保留。原曲库、角色绑定、原生 PNG/JSON 随卡导出及夜航界面继续兼容。
 

@@ -38,6 +38,18 @@ test('low contrast custom colors are safe to display without mutating or silentl
     assert(readabilityReport(colors).some(row => row.ratio < 4.5));
     assert(contrastRatio(readableColors(colors).muted, readableColors(colors).background) >= 4.5);
 });
+test('unframed shell text stays readable over image extremes without changing saved colors', () => {
+    for (const scheme of ['dark', 'light']) for (const theme of Object.keys(DESIGN_THEMES)) {
+        const source = theme === 'inherit' ? { background:'#858585',text:'#858585',muted:'#858585',accent:'#858585' } : designPalette(theme, scheme);
+        const original = structuredClone(source);
+        for (const level of ['standard','clear','high']) {
+            const p = readingPalette(source,level), backgrounds = [p.surface,...['#000000','#ffffff'].map(bg=>compositeColor(p.surface+'e5',bg))];
+            for (const name of ['body','title','secondary','hint','accent','error','warning','button']) for (const bg of backgrounds) assert(contrastRatio(p[name],bg)>=4.5,`${theme}/${scheme}/${level}/${name}`);
+            for (const bg of backgrounds) assert(contrastRatio(p.body,bg)>=(level==='high'?9:level==='clear'?7:4.5));
+        }
+        assert.deepEqual(source,original);
+    }
+});
 test('new reading preferences normalize bounded data and old libraries retain their data', () => {
     assert.deepEqual(normalizeReading(), { level: 'clear', lyricSize: 20, lineHeight: 1.9, autoFollow: true, lyricBackground: 'auto', displayMode: 'flow', nextLine: true });
     assert.deepEqual(normalizeReading({ level: 'execute', lyricSize: Infinity, lineHeight: 0, autoFollow: false, lyricBackground: '<svg>' }), { level: 'clear', lyricSize: 20, lineHeight: 1.5, autoFollow: false, lyricBackground: 'auto', displayMode: 'flow', nextLine: true });

@@ -1,4 +1,4 @@
-import { readingPalette, colorChannels, readableColor, readabilityReport } from './contrast.js';
+import { readingPalette, colorChannels, readableColor, readabilityReport, compositeColor } from './contrast.js';
 
 export function normalizeReading(raw = {}) {
     raw = raw && typeof raw === 'object' ? raw : {};
@@ -31,11 +31,12 @@ export function applyReading(panel, launcher, input, design) {
         root.style.setProperty('--read-line-height', String(settings.lineHeight));
     }
     // Component colors/opacity cannot make essential text disappear. Preserve the
-    // saved design; correct only its presentation against the local reading plate.
+    // saved design; correct only presentation against the continuous shell veil.
+    const backgrounds = [palette.surface, ...['#000000', '#ffffff'].map(bg => compositeColor(palette.surface + 'e5', bg))];
     for (const id of ['title', 'artist', 'lyrics', 'queue', 'controls', 'volume']) {
         const rule = design?.components?.[id];
         for (const node of panel.querySelectorAll('[data-design-component="' + id + '"]')) {
-            node.style.setProperty('--read-component-color', readableColor(rule?.color || palette.body, [palette.surface], 4.5));
+            node.style.setProperty('--read-component-color', readableColor(rule?.color || palette.body, backgrounds, 4.5));
             const size = parseFloat(getComputedStyle(node).fontSize) || 14;
             node.style.setProperty('zoom', String(Math.max(13 / size, rule?.size ?? 1)));
         }

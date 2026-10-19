@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-19",
+  "baseline": "6dccadf0df1f5a3373a16655527dfea0219779f8",
+  "version": "2.0.0-alpha.8",
+  "nativeSha256": "9504f949b7021b6a10de9856344bd22b82a6fcf631ec7d59eced011666f528ac",
+  "unitPassed": 181,
+  "syntaxExitCode": 0,
+  "browserPassed": 55,
+  "browserSuites": [
+    {
+      "suite": "text-surfaces",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "seconds": 204.86,
+      "runner": "text-surfaces-runner.json"
+    },
+    {
+      "suite": "reading",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "seconds": 107.65,
+      "runner": "reading-runner.json"
+    },
+    {
+      "suite": "modes",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "seconds": 81.96,
+      "runner": "modes-runner.json"
+    },
+    {
+      "suite": "data",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "seconds": 48.3,
+      "runner": "data-runner.json"
+    },
+    {
+      "suite": "native",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "seconds": 554.29,
+      "runner": "native-runner.json"
+    },
+    {
+      "suite": "maker",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "seconds": 217.16,
+      "runner": "maker-runner.json"
+    },
+    {
+      "suite": "coexist",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "seconds": 11.45,
+      "runner": "coexist-runner.json"
+    }
+  ],
+  "realHost": "SillyTavern 1.19.0 + official Tavern Helper 4.11.3",
+  "browser": "Chromium 154.0.8037.57",
+  "phone": "Chromium touch/viewport emulation; no physical phone test",
+  "pageStates": 160,
+  "ordinarySamples": 3320,
+  "ordinaryBackgroundBlocks": 0,
+  "pageMinimumContrast": 4.545801299032046,
+  "presetStates": 768,
+  "presetSamples": 5376,
+  "presetMinimumContrast": 4.510935931592659,
+  "lyricModeSamples": 720,
+  "lyricModeMinimumContrast": 4.546022267651492,
+  "screenshotPairs": 80,
+  "assets": [
+    {
+      "path": "card-player/dist/native-runtime.js",
+      "beforeBytes": 353180,
+      "afterBytes": 352108,
+      "deltaBytes": -1072,
+      "sha256": "9504f949b7021b6a10de9856344bd22b82a6fcf631ec7d59eced011666f528ac"
+    },
+    {
+      "path": "card-player/dist/shared-ui.js",
+      "beforeBytes": 314174,
+      "afterBytes": 313101,
+      "deltaBytes": -1073,
+      "sha256": "3f7fc35808e5a39f7e6f3966c4a3cf8bcc0dfdccedfd945f03c6a658ac67f0e7"
+    },
+    {
+      "path": "card-player/dist/runtime.js",
+      "beforeBytes": 71639,
+      "afterBytes": 71614,
+      "deltaBytes": -25,
+      "sha256": "b8ff03f779e88e63a2551e8f8427477cf861f7267493b3f13c349e9c14db56b7"
+    }
+  ],
+  "networkScope": "same-origin synthetic MP3 and embedded synthetic MP3, not third-party platform playback",
+  "initialFailures": {
+    "componentBackgroundHidden": "confirmed regression in first implementation; fixed original hide selector and reran final acceptance",
+    "log": "reading-initial-failure.log"
+  }
+}

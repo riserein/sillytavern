@@ -668,10 +668,10 @@ for (const {mobile,layout} of [{mobile:false,layout:'vinyl'},{mobile:true,layout
             });
             const renderedTitle = await recipient.locator('[data-role=title]').evaluate(node=>{
                 const plate=getComputedStyle(node.closest('.stm-now-info')),text=getComputedStyle(node);
-                return {text:text.color,background:plate.backgroundColor,display:plate.display,opacity:text.opacity};
+                return {text:text.color,background:plate.backgroundColor,veil:getComputedStyle(node.closest('#stm-player'),'::after').backgroundColor,display:plate.display,opacity:text.opacity};
             });
-            expect(renderedTitle.display).not.toBe('contents');expect(colorChannels(renderedTitle.background)[3]).toBe(1);
-            expect(contrastRatio(renderedTitle.text,renderedTitle.background)).toBeGreaterThanOrEqual(4.5);expect(renderedTitle.opacity).toBe('1');
+            expect(renderedTitle.display).not.toBe('contents');expect(colorChannels(renderedTitle.background)[3]).toBe(0);
+            for(const image of ['#000000','#ffffff'])expect(contrastRatio(renderedTitle.text,compositeColor(renderedTitle.veil,image))).toBeGreaterThanOrEqual(4.5);expect(renderedTitle.opacity).toBe('1');
             await recipient.locator('[data-action=toggle-lyrics]').click();
             await expect(recipient.locator('.stm-lyrics-lines p').first()).toHaveCSS('opacity','1');
             await expect(recipient.locator('.stm-lyrics-lines p').first()).toHaveCSS('font-size','23px');

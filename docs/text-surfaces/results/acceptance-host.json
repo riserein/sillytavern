@@ -1,0 +1,48 @@
+[
+  {
+    "stage": "native",
+    "status": "passed",
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.card-native.config.js",
+      "--grep",
+      "native PNG and JSON carry"
+    ],
+    "runtimeSha256": "9504f949b7021b6a10de9856344bd22b82a6fcf631ec7d59eced011666f528ac",
+    "exitCode": 0,
+    "seconds": 555.2
+  },
+  {
+    "stage": "maker",
+    "status": "passed",
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.card-export.config.js"
+    ],
+    "runtimeSha256": "9504f949b7021b6a10de9856344bd22b82a6fcf631ec7d59eced011666f528ac",
+    "exitCode": 0,
+    "seconds": 218.03
+  },
+  {
+    "stage": "coexist",
+    "status": "passed",
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.card-native.config.js",
+      "--grep",
+      "actual full plugin activation"
+    ],
+    "runtimeSha256": "9504f949b7021b6a10de9856344bd22b82a6fcf631ec7d59eced011666f528ac",
+    "exitCode": 0,
+    "seconds": 12.37
+  }
+]
