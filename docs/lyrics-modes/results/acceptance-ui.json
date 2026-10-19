@@ -1,0 +1,85 @@
+[
+  {
+    "stage": "reading",
+    "status": "passed",
+    "startedAt": 1792395507.491036,
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.reading.config.js",
+      "--reporter=json"
+    ],
+    "log": "/tmp/stm-modes-final-reading.log",
+    "runtimeSha256": "53ee60c7cf257927f8ffccf22bf832e6ddc76418fc961577568ec1633ffe0da7",
+    "exitCode": 0,
+    "seconds": 122.63
+  },
+  {
+    "stage": "modes",
+    "status": "passed",
+    "startedAt": 1792395630.1243072,
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.modes.config.js",
+      "--reporter=json"
+    ],
+    "log": "/tmp/stm-modes-final-modes.log",
+    "runtimeSha256": "53ee60c7cf257927f8ffccf22bf832e6ddc76418fc961577568ec1633ffe0da7",
+    "exitCode": 0,
+    "seconds": 83.95
+  },
+  {
+    "stage": "design",
+    "status": "passed",
+    "startedAt": 1792395714.0704844,
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.design.config.js",
+      "--reporter=json"
+    ],
+    "log": "/tmp/stm-modes-final-design.log",
+    "runtimeSha256": "53ee60c7cf257927f8ffccf22bf832e6ddc76418fc961577568ec1633ffe0da7",
+    "exitCode": 0,
+    "seconds": 129.77
+  },
+  {
+    "stage": "data",
+    "status": "passed",
+    "startedAt": 1792395843.8363125,
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.data.config.js",
+      "--output",
+      "test-results/modes-final-data",
+      "--reporter=json"
+    ],
+    "log": "/tmp/stm-modes-final-data.log",
+    "runtimeSha256": "53ee60c7cf257927f8ffccf22bf832e6ddc76418fc961577568ec1633ffe0da7",
+    "exitCode": 0,
+    "seconds": 52.15
+  },
+  {
+    "stage": "legacy",
+    "status": "passed",
+    "startedAt": 1792395895.9863195,
+    "command": [
+      "python",
+      "/workspace/scratch/stm-modes-legacy.py"
+    ],
+    "log": "/tmp/stm-modes-final-legacy.log",
+    "runtimeSha256": "53ee60c7cf257927f8ffccf22bf832e6ddc76418fc961577568ec1633ffe0da7",
+    "exitCode": 0,
+    "seconds": 160.96
+  }
+]

@@ -1,0 +1,36 @@
+[
+  {
+    "stage": "native",
+    "status": "passed",
+    "startedAt": 1792394542.1630237,
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.card-native.config.js",
+      "--grep",
+      "native PNG and JSON carry"
+    ],
+    "log": "/tmp/stm-modes-final-native.log",
+    "runtimeSha256": "a022abc3eb15eb9ab5426680442f3ad250a820e0b764e11cd2ab57dbfbf578d2",
+    "exitCode": 0,
+    "seconds": 582.08
+  },
+  {
+    "stage": "maker",
+    "status": "failed",
+    "startedAt": 1792395124.246604,
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "--config",
+      "playwright.card-export.config.js"
+    ],
+    "log": "/tmp/stm-modes-final-maker.log",
+    "runtimeSha256": "a022abc3eb15eb9ab5426680442f3ad250a820e0b764e11cd2ab57dbfbf578d2",
+    "exitCode": 1,
+    "seconds": 229.51
+  }
+]

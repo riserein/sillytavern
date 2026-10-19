@@ -1,0 +1,378 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.modes.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/modes-hardening-before",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "lyrics-modes.e2e.js"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/workspace/sillytavern/test-results/modes-hardening-before",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile-chromium-emulation",
+        "name": "mobile-chromium-emulation",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "lyrics-modes.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "lyrics-modes.e2e.js",
+      "file": "lyrics-modes.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "late ended events while hidden cannot switch the selected song",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2839,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 3\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"id\": \"a\",\u001b[39m\n\u001b[31m+   \"id\": \"b\",\u001b[39m\n\u001b[2m    \"paused\": true,\u001b[22m\n\u001b[32m-   \"same\": true,\u001b[39m\n\u001b[32m-   \"time\": 8,\u001b[39m\n\u001b[31m+   \"same\": false,\u001b[39m\n\u001b[31m+   \"time\": 0,\u001b[39m\n\u001b[2m  }\u001b[22m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 3\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"id\": \"a\",\u001b[39m\n\u001b[31m+   \"id\": \"b\",\u001b[39m\n\u001b[2m    \"paused\": true,\u001b[22m\n\u001b[32m-   \"same\": true,\u001b[39m\n\u001b[32m-   \"time\": 8,\u001b[39m\n\u001b[31m+   \"same\": false,\u001b[39m\n\u001b[31m+   \"time\": 0,\u001b[39m\n\u001b[2m  }\u001b[22m\n    at /workspace/sillytavern/tests/lyrics-modes.e2e.js:125:181",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                      "column": 181,
+                      "line": 125
+                    },
+                    "snippet": "  123 |  await fixture(page);await page.locator('[data-action=play]').click();await expect.poll(()=>page.evaluate(()=>app.audio.currentTime)).toBeGreaterThan(.1);\n  124 |  await page.evaluate(()=>{app.audio.currentTime=8;app.visibility.setState('hidden');window.hiddenSource=app.audio.src;app.audio.dispatchEvent(new Event('ended'));});\n> 125 |  await page.waitForTimeout(150);expect(await page.evaluate(()=>({id:app.settings.currentId,time:app.audio.currentTime,same:app.audio.src===hiddenSource,paused:app.audio.paused}))).toEqual({id:'a',time:8,same:true,paused:true});\n      |                                                                                                                                                                                     ^\n  126 |  await page.evaluate(()=>app.dispose());\n  127 | });\n  128 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                        "column": 181,
+                        "line": 125
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 3\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"id\": \"a\",\u001b[39m\n\u001b[31m+   \"id\": \"b\",\u001b[39m\n\u001b[2m    \"paused\": true,\u001b[22m\n\u001b[32m-   \"same\": true,\u001b[39m\n\u001b[32m-   \"time\": 8,\u001b[39m\n\u001b[31m+   \"same\": false,\u001b[39m\n\u001b[31m+   \"time\": 0,\u001b[39m\n\u001b[2m  }\u001b[22m\n\n  123 |  await fixture(page);await page.locator('[data-action=play]').click();await expect.poll(()=>page.evaluate(()=>app.audio.currentTime)).toBeGreaterThan(.1);\n  124 |  await page.evaluate(()=>{app.audio.currentTime=8;app.visibility.setState('hidden');window.hiddenSource=app.audio.src;app.audio.dispatchEvent(new Event('ended'));});\n> 125 |  await page.waitForTimeout(150);expect(await page.evaluate(()=>({id:app.settings.currentId,time:app.audio.currentTime,same:app.audio.src===hiddenSource,paused:app.audio.paused}))).toEqual({id:'a',time:8,same:true,paused:true});\n      |                                                                                                                                                                                     ^\n  126 |  await page.evaluate(()=>app.dispose());\n  127 | });\n  128 |\n    at /workspace/sillytavern/tests/lyrics-modes.e2e.js:125:181"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T07:30:11.092Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/modes-hardening-before/lyrics-modes.e2e.js-late-e-31f33-ot-switch-the-selected-song-desktop/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/modes-hardening-before/lyrics-modes.e2e.js-late-e-31f33-ot-switch-the-selected-song-desktop/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/modes-hardening-before/lyrics-modes.e2e.js-late-e-31f33-ot-switch-the-selected-song-desktop/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                    "column": 181,
+                    "line": 125
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a154d84a6ce8a3555788-b425adf8d800c2abdf8d",
+          "file": "lyrics-modes.e2e.js",
+          "line": 424,
+          "column": 1
+        },
+        {
+          "title": "losing the only visible Helper recovery route falls back to a clickable edge tag",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "desktop",
+              "projectName": "desktop",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 7720,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.stm-launcher')\nExpected: \u001b[32m\"docked\"\u001b[39m\nReceived: \u001b[31m\"hidden\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-launcher')\u001b[22m\n\u001b[2m    9 × locator resolved to <div hidden=\"\" tabindex=\"0\" role=\"button\" id=\"stm-launcher\" data-theme=\"night\" data-layout=\"night\" data-grooves=\"fine\" aria-label=\"展开音乐播放器\" data-surface=\"glass\" data-motion=\"normal\" data-reading=\"clear\" aria-expanded=\"false\" data-launcher=\"vinyl\" data-display=\"hidden\" data-hide-mode=\"false\" data-hide-next=\"false\" data-dock-edge=\"right\" title=\"点击打开音乐播放器，拖动可移动\" data-hide-scale=\"false\" data-hide-queue=\"false\" data-color-scheme=\"dark\" data-hide-artist=\"false\" data-hide-volume=\"false\" data-audio-state=\"…>…</div>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.stm-launcher')\nExpected: \u001b[32m\"docked\"\u001b[39m\nReceived: \u001b[31m\"hidden\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-launcher')\u001b[22m\n\u001b[2m    9 × locator resolved to <div hidden=\"\" tabindex=\"0\" role=\"button\" id=\"stm-launcher\" data-theme=\"night\" data-layout=\"night\" data-grooves=\"fine\" aria-label=\"展开音乐播放器\" data-surface=\"glass\" data-motion=\"normal\" data-reading=\"clear\" aria-expanded=\"false\" data-launcher=\"vinyl\" data-display=\"hidden\" data-hide-mode=\"false\" data-hide-next=\"false\" data-dock-edge=\"right\" title=\"点击打开音乐播放器，拖动可移动\" data-hide-scale=\"false\" data-hide-queue=\"false\" data-color-scheme=\"dark\" data-hide-artist=\"false\" data-hide-volume=\"false\" data-audio-state=\"…>…</div>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n\n    at /workspace/sillytavern/tests/lyrics-modes.e2e.js:132:115",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                      "column": 115,
+                      "line": 132
+                    },
+                    "snippet": "  130 |  await fixture(page);await page.evaluate(async prefix=>{app.dispose();const {initialize}=await import(prefix+'index.js');const bar=document.createElement('div');bar.id='helper-fixture-bar';bar.innerHTML='<div id=\"script_container_fixture\"><button>显示/隐藏角色音乐</button></div>';document.body.append(bar);window.app=initialize({context:ctx,helperRecovery:{scriptId:'fixture',available:()=>true,subscribe:()=>()=>{}}});app.setOpen(true);},prefix);\n  131 |  await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('.stm-visibility-controls [data-display-hide]').click();await expect(page.locator('.stm-launcher')).toBeHidden();\n> 132 |  await page.locator('#helper-fixture-bar').evaluate(n=>n.hidden=true);await expect(page.locator('.stm-launcher')).toHaveAttribute('data-display','docked');await expect(page.locator('.stm-launcher')).toBeVisible();\n      |                                                                                                                   ^\n  133 |  await page.locator('.stm-launcher').click();await expect(page.locator('#stm-player')).toBeVisible();expect(await page.evaluate(()=>app.audio.paused)).toBe(true);await page.evaluate(()=>app.dispose());\n  134 | });\n  135 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                        "column": 115,
+                        "line": 132
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.stm-launcher')\nExpected: \u001b[32m\"docked\"\u001b[39m\nReceived: \u001b[31m\"hidden\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-launcher')\u001b[22m\n\u001b[2m    9 × locator resolved to <div hidden=\"\" tabindex=\"0\" role=\"button\" id=\"stm-launcher\" data-theme=\"night\" data-layout=\"night\" data-grooves=\"fine\" aria-label=\"展开音乐播放器\" data-surface=\"glass\" data-motion=\"normal\" data-reading=\"clear\" aria-expanded=\"false\" data-launcher=\"vinyl\" data-display=\"hidden\" data-hide-mode=\"false\" data-hide-next=\"false\" data-dock-edge=\"right\" title=\"点击打开音乐播放器，拖动可移动\" data-hide-scale=\"false\" data-hide-queue=\"false\" data-color-scheme=\"dark\" data-hide-artist=\"false\" data-hide-volume=\"false\" data-audio-state=\"…>…</div>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n\n\n  130 |  await fixture(page);await page.evaluate(async prefix=>{app.dispose();const {initialize}=await import(prefix+'index.js');const bar=document.createElement('div');bar.id='helper-fixture-bar';bar.innerHTML='<div id=\"script_container_fixture\"><button>显示/隐藏角色音乐</button></div>';document.body.append(bar);window.app=initialize({context:ctx,helperRecovery:{scriptId:'fixture',available:()=>true,subscribe:()=>()=>{}}});app.setOpen(true);},prefix);\n  131 |  await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('.stm-visibility-controls [data-display-hide]').click();await expect(page.locator('.stm-launcher')).toBeHidden();\n> 132 |  await page.locator('#helper-fixture-bar').evaluate(n=>n.hidden=true);await expect(page.locator('.stm-launcher')).toHaveAttribute('data-display','docked');await expect(page.locator('.stm-launcher')).toBeVisible();\n      |                                                                                                                   ^\n  133 |  await page.locator('.stm-launcher').click();await expect(page.locator('#stm-player')).toBeVisible();expect(await page.evaluate(()=>app.audio.paused)).toBe(true);await page.evaluate(()=>app.dispose());\n  134 | });\n  135 |\n    at /workspace/sillytavern/tests/lyrics-modes.e2e.js:132:115"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T07:30:15.720Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/modes-hardening-before/lyrics-modes.e2e.js-losing-1ea54-ack-to-a-clickable-edge-tag-desktop/test-failed-1.png"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/modes-hardening-before/lyrics-modes.e2e.js-losing-1ea54-ack-to-a-clickable-edge-tag-desktop/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                    "column": 115,
+                    "line": 132
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a154d84a6ce8a3555788-0f32cc41444100fccab6",
+          "file": "lyrics-modes.e2e.js",
+          "line": 450,
+          "column": 1
+        },
+        {
+          "title": "late ended events while hidden cannot switch the selected song",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2942,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 3\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"id\": \"a\",\u001b[39m\n\u001b[31m+   \"id\": \"b\",\u001b[39m\n\u001b[2m    \"paused\": true,\u001b[22m\n\u001b[32m-   \"same\": true,\u001b[39m\n\u001b[32m-   \"time\": 8,\u001b[39m\n\u001b[31m+   \"same\": false,\u001b[39m\n\u001b[31m+   \"time\": 0,\u001b[39m\n\u001b[2m  }\u001b[22m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 3\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"id\": \"a\",\u001b[39m\n\u001b[31m+   \"id\": \"b\",\u001b[39m\n\u001b[2m    \"paused\": true,\u001b[22m\n\u001b[32m-   \"same\": true,\u001b[39m\n\u001b[32m-   \"time\": 8,\u001b[39m\n\u001b[31m+   \"same\": false,\u001b[39m\n\u001b[31m+   \"time\": 0,\u001b[39m\n\u001b[2m  }\u001b[22m\n    at /workspace/sillytavern/tests/lyrics-modes.e2e.js:125:181",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                      "column": 181,
+                      "line": 125
+                    },
+                    "snippet": "  123 |  await fixture(page);await page.locator('[data-action=play]').click();await expect.poll(()=>page.evaluate(()=>app.audio.currentTime)).toBeGreaterThan(.1);\n  124 |  await page.evaluate(()=>{app.audio.currentTime=8;app.visibility.setState('hidden');window.hiddenSource=app.audio.src;app.audio.dispatchEvent(new Event('ended'));});\n> 125 |  await page.waitForTimeout(150);expect(await page.evaluate(()=>({id:app.settings.currentId,time:app.audio.currentTime,same:app.audio.src===hiddenSource,paused:app.audio.paused}))).toEqual({id:'a',time:8,same:true,paused:true});\n      |                                                                                                                                                                                     ^\n  126 |  await page.evaluate(()=>app.dispose());\n  127 | });\n  128 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                        "column": 181,
+                        "line": 125
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 3\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"id\": \"a\",\u001b[39m\n\u001b[31m+   \"id\": \"b\",\u001b[39m\n\u001b[2m    \"paused\": true,\u001b[22m\n\u001b[32m-   \"same\": true,\u001b[39m\n\u001b[32m-   \"time\": 8,\u001b[39m\n\u001b[31m+   \"same\": false,\u001b[39m\n\u001b[31m+   \"time\": 0,\u001b[39m\n\u001b[2m  }\u001b[22m\n\n  123 |  await fixture(page);await page.locator('[data-action=play]').click();await expect.poll(()=>page.evaluate(()=>app.audio.currentTime)).toBeGreaterThan(.1);\n  124 |  await page.evaluate(()=>{app.audio.currentTime=8;app.visibility.setState('hidden');window.hiddenSource=app.audio.src;app.audio.dispatchEvent(new Event('ended'));});\n> 125 |  await page.waitForTimeout(150);expect(await page.evaluate(()=>({id:app.settings.currentId,time:app.audio.currentTime,same:app.audio.src===hiddenSource,paused:app.audio.paused}))).toEqual({id:'a',time:8,same:true,paused:true});\n      |                                                                                                                                                                                     ^\n  126 |  await page.evaluate(()=>app.dispose());\n  127 | });\n  128 |\n    at /workspace/sillytavern/tests/lyrics-modes.e2e.js:125:181"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T07:30:24.944Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/modes-hardening-before/lyrics-modes.e2e.js-late-e-31f33-ot-switch-the-selected-song-mobile-chromium-emulation/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/modes-hardening-before/lyrics-modes.e2e.js-late-e-31f33-ot-switch-the-selected-song-mobile-chromium-emulation/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/modes-hardening-before/lyrics-modes.e2e.js-late-e-31f33-ot-switch-the-selected-song-mobile-chromium-emulation/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                    "column": 181,
+                    "line": 125
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a154d84a6ce8a3555788-a8292e7958bee2ce40f4",
+          "file": "lyrics-modes.e2e.js",
+          "line": 424,
+          "column": 1
+        },
+        {
+          "title": "losing the only visible Helper recovery route falls back to a clickable edge tag",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "mobile-chromium-emulation",
+              "projectName": "mobile-chromium-emulation",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 7919,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.stm-launcher')\nExpected: \u001b[32m\"docked\"\u001b[39m\nReceived: \u001b[31m\"hidden\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-launcher')\u001b[22m\n\u001b[2m    9 × locator resolved to <div hidden=\"\" tabindex=\"0\" role=\"button\" id=\"stm-launcher\" data-theme=\"night\" data-layout=\"night\" data-grooves=\"fine\" aria-label=\"展开音乐播放器\" data-surface=\"glass\" data-motion=\"normal\" data-reading=\"clear\" aria-expanded=\"false\" data-launcher=\"vinyl\" data-display=\"hidden\" data-hide-mode=\"false\" data-hide-next=\"false\" data-dock-edge=\"right\" title=\"点击打开音乐播放器，拖动可移动\" data-hide-scale=\"false\" data-hide-queue=\"false\" data-color-scheme=\"dark\" data-hide-artist=\"false\" data-hide-volume=\"false\" data-audio-state=\"…>…</div>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.stm-launcher')\nExpected: \u001b[32m\"docked\"\u001b[39m\nReceived: \u001b[31m\"hidden\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-launcher')\u001b[22m\n\u001b[2m    9 × locator resolved to <div hidden=\"\" tabindex=\"0\" role=\"button\" id=\"stm-launcher\" data-theme=\"night\" data-layout=\"night\" data-grooves=\"fine\" aria-label=\"展开音乐播放器\" data-surface=\"glass\" data-motion=\"normal\" data-reading=\"clear\" aria-expanded=\"false\" data-launcher=\"vinyl\" data-display=\"hidden\" data-hide-mode=\"false\" data-hide-next=\"false\" data-dock-edge=\"right\" title=\"点击打开音乐播放器，拖动可移动\" data-hide-scale=\"false\" data-hide-queue=\"false\" data-color-scheme=\"dark\" data-hide-artist=\"false\" data-hide-volume=\"false\" data-audio-state=\"…>…</div>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n\n    at /workspace/sillytavern/tests/lyrics-modes.e2e.js:132:115",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                      "column": 115,
+                      "line": 132
+                    },
+                    "snippet": "  130 |  await fixture(page);await page.evaluate(async prefix=>{app.dispose();const {initialize}=await import(prefix+'index.js');const bar=document.createElement('div');bar.id='helper-fixture-bar';bar.innerHTML='<div id=\"script_container_fixture\"><button>显示/隐藏角色音乐</button></div>';document.body.append(bar);window.app=initialize({context:ctx,helperRecovery:{scriptId:'fixture',available:()=>true,subscribe:()=>()=>{}}});app.setOpen(true);},prefix);\n  131 |  await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('.stm-visibility-controls [data-display-hide]').click();await expect(page.locator('.stm-launcher')).toBeHidden();\n> 132 |  await page.locator('#helper-fixture-bar').evaluate(n=>n.hidden=true);await expect(page.locator('.stm-launcher')).toHaveAttribute('data-display','docked');await expect(page.locator('.stm-launcher')).toBeVisible();\n      |                                                                                                                   ^\n  133 |  await page.locator('.stm-launcher').click();await expect(page.locator('#stm-player')).toBeVisible();expect(await page.evaluate(()=>app.audio.paused)).toBe(true);await page.evaluate(()=>app.dispose());\n  134 | });\n  135 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                        "column": 115,
+                        "line": 132
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.stm-launcher')\nExpected: \u001b[32m\"docked\"\u001b[39m\nReceived: \u001b[31m\"hidden\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.stm-launcher')\u001b[22m\n\u001b[2m    9 × locator resolved to <div hidden=\"\" tabindex=\"0\" role=\"button\" id=\"stm-launcher\" data-theme=\"night\" data-layout=\"night\" data-grooves=\"fine\" aria-label=\"展开音乐播放器\" data-surface=\"glass\" data-motion=\"normal\" data-reading=\"clear\" aria-expanded=\"false\" data-launcher=\"vinyl\" data-display=\"hidden\" data-hide-mode=\"false\" data-hide-next=\"false\" data-dock-edge=\"right\" title=\"点击打开音乐播放器，拖动可移动\" data-hide-scale=\"false\" data-hide-queue=\"false\" data-color-scheme=\"dark\" data-hide-artist=\"false\" data-hide-volume=\"false\" data-audio-state=\"…>…</div>\u001b[22m\n\u001b[2m      - unexpected value \"hidden\"\u001b[22m\n\n\n  130 |  await fixture(page);await page.evaluate(async prefix=>{app.dispose();const {initialize}=await import(prefix+'index.js');const bar=document.createElement('div');bar.id='helper-fixture-bar';bar.innerHTML='<div id=\"script_container_fixture\"><button>显示/隐藏角色音乐</button></div>';document.body.append(bar);window.app=initialize({context:ctx,helperRecovery:{scriptId:'fixture',available:()=>true,subscribe:()=>()=>{}}});app.setOpen(true);},prefix);\n  131 |  await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('.stm-visibility-controls [data-display-hide]').click();await expect(page.locator('.stm-launcher')).toBeHidden();\n> 132 |  await page.locator('#helper-fixture-bar').evaluate(n=>n.hidden=true);await expect(page.locator('.stm-launcher')).toHaveAttribute('data-display','docked');await expect(page.locator('.stm-launcher')).toBeVisible();\n      |                                                                                                                   ^\n  133 |  await page.locator('.stm-launcher').click();await expect(page.locator('#stm-player')).toBeVisible();expect(await page.evaluate(()=>app.audio.paused)).toBe(true);await page.evaluate(()=>app.dispose());\n  134 | });\n  135 |\n    at /workspace/sillytavern/tests/lyrics-modes.e2e.js:132:115"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T07:30:29.516Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/modes-hardening-before/lyrics-modes.e2e.js-losing-1ea54-ack-to-a-clickable-edge-tag-mobile-chromium-emulation/test-failed-1.png"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/modes-hardening-before/lyrics-modes.e2e.js-losing-1ea54-ack-to-a-clickable-edge-tag-mobile-chromium-emulation/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/lyrics-modes.e2e.js",
+                    "column": 115,
+                    "line": 132
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a154d84a6ce8a3555788-88cf85c7d53e62e5c7b1",
+          "file": "lyrics-modes.e2e.js",
+          "line": 450,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-19T07:30:09.819Z",
+    "duration": 28449.529,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

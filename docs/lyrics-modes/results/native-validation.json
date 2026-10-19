@@ -1,0 +1,90 @@
+{
+  "status": "selected-tests-passed",
+  "version": "2.0.0-alpha.7",
+  "largeFixture": false,
+  "coverage": "partial-or-selected-tests; see runner report for overall status",
+  "verifiedAt": "2026-10-19T07:48:09.943Z",
+  "runtimeSha256": "53ee60c7cf257927f8ffccf22bf832e6ddc76418fc961577568ec1633ffe0da7",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "native PNG and JSON carry the shared player to a clean desktop recipient · vinyl",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean phone recipient · crystal",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean desktop recipient · cassette",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean phone recipient · pure",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 3483710,
+      "milliseconds": 1711
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4721536,
+      "milliseconds": 3184
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 3484517,
+      "milliseconds": 1668
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4722612,
+      "milliseconds": 1974
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 3449697,
+      "milliseconds": 1796
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4676184,
+      "milliseconds": 3387
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 3483154,
+      "milliseconds": 1654
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4720796,
+      "milliseconds": 2676
+    }
+  ],
+  "performanceRecords": []
+}

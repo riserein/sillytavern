@@ -1,0 +1,88 @@
+{
+  "version": "2.0.0-alpha.7",
+  "baseCommit": "b51ce368794acbf4e1e842c5f352fb72f0f7d13f",
+  "runtimeSha256": "d374b5a55aee99d9c6d5920ae2233ebcc797bc9e7297ba5d80ff2d69d6dba731",
+  "runtimeBytes": 353180,
+  "unitPassed": 180,
+  "selectedBrowserCasesPassed": 68,
+  "supplementalRepeatExecutions": 6,
+  "suites": [
+    {
+      "suite": "reading",
+      "passed": 18,
+      "failed": 0,
+      "report": "reading-runner.json"
+    },
+    {
+      "suite": "modes",
+      "passed": 16,
+      "failed": 0,
+      "report": "modes-runner.json"
+    },
+    {
+      "suite": "native",
+      "passed": 4,
+      "failed": 0,
+      "report": "native-runner.json"
+    },
+    {
+      "suite": "maker",
+      "passed": 4,
+      "failed": 0,
+      "report": "maker-runner.json"
+    },
+    {
+      "suite": "coexist",
+      "passed": 1,
+      "failed": 0,
+      "report": "coexist-runner.json"
+    },
+    {
+      "suite": "design",
+      "passed": 6,
+      "failed": 0,
+      "report": "design-runner.json"
+    },
+    {
+      "suite": "data",
+      "passed": 10,
+      "failed": 0,
+      "report": "data-runner.json"
+    },
+    {
+      "suite": "legacy",
+      "passed": 9,
+      "failed": 0,
+      "report": "legacy-runner.json"
+    },
+    {
+      "suite": "backup-fields-repeat",
+      "passed": 2,
+      "failed": 0,
+      "report": "backup-fields-runner.json"
+    },
+    {
+      "suite": "mode-progress-repeat",
+      "passed": 2,
+      "failed": 0,
+      "report": "mode-progress-runner.json"
+    },
+    {
+      "suite": "native-menu-style-repeat",
+      "passed": 2,
+      "failed": 0,
+      "report": "native-menu-runner.json"
+    }
+  ],
+  "renderStates": 768,
+  "renderSamples": 5376,
+  "modeRenderStates": 360,
+  "modeSamples": 720,
+  "host": "SillyTavern 1.19.0 / official Tavern Helper 4.11.3",
+  "browser": "Linux Chromium 154.0.8037.57 / Playwright 1.56.1",
+  "physicalPhonesVerified": false,
+  "firefoxWebKitVerified": false,
+  "realExternalMusicVerifiedThisRound": false,
+  "functionalRuntimeSha256": "53ee60c7cf257927f8ffccf22bf832e6ddc76418fc961577568ec1633ffe0da7",
+  "finalStyleChange": "185 bytes: reset browser default recovery-button styling to inherit the host menu; no playback/lifecycle/lyric logic changes."
+}

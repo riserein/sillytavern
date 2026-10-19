@@ -1,0 +1,56 @@
+{
+  "status": "selected-tests-passed",
+  "version": "2.0.0-alpha.7",
+  "largeFixture": false,
+  "coverage": "partial-or-selected-tests; see runner report for overall status",
+  "verifiedAt": "2026-10-19T08:00:49.440Z",
+  "runtimeSha256": "d374b5a55aee99d9c6d5920ae2233ebcc797bc9e7297ba5d80ff2d69d6dba731",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "native PNG and JSON carry the shared player to a clean desktop recipient · vinyl",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean phone recipient · crystal",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 3516553,
+      "milliseconds": 1638
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4765328,
+      "milliseconds": 4196
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 3483344,
+      "milliseconds": 1573
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4721048,
+      "milliseconds": 1766
+    }
+  ],
+  "performanceRecords": []
+}

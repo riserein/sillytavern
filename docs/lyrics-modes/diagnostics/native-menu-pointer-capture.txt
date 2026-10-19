@@ -1,0 +1,67 @@
+
+Running 1 test using 1 worker
+
+(node:170739) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:170739) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@298
+  ✘  1 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl (1.6m)
+
+
+  1) tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl
+
+    TimeoutError: locator.click: Timeout 20000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.stm-visibility-menu [data-display-dock]')[22m
+    [2m    - locator resolved to <button type="button" data-display-dock="">贴边收起</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not visible[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not visible[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    37 × waiting for element to be visible, enabled and stable[22m
+    [2m       - element is not visible[22m
+    [2m     - retrying click action[22m
+    [2m       - waiting 500ms[22m
+
+
+      1205 |  }
+      1206 |  await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('#stm-lyric-mode-trigger').click();await page.locator('#stm-lyric-mode-menu [data-value=flow]').click();await page.getByRole('tab',{name:'播放',exact:true}).click();
+    > 1207 |  await page.locator('.stm-visibility-menu summary').click();await page.locator('.stm-visibility-menu [data-display-dock]').click();
+           |                                                                                                                            ^
+      1208 |  await expect(page.locator('.stm-launcher')).toHaveAttribute('data-display','docked');expect(await audio.evaluate(a=>a.paused)).toBe(false);
+      1209 |  await page.locator('.stm-launcher').click();await page.locator('.stm-visibility-menu summary').click();await page.locator('.stm-visibility-menu [data-display-hide]').click();
+      1210 |  await expect(page.locator('#stm-player')).toBeHidden();await expect(page.locator('.stm-launcher')).toBeHidden();expect(await audio.evaluate(a=>a.paused)).toBe(true);
+        at recipientVisibilityAcceptance (/workspace/sillytavern/tests/card-native.e2e.js:1207:124)
+        at /workspace/sillytavern/tests/card-native.e2e.js:702:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

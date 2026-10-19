@@ -1,0 +1,61 @@
+
+Running 1 test using 1 worker
+
+(node:174661) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:174661) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@421
+  ✘  1 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl (1.8m)
+
+
+  1) tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeHidden[2m([22m[2m)[22m failed
+
+    Locator:  locator('#stm-player')
+    Expected: hidden
+    Received: visible
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toBeHidden" with timeout 5000ms[22m
+    [2m  - waiting for locator('#stm-player')[22m
+    [2m    9 × locator resolved to <section role="dialog" id="stm-player" data-width="wide" aria-label="音乐播放器" data-theme="night" data-layout="vinyl" data-grooves="fine" data-page="playback" data-surface="glass" data-height="normal" data-motion="normal" data-reading="clear" data-portable="true" data-launcher="vinyl" data-hide-mode="false" data-hide-next="false" data-hide-scale="false" data-hide-queue="false" data-color-scheme="dark" data-hide-artist="false" data-hide-volume="false" data-audio-state="paused" data-design-colors="true" dat…>…</section>[22m
+    [2m      - unexpected value "visible"[22m
+
+
+      853 |             await selectCard(recipient, avatar);
+      854 |             await expect(recipient.locator(root)).toHaveCount(1);
+    > 855 |             await expect(recipient.locator('#stm-player')).toBeHidden();await expect(recipient.locator('.stm-launcher')).toBeHidden();
+          |                                                            ^
+      856 |             await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();await recipient.locator('.stm-launcher').click();
+      857 |             expect(await recipient.locator(root+' audio').evaluate(a=>a.paused)).toBe(true);
+      858 |             if (file.format === 'json') {
+        at /workspace/sillytavern/tests/card-native.e2e.js:855:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

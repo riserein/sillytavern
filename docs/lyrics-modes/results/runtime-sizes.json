@@ -1,0 +1,23 @@
+{
+  "native-runtime.js": {
+    "bytes": 353180,
+    "sha256": "d374b5a55aee99d9c6d5920ae2233ebcc797bc9e7297ba5d80ff2d69d6dba731",
+    "baselineBytes": 334018,
+    "increaseBytes": 19162,
+    "increasePercent": 5.74
+  },
+  "runtime.js": {
+    "bytes": 71639,
+    "sha256": "abcbe39d97227b706a6aa37f379133ac93ca9d6d7b9726eb315e2094e4124cb2",
+    "baselineBytes": 55127,
+    "increaseBytes": 16512,
+    "increasePercent": 29.95
+  },
+  "shared-ui.js": {
+    "bytes": 314174,
+    "sha256": "2e72d6deefd98227d6d740d45cfa3759cf947a795e817ebdaee685f7642b9ef4",
+    "baselineBytes": 296425,
+    "increaseBytes": 17749,
+    "increasePercent": 5.99
+  }
+}

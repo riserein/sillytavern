@@ -1,0 +1,100 @@
+
+Running 4 tests using 1 worker
+
+(node:187812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:187812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@302
+  ✘  1 tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser (1.5m)
+(node:188122) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:188122) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@294
+  ✘  2 tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser (1.4m)
+(node:188579) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:188579) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 tests/card-maker.e2e.js:582:1 › resource failures and edits prevent stale or partial exports without changing the original library (11.8s)
+  ✓  4 tests/card-maker.e2e.js:630:1 › maker shared design exports independent JS, HTML and Helper JSON then plays in a clean recipient (30.1s)
+
+
+  1) tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser
+
+    TimeoutError: locator.click: Timeout 20000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('button', { name: '展开角色音乐播放器', exact: true })[22m
+
+
+      540 |         const ball = recipient.getByRole('button', { name: '展开角色音乐播放器', exact: true });
+      541 |         if (mobile) await ball.tap();
+    > 542 |         else await ball.click();
+          |                         ^
+      543 |         await continuous(recipient, 9);
+      544 |         if (mobile)
+      545 |             expect((await recipient.locator(root + ' .volume').boundingBox()).height).toBeLessThanOrEqual(30);
+        at /workspace/sillytavern/tests/card-maker.e2e.js:542:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/maker/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/maker/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/maker/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser
+
+    TimeoutError: locator.tap: Timeout 20000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('button', { name: '展开角色音乐播放器', exact: true })[22m
+
+
+      539 |         await recipient.getByRole('button', { name: '收起角色播放器', exact: true }).click();
+      540 |         const ball = recipient.getByRole('button', { name: '展开角色音乐播放器', exact: true });
+    > 541 |         if (mobile) await ball.tap();
+          |                                ^
+      542 |         else await ball.click();
+      543 |         await continuous(recipient, 9);
+      544 |         if (mobile)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:541:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/maker/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/maker/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/maker/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser
+    tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser
+  2 passed (3.8m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
