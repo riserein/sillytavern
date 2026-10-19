@@ -7,6 +7,7 @@ export const LAYOUTS = Object.freeze({
   vinyl: { name: "Vinyl Atelier", caption: "黑胶唱片机" },
   cassette: { name: "Cassette Memory", caption: "复古磁带播放器" },
   pure: { name: "Pure Form", caption: "现代极简" },
+  journal: { name: "Music Journal｜私人音乐手账", caption: "可以翻阅的角色音乐收藏" },
 });
 export const LAUNCHERS = Object.freeze({
   vinyl: "黑胶唱片",

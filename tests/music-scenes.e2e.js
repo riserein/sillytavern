@@ -41,3 +41,21 @@ test('author edits isolated drafts, orders songs, previews without publishing an
  await manager.locator('[data-scene-action=close]').click();await page.evaluate(async prefix=>{app.dispose();app=(await import(prefix+'index.js')).initialize({context:ctx,previewRecovery:true});app.setOpen(true);},prefix);
  await expect.poll(()=>page.evaluate(()=>app.getScene()?.name)).toBe('修改中的书房');expect(await page.evaluate(()=>app.settings.roleScenes[0].scenes[0].trackIds)).toEqual(['b','a']);await page.evaluate(()=>app.dispose());expect(await page.evaluate(()=>liveURLs.size)).toBe(0);
 });
+test('journal reuses music controls and lyric DOM across real book pages and every lyric mode',async({page},info)=>{
+ await fixture(page);await page.locator('[data-action=play]').click();await expect.poll(()=>page.evaluate(()=>app.audio.currentTime)).toBeGreaterThan(.1);
+ await page.evaluate(()=>{window.keptLyricView=document.querySelector('.stm-lyrics-view');window.keptJournalSource=app.audio.src;app.setDesign({layout:'journal'});});
+ const mobile=info.project.name!=='desktop',book=page.locator('.stm-journal');await expect(book).toBeVisible();
+ if(!mobile){const left=await page.locator('.stm-journal-left').boundingBox(),right=await page.locator('.stm-journal-right').boundingBox();expect(Math.abs(left.y-right.y)).toBeLessThan(2);expect(left.width).toBeGreaterThan(200);expect(right.width).toBeGreaterThan(200);}
+ else {await expect(book).toHaveAttribute('data-journal-page','player');await expect(page.locator('.stm-journal-left')).toBeVisible();}
+ const turn=async name=>{const b=page.locator(`button[data-journal-page=${name}]`);if(mobile)await b.tap();else await b.click();};
+ for(const tab of ['notes','collection','lyrics']){await turn(tab);await expect(book).toHaveAttribute('data-journal-page',tab);expect(await page.evaluate(()=>app.audio===originalAudio&&!app.audio.paused&&app.audio.src===keptJournalSource)).toBe(true);}
+ for(const mode of ['flow','centered','immersive']){
+  await page.evaluate(mode=>{const select=document.getElementById('stm-lyric-mode');select.value=mode;select.dispatchEvent(new Event('change'));app.audio.currentTime=2.2;app.audio.dispatchEvent(new Event('timeupdate'));},mode);
+  await expect(page.locator('.stm-lyrics-view')).toHaveAttribute('data-lyric-mode',mode);expect(await page.evaluate(()=>document.querySelector('.stm-lyrics-view')===keptLyricView&&app.audio===originalAudio)).toBe(true);
+ }
+ await turn('collection');await page.locator('[data-journal-track=b]').click();await expect(page.locator('[data-role=title]')).toHaveText('歌曲 b');await expect.poll(()=>page.evaluate(()=>!app.audio.paused)).toBe(true);
+ await mkdir('docs/music-journal/journal',{recursive:true});await page.locator('#stm-player').screenshot({path:`docs/music-journal/journal/collection-${info.project.name}.png`});
+ await page.evaluate(()=>app.setDesign({layout:'vinyl'}));await expect(book).toBeHidden();expect(await page.evaluate(()=>app.audio===originalAudio&&!app.audio.paused&&document.querySelector('.stm-lyrics-view')===keptLyricView)).toBe(true);
+ await page.evaluate(()=>app.setDesign({layout:'journal'}));await turn('notes');
+ expect(await page.locator('[data-journal-note]').evaluate(n=>getComputedStyle(n).backgroundColor)).toBe('rgba(0, 0, 0, 0)');await page.evaluate(()=>app.dispose());expect(await page.evaluate(()=>originalAudio.paused&&liveURLs.size===0)).toBe(true);
+});

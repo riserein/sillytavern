@@ -46,6 +46,7 @@ import { createLauncherControls } from './ui/launcher-controls.js';
 import { createLauncherAvoidance } from './ui/launcher-avoidance.js';
 import { roleSceneGroup, selectedScene, rememberScene, sceneIssues } from './music-scenes.js';
 import { createScenePicker, createSceneManager } from './music-scenes-panel.js';
+import { createJournal } from './ui/journal.js';
 import { prepareDesignIcon } from './ui/images.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
@@ -97,7 +98,7 @@ export function initialize(options = {}) {
     let membershipTrackId = null;
     let libraryDetail = false;
     let browsedPlaylistId = settings.activePlaylistId;
-    let activeSceneState=null, scenePicker=null, sceneManager=null, sceneVisualEpoch=0, sceneImageUrl=null, scenePreview=null;
+    let activeSceneState=null, scenePicker=null, sceneManager=null, sceneVisualEpoch=0, sceneImageUrl=null, scenePreview=null, journalUI=null;
     const playbackQueue = createPlaybackQueue(id => activeSceneState && id===activeSceneState.queueKey ? activeSceneState.scene.trackIds.map(id=>findTrack(settings,id)).filter(Boolean) : getQueue(settings, id));
     playbackQueue.reset(settings.activePlaylistId);
     const librarySelection = new Set();
@@ -717,6 +718,7 @@ export function initialize(options = {}) {
         if (!designPresentation) return;
         designPresentation.apply(previewDesign || effectiveDesign(), { motion: settings.visualMotion, accessible: settings.accessibleControls });
         applyReading(panel, launcher, settings.reading, previewDesign || effectiveDesign());
+        journalUI?.apply(previewDesign || effectiveDesign());
         designFont?.set((previewDesign||effectiveDesign()).fontPreset);
         designControls?.refresh(); readingControls?.refresh(); launcherControls?.refresh(); launcherDrag.refresh(); panelDrag.refresh(); launcherAvoidance?.refresh(); visibility?.refresh();
     }
@@ -743,6 +745,7 @@ export function initialize(options = {}) {
         if (coverImage.src !== fallback) coverImage.src = fallback;
     });
     function setLyricsOpen(open) {
+        if(journalUI?.active){journalUI.show(open?'lyrics':'player');return;}
         query('.stm-lyrics-view').hidden = !open;
         panel.dataset.lyricsOpen = String(open);
         menus.close();
@@ -1032,6 +1035,7 @@ export function initialize(options = {}) {
         if (open) {
             resizer.refresh(); panelDrag.refresh();
             if (wasHidden && panel.dataset.lyricsOpen === 'true') { lyricReader?.reset(); updateLyrics(true); }
+            if(wasHidden&&journalUI?.active)journalUI.resume();
             if (focus) (panel.dataset.lyricsOpen === 'true' ? query('.stm-lyrics-scroll') : query('[data-action="close"]')).focus({ preventScroll: true });
         }
         else { menus.close(); setSheetOpen('#stm-sleep', false); setQueueOpen(false); setDetailsOpen(false); officialList.close(); if (panel.contains(document.activeElement)) launcher.focus(); }
@@ -1468,6 +1472,7 @@ export function initialize(options = {}) {
         renderHistory();
         listening.render();
         updatePlayback();
+        journalUI?.sync();
     }
 
     function songButton(track, label, detail, playTrack) {
@@ -1985,6 +1990,7 @@ export function initialize(options = {}) {
         if (disposed) return;
         disposed = true;
         listening?.dispose(); transitions.dispose();
+        journalUI?.dispose();
         sceneManager?.dispose();scenePicker?.dispose();++sceneVisualEpoch;if(sceneImageUrl)URL.revokeObjectURL(sceneImageUrl);
         designEditor?.dispose(); designFont?.dispose();
         lyricReader?.dispose(); readingControls?.dispose(); launcherControls?.dispose(); launcherAvoidance?.dispose(); designControls?.dispose(); designPresentation?.dispose();
@@ -2057,6 +2063,8 @@ export function initialize(options = {}) {
         const entry=document.createElement('button');entry.type='button';entry.className='stm-secondary';entry.dataset.action='music-scenes';entry.textContent='角色音乐场景';entry.addEventListener('click',()=>sceneManager.open(currentCharacterAvatar(freshContext())));query('[data-action=card-maker]').after(entry);
     }
     scenePicker=createScenePicker({panel,getGroup:sceneGroupForCurrent,getCurrent:()=>activeSceneState?.scene,onChoose:id=>{scenePreview=null;return activateScene(id);},onManage:(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)?null:()=>sceneManager.open(currentCharacterAvatar(freshContext())),onError:error=>showStatus(error.message,true)});
+    journalUI=createJournal({panel,audio,getTrack:()=>findTrack(settings,settings.currentId),getTracks:()=>playbackQueue.tracks(),getScene:()=>activeSceneState?.scene,getGroup:()=>activeSceneState?.group||roleSceneGroup(settings,currentCharacterAvatar(freshContext())),onTrack:id=>{if(id===settings.currentId){if(audio.paused)void play();else void softPause();}else void selectTrack(id,true);},onLyrics:visible=>{if(visible){lyricReader?.reset();updateLyrics(true);}else lyricReader?.suspend();}});
+    journalUI.apply(effectiveDesign());
     if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
         cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback,getDesign:effectiveDesign});
         query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
