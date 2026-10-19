@@ -1,14 +1,16 @@
 /** Read decompressed response bytes with an actual stream bound, not only a header. */
+// A retained host operation may finish after its Helper iframe is removed.
+const ByteArray = Uint8Array, ResponseLimitError = Error, NumericValue = Number;
 export async function boundedBytes(response, maxBytes, signal) {
-    if (Number(response.headers.get('Content-Length')) > maxBytes) {
+    if (NumericValue(response.headers.get('Content-Length')) > maxBytes) {
         await response.body?.cancel().catch(() => {});
-        throw new Error('响应内容过大，已停止读取。');
+        throw new ResponseLimitError('响应内容过大，已停止读取。');
     }
     signal?.throwIfAborted();
     if (!response.body) {
-        const data = new Uint8Array(await response.arrayBuffer());
+        const data = new ByteArray(await response.arrayBuffer());
         signal?.throwIfAborted();
-        if (data.length > maxBytes) throw new Error('响应内容过大，已停止读取。');
+        if (data.length > maxBytes) throw new ResponseLimitError('响应内容过大，已停止读取。');
         return data;
     }
     const reader = response.body.getReader(), parts = [];
@@ -22,10 +24,10 @@ export async function boundedBytes(response, maxBytes, signal) {
             signal?.throwIfAborted();
             if (done) break;
             size += value.byteLength;
-            if (size > maxBytes) throw new Error('响应内容过大，已停止读取。');
+            if (size > maxBytes) throw new ResponseLimitError('响应内容过大，已停止读取。');
             parts.push(value);
         }
-        const result = new Uint8Array(size);
+        const result = new ByteArray(size);
         let offset = 0;
         for (const part of parts) { result.set(part, offset); offset += part.byteLength; }
         return result;

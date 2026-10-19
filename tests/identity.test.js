@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {identifyAccount,databaseName,preferenceKey} from '../data/identity.js';
+import {identifyAccount,databaseName,preferenceKey,createAccountGuard} from '../data/identity.js';
 import {accountPreferences,rolePreferences} from '../card-player/preferences.js';
 test('account identity follows authenticated server primary key and creation, never display name',async()=>{
  const identify=profile=>identifyAccount({fetcher:async()=>Response.json(profile)});
@@ -8,6 +8,7 @@ test('account identity follows authenticated server primary key and creation, ne
  assert.equal(a.key,renamed.key);assert.notEqual(a.key,recreated.key);assert.notEqual(a.key,b.key);assert(!a.key.includes('account-a'));
  assert.notEqual(databaseName('library',a.key),databaseName('library',b.key));assert.equal(databaseName('library','legacy'),'library');assert.throws(()=>databaseName('library',null),/未确认/);
  assert.notEqual(preferenceKey('last',a.key),preferenceKey('last',b.key));
+ assert(!Object.keys(a).includes('guardIdentity'));assert(!JSON.stringify(a).includes('guardIdentity'));
 });
 test('missing, unauthenticated or unsupported identity refuses to guess an account',async()=>{
  for(const profile of [{name:'Display only'},{handle:'a',created:null},{handle:'a',created:'now'}])await assert.rejects(identifyAccount({fetcher:async()=>Response.json(profile)}),/账号标识/);
@@ -27,4 +28,15 @@ test('account preference writes require current authorization and a late older r
 });
 test('opaque-origin maker preview still runs when merely accessing localStorage throws SecurityError',async()=>{
  const host={get localStorage(){throw new DOMException('opaque sandbox','SecurityError');}},prefs=rolePreferences({hostWindow:host},'new','old');assert.deepEqual(prefs.read(),{});assert.equal(await prefs.write({volume:.3}),false);
+});
+test('a confirmed account mismatch stays blocked after disposal under a retained extension wrapper',async()=>{
+ let active='account-a',writes=0,mismatches=0;
+ const previous=async input=>{if(String(input).endsWith('/api/users/me'))return Response.json({handle:active,created:123});writes++;return Response.json({result:'ok'});};
+ const account=await identifyAccount({fetcher:previous}),host=new EventTarget(),doc=new EventTarget();doc.visibilityState='visible';
+ Object.assign(host,{fetch:previous,location:new URL('https://host.example/'),document:doc,URL,Response,JSON,String});
+ const guard=createAccountGuard({account,context:{getRequestHeaders:()=>({})},host,onMismatch:()=>mismatches++});
+ const retained=host.fetch;host.fetch=function(...args){return retained.apply(this,args);};
+ active='account-b';assert.equal((await host.fetch('/api/settings/save')).status,409);assert.equal(mismatches,1);
+ guard.dispose();host.Response=undefined;host.URL=undefined;
+ const blocked=await host.fetch('/api/settings/save');assert.equal(blocked.status,409);assert.match((await blocked.json()).error,/账号已切换/);assert.equal(writes,0);
 });

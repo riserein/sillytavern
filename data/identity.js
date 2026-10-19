@@ -16,7 +16,12 @@ export async function identifyAccount({fetcher=globalThis.fetch,headers={},signa
     if(typeof profile.handle!=='string' || !profile.handle || profile.handle.length>128 || !Number.isSafeInteger(profile.created) || profile.created<=0)
         throw new Error('当前酒馆没有提供受支持的稳定账号标识，本地存储保持锁定。');
     // handle is the server's internal account primary key; created prevents handle-reuse adoption.
-    return {key:'account-'+hex(sha256(new TextEncoder().encode(JSON.stringify([profile.handle,profile.created])))),verified:true,label:String(profile.name||'当前账号').slice(0,80)};
+    const identity=JSON.stringify([profile.handle,profile.created]);
+    const account={key:'account-'+hex(sha256(new TextEncoder().encode(identity))),verified:true,label:String(profile.name||'当前账号').slice(0,80)};
+    // Ephemeral verified primary-key descriptor; never serialized into settings,
+    // backups, storage namespaces or character cards.
+    Object.defineProperty(account,'guardIdentity',{value:identity});
+    return account;
 }
 export function databaseName(base,scope=getStorageScope().key) {
     if(scope===null || scope===undefined) throw new Error('当前账号身份尚未确认，不能访问本地资源。');
@@ -27,7 +32,24 @@ export function databaseName(base,scope=getStorageScope().key) {
 export function preferenceKey(name,scope=getStorageScope().key) { return `${name}:${scope||'locked'}`; }
 
 export function createAccountGuard({account,context,host=window,onMismatch=()=>{}}) {
-    const previous=host.fetch,controller=new AbortController();let disposed=false,locked=false;
+    const previous=host.fetch,controller=new AbortController();let disposed=false,locked=false,lockMessage='酒馆账号已切换，请刷新旧页面后再保存。';
+    // A Helper iframe can disappear while another extension still retains this
+    // wrapper. Keep host constructors, not lookups on a destroyed iframe global.
+    const HostURL=host.URL||URL,HostResponse=host.Response||Response,HostString=host.String||String,serialize=host.JSON?.stringify||JSON.stringify;
+    const parse=host.JSON?.parse||JSON.parse,Decoder=host.TextDecoder||TextDecoder,Signal=host.AbortSignal||AbortSignal,isInteger=host.Number?.isSafeInteger||Number.isSafeInteger,expectedIdentity=account.guardIdentity;
+    const blocked=error=>new HostResponse(serialize({error}),{status:409,headers:{'Content-Type':'application/json'}});
+    async function retiredIdentity(headers) {
+        // A role exit is not proof the account stayed the same. Reconfirm with
+        // a host-owned bounded request before releasing an interrupted write.
+        if(typeof expectedIdentity!=='string')return 'unknown';
+        try{
+            const signal=Signal.timeout(5000),response=await previous.call(host,'/api/users/me',{headers,credentials:'same-origin',signal,cache:'no-store'});
+            if(!response.ok||response.redirected)return 'unknown';
+            const profile=parse(new Decoder().decode(await boundedBytes(response,16*1024*1024,signal)));
+            if(!profile||typeof profile.handle!=='string'||!profile.handle||profile.handle.length>128||!isInteger(profile.created)||profile.created<=0)return 'unknown';
+            return serialize([profile.handle,profile.created])===expectedIdentity?'same':'changed';
+        }catch{return 'unknown';}
+    }
     const assert=async()=>{
         controller.signal.throwIfAborted();
         const current=await identifyAccount({fetcher:previous.bind(host),headers:context.getRequestHeaders(),signal:controller.signal});
@@ -36,13 +58,24 @@ export function createAccountGuard({account,context,host=window,onMismatch=()=>{
         return current;
     };
     async function wrapped(input,init) {
-        const target=new URL(typeof input==='string'?input:input?.url||String(input),host.location.href);
+        if(disposed&&!locked)return previous.call(this,input,init);
+        const target=new HostURL(typeof input==='string'?input:input?.url||HostString(input),host.location.href);
         if(target.origin===host.location.origin&&['/api/settings/save','/api/characters/merge-attributes'].includes(target.pathname)){
             // A stale host page can keep saving AFTER the player has been disposed.
             // Keep this tiny forwarding guard until reload; release all player listeners below.
-            if(locked)return Response.json({error:'酒馆账号已切换，请刷新旧页面后再保存。'},{status:409});
+            if(locked)return blocked(lockMessage);
             if(disposed)return previous.call(this,input,init);
-            try{await assert();}catch(error){return Response.json({error:error.message},{status:409});}
+            let headers;
+            try{headers=context.getRequestHeaders();await assert();}catch(error){
+                if(disposed&&!locked){
+                    const state=await retiredIdentity(headers);
+                    if(state==='same')return previous.call(this,input,init);
+                    locked=true;
+                    if(state==='unknown')lockMessage='保存账号无法重新确认；本次未写入，请刷新酒馆后重试。';
+                    return blocked(lockMessage);
+                }
+                return blocked(error.message);
+            }
         }
         return previous.call(this,input,init);
     }
