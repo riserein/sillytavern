@@ -16,6 +16,7 @@ test('scene switching preserves a shared song, paused intent, role isolation and
  await page.locator('[data-action=play]').click();await expect.poll(()=>page.evaluate(()=>app.audio.currentTime)).toBeGreaterThan(.2);
  const before=await page.evaluate(()=>({src:app.audio.src,time:app.audio.currentTime}));
  await page.locator('[data-scene-open]').click();const pick=page.locator('[data-scene-action=choose][data-id=memory]');if(info.project.name==='desktop')await pick.click();else await pick.tap();
+ await page.getByRole('tab',{name:'外观',exact:true}).click();await page.getByRole('tab',{name:'播放',exact:true}).click();
  expect(await page.evaluate(()=>app.audio===originalAudio&&!app.audio.paused)).toBe(true);expect(await page.evaluate(()=>app.audio.src)).toBe(before.src);expect(await page.evaluate(()=>app.audio.currentTime)).toBeGreaterThanOrEqual(before.time);
  await page.evaluate(()=>app.audio.pause());await page.evaluate(()=>app.chooseScene('morning'));expect(await page.evaluate(()=>app.audio.paused)).toBe(true);await expect(page.locator('[data-role=title]')).toHaveText('歌曲 c');
  await page.evaluate(()=>{ctx.characterId=1;emitSceneChat();});await expect.poll(()=>page.evaluate(()=>app.getScene()?.id)).toBe('other');await expect(page.locator('[data-role=title]')).toHaveText('歌曲 b');
@@ -79,13 +80,13 @@ test('four journal themes keep unframed readable text across schemes, materials 
     const {sampleReadingInk}=await import(prefix+'tests/rendered-reading.js'),{colorChannels}=await import(prefix+'ui/contrast.js');
     app.settings.surface=material;document.querySelector(`[data-scheme-choice=${scheme}]`).click();app.setDesign({layout:'journal',theme});
     const p=document.querySelector('#stm-player');p.dataset.hasBackground=String(image);const c=document.createElement('canvas');c.width=c.height=80;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,80,80);ctx.fillStyle='#000';ctx.fillRect(0,0,40,80);p.style.setProperty('--stm-background-image',image?`url("${c.toDataURL()}")`:'none');p.style.setProperty('--stm-mask-opacity','0');
-    document.querySelector('button[data-journal-page=notes]').click();await new Promise(requestAnimationFrame);
+    document.querySelector('button[data-journal-page=notes]').click();for(const a of p.querySelector('.stm-journal-reading').getAnimations())a.finish();await new Promise(requestAnimationFrame);
     const samples=['[data-role=title]','[data-role=source]','[data-journal-note]','[data-journal-description]'].map(s=>{const n=p.querySelector(s);return {selector:s,...sampleReadingInk(n),boxAlpha:colorChannels(getComputedStyle(n).backgroundColor)[3]};});
-    document.querySelector('button[data-journal-page=lyrics]').click();await new Promise(requestAnimationFrame);
+    document.querySelector('button[data-journal-page=lyrics]').click();for(const a of p.querySelector('.stm-journal-reading').getAnimations())a.finish();await new Promise(requestAnimationFrame);
     for(const n of p.querySelectorAll('.stm-lyrics-lines p'))samples.push({...sampleReadingInk(n),selector:'lyrics',boxAlpha:colorChannels(getComputedStyle(n).backgroundColor)[3]});
     return {theme,scheme,material,image,samples};
    },{prefix,theme,scheme,material,image});records.push(row);
-   for(const s of row.samples){expect(s.ratio,JSON.stringify(row)).toBeGreaterThanOrEqual(4.5);expect(s.boxAlpha).toBe(0);}
+   for(const s of row.samples){expect(s.ratio,JSON.stringify(row)).toBeGreaterThanOrEqual(4.5);expect(s.boxAlpha).toBe(0);expect(s.opacity).toBe(1);}
   }
   if(info.project.name!=='desktop')await page.locator('button[data-journal-page=player]').tap();
   await page.locator('#stm-player').screenshot({path:`docs/music-journal/themes/${theme}-${scheme}-${info.project.name}.png`});

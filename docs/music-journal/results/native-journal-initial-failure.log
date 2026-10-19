@@ -1,0 +1,69 @@
+
+Running 2 tests using 1 worker
+
+(node:258226) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:258226) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop (20.9s)
+(node:258461) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:258461) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch (22.9s)
+
+
+  1) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+
+    Error: page.evaluate: TypeError: store.dispose is not a function
+        at eval (eval at evaluate (:290:30), <anonymous>:69:17)
+        at async <anonymous>:316:30
+        at eval (eval at evaluate (:290:30), <anonymous>:69:17)
+        at async <anonymous>:316:30
+        at /workspace/sillytavern/tests/card-native.e2e.js:1234:15
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+
+    Error: page.evaluate: TypeError: store.dispose is not a function
+        at eval (eval at evaluate (:290:30), <anonymous>:69:17)
+        at async <anonymous>:316:30
+        at eval (eval at evaluate (:290:30), <anonymous>:69:17)
+        at async <anonymous>:316:30
+        at /workspace/sillytavern/tests/card-native.e2e.js:1234:15
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

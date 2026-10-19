@@ -81,6 +81,7 @@ test('selected draft, excluded default and missing scene image block export with
  const {prepareCardPackage}=await import('../card-player/export.js');const image=new Blob(['cover'],{type:'image/png'});
  const prepare=sceneSet=>prepareCardPackage({id:'test',tracks,sceneSet,appearance:{}},{getBlob:async()=>null,readFallback:async()=>image,probeAudio:async()=>{}});
  await assert.rejects(prepare({scenes:[scene('draft',['missing'])]}),/尚未完成/);
+ await assert.rejects(prepare({scenes:[{...scene('x'),included:false}]}),/没有选择/);
  await assert.rejects(prepare({defaultSceneId:'x',scenes:[{...scene('x'),included:false},scene('y')]}),/默认场景/);
  await assert.rejects(prepare({scenes:[{...scene('x'),coverId:'cover:11111111-1111-4111-8111-111111111111'}]}),/封面或背景缺失/);
 });
@@ -88,10 +89,16 @@ test('draft scene bytes are independent ZIP entries and remapped with project co
  const {captureProjectResources}=await import('../card-player/project-store.js');const id='background:22222222-2222-4222-8222-222222222222',blob=new Blob(['image'],{type:'image/png'}),settings=normalizeSettings({tracks:[tracks[0]]});
  const set=normalizeSceneSet({scenes:[{...scene('s'),backgroundId:id}],notes:[{trackId:'a',text:'手记'}]});
  const snapshot=await captureProjectResources([tracks[0]],{sceneSet:set},async key=>key.startsWith(id)?blob:null);
- const project={id:'rscp:p',title:'project',format:1,tracks:snapshot.tracks,sourceSettings:{sceneSet:set,uiDesign:normalizeDesign({layout:'journal'})},form:{},assets:{sceneBlobs:snapshot.appearance.sceneBlobs}};
+ const project={id:'rscp:p',title:'project',format:1,tracks:snapshot.tracks,sourceSettings:{sceneSet:set,uiDesign:normalizeDesign({layout:'journal'}),theme:'pink',colorScheme:'light',surface:'glass'},form:{'shared-design':true},assets:{sceneBlobs:snapshot.appearance.sceneBlobs}};
  const store={entries:async()=>[]};const backup=await createBackup({settings,store,projects:[project]});
  assert.equal(backup.manifest.projects[0].assets.sceneBlobs[id].bytes,5);assert(!JSON.stringify(backup.manifest).includes('base64'));
  const read=await inspectBackup(backup.blob);assert.equal(await read.projects[0].assets.sceneBlobs[id].text(),'image');
  const plan=await makeRestorePlan({backup:read,current:settings,store,projects:[project],mode:'copy',restorePreferences:true,bindingMap:{}}),copy=plan.projectWrites[0],sceneCopy=copy.sourceSettings.sceneSet.scenes[0];
- assert.notEqual(sceneCopy.id,'s');assert.notEqual(sceneCopy.backgroundId,id);assert.equal(await copy.assets.sceneBlobs[sceneCopy.backgroundId].text(),'image');assert.equal(copy.sourceSettings.uiDesign.layout,'journal');
+ assert.notEqual(sceneCopy.id,'s');assert.notEqual(sceneCopy.backgroundId,id);assert.equal(await copy.assets.sceneBlobs[sceneCopy.backgroundId].text(),'image');assert.equal(copy.sourceSettings.uiDesign.layout,'journal');assert.equal(copy.form['shared-design'],true);assert.equal(copy.sourceSettings.colorScheme,'light');assert.equal(copy.sourceSettings.theme,'pink');
+});
+test('a default catalog recording referenced only by scenes is retained when restoring to an empty catalog',async()=>{
+ const online={platform:'openverse',platformTrackId:'builtin-123',title:'Default song',sourceUrl:'https://openverse.org/audio/builtin-123',playback:'full'};
+ const s=normalizeSettings({},Date.now(),{version:1,tracks:[online]}),id=s.builtinCatalog.tracks[0].id;saveRoleScenes(s,'a.png',{scenes:[scene('only',[id])]});
+ const backup=await createBackup({settings:s,store:{entries:async()=>[]}}),read=await inspectBackup(backup.blob);assert.equal(read.manifest.catalog.length,1);
+ const plan=await makeRestorePlan({backup:read,current:normalizeSettings({}),store:{entries:async()=>[]},bindingMap:{'a.png':'b.png'}});assert.equal(plan.after.tracks[0].id,id);assert.equal(plan.summary.draftScenes,0);
 });

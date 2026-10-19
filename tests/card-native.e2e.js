@@ -425,11 +425,11 @@ test.afterAll(async () => {
         JSON.stringify(
             {
                 status: results.length && results.every((item) => item.status === 'passed' && item.cleanup === 'passed')
-                    ? (results.length === 9 ? 'passed' : 'selected-tests-passed')
+                    ? (results.length === 11 ? 'passed' : 'selected-tests-passed')
                     : 'incomplete-or-failed',
                 version: PLAYER_BUILD,
                 largeFixture,
-                coverage: results.length === 9 ? 'full-suite' : 'partial-or-selected-tests; see runner report for overall status',
+                coverage: results.length === 11 ? 'full-suite' : 'partial-or-selected-tests; see runner report for overall status',
                 verifiedAt: new Date().toISOString(),
                 runtimeSha256: createHash('sha256').update(runtime).digest('hex'),
                 sillyTavern: '1.19.0',
@@ -1227,3 +1227,41 @@ async function recipientVisibilityAcceptance(page,{layout,mobile,format}) {
  await page.locator('.stm-launcher').click();await page.locator('[data-action=play]').click();await expect.poll(()=>audio.evaluate(a=>a.currentTime)).toBeGreaterThan(time+.1);
  await expect(page.locator('[data-riserein-recovery]')).toHaveCount(1);
 }
+
+for(const mobile of [false,true])test(`journal scenes native PNG/JSON retain notes, one audio and role lifecycle · ${mobile?'touch':'desktop'}`,async({browser})=>{
+ test.setTimeout(300000);const {page:author,context:authorContext}=await session(browser),a=await createCard(author,'JournalA'),b=await createCard(author,'JournalB');await selectCard(author,a);
+ await author.getByRole('tab',{name:'导入',exact:true}).click();await author.locator('[data-role=files]').setInputFiles(['One','Two','Three'].map(name=>({name:name+'.mp3',mimeType:'audio/mpeg',buffer:tone})));await expect(author.locator('.stm-status')).toContainText('已导入 3 首');
+ await author.evaluate(async({a,b,image})=>{
+  const prefix='/scripts/extensions/third-party/sillytavern/',{saveRoleScenes}=await import(prefix+'music-scenes.js'),{LocalMusicStore}=await import(prefix+'local-store.js');
+  const s=SillyTavern.getContext().extensionSettings.riserein_music_player,[one,two,three]=s.tracks,store=new LocalMusicStore();
+  const {prepareCover}=await import(prefix+'media.js');const bg='background:'+crypto.randomUUID(),cover='cover:'+crypto.randomUUID(),blob=await prepareCover(new Blob([new Uint8Array(image)],{type:'image/png'}));await store.put(bg,blob);await store.put(bg+':original',blob);await store.put(cover,blob);
+  one.lyrics='[00:00]雨落书页\n[00:02]旧日回声';one.album='合成音测试';
+  saveRoleScenes(s,a,{defaultSceneId:'rain',scenes:[{id:'rain',name:'雨夜书房',description:'窗外下着雨。',trackIds:[one.id,two.id],backgroundId:bg,coverId:cover,themeId:'journal-parchment'},{id:'memory',name:'旧日回忆',description:'旧日的一页。',trackIds:[two.id,one.id],themeId:'journal-archive'},{id:'draft',name:'不分发的草稿',trackIds:['missing'],included:false}],notes:[{trackId:one.id,text:'<img src=x onerror="window.noteExecuted=true"> 雨夜手记'},{trackId:two.id,text:'第二首的手记'}]});
+  saveRoleScenes(s,b,{scenes:[{id:'other',name:'角色 B 的清晨',trackIds:[three.id],themeId:'journal-midnight'}],notes:[{trackId:three.id,text:'B 独立手记'}]});
+  s.transitionDuration=0;await store.close();
+ },{a,b,image:Array.from(image)});
+ await author.getByRole('tab',{name:'外观',exact:true}).click();await menu(author,'#stm-design-layout','journal');await menu(author,'#stm-design-theme','journal-parchment');
+ await author.getByRole('tab',{name:'曲库',exact:true}).click();await author.locator('[data-action=rebuild-native]').click();await expect(author.locator('.stm-status')).toContainText('按当前版本重建',{timeout:60000});
+ const files=[];for(const format of ['json','png']){await author.locator('#export_button').dispatchEvent('click');const pending=author.waitForEvent('download');await author.locator('.export_format[data-format='+format+']').dispatchEvent('click');const d=await pending,bytes=await readFile(await d.path());files.push({bytes,format});if(format==='json'){const card=JSON.parse(bytes),script=card.data.extensions.tavern_helper.scripts.find(s=>s.id===card.data.extensions.riserein_card_player.scriptId),p=readScriptPayload(script.content);expect(p.config.sceneSet.scenes.map(s=>s.id)).toEqual(['rain','memory']);expect(p.config.tracks.length).toBe(2);expect(new Set(p.config.tracks.map(t=>t.id)).size).toBe(2);expect(p.config.sceneSet.notes.length).toBe(2);expect(Object.keys(p.config.sceneAssets)).toHaveLength(2);exportMetrics.push({operation:'journal-scenes-export',mobile,format,bytes:bytes.length,...analyzePayload(p,script)});}}
+ await selectCard(author,b);await author.locator('#export_button').dispatchEvent('click');const pending=author.waitForEvent('download');await author.locator('.export_format[data-format=json]').dispatchEvent('click');const bFile=await readFile(await(await pending).path());await authorContext.close();
+ const{page:recipient}=await session(browser,{portable:true,mobile});const blank=await createCard(recipient,'JournalBlank'),other=await importCard(recipient,bFile,'json');
+ const permit=async()=>{const prompt=recipient.getByText(/^(确认|Confirm)$/,{exact:true}).last();await expect.poll(async()=>await prompt.isVisible()||await recipient.locator(root).count()===1,{timeout:60000}).toBe(true);if(await prompt.isVisible())await prompt.click();await expect(recipient.locator(root)).toHaveCount(1);};
+ const click=async selector=>{const n=recipient.locator(selector);if(mobile)await n.tap();else await n.click();};
+ for(const file of files){const avatar=await importCard(recipient,file.bytes,file.format);await selectCard(recipient,avatar);await permit();await expect(recipient.locator('#stm-player')).toHaveAttribute('data-layout','journal');await expect(recipient.locator('#stm-player')).toHaveAttribute('data-has-background','true');await expect(recipient.locator('.stm-scene-cover')).toBeVisible();await expect.poll(()=>recipient.locator('.stm-scene-cover').evaluate(i=>i.naturalWidth)).toBeGreaterThan(0);
+  await expect(recipient.locator('[data-action=card-maker],[data-action=music-scenes]')).toHaveCount(0);expect(await recipient.evaluate(async()=>!(await indexedDB.databases()).some(d=>d.name.startsWith('riserein-sillytavern-music')))).toBe(true);
+  await recipient.locator(root).evaluate(n=>{window.journalOriginal={node:n,api:n.__risereinPlayer,audio:n.__risereinPlayer.audio};});
+  await click('[data-action=play]');await expect.poll(()=>recipient.locator(root+' audio').evaluate(a=>a.currentTime)).toBeGreaterThan(.2);const src=await recipient.locator(root+' audio').getAttribute('src');
+  await click('[data-scene-open]');await click('[data-scene-action=choose][data-id=memory]');expect(await recipient.locator(root+' audio').getAttribute('src')).toBe(src);
+  expect(await recipient.evaluate(()=>journalOriginal.audio===document.querySelector('[data-riserein-card-player] audio')&&!journalOriginal.audio.paused)).toBe(true);
+  await click('button[data-journal-page=notes]');await expect(recipient.locator('[data-journal-note]')).toContainText('雨夜手记');expect(await recipient.locator('[data-journal-note] img').count()).toBe(0);expect(await recipient.evaluate(()=>window.noteExecuted)).toBeUndefined();
+  await click('button[data-journal-page=lyrics]');for(const mode of ['flow','centered','immersive']){await recipient.locator('#stm-lyric-mode').evaluate((n,mode)=>{n.value=mode;n.dispatchEvent(new Event('change'));},mode);await expect(recipient.locator('.stm-lyrics-view')).toHaveAttribute('data-lyric-mode',mode);expect(await recipient.evaluate(()=>journalOriginal.audio===document.querySelector('[data-riserein-card-player] audio')&&!journalOriginal.audio.paused)).toBe(true);}
+  await click('button[data-journal-page=collection]');await click('[data-journal-track][aria-current=false]');await expect.poll(()=>recipient.locator('[data-role=title]').textContent()).toContain('Two');await click('button[data-journal-page=notes]');await expect(recipient.locator('[data-journal-note]')).toHaveText('第二首的手记');
+  await mkdir(screenshotDir,{recursive:true});await recipient.locator('#stm-player').screenshot({path:`${screenshotDir}/journal-${file.format}-${mobile?'touch':'desktop'}.png`});
+  await recipient.evaluate(async()=>{await TavernHelper.createChatMessages([{role:'user',message:'Scene lifecycle.'},{role:'assistant',message:'First reply.'}]);const id=SillyTavern.getContext().chat.length-1;await TavernHelper.setChatMessages([{message_id:id,swipe_id:0,swipes:['First reply.','Second reply.']}]);const {swipe_right,saveChat,openCharacterChat}=await import('/script.js');await swipe_right();await saveChat({force:true});await openCharacterChat('RSCP_Test_JournalChat_'+crypto.randomUUID());});
+  expect(await recipient.evaluate(()=>journalOriginal.node.isConnected&&journalOriginal.audio===document.querySelector('[data-riserein-card-player] audio')&&!journalOriginal.audio.paused)).toBe(true);
+  await selectCard(recipient,other);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('角色 B 的清晨');await click('button[data-journal-page=notes]');await expect(recipient.locator('[data-journal-note]')).toHaveText('B 独立手记');expect(await recipient.evaluate(()=>journalOriginal.audio.paused&&!journalOriginal.audio.isConnected&&Object.values(journalOriginal.api.resourceCounts).every(v=>v===0))).toBe(true);
+  await selectCard(recipient,avatar);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('旧日回忆');
+  // Hide preference must survive role exit/re-entry; restore through the actual wand menu.
+  await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('.stm-visibility-menu [data-display-hide]').click();await expect(recipient.locator('#stm-launcher')).toBeHidden();await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);await selectCard(recipient,avatar);await permit();await expect(recipient.locator('#stm-player')).toBeHidden();await expect(recipient.locator('#stm-launcher')).toBeHidden();await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();await expect(recipient.locator('#stm-launcher')).toBeVisible();await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);
+ }
+});

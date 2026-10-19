@@ -9,15 +9,15 @@ import { validateImageFile } from './background.js';
 const button = (doc,text,action,id) => { const b=doc.createElement('button');b.type='button';b.className='stm-secondary';b.textContent=text;b.dataset.sceneAction=action;if(id)b.dataset.id=id;return b; };
 
 /** One shared, delegated picker. No audio or account storage of its own. */
-export function createScenePicker({panel,getGroup,getCurrent,onChoose,onManage,onError}) {
+export function createScenePicker({panel,getGroup,getCurrent,onChoose,onManage,onError,setOpen}) {
     const doc=panel.ownerDocument,abort=new AbortController(),bar=doc.createElement('div');bar.className='stm-scene-bar';
     bar.innerHTML='<button type="button" class="stm-secondary" data-scene-open><img class="stm-scene-cover" alt="" hidden>场景 <span></span> ▾</button><p class="stm-hint" data-scene-description></p>';
     panel.querySelector('[data-view=playback]').prepend(bar);
-    const overlay=doc.createElement('section');overlay.className='stm-queue-overlay';overlay.hidden=true;overlay.setAttribute('aria-label','音乐场景');
+    const overlay=doc.createElement('section');overlay.className='stm-queue-overlay';overlay.id='stm-scenes';overlay.hidden=true;overlay.setAttribute('aria-label','音乐场景');
     overlay.innerHTML='<div class="stm-queue-scrim" data-scene-close></div><div class="stm-queue-sheet"><header><h3>音乐场景</h3><button type="button" class="stm-icon" data-scene-close aria-label="关闭音乐场景">×</button></header><p class="stm-hint">选择此刻的配乐；暂停时切换也会保持暂停。</p><div class="stm-scene-choices"></div></div>';
     panel.append(overlay);let returnFocus=null;
-    function close(){overlay.hidden=true;returnFocus?.focus({preventScroll:true});returnFocus=null;}
-    bar.addEventListener('click',()=>{returnFocus=doc.activeElement;refresh();overlay.hidden=false;overlay.querySelector('button')?.focus();},{signal:abort.signal});
+    function close(){if(setOpen)setOpen(false);else overlay.hidden=true;returnFocus?.focus({preventScroll:true});returnFocus=null;}
+    bar.addEventListener('click',()=>{returnFocus=doc.activeElement;refresh();if(setOpen)setOpen(true);else overlay.hidden=false;overlay.querySelector('button')?.focus();},{signal:abort.signal});
     overlay.addEventListener('click',event=>{if(event.target.closest('[data-scene-close]'))return close();const b=event.target.closest('[data-scene-action]');if(!b)return;if(b.dataset.sceneAction==='manage'){close();onManage?.();return;}Promise.resolve(onChoose(b.dataset.id)).then(close).catch(onError);},{signal:abort.signal});
     overlay.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close();}},{signal:abort.signal});
     function refresh(){

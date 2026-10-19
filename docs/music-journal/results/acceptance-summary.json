@@ -1,0 +1,740 @@
+{
+  "version": "2.1.0-alpha.1",
+  "generatedAt": "2026-10-19T14:07:56.875137+00:00",
+  "unit": {
+    "passed": 192,
+    "failed": 0
+  },
+  "browser": {
+    "uniqueCasesWithPassingRun": 88,
+    "unresolvedCases": {},
+    "rawFailedCasesInFinalRegressionRuns": 1,
+    "resolution": "One native vinyl run lost Playwright trace files because concurrent runners shared outputDir; same case rerun passed with an isolated output directory. Raw failing runner retained. Early development failures are separate logs."
+  },
+  "themeMatrix": {
+    "journal-parchment": {
+      "states": 24,
+      "minimumMeasuredRatio": 5.669176544024886
+    },
+    "journal-archive": {
+      "states": 24,
+      "minimumMeasuredRatio": 5.682664773749871
+    },
+    "journal-midnight": {
+      "states": 24,
+      "minimumMeasuredRatio": 5.6384134285813845
+    },
+    "journal-editorial": {
+      "states": 24,
+      "minimumMeasuredRatio": 5.68812815928849
+    }
+  },
+  "builds": {
+    "card-player/dist/native-runtime.js": {
+      "beforeBytes": 352108,
+      "afterBytes": 379481,
+      "growthBytes": 27373,
+      "sha256": "2e659089527fcef33ecd40265d4420c9b9c459e719778308146bed01d340331f"
+    },
+    "card-player/dist/shared-ui.js": {
+      "beforeBytes": 313101,
+      "afterBytes": 336378,
+      "growthBytes": 23277,
+      "sha256": "e513ab7fb7cd6ea785628b2d51d09406ca37a7f994b34299ccd91b8bc8beeeb9"
+    },
+    "card-player/dist/runtime.js": {
+      "beforeBytes": 71614,
+      "afterBytes": 75076,
+      "growthBytes": 3462,
+      "sha256": "b69cf15adddee6d85aa8b97c2c298b9727be83a8914983a9bcbd906b73bf94da"
+    }
+  },
+  "runs": [
+    {
+      "file": "final-scenes-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T14:03:39.739Z",
+        "duration": 43945.689,
+        "expected": 12,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "file": "reading-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T13:35:18.761Z",
+        "duration": 105802.908,
+        "expected": 18,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "file": "modes-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T13:37:05.604Z",
+        "duration": 77673.186,
+        "expected": 16,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "file": "data-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T13:39:59.523Z",
+        "duration": 55503.6,
+        "expected": 11,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "file": "quality-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T13:45:09.407Z",
+        "duration": 26627.544,
+        "expected": 15,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "file": "maker-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T13:45:58.253Z",
+        "duration": 299686.45900000003,
+        "expected": 5,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "file": "native-regression-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T13:50:58.941Z",
+        "duration": 770449.372,
+        "expected": 7,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      }
+    },
+    {
+      "file": "native-journal-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T13:52:56.245Z",
+        "duration": 167452.37,
+        "expected": 2,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "file": "native-font-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T14:01:37.449Z",
+        "duration": 55433.498,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "file": "native-vinyl-rerun-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T13:58:13.967Z",
+        "duration": 160162.70899999997,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "file": "data-supplement-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T13:56:21.589Z",
+        "duration": 16057.814000000002,
+        "expected": 2,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "file": "maker-journal-runner.json",
+      "stats": {
+        "startTime": "2026-10-19T13:56:38.639Z",
+        "duration": 43607.428,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    }
+  ],
+  "caseEvidence": {
+    "scene switching preserves a shared song, paused intent, role isolation and hidden state on one Audio | desktop": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "author edits isolated drafts, orders songs, previews without publishing and survives a quota failure | desktop": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "journal reuses music controls and lyric DOM across real book pages and every lyric mode | desktop": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "author song notes render as text, follow the current song and can be hidden without deletion | desktop": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "four journal themes keep unframed readable text across schemes, materials and actual image layers | desktop": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "journal editor properties, scene preview and undo do not overwrite saved designs or recreate audio | desktop": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "scene switching preserves a shared song, paused intent, role isolation and hidden state on one Audio | mobile-chromium-emulation": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "author edits isolated drafts, orders songs, previews without publishing and survives a quota failure | mobile-chromium-emulation": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "journal reuses music controls and lyric DOM across real book pages and every lyric mode | mobile-chromium-emulation": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "author song notes render as text, follow the current song and can be hidden without deletion | mobile-chromium-emulation": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "four journal themes keep unframed readable text across schemes, materials and actual image layers | mobile-chromium-emulation": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "journal editor properties, scene preview and undo do not overwrite saved designs or recreate audio | mobile-chromium-emulation": [
+      {
+        "file": "final-scenes-runner.json",
+        "passed": true
+      }
+    ],
+    "rendered contrast matrix: all old palettes and all new layouts, schemes, surfaces and image extremes | desktop": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "manual reading survives new LRC lines; resume, text clicks, keys, reopening and song changes preserve audio | desktop": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "component background overrides retain unframed text and cannot defeat the shared reading surface | desktop": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "destructive, error and warning text retain semantic contrast, including pressed buttons | desktop": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "disposed role guard forwards an in-flight same-account host save through another extension wrapper | desktop": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "all reading levels and lyric backgrounds protect custom colors; real touch swipes suspend follow | desktop": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "old maker standalone preview uses the same readable colors and explicit lyric reader | desktop": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "reading preferences persist through real IndexedDB binary ZIP restore including maker drafts | desktop": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "actual host reading controls, designer contrast warnings and layout changes retain one playing Audio | desktop": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "rendered contrast matrix: all old palettes and all new layouts, schemes, surfaces and image extremes | mobile-chromium-emulation": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "manual reading survives new LRC lines; resume, text clicks, keys, reopening and song changes preserve audio | mobile-chromium-emulation": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "component background overrides retain unframed text and cannot defeat the shared reading surface | mobile-chromium-emulation": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "destructive, error and warning text retain semantic contrast, including pressed buttons | mobile-chromium-emulation": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "disposed role guard forwards an in-flight same-account host save through another extension wrapper | mobile-chromium-emulation": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "all reading levels and lyric backgrounds protect custom colors; real touch swipes suspend follow | mobile-chromium-emulation": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "old maker standalone preview uses the same readable colors and explicit lyric reader | mobile-chromium-emulation": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "reading preferences persist through real IndexedDB binary ZIP restore including maker drafts | mobile-chromium-emulation": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "actual host reading controls, designer contrast warnings and layout changes retain one playing Audio | mobile-chromium-emulation": [
+      {
+        "file": "reading-runner.json",
+        "passed": true
+      }
+    ],
+    "three modes, continuous motion, immediate highlight, calibration and free reading share one playing audio | desktop": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "hidden pauses immediately, cancels sleep, keeps progress and recovers paused; no recovery degrades to dock | desktop": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "left and right snapping, 320px and landscape/keyboard-sized viewports keep edge tabs reachable | desktop": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "unframed lyrics remain readable in every layout, mode, scheme and scrim on arbitrary image extremes | desktop": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "classic standalone runtime supports author-docked entry, personal hiding and explicit preview recovery | desktop": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "late ended events while hidden cannot switch the selected song | desktop": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "losing the only visible Helper recovery route falls back to a clickable edge tag | desktop": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "active lyric animation releases all pending frames on hide and dispose | desktop": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "three modes, continuous motion, immediate highlight, calibration and free reading share one playing audio | mobile-chromium-emulation": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "hidden pauses immediately, cancels sleep, keeps progress and recovers paused; no recovery degrades to dock | mobile-chromium-emulation": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "left and right snapping, 320px and landscape/keyboard-sized viewports keep edge tabs reachable | mobile-chromium-emulation": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "unframed lyrics remain readable in every layout, mode, scheme and scrim on arbitrary image extremes | mobile-chromium-emulation": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "classic standalone runtime supports author-docked entry, personal hiding and explicit preview recovery | mobile-chromium-emulation": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "late ended events while hidden cannot switch the selected song | mobile-chromium-emulation": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "losing the only visible Helper recovery route falls back to a clickable edge tag | mobile-chromium-emulation": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "active lyric animation releases all pending frames on hide and dispose | mobile-chromium-emulation": [
+      {
+        "file": "modes-runner.json",
+        "passed": true
+      }
+    ],
+    "complete ZIP download includes actual library/project bytes and excludes host credentials; preview is read-only | ": [
+      {
+        "file": "data-runner.json",
+        "passed": true
+      }
+    ],
+    "ZIP restores into a clean account with actual IDB, checked role remapping and preserved original project IDs | ": [
+      {
+        "file": "data-runner.json",
+        "passed": true
+      }
+    ],
+    "failed settings save keeps staged bytes and old settings; explicit readback safely rolls back only owned data | ": [
+      {
+        "file": "data-runner.json",
+        "passed": true
+      }
+    ],
+    "restore locks edits while server verification is pending and restores control states afterwards | ": [
+      {
+        "file": "data-runner.json",
+        "passed": true
+      }
+    ],
+    "damaged backup never mutates existing IDB or visible settings | ": [
+      {
+        "file": "data-runner.json",
+        "passed": true
+      }
+    ],
+    "same-origin account stores and project IDs are isolated and never automatically adopt legacy bytes | ": [
+      {
+        "file": "data-runner.json",
+        "passed": true
+      }
+    ],
+    "legacy UI requires ownership and explicit selection/copy; music/font/project bytes survive and original DB stays intact | ": [
+      {
+        "file": "data-runner.json",
+        "passed": true
+      }
+    ],
+    "storage UI previews then deletes only acknowledged unused resources in actual IDB | ": [
+      {
+        "file": "data-runner.json",
+        "passed": true
+      }
+    ],
+    "real quota failure aborts a binary batch and its ownership records without deleting prior bytes | ": [
+      {
+        "file": "data-runner.json",
+        "passed": true
+      }
+    ],
+    "design templates and draft icon bytes survive actual ZIP and IndexedDB restore with role remapping | ": [
+      {
+        "file": "data-runner.json",
+        "passed": true
+      },
+      {
+        "file": "data-supplement-runner.json",
+        "passed": true
+      }
+    ],
+    "scene metadata, notes, journal design and draft image bytes survive a full ZIP restore in actual IndexedDB | ": [
+      {
+        "file": "data-runner.json",
+        "passed": true
+      },
+      {
+        "file": "data-supplement-runner.json",
+        "passed": true
+      }
+    ],
+    "drafts survive close/reopen/reload, copy and switch, retaining actual imported audio and edits | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "draft database transactions roll back on clone failure and ordered delete cannot resurrect a project | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "leaving during embedded audio decode cancels pending work without late URLs, audio or duplicate roots | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "controlled Helper scope shares account protection across font/mount leases and blocks cross-realm URL saves after account changes | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "explicit legacy preference adoption waits for authorized storage before rebuilding the current player | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "a queued focus scroll keeps the menu aligned while a later user wheel closes it | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "rapid roles, duplicate starts, same-role events, script exit and full-plugin handoff release resources and audio | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "malformed resources unwind early DOM and object URLs; a late FontFace load cannot reattach after exit | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "disposing a scoped request after headers aborts its unfinished response body and observer reuse is cleaned | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "concurrent font decoding starts share one pending task, exit cancels it and scripts isolate persisted preferences | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "maker reads embedded MP3 lyrics and confirmed search results travel into exported script without recipient lookup | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "simulated storage failure retains the old draft and restores unsaved edits within the current page | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "draft audio, cover and background remain usable after their original library files are removed | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "leaving during image decoding closes the late bitmap and never restores the cropper or its resources | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "independent maker runtime isolates scripts, replaces old audio and defers to the full plugin | ": [
+      {
+        "file": "quality-runner.json",
+        "passed": true
+      }
+    ],
+    "maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser | ": [
+      {
+        "file": "maker-runner.json",
+        "passed": true
+      }
+    ],
+    "maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser | ": [
+      {
+        "file": "maker-runner.json",
+        "passed": true
+      }
+    ],
+    "resource failures and edits prevent stale or partial exports without changing the original library | ": [
+      {
+        "file": "maker-runner.json",
+        "passed": true
+      }
+    ],
+    "maker shared design cassette exports independent JS, HTML and Helper JSON then plays in a clean recipient | ": [
+      {
+        "file": "maker-runner.json",
+        "passed": true
+      }
+    ],
+    "maker shared design journal exports independent JS, HTML and Helper JSON then plays in a clean recipient | ": [
+      {
+        "file": "maker-runner.json",
+        "passed": true
+      },
+      {
+        "file": "maker-journal-runner.json",
+        "passed": true
+      }
+    ],
+    "native PNG and JSON carry the shared player to a clean desktop recipient · vinyl | ": [
+      {
+        "file": "native-regression-runner.json",
+        "passed": false
+      },
+      {
+        "file": "native-vinyl-rerun-runner.json",
+        "passed": true
+      }
+    ],
+    "native PNG and JSON carry the shared player to a clean phone recipient · crystal | ": [
+      {
+        "file": "native-regression-runner.json",
+        "passed": true
+      }
+    ],
+    "native PNG and JSON carry the shared player to a clean desktop recipient · cassette | ": [
+      {
+        "file": "native-regression-runner.json",
+        "passed": true
+      }
+    ],
+    "native PNG and JSON carry the shared player to a clean phone recipient · pure | ": [
+      {
+        "file": "native-regression-runner.json",
+        "passed": true
+      }
+    ],
+    "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind | ": [
+      {
+        "file": "native-regression-runner.json",
+        "passed": true
+      }
+    ],
+    "saving local bindings and exporting an imported card never remove its unrelated carried player | ": [
+      {
+        "file": "native-regression-runner.json",
+        "passed": true
+      }
+    ],
+    "two designer-bound roles retain different layouts and selected fonts while sharing one playlist | ": [
+      {
+        "file": "native-regression-runner.json",
+        "passed": true
+      }
+    ],
+    "actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script | ": [
+      {
+        "file": "native-regression-runner.json",
+        "passed": true
+      }
+    ],
+    "journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop | ": [
+      {
+        "file": "native-journal-runner.json",
+        "passed": true
+      }
+    ],
+    "journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch | ": [
+      {
+        "file": "native-journal-runner.json",
+        "passed": true
+      }
+    ],
+    "compact selected font stays fixed after native export and changes only on a new author export | ": [
+      {
+        "file": "native-font-runner.json",
+        "passed": true
+      }
+    ]
+  },
+  "environment": {
+    "sillyTavern": "1.19.0",
+    "officialTavernHelper": "4.11.3",
+    "browser": "Chromium 154.0.8037.57",
+    "recipient": "full-plugin network assets blocked, empty music IndexedDB; actual native PNG/JSON import",
+    "mobile": "Chromium touch emulation, not physical iOS/Android",
+    "externalAudio": "synthetic embedded MP3; routed HTTPS fixture, not actual external music service verification"
+  }
+}

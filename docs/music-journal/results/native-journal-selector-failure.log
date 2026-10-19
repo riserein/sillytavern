@@ -1,0 +1,101 @@
+
+Running 2 tests using 1 worker
+
+(node:266771) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:266771) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@229
+  ✘  1 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop (52.1s)
+(node:267500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:267500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@231
+  ✘  2 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch (49.9s)
+
+
+  1) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+
+    Error: locator.click: Error: strict mode violation: locator('[data-journal-track]') resolved to 2 elements:
+        1) <button type="button" aria-label="播放：Two" aria-current="false" data-journal-track="786fdbe2-a133-498f-8818-e05814c4bf52">…</button> aka getByRole('button', { name: '播放：Two' })
+        2) <button type="button" aria-current="true" aria-label="暂停：One" data-journal-track="d279b511-5a9b-4037-86da-61e138ffb490">…</button> aka getByRole('button', { name: '暂停：One' })
+
+    Call log:
+    [2m  - waiting for locator('[data-journal-track]')[22m
+
+
+      1247 |  const{page:recipient}=await session(browser,{portable:true,mobile});const blank=await createCard(recipient,'JournalBlank'),other=await importCard(recipient,bFile,'json');
+      1248 |  const permit=async()=>{const prompt=recipient.getByText(/^(确认|Confirm)$/,{exact:true}).last();await expect.poll(async()=>await prompt.isVisible()||await recipient.locator(root).count()===1,{timeout:60000}).toBe(true);if(await prompt.isVisible())await prompt.click();await expect(recipient.locator(root)).toHaveCount(1);};
+    > 1249 |  const click=async selector=>{const n=recipient.locator(selector);if(mobile)await n.tap();else await n.click();};
+           |                                                                                                        ^
+      1250 |  for(const file of files){const avatar=await importCard(recipient,file.bytes,file.format);await selectCard(recipient,avatar);await permit();await expect(recipient.locator('#stm-player')).toHaveAttribute('data-layout','journal');await expect(recipient.locator('.stm-scene-cover')).toBeVisible();await expect.poll(()=>recipient.locator('.stm-scene-cover').evaluate(i=>i.naturalWidth)).toBeGreaterThan(0);
+      1251 |   await expect(recipient.locator('[data-action=card-maker],[data-action=music-scenes]')).toHaveCount(0);expect(await recipient.evaluate(async()=>!(await indexedDB.databases()).some(d=>d.name.startsWith('riserein-sillytavern-music')))).toBe(true);
+      1252 |   await recipient.locator(root).evaluate(n=>{window.journalOriginal={node:n,api:n.__risereinPlayer,audio:n.__risereinPlayer.audio};});
+        at click (/workspace/sillytavern/tests/card-native.e2e.js:1249:104)
+        at /workspace/sillytavern/tests/card-native.e2e.js:1257:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+
+    Error: locator.tap: Error: strict mode violation: locator('[data-journal-track]') resolved to 2 elements:
+        1) <button type="button" aria-label="播放：Two" aria-current="false" data-journal-track="d6d7f02e-dedb-4e87-aec2-33d46900820b">…</button> aka getByRole('button', { name: '播放：Two' })
+        2) <button type="button" aria-current="true" aria-label="暂停：One" data-journal-track="79ce7eb0-8cd9-4430-be70-34d01c568b42">…</button> aka getByRole('button', { name: '暂停：One' })
+
+    Call log:
+    [2m  - waiting for locator('[data-journal-track]')[22m
+
+
+      1247 |  const{page:recipient}=await session(browser,{portable:true,mobile});const blank=await createCard(recipient,'JournalBlank'),other=await importCard(recipient,bFile,'json');
+      1248 |  const permit=async()=>{const prompt=recipient.getByText(/^(确认|Confirm)$/,{exact:true}).last();await expect.poll(async()=>await prompt.isVisible()||await recipient.locator(root).count()===1,{timeout:60000}).toBe(true);if(await prompt.isVisible())await prompt.click();await expect(recipient.locator(root)).toHaveCount(1);};
+    > 1249 |  const click=async selector=>{const n=recipient.locator(selector);if(mobile)await n.tap();else await n.click();};
+           |                                                                                     ^
+      1250 |  for(const file of files){const avatar=await importCard(recipient,file.bytes,file.format);await selectCard(recipient,avatar);await permit();await expect(recipient.locator('#stm-player')).toHaveAttribute('data-layout','journal');await expect(recipient.locator('.stm-scene-cover')).toBeVisible();await expect.poll(()=>recipient.locator('.stm-scene-cover').evaluate(i=>i.naturalWidth)).toBeGreaterThan(0);
+      1251 |   await expect(recipient.locator('[data-action=card-maker],[data-action=music-scenes]')).toHaveCount(0);expect(await recipient.evaluate(async()=>!(await indexedDB.databases()).some(d=>d.name.startsWith('riserein-sillytavern-music')))).toBe(true);
+      1252 |   await recipient.locator(root).evaluate(n=>{window.journalOriginal={node:n,api:n.__risereinPlayer,audio:n.__risereinPlayer.audio};});
+        at click (/workspace/sillytavern/tests/card-native.e2e.js:1249:85)
+        at /workspace/sillytavern/tests/card-native.e2e.js:1257:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

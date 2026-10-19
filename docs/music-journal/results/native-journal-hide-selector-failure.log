@@ -1,0 +1,99 @@
+
+Running 2 tests using 1 worker
+
+(node:268986) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:268986) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@258
+  ✘  1 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop (1.0m)
+(node:269389) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:269389) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@260
+  ✘  2 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch (1.0m)
+
+
+  1) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+
+    Error: locator.click: Error: strict mode violation: locator('[data-display-hide]') resolved to 2 elements:
+        1) <button type="button" data-display-hide="" class="stm-secondary">隐藏角色音乐</button> aka getByRole('button', { name: '隐藏角色音乐', exact: true })
+        2) <button type="button" data-display-hide="" class="stm-secondary">隐藏角色音乐</button> aka locator('#stm-appearance').getByText('隐藏角色音乐')
+
+    Call log:
+    [2m  - waiting for locator('[data-display-hide]')[22m
+
+
+      1262 |   await selectCard(recipient,avatar);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('旧日回忆');
+      1263 |   // Hide preference must survive role exit/re-entry; restore through the actual wand menu.
+    > 1264 |   await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('[data-display-hide]').click();await expect(recipient.locator('#stm-launcher')).toBeHidden();await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);await selectCard(recipient,avatar);await permit();await expect(recipient.locator('#stm-player')).toBeHidden();await expect(recipient.locator('#stm-launcher')).toBeHidden();await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();await expect(recipient.locator('#stm-launcher')).toBeVisible();await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);
+           |                                                                                                                  ^
+      1265 |  }
+      1266 | });
+      1267 |
+        at /workspace/sillytavern/tests/card-native.e2e.js:1264:114
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+
+    Error: locator.click: Error: strict mode violation: locator('[data-display-hide]') resolved to 2 elements:
+        1) <button type="button" data-display-hide="" class="stm-secondary">隐藏角色音乐</button> aka getByRole('button', { name: '隐藏角色音乐', exact: true })
+        2) <button type="button" data-display-hide="" class="stm-secondary">隐藏角色音乐</button> aka locator('#stm-appearance').getByText('隐藏角色音乐')
+
+    Call log:
+    [2m  - waiting for locator('[data-display-hide]')[22m
+
+
+      1262 |   await selectCard(recipient,avatar);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('旧日回忆');
+      1263 |   // Hide preference must survive role exit/re-entry; restore through the actual wand menu.
+    > 1264 |   await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('.stm-visibility-menu [data-display-hide]').click();await expect(recipient.locator('#stm-launcher')).toBeHidden();await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);await selectCard(recipient,avatar);await permit();await expect(recipient.locator('#stm-player')).toBeHidden();await expect(recipient.locator('#stm-launcher')).toBeHidden();await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();await expect(recipient.locator('#stm-launcher')).toBeVisible();await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);
+           |                                                                                                                  ^
+      1265 |  }
+      1266 | });
+      1267 |
+        at /workspace/sillytavern/tests/card-native.e2e.js:1264:114
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

@@ -1,0 +1,141 @@
+
+Running 2 tests using 1 worker
+
+(node:263162) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:263162) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@222
+  ✘  1 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop (1.1m)
+(node:264316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:264316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@222
+  ✘  2 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch (1.2m)
+
+
+  1) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+
+    TimeoutError: locator.click: Timeout 20000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button[data-journal-page=notes]')[22m
+    [2m    - locator resolved to <button type="button" aria-pressed="false" data-journal-page="notes">Notes｜角色手记</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <section role="dialog" id="stm-player" data-width="wide" aria-label="音乐播放器" data-theme="night" data-grooves="fine" data-page="playback" data-surface="matte" data-height="normal" data-motion="normal" data-reading="clear" data-portable="true" data-layout="journal" data-launcher="vinyl" data-hide-mode="false" data-hide-next="false" data-hide-scale="false" data-hide-queue="false" data-color-scheme="dark" data-hide-artist="false" data-hide-volume="false" data-lyrics-open="false" data-design-colors="true" da…>…</section> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <section role="dialog" id="stm-player" data-width="wide" aria-label="音乐播放器" data-theme="night" data-grooves="fine" data-page="playback" data-surface="matte" data-height="normal" data-motion="normal" data-reading="clear" data-portable="true" data-layout="journal" data-launcher="vinyl" data-hide-mode="false" data-hide-next="false" data-hide-scale="false" data-hide-queue="false" data-color-scheme="dark" data-hide-artist="false" data-hide-volume="false" data-lyrics-open="false" data-design-colors="true" da…>…</section> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    31 × waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <section role="dialog" id="stm-player" data-width="wide" aria-label="音乐播放器" data-theme="night" data-grooves="fine" data-page="playback" data-surface="matte" data-height="normal" data-motion="normal" data-reading="clear" data-portable="true" data-layout="journal" data-launcher="vinyl" data-hide-mode="false" data-hide-next="false" data-hide-scale="false" data-hide-queue="false" data-color-scheme="dark" data-hide-artist="false" data-hide-volume="false" data-lyrics-open="false" data-design-colors="true" da…>…</section> intercepts pointer events[22m
+    [2m     - retrying click action[22m
+    [2m       - waiting 500ms[22m
+
+
+      1247 |  const{page:recipient}=await session(browser,{portable:true,mobile});const blank=await createCard(recipient,'JournalBlank'),other=await importCard(recipient,bFile,'json');
+      1248 |  const permit=async()=>{const prompt=recipient.getByText(/^(确认|Confirm)$/,{exact:true}).last();await expect.poll(async()=>await prompt.isVisible()||await recipient.locator(root).count()===1,{timeout:60000}).toBe(true);if(await prompt.isVisible())await prompt.click();await expect(recipient.locator(root)).toHaveCount(1);};
+    > 1249 |  const click=async selector=>{const n=recipient.locator(selector);if(mobile)await n.tap();else await n.click();};
+           |                                                                                                        ^
+      1250 |  for(const file of files){const avatar=await importCard(recipient,file.bytes,file.format);await selectCard(recipient,avatar);await permit();await expect(recipient.locator('#stm-player')).toHaveAttribute('data-layout','journal');await expect(recipient.locator('.stm-scene-cover')).toBeVisible();await expect.poll(()=>recipient.locator('.stm-scene-cover').evaluate(i=>i.naturalWidth)).toBeGreaterThan(0);
+      1251 |   await expect(recipient.locator('[data-action=card-maker],[data-action=music-scenes]')).toHaveCount(0);expect(await recipient.evaluate(async()=>!(await indexedDB.databases()).some(d=>d.name.startsWith('riserein-sillytavern-music')))).toBe(true);
+      1252 |   await recipient.locator(root).evaluate(n=>{window.journalOriginal={node:n,api:n.__risereinPlayer,audio:n.__risereinPlayer.audio};});
+        at click (/workspace/sillytavern/tests/card-native.e2e.js:1249:104)
+        at /workspace/sillytavern/tests/card-native.e2e.js:1256:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+
+    TimeoutError: locator.tap: Timeout 20000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button[data-journal-page=notes]')[22m
+    [2m    - locator resolved to <button type="button" aria-pressed="false" data-journal-page="notes">Notes｜角色手记</button>[22m
+    [2m  - attempting tap action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <section role="dialog" id="stm-player" aria-label="音乐播放器" data-theme="night" data-width="narrow" data-grooves="fine" data-page="playback" data-surface="matte" data-height="normal" data-motion="normal" data-reading="clear" data-portable="true" data-layout="journal" data-launcher="vinyl" data-hide-mode="false" data-hide-next="false" data-hide-scale="false" data-hide-queue="false" data-color-scheme="dark" data-hide-artist="false" data-hide-volume="false" data-lyrics-open="false" data-design-colors="true" …>…</section> intercepts pointer events[22m
+    [2m    - retrying tap action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <section role="dialog" id="stm-player" aria-label="音乐播放器" data-theme="night" data-width="narrow" data-grooves="fine" data-page="playback" data-surface="matte" data-height="normal" data-motion="normal" data-reading="clear" data-portable="true" data-layout="journal" data-launcher="vinyl" data-hide-mode="false" data-hide-next="false" data-hide-scale="false" data-hide-queue="false" data-color-scheme="dark" data-hide-artist="false" data-hide-volume="false" data-lyrics-open="false" data-design-colors="true" …>…</section> intercepts pointer events[22m
+    [2m    - retrying tap action[22m
+    [2m      - waiting 100ms[22m
+    [2m    34 × waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <section role="dialog" id="stm-player" aria-label="音乐播放器" data-theme="night" data-width="narrow" data-grooves="fine" data-page="playback" data-surface="matte" data-height="normal" data-motion="normal" data-reading="clear" data-portable="true" data-layout="journal" data-launcher="vinyl" data-hide-mode="false" data-hide-next="false" data-hide-scale="false" data-hide-queue="false" data-color-scheme="dark" data-hide-artist="false" data-hide-volume="false" data-lyrics-open="false" data-design-colors="true" …>…</section> intercepts pointer events[22m
+    [2m     - retrying tap action[22m
+    [2m       - waiting 500ms[22m
+
+
+      1247 |  const{page:recipient}=await session(browser,{portable:true,mobile});const blank=await createCard(recipient,'JournalBlank'),other=await importCard(recipient,bFile,'json');
+      1248 |  const permit=async()=>{const prompt=recipient.getByText(/^(确认|Confirm)$/,{exact:true}).last();await expect.poll(async()=>await prompt.isVisible()||await recipient.locator(root).count()===1,{timeout:60000}).toBe(true);if(await prompt.isVisible())await prompt.click();await expect(recipient.locator(root)).toHaveCount(1);};
+    > 1249 |  const click=async selector=>{const n=recipient.locator(selector);if(mobile)await n.tap();else await n.click();};
+           |                                                                                     ^
+      1250 |  for(const file of files){const avatar=await importCard(recipient,file.bytes,file.format);await selectCard(recipient,avatar);await permit();await expect(recipient.locator('#stm-player')).toHaveAttribute('data-layout','journal');await expect(recipient.locator('.stm-scene-cover')).toBeVisible();await expect.poll(()=>recipient.locator('.stm-scene-cover').evaluate(i=>i.naturalWidth)).toBeGreaterThan(0);
+      1251 |   await expect(recipient.locator('[data-action=card-maker],[data-action=music-scenes]')).toHaveCount(0);expect(await recipient.evaluate(async()=>!(await indexedDB.databases()).some(d=>d.name.startsWith('riserein-sillytavern-music')))).toBe(true);
+      1252 |   await recipient.locator(root).evaluate(n=>{window.journalOriginal={node:n,api:n.__risereinPlayer,audio:n.__risereinPlayer.audio};});
+        at click (/workspace/sillytavern/tests/card-native.e2e.js:1249:85)
+        at /workspace/sillytavern/tests/card-native.e2e.js:1256:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

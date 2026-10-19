@@ -1,0 +1,394 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-native.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/music-journal/results/native-regression-runner.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/native",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-native.e2e.js"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-native.e2e.js",
+      "file": "card-native.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "native PNG and JSON carry the shared player to a clean desktop recipient · vinyl",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 42732,
+                  "error": {
+                    "message": "Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/native/.playwright-artifacts-0/traces/2b87ee61e4f2719ca13e-d87c1eab157acae7c3bc.network'",
+                    "stack": "Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/native/.playwright-artifacts-0/traces/2b87ee61e4f2719ca13e-d87c1eab157acae7c3bc.network'\n    at /workspace/sillytavern/tests/card-native.e2e.js:619:29",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                      "column": 29,
+                      "line": 619
+                    },
+                    "snippet": "  617 |                 }),\n  618 |         );\n> 619 |         await authorContext.close();\n      |                             ^\n  620 |         const { page: recipient } = await session(browser, {\n  621 |             portable: true,\n  622 |             mobile,"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                        "column": 29,
+                        "line": 619
+                      },
+                      "message": "Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/native/.playwright-artifacts-0/traces/2b87ee61e4f2719ca13e-d87c1eab157acae7c3bc.network'\n\n  617 |                 }),\n  618 |         );\n> 619 |         await authorContext.close();\n      |                             ^\n  620 |         const { page: recipient } = await session(browser, {\n  621 |             portable: true,\n  622 |             mobile,\n    at /workspace/sillytavern/tests/card-native.e2e.js:619:29"
+                    },
+                    {
+                      "message": "Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/native/.playwright-artifacts-0/traces/2b87ee61e4f2719ca13e-d87c1eab157acae7c3bc.network'"
+                    },
+                    {
+                      "message": "Error: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/native/.playwright-artifacts-0/6c140ba7622397c9b58ef3a2cb7a6548.zip'"
+                    },
+                    {
+                      "message": "\u001b[31mTest timeout of 180000ms exceeded.\u001b[39m"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T13:51:00.189Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                    "column": 29,
+                    "line": 619
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-d87c1eab157acae7c3bc",
+          "file": "card-native.e2e.js",
+          "line": 539,
+          "column": 5
+        },
+        {
+          "title": "native PNG and JSON carry the shared player to a clean phone recipient · crystal",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 133265,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T13:54:44.802Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-3a082b7209d7ed6e8c2b",
+          "file": "card-native.e2e.js",
+          "line": 539,
+          "column": 5
+        },
+        {
+          "title": "native PNG and JSON carry the shared player to a clean desktop recipient · cassette",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 145272,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T13:56:58.438Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-472b4b81bb54fcbc2c4f",
+          "file": "card-native.e2e.js",
+          "line": 539,
+          "column": 5
+        },
+        {
+          "title": "native PNG and JSON carry the shared player to a clean phone recipient · pure",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 142395,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T13:59:23.771Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-6fc1bbd6d6b64f9f236e",
+          "file": "card-native.e2e.js",
+          "line": 539,
+          "column": 5
+        },
+        {
+          "title": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 20976,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T14:01:46.204Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-0b69860e3a5942b7e52e",
+          "file": "card-native.e2e.js",
+          "line": 1070,
+          "column": 1
+        },
+        {
+          "title": "saving local bindings and exporting an imported card never remove its unrelated carried player",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 19632,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T14:02:07.213Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-9201350a0a4651f44034",
+          "file": "card-native.e2e.js",
+          "line": 1262,
+          "column": 1
+        },
+        {
+          "title": "two designer-bound roles retain different layouts and selected fonts while sharing one playlist",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 68342,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T14:02:26.866Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-743b95620a842a1fea34",
+          "file": "card-native.e2e.js",
+          "line": 1394,
+          "column": 1
+        },
+        {
+          "title": "actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13645,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-19T14:03:35.242Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-04e18de597547ecedd53",
+          "file": "card-native.e2e.js",
+          "line": 1524,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-19T13:50:58.941Z",
+    "duration": 770449.372,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

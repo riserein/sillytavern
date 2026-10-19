@@ -35,7 +35,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -48,7 +48,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -60,7 +60,7 @@
       {
         "safe": true,
         "ratio": 8.043913836102247,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(223, 188, 132)",
         "backgrounds": [
@@ -73,7 +73,7 @@
       {
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -121,7 +121,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -134,7 +134,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -146,7 +146,7 @@
       {
         "safe": true,
         "ratio": 8.043913836102247,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(223, 188, 132)",
         "backgrounds": [
@@ -159,7 +159,7 @@
       {
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -207,7 +207,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -220,7 +220,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -232,7 +232,7 @@
       {
         "safe": true,
         "ratio": 8.043913836102247,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(223, 188, 132)",
         "backgrounds": [
@@ -245,7 +245,7 @@
       {
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -293,7 +293,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -306,7 +306,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -318,7 +318,7 @@
       {
         "safe": true,
         "ratio": 8.043913836102247,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(223, 188, 132)",
         "backgrounds": [
@@ -331,7 +331,7 @@
       {
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -379,7 +379,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -392,7 +392,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -404,7 +404,7 @@
       {
         "safe": true,
         "ratio": 8.043913836102247,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(223, 188, 132)",
         "backgrounds": [
@@ -417,7 +417,7 @@
       {
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -465,7 +465,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -478,7 +478,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -490,7 +490,7 @@
       {
         "safe": true,
         "ratio": 8.043913836102247,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(223, 188, 132)",
         "backgrounds": [
@@ -503,7 +503,7 @@
       {
         "safe": true,
         "ratio": 12.03964328363803,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(243, 233, 216)",
         "backgrounds": [
@@ -551,7 +551,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -564,7 +564,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -576,7 +576,7 @@
       {
         "safe": true,
         "ratio": 5.669176544024886,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(114, 82, 44)",
         "backgrounds": [
@@ -589,7 +589,7 @@
       {
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -637,7 +637,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -650,7 +650,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -662,7 +662,7 @@
       {
         "safe": true,
         "ratio": 5.669176544024886,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(114, 82, 44)",
         "backgrounds": [
@@ -675,7 +675,7 @@
       {
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -723,7 +723,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -736,7 +736,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -748,7 +748,7 @@
       {
         "safe": true,
         "ratio": 5.669176544024886,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(114, 82, 44)",
         "backgrounds": [
@@ -761,7 +761,7 @@
       {
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -809,7 +809,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -822,7 +822,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -834,7 +834,7 @@
       {
         "safe": true,
         "ratio": 5.669176544024886,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(114, 82, 44)",
         "backgrounds": [
@@ -847,7 +847,7 @@
       {
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -895,7 +895,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -908,7 +908,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -920,7 +920,7 @@
       {
         "safe": true,
         "ratio": 5.669176544024886,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(114, 82, 44)",
         "backgrounds": [
@@ -933,7 +933,7 @@
       {
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -981,7 +981,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -994,7 +994,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -1006,7 +1006,7 @@
       {
         "safe": true,
         "ratio": 5.669176544024886,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(114, 82, 44)",
         "backgrounds": [
@@ -1019,7 +1019,7 @@
       {
         "safe": true,
         "ratio": 10.137769151907033,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(59, 49, 39)",
         "backgrounds": [
@@ -1067,7 +1067,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1080,7 +1080,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1092,7 +1092,7 @@
       {
         "safe": true,
         "ratio": 7.932621193972945,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(167, 199, 211)",
         "backgrounds": [
@@ -1105,7 +1105,7 @@
       {
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1153,7 +1153,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1166,7 +1166,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1178,7 +1178,7 @@
       {
         "safe": true,
         "ratio": 7.932621193972945,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(167, 199, 211)",
         "backgrounds": [
@@ -1191,7 +1191,7 @@
       {
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1239,7 +1239,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1252,7 +1252,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1264,7 +1264,7 @@
       {
         "safe": true,
         "ratio": 7.932621193972945,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(167, 199, 211)",
         "backgrounds": [
@@ -1277,7 +1277,7 @@
       {
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1325,7 +1325,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1338,7 +1338,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1350,7 +1350,7 @@
       {
         "safe": true,
         "ratio": 7.932621193972945,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(167, 199, 211)",
         "backgrounds": [
@@ -1363,7 +1363,7 @@
       {
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1411,7 +1411,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1424,7 +1424,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1436,7 +1436,7 @@
       {
         "safe": true,
         "ratio": 7.932621193972945,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(167, 199, 211)",
         "backgrounds": [
@@ -1449,7 +1449,7 @@
       {
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1497,7 +1497,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1510,7 +1510,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1522,7 +1522,7 @@
       {
         "safe": true,
         "ratio": 7.932621193972945,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(167, 199, 211)",
         "backgrounds": [
@@ -1535,7 +1535,7 @@
       {
         "safe": true,
         "ratio": 11.98546750254023,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(231, 237, 239)",
         "backgrounds": [
@@ -1583,7 +1583,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1596,7 +1596,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1608,7 +1608,7 @@
       {
         "safe": true,
         "ratio": 5.682664773749871,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(53, 94, 110)",
         "backgrounds": [
@@ -1621,7 +1621,7 @@
       {
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1669,7 +1669,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1682,7 +1682,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1694,7 +1694,7 @@
       {
         "safe": true,
         "ratio": 5.682664773749871,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(53, 94, 110)",
         "backgrounds": [
@@ -1707,7 +1707,7 @@
       {
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1755,7 +1755,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1768,7 +1768,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1780,7 +1780,7 @@
       {
         "safe": true,
         "ratio": 5.682664773749871,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(53, 94, 110)",
         "backgrounds": [
@@ -1793,7 +1793,7 @@
       {
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1841,7 +1841,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1854,7 +1854,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1865,10 +1865,10 @@
       },
       {
         "safe": true,
-        "ratio": 5.682664773749871,
-        "opacity": 0.8,
+        "ratio": 9.118568537447272,
+        "opacity": 1,
         "size": 20,
-        "foreground": "rgb(53, 94, 110)",
+        "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
           "#e1e8e9"
         ],
@@ -1878,10 +1878,10 @@
       },
       {
         "safe": true,
-        "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "ratio": 5.682664773749871,
+        "opacity": 1,
         "size": 20,
-        "foreground": "rgb(44, 61, 67)",
+        "foreground": "rgb(53, 94, 110)",
         "backgrounds": [
           "#e1e8e9"
         ],
@@ -1927,7 +1927,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1940,7 +1940,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -1951,10 +1951,10 @@
       },
       {
         "safe": true,
-        "ratio": 5.682664773749871,
-        "opacity": 0.8,
+        "ratio": 9.118568537447272,
+        "opacity": 1,
         "size": 20,
-        "foreground": "rgb(53, 94, 110)",
+        "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
           "#e1e8e9"
         ],
@@ -1964,10 +1964,10 @@
       },
       {
         "safe": true,
-        "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "ratio": 5.682664773749871,
+        "opacity": 1,
         "size": 20,
-        "foreground": "rgb(44, 61, 67)",
+        "foreground": "rgb(53, 94, 110)",
         "backgrounds": [
           "#e1e8e9"
         ],
@@ -2013,7 +2013,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -2026,7 +2026,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -2038,7 +2038,7 @@
       {
         "safe": true,
         "ratio": 9.118568537447272,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(44, 61, 67)",
         "backgrounds": [
@@ -2051,7 +2051,7 @@
       {
         "safe": true,
         "ratio": 5.682664773749871,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(53, 94, 110)",
         "backgrounds": [
@@ -2099,7 +2099,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2112,7 +2112,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2124,7 +2124,7 @@
       {
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2137,7 +2137,7 @@
       {
         "safe": true,
         "ratio": 8.389069078579533,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(198, 184, 226)",
         "backgrounds": [
@@ -2185,7 +2185,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2198,7 +2198,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2210,7 +2210,7 @@
       {
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2223,7 +2223,7 @@
       {
         "safe": true,
         "ratio": 8.389069078579533,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(198, 184, 226)",
         "backgrounds": [
@@ -2271,7 +2271,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2284,7 +2284,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2296,7 +2296,7 @@
       {
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2309,7 +2309,7 @@
       {
         "safe": true,
         "ratio": 8.389069078579533,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(198, 184, 226)",
         "backgrounds": [
@@ -2357,7 +2357,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2370,7 +2370,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2382,7 +2382,7 @@
       {
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2395,7 +2395,7 @@
       {
         "safe": true,
         "ratio": 8.389069078579533,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(198, 184, 226)",
         "backgrounds": [
@@ -2443,7 +2443,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2456,7 +2456,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2468,7 +2468,7 @@
       {
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.817139,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2481,7 +2481,7 @@
       {
         "safe": true,
         "ratio": 8.389069078579533,
-        "opacity": 0.817139,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(198, 184, 226)",
         "backgrounds": [
@@ -2529,7 +2529,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2542,7 +2542,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2554,7 +2554,7 @@
       {
         "safe": true,
         "ratio": 12.856306579330553,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(233, 233, 242)",
         "backgrounds": [
@@ -2567,7 +2567,7 @@
       {
         "safe": true,
         "ratio": 8.389069078579533,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(198, 184, 226)",
         "backgrounds": [
@@ -2615,7 +2615,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2628,7 +2628,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2640,7 +2640,7 @@
       {
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2653,7 +2653,7 @@
       {
         "safe": true,
         "ratio": 5.6384134285813845,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(90, 81, 129)",
         "backgrounds": [
@@ -2701,7 +2701,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2714,7 +2714,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2726,7 +2726,7 @@
       {
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2739,7 +2739,7 @@
       {
         "safe": true,
         "ratio": 5.6384134285813845,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(90, 81, 129)",
         "backgrounds": [
@@ -2787,7 +2787,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2800,7 +2800,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2812,7 +2812,7 @@
       {
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2825,7 +2825,7 @@
       {
         "safe": true,
         "ratio": 5.6384134285813845,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(90, 81, 129)",
         "backgrounds": [
@@ -2873,7 +2873,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2886,7 +2886,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2898,7 +2898,7 @@
       {
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2911,7 +2911,7 @@
       {
         "safe": true,
         "ratio": 5.6384134285813845,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(90, 81, 129)",
         "backgrounds": [
@@ -2959,7 +2959,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2972,7 +2972,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2984,7 +2984,7 @@
       {
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.817027,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -2997,7 +2997,7 @@
       {
         "safe": true,
         "ratio": 5.6384134285813845,
-        "opacity": 0.817027,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(90, 81, 129)",
         "backgrounds": [
@@ -3045,7 +3045,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -3058,7 +3058,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -3070,7 +3070,7 @@
       {
         "safe": true,
         "ratio": 9.639490068277906,
-        "opacity": 0.817063,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 52, 73)",
         "backgrounds": [
@@ -3083,7 +3083,7 @@
       {
         "safe": true,
         "ratio": 5.6384134285813845,
-        "opacity": 0.817063,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(90, 81, 129)",
         "backgrounds": [
@@ -3131,7 +3131,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3144,7 +3144,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3156,7 +3156,7 @@
       {
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3169,7 +3169,7 @@
       {
         "safe": true,
         "ratio": 8.925557126320783,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(214, 200, 170)",
         "backgrounds": [
@@ -3217,7 +3217,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3230,7 +3230,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3242,7 +3242,7 @@
       {
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3255,7 +3255,7 @@
       {
         "safe": true,
         "ratio": 8.925557126320783,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(214, 200, 170)",
         "backgrounds": [
@@ -3303,7 +3303,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3316,7 +3316,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3328,7 +3328,7 @@
       {
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3341,7 +3341,7 @@
       {
         "safe": true,
         "ratio": 8.925557126320783,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(214, 200, 170)",
         "backgrounds": [
@@ -3389,7 +3389,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3402,7 +3402,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3414,7 +3414,7 @@
       {
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3427,7 +3427,7 @@
       {
         "safe": true,
         "ratio": 8.925557126320783,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(214, 200, 170)",
         "backgrounds": [
@@ -3475,7 +3475,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3488,7 +3488,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3500,7 +3500,7 @@
       {
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3513,7 +3513,7 @@
       {
         "safe": true,
         "ratio": 8.925557126320783,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(214, 200, 170)",
         "backgrounds": [
@@ -3561,7 +3561,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3574,7 +3574,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3586,7 +3586,7 @@
       {
         "safe": true,
         "ratio": 12.941425598110312,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(242, 240, 233)",
         "backgrounds": [
@@ -3599,7 +3599,7 @@
       {
         "safe": true,
         "ratio": 8.925557126320783,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(214, 200, 170)",
         "backgrounds": [
@@ -3647,7 +3647,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3660,7 +3660,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3672,7 +3672,7 @@
       {
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3685,7 +3685,7 @@
       {
         "safe": true,
         "ratio": 5.68812815928849,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(109, 90, 61)",
         "backgrounds": [
@@ -3733,7 +3733,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3746,7 +3746,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3758,7 +3758,7 @@
       {
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3771,7 +3771,7 @@
       {
         "safe": true,
         "ratio": 5.68812815928849,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(109, 90, 61)",
         "backgrounds": [
@@ -3819,7 +3819,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3832,7 +3832,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3844,7 +3844,7 @@
       {
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3857,7 +3857,7 @@
       {
         "safe": true,
         "ratio": 5.68812815928849,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(109, 90, 61)",
         "backgrounds": [
@@ -3905,7 +3905,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3918,7 +3918,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3930,7 +3930,7 @@
       {
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -3943,7 +3943,7 @@
       {
         "safe": true,
         "ratio": 5.68812815928849,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(109, 90, 61)",
         "backgrounds": [
@@ -3991,7 +3991,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -4004,7 +4004,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -4016,7 +4016,7 @@
       {
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -4029,7 +4029,7 @@
       {
         "safe": true,
         "ratio": 5.68812815928849,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(109, 90, 61)",
         "backgrounds": [
@@ -4077,7 +4077,7 @@
         "selector": "[data-journal-note]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -4090,7 +4090,7 @@
         "selector": "[data-journal-description]",
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 14,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -4102,7 +4102,7 @@
       {
         "safe": true,
         "ratio": 11.402769659706864,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(48, 48, 45)",
         "backgrounds": [
@@ -4115,7 +4115,7 @@
       {
         "safe": true,
         "ratio": 5.68812815928849,
-        "opacity": 0.8,
+        "opacity": 1,
         "size": 20,
         "foreground": "rgb(109, 90, 61)",
         "backgrounds": [

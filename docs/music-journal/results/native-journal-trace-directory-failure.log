@@ -1,0 +1,53 @@
+
+Running 2 tests using 1 worker
+
+(node:270063) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:270063) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@368
+  ✘  1 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop (1.4m)
+(node:271018) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:271018) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch (1.4m)
+
+
+  1) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+
+    Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/native/.playwright-artifacts-0/traces/2b87ee61e4f2719ca13e-9be51c9e53674880586b-recording1.trace'
+
+      414 |         results.push({ name: info.title, status: info.status, cleanup: 'passed' });
+      415 |     } finally {
+    > 416 |         for (const item of sessions) await item.context.close();
+          |                                                         ^
+      417 |     }
+      418 | });
+      419 |
+        at /workspace/sillytavern/tests/card-native.e2e.js:416:57
+
+    Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/native/.playwright-artifacts-0/traces/2b87ee61e4f2719ca13e-9be51c9e53674880586b-recording1.trace'
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+  1 passed (2.9m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

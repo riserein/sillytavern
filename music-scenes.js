@@ -130,7 +130,7 @@ export function sceneNote(group, trackId) {
 export function sceneSelection(group, tracks) {
     if(!group?.scenes?.length)return {tracks,sceneSet:null};
     const checked=saveRoleScenes({roleScenes:[]},'export',group),scenes=checked.scenes.filter(s=>s.included);
-    if(!scenes.length)return {tracks,sceneSet:null};
+    if(!scenes.length)throw new Error('没有选择随卡导出的音乐场景，请至少勾选一个；未改用其他歌曲分发。');
     if(!scenes.some(s=>s.id===checked.defaultSceneId))throw new Error('默认场景未选择随卡导出，请先调整默认场景。');
     for(const scene of scenes){const issues=sceneIssues(scene,tracks);if(issues.length)throw new Error('场景「'+scene.name+'」尚未完成：'+issues.join('；'));}
     const ids=[...new Set(scenes.flatMap(s=>s.trackIds))],byId=new Map(tracks.map(t=>[t.id,t]));

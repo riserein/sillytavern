@@ -1,0 +1,3602 @@
+[
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "night",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "night",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "crystal",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "crystal",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "vinyl",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "cassette",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "cassette",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 7.188277439007577
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 11.36128702062183
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 6.15587089456063
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.729537665793156
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 8.369023760497011
+  },
+  {
+    "layout": "pure",
+    "scheme": "dark",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 13.227491820145673
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "flow",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "centered",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.1083043833823245
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "auto",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 9.169905953119857
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 4.546022267651492
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "transparent",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 8.160554564986827
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": false,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "current",
+    "boxAlpha": 0,
+    "ratio": 5.70144779019203
+  },
+  {
+    "layout": "pure",
+    "scheme": "light",
+    "displayMode": "immersive",
+    "lyricBackground": "soft",
+    "image": true,
+    "name": "regular",
+    "boxAlpha": 0,
+    "ratio": 10.234656376930113
+  }
+]

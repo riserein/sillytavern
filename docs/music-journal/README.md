@@ -1,6 +1,6 @@
 # 2.1 角色剧情配乐场景与私人音乐手账
 
-开发基线：main `2d1f990`，2.0.0-alpha.8。按 A—G 独立提交，未完成部分不会当作已上线能力。
+交付版本 **2.1.0-alpha.1**，开发基线为 main `2d1f990`（2.0.0-alpha.8）。A—G 分阶段提交完成；最终测试、截图与限制见下方「阶段 G」。[操作说明](使用说明.md) · [数据与源码](数据与实现.md) · [验收汇总](results/acceptance-summary.json)
 
 ## 阶段 A：数据与兼容
 
@@ -51,3 +51,85 @@
 制作页新增「管理角色音乐场景」「读取当前角色场景」。读取是明确操作，保留项目已编辑歌曲并合并所需曲目，不自动覆盖已有项目。项目独立保存场景图片副本，整理源曲库后仍可恢复。ZIP 使用 SHA-256 文件去重并保存独立二进制，支持项目内的场景引用映射；存储扫描和恢复容量估算包含这些副本。
 
 阶段 F：191 项 Node 测试与代码检查通过，12 项受控 Chromium 用例通过；共享构建不含完整版 IndexedDB／在线搜索／制作入口。模拟音频探测只用于 Node 导出校验测试，不作实际播放证据；真实音频解码及原生角色卡测试在阶段 G 单列。
+
+## 阶段 G：最终验收（2.1.0-alpha.1）
+
+A—G 已完成。完整代码随分阶段提交交付，未改原音乐库 IndexedDB 结构，也没有重新制作播放引擎。操作见 [中文使用说明](使用说明.md)，字段和源码分工见 [数据与实现](数据与实现.md)。原生随卡共享构建已重新生成；旧角色卡需由制作端主动重建并重新导出。
+
+### 测试结果
+
+实际环境：SillyTavern 1.19.0、官方酒馆助手 4.11.3、Chromium 154.0.8037.57。所有角色和聊天均为测试目录中的合成资料，未使用日常酒馆数据。接收端阻止加载完整版插件资源，并检查音乐 IndexedDB 为空；通过酒馆自己的原生导出控件和导入端点执行 PNG/JSON 流程。
+
+| 范围 | 最终结果 | 证据 |
+|---|---|---|
+| Node 单元测试 | 192 通过，0 失败 | [日志](results/final-unit.log) |
+| 语法、数据与共享构建 | 通过；无完整版存储／制作／在线搜索依赖 | [代码检查](results/final-check.log)、[共享构建](results/final-native-build.log) |
+| 场景／手账／手记／设计器 | 12 个浏览器用例通过，含实际触屏 tap | [结果](results/final-scenes-runner.json) |
+| 旧布局阅读与对比度 | 18 通过 | [结果](results/reading-runner.json) |
+| 三种歌词模式／隐藏恢复 | 16 通过 | [结果](results/modes-runner.json) |
+| ZIP、真实 IndexedDB、配额、保存失败、隔离 | 11 通过；另补跑 2 个资源／配置恢复用例通过 | [完整结果](results/data-runner.json)、[补充](results/data-supplement-runner.json) |
+| 草稿／异步解码／字体／生命周期专项 | 15 通过，属于受控浏览器环境 | [结果](results/quality-runner.json) |
+| 制作页原生 JSON、JS、HTML、Helper JSON | 5 通过；手账在最后修改后再补跑 1 次通过 | [完整结果](results/maker-runner.json)、[手账补跑](results/maker-journal-runner.json) |
+| 新场景原生 PNG/JSON，桌面与触屏接收端 | 2 个完整流程通过，覆盖两种文件格式 | [运行结果](results/native-journal-runner.json)、[验收记录](results/native-validation.json) |
+| 旧四布局原生 PNG/JSON、外来脚本保护、缺失资源、共存、多角色字体 | 8 个不同用例最终通过；首次黑胶记录因 trace 目录冲突失败，独立目录重跑通过 | [原始回归](results/native-regression-runner.json)、[黑胶重跑](results/native-vinyl-rerun-runner.json) |
+| 当前选中字体验证 | 1 个完整流程通过，重新导出才更新字体 | [结果](results/native-font-runner.json) |
+
+合计 **88 个不同浏览器用例均有最终通过记录**；重复补跑不重复计数。不是声称一条命令首次零失败。可追溯汇总见 [acceptance-summary.json](results/acceptance-summary.json)，保留原始失败记录和补跑关联。
+
+新场景随卡验收包括：两角色不同曲目／手记、共用歌曲的 Audio 和来源不变、三种歌词模式、实际点击切歌、纯文本防注入、个人场景记忆、隐藏后退出再进入仍隐藏、魔棒恢复。A 切 B 后旧 Audio 停止、旧节点移除、资源计数全部归零；同角色切回复与聊天文件不重建。旧布局的真实酒馆用例另覆盖开场白、编辑、重新生成、脚本停用和完整版接管。重新生成的模型响应使用测试桩，不是真实模型服务。
+
+### 主题可读性
+
+四主题 × 深浅 × 三材质 × 有无图片 × 两尺寸，共 96 个渲染状态。测量完成翻页动画后的颜色与透明度，普通文本背景透明、正文不透明。表中为封面信息、手记、介绍及歌词的最小测量比值；纹理上限另受现有阅读背景黑白边界单元测试约束。不会将此描述成对任意背景图每个像素的扫描。
+
+| 主题 | 状态数 | 最小测量对比度 |
+|---|---:|---:|
+| Vintage Parchment | 24 | 5.67:1 |
+| Cold Archive | 24 | 5.68:1 |
+| Midnight Journal | 24 | 5.64:1 |
+| Modern Editorial | 24 | 5.69:1 |
+
+原始颜色记录：[桌面](results/journal-colors-desktop.json)、[触屏模拟](results/journal-colors-mobile-chromium-emulation.json)。保留连续阅读保护和完整书页纸张背景；没有重新为普通段落、歌词或标题加独立矩形底块。
+
+### 实际体积
+
+| 项目 | alpha.8 基线 | 2.1 本次 |
+|---|---:|---:|
+| 原生共享运行时 | 352,108 字节 | 379,481 字节 |
+| 共享 UI 源构建 | 313,101 字节 | 336,378 字节 |
+| 旧独立运行时 | 71,614 字节 | 75,076 字节 |
+
+原生运行时增长 27,373 字节，未引入新运行依赖。哈希见 [build-sizes.json](results/build-sizes.json)。
+
+实际两场景、两首合成 MP3、图片与手记的桌面角色卡：JSON **1,783,908 字节**，PNG **2,453,416 字节**；触屏流程使用不同自动封面，JSON **1,817,924 字节**，PNG **2,498,772 字节**。仅选中两场景；未分发的草稿和第三首歌不在载荷中。资源统计由原生导出后的脚本重新解析，见 [原生验收记录](results/native-validation.json)。没有修改、转码或压缩原始音频。
+
+### 开发期间的问题与处理
+
+- **浏览器复现并修复：** 场景弹层与原有弹层的 inert 状态不同步，选场景后手记等按钮无法点击。修复入口在 `index.js:2067` 与 `music-scenes-panel.js`；现在共用 `setSheetOpen`，加入选场景后继续操作的回归。
+- **源码确认并加测试：** 仅被场景引用的默认曲库歌曲原本不会进入 ZIP 的来源清单，换空目录恢复会成为缺歌草稿。已在 `data/backup.js:102` 保留这些来源，并测试空目录恢复。
+- **源码确认并加测试：** 既有 ZIP 项目白名单没有保留共享界面勾选和部分材质／配色字段。已补全 `data/backup.js:11`、`:12`，由 Node 和实际 IndexedDB 恢复验证。
+- **保护性调整：** 原生按字体复用导出结果的缓存现在也区分场景集合（`card-player/native-export.js:557`）；全部取消场景不会擅自退回分发其他歌曲，缺资源阻止导出。源卡与原始曲库保留。
+- **测试脚本错误：** 新测试最初误用 `store.dispose`、没有压缩超过既有图片上限的测试图，以及使用不唯一的按钮选择器；分别更正为原 API、真实制作路径和明确选择器，未放宽产品限制。
+- **测试环境错误：** 并行 runner 共用 `test-results/native` 导致 trace 文件被另一轮清理。改用独立输出目录后重跑通过。旧回归仍保留 1 条该错误，不能据此声称产品首次全绿。
+
+开发期失败日志在 `results/native-journal-*-failure.log`、`results/native-journal-oversized-fixture.log` 以及原始旧版回归记录中。已有 alpha.8 文字修复及历史验收资料未覆盖或改写。
+
+### 截图
+
+| 场景 | 桌面 | 触屏模拟 |
+|---|---|---|
+| 场景管理 | [查看](scenes/manager-desktop.png) | [查看](scenes/manager-mobile-chromium-emulation.png) |
+| 曲目目录／书页 | [查看](journal/collection-desktop.png) | [查看](journal/collection-mobile-chromium-emulation.png) |
+| 歌曲手记编辑 | [查看](notes/editor-desktop.png) | [查看](notes/editor-mobile-chromium-emulation.png) |
+| 干净接收端 JSON | [查看](native/journal-json-desktop.png) | [查看](native/journal-json-touch.png) |
+| 干净接收端 PNG | [查看](native/journal-png-desktop.png) | [查看](native/journal-png-touch.png) |
+
+四主题：[羊皮纸浅色](themes/journal-parchment-light-desktop.png)／[深色](themes/journal-parchment-dark-desktop.png)，[冷灰浅色](themes/journal-archive-light-desktop.png)／[深色](themes/journal-archive-dark-desktop.png)，[午夜浅色](themes/journal-midnight-light-desktop.png)／[深色](themes/journal-midnight-dark-desktop.png)，[极简杂志浅色](themes/journal-editorial-light-desktop.png)／[深色](themes/journal-editorial-dark-desktop.png)。同目录保留全部手机尺寸截图。
+
+### 未验证边界与回滚
+
+- 手机使用 Chromium 的真实 `tap` 触屏模拟；没有实体 iPhone／Android，不等于 iOS Safari／Android Chrome 真机通过。Firefox、WebKit 和酒馆助手 4.9.5 本轮未重新验证。
+- 嵌入 MP3 真实解码播放已验证；外部 HTTPS 音源是受控网络夹具，不是新的外网音乐平台可用性证明。
+- 未测试 200 个角色均达到 12 场景的极限压力，或把本轮小型样本当作 30 MiB 内存峰值测试。
+- 场景编辑器未保存的输入只留在当前内存；完整制作项目继续自动保存。删除引用歌曲后，场景保留缺失项待补齐。处理中退出的暂存图片可能保守保留，不自动删除不确定引用。
+- 源码可按阶段提交回退，但旧版不认识新场景字段；先保留 2.1 ZIP，再回退。没有自动删除、重命名或迁移旧数据库。旧版随卡文件不会远程自动升级。

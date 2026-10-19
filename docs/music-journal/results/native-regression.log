@@ -1,0 +1,54 @@
+
+Running 8 tests using 1 worker
+
+(node:270854) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:270854) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl (42.7s)
+(node:272918) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:272918) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean phone recipient · crystal (2.2m)
+  ✓  3 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · cassette (2.4m)
+  ✓  4 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean phone recipient · pure (2.4m)
+  ✓  5 tests/card-native.e2e.js:1070:1 › native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind (21.0s)
+  ✓  6 tests/card-native.e2e.js:1262:1 › saving local bindings and exporting an imported card never remove its unrelated carried player (19.6s)
+  ✓  7 tests/card-native.e2e.js:1394:1 › two designer-bound roles retain different layouts and selected fonts while sharing one playlist (1.1m)
+  ✓  8 tests/card-native.e2e.js:1524:1 › actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script (13.6s)
+
+
+  1) tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl 
+
+    Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/native/.playwright-artifacts-0/traces/2b87ee61e4f2719ca13e-d87c1eab157acae7c3bc.network'
+
+      617 |                 }),
+      618 |         );
+    > 619 |         await authorContext.close();
+          |                             ^
+      620 |         const { page: recipient } = await session(browser, {
+      621 |             portable: true,
+      622 |             mobile,
+        at /workspace/sillytavern/tests/card-native.e2e.js:619:29
+
+    Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/native/.playwright-artifacts-0/traces/2b87ee61e4f2719ca13e-d87c1eab157acae7c3bc.network'
+
+    Error: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/native/.playwright-artifacts-0/6c140ba7622397c9b58ef3a2cb7a6548.zip'
+
+    [31mTest timeout of 180000ms exceeded.[39m
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/error-context.md
+
+  1 failed
+    tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl 
+  7 passed (12.8m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

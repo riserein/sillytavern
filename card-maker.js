@@ -518,7 +518,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         sourceSettings = Object.fromEntries(sourceKeys.map((key) => [key, structuredClone(settings[key])]));
         sourceSettings.uiDesign=normalizeDesign(getDesign());
         q('[data-maker=recipient-display]').value=sourceSettings.uiDesign.recipientDisplay;
-        q('[data-maker=shared-design]').checked=false;
+        q('[data-maker=shared-design]').checked=sourceSettings.uiDesign.layout==='journal';
         projectAssets = {};
         returnFocus = document.activeElement;
         menus.close();
@@ -819,7 +819,8 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                         message(`正在检查 ${progress.index + 1}/${progress.total}：${progress.title}`),
                 },
             );
-            const shared=Boolean(result.config.sceneSet)||sourceSettings.uiDesign?.layout==='journal'||q('[data-maker=shared-design]').checked;
+            const requiredShared=Boolean(result.config.sceneSet)||sourceSettings.uiDesign?.layout==='journal';if(requiredShared)q('[data-maker=shared-design]').checked=true;
+            const shared=requiredShared||q('[data-maker=shared-design]').checked;
             const response = await fetch(new URL(shared?'./card-player/dist/native-runtime.js':'./card-player/dist/runtime.js', import.meta.url), {
                 signal: own.signal,
             });

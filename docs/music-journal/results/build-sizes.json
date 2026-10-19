@@ -1,0 +1,20 @@
+{
+  "card-player/dist/native-runtime.js": {
+    "beforeBytes": 352108,
+    "afterBytes": 379481,
+    "growthBytes": 27373,
+    "sha256": "2e659089527fcef33ecd40265d4420c9b9c459e719778308146bed01d340331f"
+  },
+  "card-player/dist/shared-ui.js": {
+    "beforeBytes": 313101,
+    "afterBytes": 336378,
+    "growthBytes": 23277,
+    "sha256": "e513ab7fb7cd6ea785628b2d51d09406ca37a7f994b34299ccd91b8bc8beeeb9"
+  },
+  "card-player/dist/runtime.js": {
+    "beforeBytes": 71614,
+    "afterBytes": 75076,
+    "growthBytes": 3462,
+    "sha256": "b69cf15adddee6d85aa8b97c2c298b9727be83a8914983a9bcbd906b73bf94da"
+  }
+}

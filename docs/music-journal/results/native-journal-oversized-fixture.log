@@ -1,0 +1,109 @@
+
+Running 2 tests using 1 worker
+
+(node:259178) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:259178) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop (1.5m)
+(node:261162) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:261162) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch (1.5m)
+
+
+  1) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('.stm-status')
+    Expected substring: [32m"按当前版本重建"[39m
+    Received string:    [31m""[39m
+    Timeout: 60000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 60000ms[22m
+    [2m  - waiting for locator('.stm-status')[22m
+    [2m    3 × locator resolved to <p role="status" class="stm-status" aria-live="polite"></p>[22m
+    [2m      - unexpected value ""[22m
+    [2m    9 × locator resolved to <p role="status" aria-live="polite" class="stm-status stm-error">重建未完成：图片为 2.31 MB（image/png），封面或背景需要是 2 MB 以内的 PN…</p>[22m
+    [2m      - unexpected value "重建未完成：图片为 2.31 MB（image/png），封面或背景需要是 2 MB 以内的 PNG、JPEG、WebP、GIF 或 AVIF 图片。"[22m
+    [2m    51 × locator resolved to <p role="status" class="stm-status" aria-live="polite"></p>[22m
+    [2m       - unexpected value ""[22m
+
+
+      1242 |  },{a,b,image:Array.from(image)});
+      1243 |  await author.getByRole('tab',{name:'外观',exact:true}).click();await menu(author,'#stm-design-layout','journal');await menu(author,'#stm-design-theme','journal-parchment');
+    > 1244 |  await author.getByRole('tab',{name:'曲库',exact:true}).click();await author.locator('[data-action=rebuild-native]').click();await expect(author.locator('.stm-status')).toContainText('按当前版本重建',{timeout:60000});
+           |                                                                                                                                                                        ^
+      1245 |  const files=[];for(const format of ['json','png']){await author.locator('#export_button').dispatchEvent('click');const pending=author.waitForEvent('download');await author.locator('.export_format[data-format='+format+']').dispatchEvent('click');const d=await pending,bytes=await readFile(await d.path());files.push({bytes,format});if(format==='json'){const card=JSON.parse(bytes),script=card.data.extensions.tavern_helper.scripts.find(s=>s.id===card.data.extensions.riserein_card_player.scriptId),p=readScriptPayload(script.content);expect(p.config.sceneSet.scenes.map(s=>s.id)).toEqual(['rain','memory']);expect(p.config.tracks.length).toBe(2);expect(new Set(p.config.tracks.map(t=>t.id)).size).toBe(2);expect(p.config.sceneSet.notes.length).toBe(2);expect(Object.keys(p.config.sceneAssets)).toHaveLength(2);exportMetrics.push({operation:'journal-scenes-export',mobile,format,bytes:bytes.length,...analyzePayload(p,script)});}}
+      1246 |  await selectCard(author,b);await author.locator('#export_button').dispatchEvent('click');const pending=author.waitForEvent('download');await author.locator('.export_format[data-format=json]').dispatchEvent('click');const bFile=await readFile(await(await pending).path());await authorContext.close();
+      1247 |  const{page:recipient}=await session(browser,{portable:true,mobile});const blank=await createCard(recipient,'JournalBlank'),other=await importCard(recipient,bFile,'json');
+        at /workspace/sillytavern/tests/card-native.e2e.js:1244:168
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('.stm-status')
+    Expected substring: [32m"按当前版本重建"[39m
+    Received string:    [31m""[39m
+    Timeout: 60000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 60000ms[22m
+    [2m  - waiting for locator('.stm-status')[22m
+    [2m    3 × locator resolved to <p role="status" class="stm-status" aria-live="polite"></p>[22m
+    [2m      - unexpected value ""[22m
+    [2m    9 × locator resolved to <p role="status" aria-live="polite" class="stm-status stm-error">重建未完成：图片为 2.31 MB（image/png），封面或背景需要是 2 MB 以内的 PN…</p>[22m
+    [2m      - unexpected value "重建未完成：图片为 2.31 MB（image/png），封面或背景需要是 2 MB 以内的 PNG、JPEG、WebP、GIF 或 AVIF 图片。"[22m
+    [2m    51 × locator resolved to <p role="status" class="stm-status" aria-live="polite"></p>[22m
+    [2m       - unexpected value ""[22m
+
+
+      1242 |  },{a,b,image:Array.from(image)});
+      1243 |  await author.getByRole('tab',{name:'外观',exact:true}).click();await menu(author,'#stm-design-layout','journal');await menu(author,'#stm-design-theme','journal-parchment');
+    > 1244 |  await author.getByRole('tab',{name:'曲库',exact:true}).click();await author.locator('[data-action=rebuild-native]').click();await expect(author.locator('.stm-status')).toContainText('按当前版本重建',{timeout:60000});
+           |                                                                                                                                                                        ^
+      1245 |  const files=[];for(const format of ['json','png']){await author.locator('#export_button').dispatchEvent('click');const pending=author.waitForEvent('download');await author.locator('.export_format[data-format='+format+']').dispatchEvent('click');const d=await pending,bytes=await readFile(await d.path());files.push({bytes,format});if(format==='json'){const card=JSON.parse(bytes),script=card.data.extensions.tavern_helper.scripts.find(s=>s.id===card.data.extensions.riserein_card_player.scriptId),p=readScriptPayload(script.content);expect(p.config.sceneSet.scenes.map(s=>s.id)).toEqual(['rain','memory']);expect(p.config.tracks.length).toBe(2);expect(new Set(p.config.tracks.map(t=>t.id)).size).toBe(2);expect(p.config.sceneSet.notes.length).toBe(2);expect(Object.keys(p.config.sceneAssets)).toHaveLength(2);exportMetrics.push({operation:'journal-scenes-export',mobile,format,bytes:bytes.length,...analyzePayload(p,script)});}}
+      1246 |  await selectCard(author,b);await author.locator('#export_button').dispatchEvent('click');const pending=author.waitForEvent('download');await author.locator('.export_format[data-format=json]').dispatchEvent('click');const bFile=await readFile(await(await pending).path());await authorContext.close();
+      1247 |  const{page:recipient}=await session(browser,{portable:true,mobile});const blank=await createCard(recipient,'JournalBlank'),other=await importCard(recipient,bFile,'json');
+        at /workspace/sillytavern/tests/card-native.e2e.js:1244:168
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
