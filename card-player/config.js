@@ -2,6 +2,7 @@
 import { TRANSITION_DURATIONS } from '../listening.js';
 import { normalizeLyricOffset } from '../ui/lyric-timing.js';
 import { normalizeReading } from '../ui/reading.js';
+import { normalizeSceneSet, sceneIssues, sceneAssetReferences } from '../music-scenes.js';
 export const MAX_PACKAGE_BYTES = 30 * 1024 * 1024;
 export const MAX_AUDIO_BYTES = 20 * 1024 * 1024;
 export const CARD_THEMES = Object.freeze({
@@ -92,6 +93,7 @@ export function normalizeCardConfig(raw) {
             id,
             title: String(track.title || '未命名音乐').slice(0, 160),
             artist: String(track.artist || '').slice(0, 120),
+            ...(typeof track.album==='string'&&track.album?{album:track.album.slice(0,160)}:{}),
             src,
             cover: portableImage(track.cover) || '',
             lyrics: String(track.lyrics || '').slice(0, 50000),
@@ -101,6 +103,15 @@ export function normalizeCardConfig(raw) {
             attribution: String(track.attribution || '').slice(0, 1000),
         };
     });
+    let sceneData={};
+    if(raw.sceneSet?.scenes?.length){
+        const sceneSet=normalizeSceneSet(raw.sceneSet),assets=raw.sceneAssets||{};
+        if(sceneSet.scenes.length!==raw.sceneSet.scenes.length||sceneSet.scenes.some(s=>!s.included||sceneIssues(s,tracks).length))throw new Error('随卡场景缺少歌曲、重复或未完成。');
+        if(sceneSet.defaultSceneId!==raw.sceneSet.defaultSceneId)throw new Error('随卡默认场景无效。');
+        const refs=[...sceneAssetReferences([sceneSet])].filter(id=>!id.endsWith(':original'));
+        if(Object.keys(assets).length!==refs.length||refs.some(id=>!portableImage(assets[id])))throw new Error('随卡场景图片资源缺失或无效。');
+        sceneData={sceneSet,sceneAssets:Object.fromEntries(refs.map(id=>[id,portableImage(assets[id])]))};
+    }
     return {
         id: raw.id,
         title: String(raw.title || '我的音乐').slice(0, 80),
@@ -113,6 +124,7 @@ export function normalizeCardConfig(raw) {
         reading: normalizeReading(raw.reading),
         startCollapsed: raw.startCollapsed === true,
         recipientDisplay: ['launcher','docked','collapsed'].includes(raw.recipientDisplay) ? raw.recipientDisplay : 'launcher',
+        ...sceneData,
     };
 }
 export function jsonForScript(value) {

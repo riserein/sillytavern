@@ -66,3 +66,32 @@ test('journal presets and bounded settings share readable palette and template v
     assert.equal(validateTemplate({format:'riserein-player-design',version:1,name:'valid',config:design}).config.layout,'journal');
     assert.throws(()=>validateTemplate({format:'riserein-player-design',version:1,name:'bad',config:{...design,customization:{...design.customization,journalDuration:999}}}));
 });
+
+test('card export selects complete scenes and carries shared audio once without unselected music or notes',async()=>{
+ const {prepareCardPackage}=await import('../card-player/export.js'),{readScriptPayload,payloadLiteral}=await import('../card-player/quality.js');
+ const bytes=new Blob(['sound'],{type:'audio/mpeg'}),image=new Blob(['picture'],{type:'image/png'}),id='cover:11111111-1111-4111-8111-111111111111';let reads=0;
+ const group=normalizeSceneSet({defaultSceneId:'rain',scenes:[{...scene('rain',['b','a']),coverId:id},scene('memory',['b']),{...scene('private',['c']),included:false}],notes:[{trackId:'b',text:'shared note'},{trackId:'c',text:'private note'}]});
+ const result=await prepareCardPackage({id:'test',tracks:[...tracks,{id:'c',kind:'url',title:'C',url:'https://example.com/c.mp3'}],sceneSet:group,appearance:{}},{getBlob:async key=>{if(key==='b'){reads++;return bytes;}if(key===id)return image;},readFallback:async()=>image,probeAudio:async()=>{}});
+ assert.equal(reads,1);assert.deepEqual(result.config.tracks.map(t=>t.id),['b','a']);assert.equal(result.config.sceneSet.scenes.length,2);assert.deepEqual(result.config.sceneSet.notes,[{trackId:'b',text:'shared note'}]);assert.equal(Object.keys(result.config.sceneAssets).length,1);
+ const decoded=readScriptPayload(payloadLiteral({config:result.config}));assert.deepEqual(decoded.config.sceneSet,result.config.sceneSet);
+ const broken=structuredClone(result.config);delete broken.sceneAssets[id];assert.throws(()=>readScriptPayload(payloadLiteral({config:broken})),/图片/);
+ assert.equal(group.scenes.length,3);assert.equal(bytes.size,5);
+});
+test('selected draft, excluded default and missing scene image block export without touching author data',async()=>{
+ const {prepareCardPackage}=await import('../card-player/export.js');const image=new Blob(['cover'],{type:'image/png'});
+ const prepare=sceneSet=>prepareCardPackage({id:'test',tracks,sceneSet,appearance:{}},{getBlob:async()=>null,readFallback:async()=>image,probeAudio:async()=>{}});
+ await assert.rejects(prepare({scenes:[scene('draft',['missing'])]}),/尚未完成/);
+ await assert.rejects(prepare({defaultSceneId:'x',scenes:[{...scene('x'),included:false},scene('y')]}),/默认场景/);
+ await assert.rejects(prepare({scenes:[{...scene('x'),coverId:'cover:11111111-1111-4111-8111-111111111111'}]}),/封面或背景缺失/);
+});
+test('draft scene bytes are independent ZIP entries and remapped with project copies',async()=>{
+ const {captureProjectResources}=await import('../card-player/project-store.js');const id='background:22222222-2222-4222-8222-222222222222',blob=new Blob(['image'],{type:'image/png'}),settings=normalizeSettings({tracks:[tracks[0]]});
+ const set=normalizeSceneSet({scenes:[{...scene('s'),backgroundId:id}],notes:[{trackId:'a',text:'手记'}]});
+ const snapshot=await captureProjectResources([tracks[0]],{sceneSet:set},async key=>key.startsWith(id)?blob:null);
+ const project={id:'rscp:p',title:'project',format:1,tracks:snapshot.tracks,sourceSettings:{sceneSet:set,uiDesign:normalizeDesign({layout:'journal'})},form:{},assets:{sceneBlobs:snapshot.appearance.sceneBlobs}};
+ const store={entries:async()=>[]};const backup=await createBackup({settings,store,projects:[project]});
+ assert.equal(backup.manifest.projects[0].assets.sceneBlobs[id].bytes,5);assert(!JSON.stringify(backup.manifest).includes('base64'));
+ const read=await inspectBackup(backup.blob);assert.equal(await read.projects[0].assets.sceneBlobs[id].text(),'image');
+ const plan=await makeRestorePlan({backup:read,current:settings,store,projects:[project],mode:'copy',restorePreferences:true,bindingMap:{}}),copy=plan.projectWrites[0],sceneCopy=copy.sourceSettings.sceneSet.scenes[0];
+ assert.notEqual(sceneCopy.id,'s');assert.notEqual(sceneCopy.backgroundId,id);assert.equal(await copy.assets.sceneBlobs[sceneCopy.backgroundId].text(),'image');assert.equal(copy.sourceSettings.uiDesign.layout,'journal');
+});

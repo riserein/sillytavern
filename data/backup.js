@@ -1,3 +1,4 @@
+import {normalizeSceneSet,sceneAssetReferences} from '../music-scenes.js';
 import {normalizeSettings} from '../core.js';
 import {referencedAssets} from '../asset-retirement.js';
 import {checksum,hashText} from './checksum.js';
@@ -8,7 +9,7 @@ import {normalizeDesign,designReferences} from '../ui/config.js';
 const encoder=new TextEncoder();
 const TRACK_KEYS=['id','kind','title','artist','album','url','coverId','lyrics','lyricsSource','lyricOffsetMs','fallbackCover','platform','platformTrackId','remoteId','sourceUrl','playback','cover','duration','metadataStatus','restriction'];
 const FORM_KEYS=['stm-maker-title','stm-maker-collection','stm-maker-theme','stm-maker-surface','accent','background','text','color:accent','color:background','color:text','opacity','font','font-credit','collapsed','recipient-display','stm-maker-recipient-display'];
-const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode','transitionDuration','uiDesign','reading','lyricOffsets'];
+const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode','transitionDuration','uiDesign','reading','lyricOffsets','sceneSet'];
 const pick=(object,keys)=>Object.fromEntries(keys.filter(key=>Object.hasOwn(object||{},key)).map(key=>[key,object[key]]));
 export const canonical=value=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)&&!(item instanceof Blob)?Object.fromEntries(Object.keys(item).sort().map(key=>[key,item[key]])):item);
 function cleanUrl(value,warnings) {
@@ -48,6 +49,7 @@ export function draftReferences(project) {
     if(project.sourceSettings?.backgroundId&&!project.assets?.imageBlob)ids.add(project.sourceSettings.backgroundId);
     if(project.sourceSettings?.fontPreset==='custom'&&project.sourceSettings?.fontId&&!project.assets?.fontBlob)ids.add(project.sourceSettings.fontId);
     if(!project.assets?.iconBlob)for(const id of designReferences(project.sourceSettings))ids.add(id);
+    for(const id of sceneAssetReferences([project.sourceSettings?.sceneSet||{}]))if(!project.assets?.sceneBlobs?.[id]&&!id.endsWith(':original'))ids.add(id);
     return ids;
 }
 export async function createBackup({settings,store,projects=[],version=PLAYER_BUILD,signal,onProgress=()=>{}}) {
@@ -90,6 +92,10 @@ export async function createBackup({settings,store,projects=[],version=PLAYER_BU
         const icon=project.assets?.iconBlob||(iconId?all.get(iconId):null);
         if(icon)copy.assets.iconBlob=await add(icon,'项目悬浮图标');else if(iconId)throw new Error('项目悬浮图标缺失，未生成不完整备份。');
         if(project.sourceSettings?.backgroundId&&!image||project.sourceSettings?.fontPreset==='custom'&&!font)throw new Error('项目背景或字体缺失，未生成不完整备份。');
+        if(copy.sourceSettings.sceneSet){
+            const set=normalizeSceneSet(copy.sourceSettings.sceneSet);assertScenesPreserved({roleScenes:[{avatar:'project',...copy.sourceSettings.sceneSet}]},{roleScenes:[{avatar:'project',...set}]});copy.sourceSettings.sceneSet=set;copy.assets.sceneBlobs={};
+            for(const id of sceneAssetReferences([set])){const blob=project.assets?.sceneBlobs?.[id]||all.get(id);if(blob)copy.assets.sceneBlobs[id]=await add(blob,'项目场景图片');else if(!id.endsWith(':original'))throw new Error('项目场景图片缺失，未生成不完整备份。');}
+        }
         drafts.push(copy);
         onProgress({phase:'projects',done:drafts.length,total:projects.length});
     }
@@ -122,6 +128,7 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
     for(const project of manifest.projects){
         if(typeof project.id!=='string'||!project.id||projects.has(project.id)||!Array.isArray(project.tracks)||project.tracks.length>200||!plain(project.form)||!plain(project.sourceSettings))throw new Error('备份项目结构或 ID 无效。');
         projects.add(project.id);
+        if(project.sourceSettings.sceneSet){const set=normalizeSceneSet(project.sourceSettings.sceneSet);assertScenesPreserved({roleScenes:[{avatar:'project',...project.sourceSettings.sceneSet}]},{roleScenes:[{avatar:'project',...set}]});const refs=sceneAssetReferences([set]);for(const [id,row]of Object.entries(project.assets?.sceneBlobs||{})){if(!refs.has(id))throw new Error('项目场景资源有未知引用。');expectResource(row);}for(const id of refs)if(!id.endsWith(':original')&&!project.assets?.sceneBlobs?.[id])throw new Error('项目场景图片缺失。');}
         for(const track of project.tracks){if(track.exportBlob)expectResource(track.exportBlob);if(track.exportCover)expectResource(track.exportCover);}
         for(const key of ['imageBlob','imageOriginalBlob','fontBlob','iconBlob'])if(project.assets?.[key])expectResource(project.assets[key]);
     }
@@ -151,6 +158,7 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
             if(track.kind==='local'&&!copy.exportBlob&&!copy.exportUrl)throw new Error('项目音频引用不完整。');return copy;
         })};
         for(const key of ['imageBlob','imageOriginalBlob','fontBlob','iconBlob'])if(project.assets?.[key])row.assets[key]=binary(project.assets[key]);
+        if(row.sourceSettings.sceneSet){row.sourceSettings.sceneSet=normalizeSceneSet(row.sourceSettings.sceneSet);row.assets.sceneBlobs=Object.fromEntries(Object.entries(project.assets?.sceneBlobs||{}).map(([id,resource])=>[id,binary(resource)]));}
         if(row.sourceSettings.uiDesign)row.sourceSettings.uiDesign=normalizeDesign(row.sourceSettings.uiDesign);
         return row;
     });

@@ -125,6 +125,19 @@ export function sceneNote(group, trackId) {
     return group?.showNotes !== false ? group?.notes?.find(n => n.trackId === trackId)?.text || '' : '';
 }
 
+/** Export is an explicit selection, not a partial success. Shared song IDs are
+ * resolved once in first-scene order; author arrays and bytes remain untouched. */
+export function sceneSelection(group, tracks) {
+    if(!group?.scenes?.length)return {tracks,sceneSet:null};
+    const checked=saveRoleScenes({roleScenes:[]},'export',group),scenes=checked.scenes.filter(s=>s.included);
+    if(!scenes.length)return {tracks,sceneSet:null};
+    if(!scenes.some(s=>s.id===checked.defaultSceneId))throw new Error('默认场景未选择随卡导出，请先调整默认场景。');
+    for(const scene of scenes){const issues=sceneIssues(scene,tracks);if(issues.length)throw new Error('场景「'+scene.name+'」尚未完成：'+issues.join('；'));}
+    const ids=[...new Set(scenes.flatMap(s=>s.trackIds))],byId=new Map(tracks.map(t=>[t.id,t]));
+    if(ids.length>MAX_SCENE_TRACKS)throw new Error('所选场景共引用超过 200 首不同歌曲，请拆分场景；没有舍弃歌曲。');
+    return {tracks:ids.map(id=>byId.get(id)),sceneSet:normalizeSceneSet({...checked,scenes,notes:checked.notes.filter(n=>ids.includes(n.trackId))})};
+}
+
 export function remapSceneSet(value, { trackId = id => id, assetId = id => id, sceneId = id => id } = {}) {
     const copy = normalizeSceneSet(value), ids = new Map(copy.scenes.map(s => [s.id, sceneId(s.id)]));
     copy.defaultSceneId = ids.get(copy.defaultSceneId) || null;

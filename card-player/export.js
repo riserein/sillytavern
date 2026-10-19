@@ -1,4 +1,5 @@
 import { PLAYER_BUILD, PAYLOAD_FORMAT, analyzePayload, assertCapacity, payloadLiteral } from './quality.js';
+import { sceneSelection, sceneAssetReferences } from '../music-scenes.js';
 import {
     normalizeCardConfig,
     jsonForScript,
@@ -54,7 +55,7 @@ function checkedImage(blob) {
 }
 /** Reads copies only. No writes to the library, playlist or IndexedDB. */
 export async function prepareCardPackage(
-    { id, title, tracks, appearance, volume, mode, transitionDuration, reading, lyricOffsets, recipientDisplay, startCollapsed },
+    { id, title, tracks, appearance, volume, mode, transitionDuration, reading, lyricOffsets, recipientDisplay, startCollapsed, sceneSet:sourceScenes },
     {
         getBlob,
         readFallback,
@@ -69,6 +70,7 @@ export async function prepareCardPackage(
         encodeBlob = blobData,
     },
 ) {
+    const selected=sceneSelection(sourceScenes,tracks||[]);tracks=selected.tracks;
     if (!tracks?.length) throw new Error('歌单没有歌曲，请先导入音乐。');
     if (tracks.length > 200) throw new Error('一次最多导出 200 首，请拆分歌单。');
     let total = 0;
@@ -124,6 +126,7 @@ export async function prepareCardPackage(
                 id: track.id,
                 title: track.title,
                 artist: track.artist,
+                album: track.album,
                 src,
                 cover,
                 lyrics: track.lyrics,
@@ -139,6 +142,11 @@ export async function prepareCardPackage(
     }
     signal?.throwIfAborted();
     if (errors.length) throw new Error(`未导出，${errors.length} 首歌曲需要处理：\n${errors.join('\n')}`);
+    const sceneAssets={};
+    for(const assetId of [...sceneAssetReferences(selected.sceneSet?[selected.sceneSet]:[])].filter(id=>!id.endsWith(':original'))){
+        signal?.throwIfAborted();const image=await getBlob(assetId);if(!image)throw new Error('场景封面或背景缺失，请重新选择；没有导出不完整场景。');
+        const kind=assetId.startsWith('background:')?'background':'cover';sceneAssets[assetId]=await encodeBlob(add(checkedImage(image),kind,'场景'+(kind==='background'?'背景':'封面')));
+    }
     const theme = { ...appearance };
     if (theme.imageBlob || theme.imageId) {
         const image = theme.imageBlob || (await getBlob(theme.imageId));
@@ -171,6 +179,7 @@ export async function prepareCardPackage(
         mode,
         transitionDuration, reading, recipientDisplay,
         startCollapsed,
+        ...(selected.sceneSet?{sceneSet:selected.sceneSet,sceneAssets}:{}),
     });
     return {
         config,
@@ -181,6 +190,7 @@ export async function prepareCardPackage(
 }
 export function buildCardExports(config, runtime, scriptId) {
     config = normalizeCardConfig(config);
+    if(config.sceneSet)throw new Error('音乐场景需要使用共享界面导出，不能套入旧经典播放器。');
     if (!runtime.includes('startCharacterPlayer') || runtime.includes('//# sourceMappingURL'))
         throw new Error('独立播放器文件不完整，请更新插件后刷新。');
     config.runtimeVersion = PLAYER_BUILD;

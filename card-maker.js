@@ -13,7 +13,7 @@ import {
 } from './card-player/quality.js';
 import { getQueue, createTrackId, validateAudioFile } from './core.js';
 import { fallbackCoverUrl, prepareCover, readEmbeddedMetadata, MAX_LYRICS } from './media.js';
-import { BUILTIN_ID } from './platforms/library.js';
+import { allTracks, BUILTIN_ID } from './platforms/library.js';
 import { FONT_PRESETS } from './fonts.js';
 import { themePalette, resolveScheme } from './scheme.js';
 import { createSelectMenus } from './select-menu.js';
@@ -22,7 +22,7 @@ import { prepareCardPackage, buildCardExports, attachPlayerToCard, blobData } fr
 import { fetchBlob, probeAudio } from './card-player/browser-resources.js';
 
 /** Authoring uses export-only copies. It never rewrites the music library or role bindings. */
-export function createCardMaker({ panel, settings, store, context, getCollectionId, pausePlayback, getDesign = () => settings.uiDesign }) {
+export function createCardMaker({ panel, settings, store, context, getCollectionId, pausePlayback, getDesign = () => settings.uiDesign, getScenes = () => null, openScenes = () => {} }) {
     const element = document.createElement('section');
     element.className = 'stm-card-maker';
     element.hidden = true;
@@ -32,6 +32,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
     element.innerHTML = `<header class="stm-maker-header"><div><h3>角色卡播放器制作</h3><p class="stm-hint">配置歌单、封面与外观，导出独立运行的角色卡播放器。</p></div><button type="button" class="stm-icon" data-maker="close" aria-label="关闭角色卡播放器制作">×</button></header>
     <div class="stm-maker-projects"><label for="stm-maker-project">制作项目 · 自动保存在当前浏览器</label><select id="stm-maker-project"></select><button type="button" class="stm-secondary" data-maker="project-new">新建项目</button><button type="button" class="stm-secondary" data-maker="project-copy">复制项目</button><button type="button" class="stm-secondary" data-maker="project-delete">删除当前项目</button><p class="stm-hint" data-maker="draft-status" role="status"></p></div>
     <label for="stm-maker-collection">1 · 选择要携带的歌单</label><select id="stm-maker-collection"><option value="">总曲库</option></select>
+    <button type="button" class="stm-secondary" data-maker="capture-scenes">读取当前角色场景</button><button type="button" class="stm-secondary" data-maker="manage-scenes">管理角色音乐场景</button><p class="stm-hint" data-maker="scene-status">可选：先管理场景，再读取到此项目。读取会合并所需歌曲，保留项目已有编辑；仅导出勾选的完整场景。</p>
     <label for="stm-maker-title">播放器名称</label><input id="stm-maker-title" maxlength="80" value="我的音乐">
     <p class="stm-hint">下方修改只影响导出副本。可编辑歌名、歌手、歌词与顺序，或替换音频、封面。</p>
     <button type="button" class="stm-secondary" data-maker="add">＋ 批量添加音频</button><input type="file" data-maker-file="audio" accept="audio/*,.mp3,.wav,.ogg,.m4a,.flac,.aac,.opus,.webm" multiple hidden>
@@ -124,7 +125,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                 const resources = await captureProjectResources(
                     snapshot.tracks,
                     {
-                        imageId: snapshot.sourceSettings.backgroundId,
+                        sceneSet:snapshot.sourceSettings.sceneSet, imageId: snapshot.sourceSettings.backgroundId,
                         iconId: snapshot.sourceSettings.uiDesign?.customization?.iconId,
                         fontId:
                             snapshot.sourceSettings.fontPreset === 'custom'
@@ -136,7 +137,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                 );
                 snapshot.tracks = resources.tracks;
                 snapshot.assets = {
-                    imageBlob: resources.appearance.imageBlob,
+                    sceneBlobs:resources.appearance.sceneBlobs, imageOriginalBlob:resources.appearance.imageOriginalBlob, imageBlob: resources.appearance.imageBlob,
                     fontBlob: resources.appearance.fontBlob,
                     iconBlob: resources.appearance.iconBlob,
                 };
@@ -771,7 +772,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                 {
                     id: projectId,
                     title: q('#stm-maker-title').value,
-                    tracks,
+                    tracks, sceneSet:sourceSettings.sceneSet,
                     appearance: appearance(),
                     volume: sourceSettings.volume,
                     mode: sourceSettings.mode,
@@ -780,7 +781,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     startCollapsed: q('[data-maker=collapsed]').checked,
                 },
                 {
-                    getBlob: (id) => store.get(id),
+                    getBlob: (id) => projectAssets.sceneBlobs?.[id]||store.get(id),
                     readFallback: async (index, signal) =>
                         prepareCover(await fetchBlob(fallbackCoverUrl(index), signal)),
                     readPublicImage: (url, signal) => {
@@ -818,7 +819,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                         message(`正在检查 ${progress.index + 1}/${progress.total}：${progress.title}`),
                 },
             );
-            const shared=q('[data-maker=shared-design]').checked;
+            const shared=Boolean(result.config.sceneSet)||sourceSettings.uiDesign?.layout==='journal'||q('[data-maker=shared-design]').checked;
             const response = await fetch(new URL(shared?'./card-player/dist/native-runtime.js':'./card-player/dist/runtime.js', import.meta.url), {
                 signal: own.signal,
             });
@@ -888,6 +889,15 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                 message(error.message);
             }
         });
+    action('manage-scenes',()=>openScenes());
+    action('capture-scenes',()=>{
+        const group=getScenes();if(!group?.scenes?.length)throw new Error('当前角色尚未保存音乐场景，请先点击管理角色音乐场景。');
+        const existing=new Map(tracks.map(t=>[t.id,t])),available=new Map([...allTracks(settings),...tracks].map(t=>[t.id,t]));
+        // Keep unfinished/unselected references as metadata so validation can explain them.
+        const ids=[...new Set(group.scenes.flatMap(s=>s.trackIds))];for(const id of ids)if(!existing.has(id)&&available.has(id))tracks.push({...available.get(id)});
+        sourceSettings.sceneSet=structuredClone(group);delete sourceSettings.sceneSet.avatar;sourceSettings.uiDesign=normalizeDesign(getDesign());q('[data-maker=shared-design]').checked=true;
+        q('[data-maker=scene-status]').textContent='已读取 '+group.scenes.length+' 个场景。源角色后续修改不会自动覆盖此项目；需要时重新读取。';edits();renderTracks();
+    });
     for (const [name, key, extension, mime] of [
         ['script-json', 'script', '.tavern-helper.json', 'application/json'],
         ['javascript', 'javascript', '.js', 'text/javascript'],
@@ -985,7 +995,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     const resources = await captureProjectResources(
                         structuredClone(tracks),
                         {
-                            imageId: sourceSettings.backgroundId,
+                            sceneSet:sourceSettings.sceneSet, imageId: sourceSettings.backgroundId,
                             iconId: sourceSettings.uiDesign?.customization?.iconId,
                             fontId: sourceSettings.fontPreset === 'custom' ? sourceSettings.fontId : null,
                             ...projectAssets,
@@ -997,7 +1007,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                         tracks: resources.tracks,
                         sourceSettings: structuredClone(sourceSettings),
                         assets: {
-                            imageBlob: resources.appearance.imageBlob,
+                            sceneBlobs:resources.appearance.sceneBlobs, imageOriginalBlob:resources.appearance.imageOriginalBlob, imageBlob: resources.appearance.imageBlob,
                             fontBlob: resources.appearance.fontBlob,
                     iconBlob: resources.appearance.iconBlob,
                         },

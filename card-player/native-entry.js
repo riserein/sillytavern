@@ -61,7 +61,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
             const result = {
                 id: track.id,
                 title: track.title,
-                artist: track.artist,
+                artist: track.artist, album:track.album,
                 lyrics: track.lyrics,
                 lyricOffsetMs: track.lyricOffsetMs,
                 lyricsSource: track.lyricsSource,
@@ -95,12 +95,18 @@ export function mountNativePlayer(payload, scope, options = {}) {
             builtinHidden: true,
             visibility: { state: (payload.ui?.uiDesign?.recipientDisplay || config.recipientDisplay) === 'docked' ? 'docked' : 'normal' },
         };
+        if(config.sceneSet){
+            settings.roleScenes=[{avatar,...config.sceneSet}];
+            const first=config.sceneSet.scenes.find(s=>s.id===config.sceneSet.defaultSceneId)?.trackIds[0];if(first)settings.currentId=first;
+            for(const [id,value]of Object.entries(config.sceneAssets||{}))embedded.setData(id,value);
+        }
         if (config.appearance.image) {
             settings.backgroundId = `background:${createTrackId(win.crypto)}`;
             embedded.setBlob(settings.backgroundId, dataBlob(config.appearance.image, win));
         }
         if(config.appearance.launcherIcon){const id='cover:'+createTrackId(win.crypto);embedded.setBlob(id,dataBlob(config.appearance.launcherIcon,win));settings.uiDesign=normalizeDesign(settings.uiDesign);settings.uiDesign.customization.iconId=id;}
         const allowedState = [
+            'scenePreferences',
             'volume',
             'mode',
             'currentId',

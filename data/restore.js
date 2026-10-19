@@ -4,7 +4,7 @@ import {referencedAssets} from '../asset-retirement.js';
 import {canonical} from './backup.js';
 import {checksum,hashText} from './checksum.js';
 import {normalizeDesign} from '../ui/config.js';
-import { remapSceneSet, sceneIssues, MAX_SCENES, MAX_SCENE_ROLES, MAX_SCENE_TRACKS } from '../music-scenes.js';
+import { remapSceneSet, sceneAssetReferences, sceneIssues, MAX_SCENES, MAX_SCENE_ROLES, MAX_SCENE_TRACKS } from '../music-scenes.js';
 const cloneSettings=settings=>JSON.parse(JSON.stringify(normalizeSettings(settings)));
 export const settingsHash=settings=>hashText(canonical(cloneSettings(settings)));
 export const projectVersions=projects=>canonical(projects.map(p=>[p.id,p.revision||0]).sort(([a],[b])=>a.localeCompare(b)));
@@ -151,6 +151,7 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         for(const key of ['backgroundId','fontId'])if(assetIds.has(copy.sourceSettings[key]))copy.sourceSettings[key]=assetIds.get(copy.sourceSettings[key]);
         if(copy.sourceSettings.lyricOffsets)copy.sourceSettings.lyricOffsets=Object.fromEntries(Object.entries(copy.sourceSettings.lyricOffsets).map(([id,value])=>[trackIds.get(id)||id,value]));
         if(copy.sourceSettings.uiDesign)copy.sourceSettings.uiDesign=mappedDesign(copy.sourceSettings.uiDesign);
+        if(copy.sourceSettings.sceneSet){copy.sourceSettings.sceneSet=remapSceneSet(copy.sourceSettings.sceneSet,{trackId:id=>trackIds.get(id)||id,assetId:mappedAsset,sceneId:id=>mode==='copy'?'scene:'+createTrackId():id});if(copy.assets?.sceneBlobs)copy.assets.sceneBlobs=Object.fromEntries(Object.entries(copy.assets.sceneBlobs).map(([id,blob])=>[mappedAsset(id),blob]));}
         projectWrites.push(copy);summary.projectsAdded++;
     }
     if(after.tracks.length>MAX_TRACKS||after.playlists.length>MAX_PLAYLISTS||after.fonts.length>MAX_FONTS)throw new Error(`恢复后将有 ${after.tracks.length} 首歌曲、${after.playlists.length} 个歌单、${after.fonts.length} 款字体，超过现有限制（200 / 50 / 20）；未写入或舍弃内容，请改选仅恢复缺失内容或调整后重试。`);
@@ -165,7 +166,7 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
     if(checked.tracks.length!==after.tracks.length||checked.playlists.length!==after.playlists.length||checked.fonts.length!==after.fonts.length)throw new Error('恢复计划会丢弃无效或冲突项目，已阻止执行。');
     const reusedAssets=[];
     for(const id of finalRefs)if(blobs.has(id))reusedAssets.push({id,bytes:blobs.get(id).size,sha256:existingDigests.get(id)||(await checksum(blobs.get(id),{signal})).sha256});
-    return {before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),reusedAssets,assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0)+(p.assets?.iconBlob?.size||0),0)};
+    return {before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),reusedAssets,assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0)+(p.assets?.iconBlob?.size||0)+Object.values(p.assets?.sceneBlobs||{}).reduce((n,b)=>n+(b?.size||0),0),0)};
 }
 export async function verifyReferences(settings,store,projects=[]) {
     const missing=[];
@@ -213,6 +214,7 @@ export async function rollbackStaging({op,store,projects,journal,protectedSettin
         for(const track of project.tracks||[]){if(track.kind==='local')refs.add(track.id);if(track.coverId)refs.add(track.coverId);}
         for(const key of ['backgroundId','fontId'])if(project.sourceSettings?.[key]){refs.add(project.sourceSettings[key]);if(key==='backgroundId')refs.add(project.sourceSettings[key]+':original');}
     }
+    for(const project of await projects.list())for(const id of sceneAssetReferences([project.sourceSettings?.sceneSet||{}]))refs.add(id);
     const remove=[];
     for(const row of op.assets){
         if(await store.owner(row.id)!==op.id)continue;

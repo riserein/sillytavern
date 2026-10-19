@@ -11,7 +11,7 @@ const button = (doc,text,action,id) => { const b=doc.createElement('button');b.t
 /** One shared, delegated picker. No audio or account storage of its own. */
 export function createScenePicker({panel,getGroup,getCurrent,onChoose,onManage,onError}) {
     const doc=panel.ownerDocument,abort=new AbortController(),bar=doc.createElement('div');bar.className='stm-scene-bar';
-    bar.innerHTML='<button type="button" class="stm-secondary" data-scene-open>场景 <span></span> ▾</button><p class="stm-hint" data-scene-description></p>';
+    bar.innerHTML='<button type="button" class="stm-secondary" data-scene-open><img class="stm-scene-cover" alt="" hidden>场景 <span></span> ▾</button><p class="stm-hint" data-scene-description></p>';
     panel.querySelector('[data-view=playback]').prepend(bar);
     const overlay=doc.createElement('section');overlay.className='stm-queue-overlay';overlay.hidden=true;overlay.setAttribute('aria-label','音乐场景');
     overlay.innerHTML='<div class="stm-queue-scrim" data-scene-close></div><div class="stm-queue-sheet"><header><h3>音乐场景</h3><button type="button" class="stm-icon" data-scene-close aria-label="关闭音乐场景">×</button></header><p class="stm-hint">选择此刻的配乐；暂停时切换也会保持暂停。</p><div class="stm-scene-choices"></div></div>';
@@ -31,7 +31,7 @@ export function createScenePicker({panel,getGroup,getCurrent,onChoose,onManage,o
         }
         if(onManage)target.append(button(doc,'管理当前角色的音乐场景','manage'));
     }
-    refresh();return {refresh,close,bar,dispose(){abort.abort();overlay.remove();bar.remove();}};
+    refresh();return {refresh,close,bar,setCover(url){const img=bar.querySelector('img');img.hidden=!url;if(url)img.src=url;else img.removeAttribute('src');},dispose(){abort.abort();overlay.remove();bar.remove();}};
 }
 
 /** Author-only editor. Draft metadata and uploaded bytes stay isolated until
@@ -39,7 +39,7 @@ export function createScenePicker({panel,getGroup,getCurrent,onChoose,onManage,o
 export function createSceneManager({panel,settings,store,getContext,save,onSaved,onPreview,onError}) {
     const doc=panel.ownerDocument,abort=new AbortController(),root=doc.createElement('section');root.className='stm-scene-manager';root.hidden=true;
     root.innerHTML='<div class="stm-maker-scroll"><header class="stm-maker-header"><h3>角色音乐场景</h3><button type="button" class="stm-secondary" data-scene-action="close">关闭</button></header><p class="stm-hint">为同一角色安排不同配乐。歌曲引用现有曲库，不复制音频；草稿只有点击保存才写入。</p><label>绑定角色<select data-scene-role></select></label><div class="stm-scene-editor-list"></div><div><button type="button" class="stm-secondary" data-scene-action="new">＋ 新建场景</button><button type="button" class="stm-secondary" data-scene-action="copy">复制场景</button><button type="button" class="stm-secondary" data-scene-action="delete">删除场景</button></div><div data-scene-fields><label>场景名称<input data-scene-field="name" required></label><label>场景介绍 · 最多 300 字<textarea data-scene-field="description" rows="3"></textarea><output data-scene-counter></output></label><label>主题色<select data-scene-field="themeId"></select></label><label class="stm-check-label"><input type="checkbox" data-scene-field="default">作为作者默认场景</label><label class="stm-check-label"><input type="checkbox" data-scene-field="included">随角色卡导出此场景</label><div class="stm-inline-form"><label>场景封面<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" data-scene-file="coverId"></label><button type="button" class="stm-secondary" data-scene-action="clear-cover">移除封面</button></div><div class="stm-inline-form"><label>场景背景<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" data-scene-file="backgroundId"></label><button type="button" class="stm-secondary" data-scene-action="clear-background">移除背景</button></div><p class="stm-hint" data-scene-resources></p><h4>曲目与永久顺序</h4><div data-scene-selected></div><details><summary>从总曲库选择歌曲</summary><div data-scene-library></div></details><p class="stm-hint" data-scene-issues></p><button type="button" class="stm-secondary" data-scene-action="preview">试听／预览此场景</button></div><p class="stm-hint" data-scene-save-status aria-live="polite"></p><button type="button" class="stm-primary" data-scene-action="save">保存角色场景</button></div>';
-    panel.append(root);let draft=null,avatar=null,selected=null,baseline='',epoch=0,dirty=false,saving=false,processing=0;const staged=new Map();
+    panel.append(root);let draft=null,avatar=null,selected=null,baseline='',epoch=0,dirty=false,saving=false,processing=0,previousInert=false;const staged=new Map();
     const q=s=>root.querySelector(s),current=()=>draft?.scenes.find(s=>s.id===selected);
     for(const [id,theme] of Object.entries(DESIGN_THEMES))q('[data-scene-field=themeId]').append(new Option(theme.name,id));
     q('[data-scene-role]').id='stm-scene-role';q('[data-scene-field=themeId]').id='stm-scene-theme';const menus=createSelectMenus(panel,{controlsRoot:root});
@@ -72,8 +72,8 @@ export function createSceneManager({panel,settings,store,getContext,save,onSaved
         for(const track of tracks){const label=doc.createElement('label');label.className='stm-check-label';const box=doc.createElement('input');box.type='checkbox';box.dataset.sceneTrack=track.id;box.checked=s.trackIds.includes(track.id);box.disabled=track.kind==='platform'&&!['full','preview'].includes(track.playback);label.append(box,doc.createTextNode(track.title+(box.disabled?' · 仅来源记录':'')));library.append(label);}
         q('[data-scene-issues]').textContent=sceneIssues(s,tracks).join('；');
     }
-    function close(force=false){if(saving&&!force)return;epoch++;root.hidden=true;menus.close();staged.clear();void onPreview?.(null);draft=null;dirty=false;}
-    function open(target){epoch++;q('[data-scene-role]').replaceChildren(...roles().map(c=>new Option(c.name||c.avatar,c.avatar)));const list=roles();if(!list.length){onError(new Error('请先创建或导入一个单人角色。'));return;}root.hidden=false;load(target&&list.some(c=>c.avatar===target)?target:list[0].avatar);}
+    function close(force=false){if(saving&&!force)return;epoch++;root.hidden=true;root.inert=previousInert;menus.close();staged.clear();void onPreview?.(null);draft=null;dirty=false;}
+    function open(target){previousInert=root.inert;root.inert=false;epoch++;q('[data-scene-role]').replaceChildren(...roles().map(c=>new Option(c.name||c.avatar,c.avatar)));const list=roles();if(!list.length){onError(new Error('请先创建或导入一个单人角色。'));return;}root.hidden=false;load(target&&list.some(c=>c.avatar===target)?target:list[0].avatar);}
     root.addEventListener('input',e=>{if(e.target.dataset.sceneNote){const id=e.target.dataset.sceneNote,value=e.target.value;e.target.setCustomValidity(textLength(value)>500?'歌曲手记最多 500 字':'');draft.notes=draft.notes.filter(n=>n.trackId!==id);if(value.trim())draft.notes.push({trackId:id,text:value});e.target.nextElementSibling.textContent=textLength(value)+' / 500';dirty=true;return;}
         const s=current(),field=e.target.dataset.sceneField;if(!s||!field)return;
         if(['name','description'].includes(field)){s[field]=e.target.value;const max=field==='name'?80:300;e.target.setCustomValidity(textLength(s[field])>max?`最多 ${max} 字`:'');dirty=true;if(field==='description')q('[data-scene-counter]').value=textLength(s.description)+' / 300';}

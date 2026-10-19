@@ -47,6 +47,7 @@ export function buildSharedCardExports(
       title: config.title,
       projectId: config.id,
       design: selected,
+      ...(config.sceneSet?{sceneSet:config.sceneSet}:{}),
       font: {
         name: config.appearance.fontName,
         license: config.appearance.fontLicense,

@@ -1,0 +1,18 @@
+✔ old bindings and queues remain intact without scene data (5.254948ms)
+✔ scene settings survive serialization, scope by avatar and keep ordered shared IDs without audio copies (1.151748ms)
+✔ missing tracks remain visible as draft issues and personal selection falls back safely (0.70951ms)
+✔ bounds, duplicate identifiers, Unicode text limits and prototype keys are safe metadata (0.577401ms)
+✔ scene image references protect live resources from retirement without adding audio copies (0.55691ms)
+✔ portable ZIP contains shared audio once and restores scene/track/role IDs without mutating originals (16.502759ms)
+✔ journal presets and bounded settings share readable palette and template validation (18.545605ms)
+✔ card export selects complete scenes and carries shared audio once without unselected music or notes (5.977518ms)
+✔ selected draft, excluded default and missing scene image block export without touching author data (1.200827ms)
+✔ draft scene bytes are independent ZIP entries and remapped with project copies (5.76597ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 143.061975

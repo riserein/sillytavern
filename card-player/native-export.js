@@ -8,6 +8,9 @@ import {
     transformCardFile,
     sameData,
 } from './quality.js';
+import { allTracks } from '../platforms/library.js';
+import { roleSceneGroup, sceneSelection } from '../music-scenes.js';
+import { hashText } from '../data/checksum.js';
 import { getQueue, playlistForCharacter, createTrackId } from '../core.js';
 import { FONT_PRESETS } from '../fonts.js';
 import { fallbackCoverUrl, prepareCover } from '../media.js';
@@ -77,7 +80,8 @@ export function nativeCardScript(payload, runtime, scriptId) {
 export function createNativeCardExport({ settings, store, getContext, showStatus }) {
     const abort = new AbortController();
     // A native marker can come from an imported card. It is not proof of a local binding.
-    const managedAvatars = new Set(settings.playlists.flatMap(item => item.characterAvatars || []));
+    const managedAvatars = new Set([...settings.playlists.flatMap(item => item.characterAvatars || []),...(settings.roleScenes||[]).filter(g=>g.scenes.length).map(g=>g.avatar)]);
+    const collectionForRole=avatar=>playlistForCharacter(settings,avatar)||(roleSceneGroup(settings,avatar)?.scenes.length?{id:'scenes:'+hashText(avatar).slice(0,32),name:'角色音乐场景',trackIds:[],characterAvatars:[avatar]}:null);
     let queue = Promise.resolve(),
         runtimePromise,
         cachedFont;
@@ -114,7 +118,8 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
     const designForAvatar = avatar => normalizeDesign(settings.roleDesigns?.find(row => row.avatar === avatar)?.config || settings.uiDesign);
     const sourceSnapshot = (playlist, avatar) => ({
         playlist: structuredClone(playlist),
-        tracks: structuredClone(getQueue(settings, playlist.id)).map(track => ({...track,lyricOffsetMs:settings.lyricOffsets?.[track.id] ?? track.lyricOffsetMs})),
+        sceneSet: sceneSelection(roleSceneGroup(settings,avatar),allTracks(settings)).sceneSet,
+        tracks: structuredClone(roleSceneGroup(settings,avatar)?.scenes.some(s=>s.included)?sceneSelection(roleSceneGroup(settings,avatar),allTracks(settings)).tracks:getQueue(settings, playlist.id)).map(track => ({...track,lyricOffsetMs:settings.lyricOffsets?.[track.id] ?? track.lyricOffsetMs})),
         ui: { ...Object.fromEntries(UI_KEYS.map((key) => [key, structuredClone(settings[key])])), uiDesign: designForAvatar(avatar), fontPreset:designForAvatar(avatar).fontPreset==='current'?settings.fontPreset:designForAvatar(avatar).fontPreset },
         fontPreset: designForAvatar(avatar).fontPreset==='current'?settings.fontPreset:designForAvatar(avatar).fontPreset,
         backgroundId: settings.backgroundId,
@@ -129,7 +134,8 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         JSON.stringify(value, (key, entry) => (['lastTrackId', 'fallbackCover'].includes(key) ? undefined : entry));
     const checkSource = (payload, avatar) => {
         const previous = signatures.get(payload);
-        const playlist = settings.playlists.find((item) => item.id === previous?.id);
+        const playlist = collectionForRole(avatar ?? previous?.avatar);
+        if(playlist&&playlist.id!==previous?.id)throw new Error('绑定已改变，请重新导出；原角色卡保留。');
         if (!previous || !playlist) throw new Error('检查期间歌单已改变，请重新导出；未替换旧随卡配置');
         const current = sourceSignature(sourceSnapshot(playlist, avatar ?? previous.avatar));
         if (current !== previous.signature) {
@@ -163,7 +169,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
             {
                 id: `native:${playlist.id}`,
                 title: playlist.name,
-                tracks: author.tracks,
+                tracks: author.tracks, sceneSet:author.sceneSet,
                 appearance: {
                     imageId: author.backgroundId,
                     fontFile: preset?.file,
@@ -270,7 +276,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         card.data.name ||= character.name;
         card.data.extensions ||= {};
         const old = card.data.extensions.riserein_card_player;
-        const playlist = playlistForCharacter(settings, avatar);
+        const playlist = collectionForRole(avatar);
         if (!playlist && !managedAvatars.has(avatar)) return;
         if (!playlist && old?.mode !== 'native') { managedAvatars.delete(avatar); return; }
         const current = () => {
@@ -429,7 +435,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         const marked =
             context.characters.find((card) => card.avatar === avatar)?.data?.extensions?.riserein_card_player
                 ?.mode === 'native';
-        const local = Boolean(playlistForCharacter(settings, avatar)) || managedAvatars.has(avatar);
+        const local = Boolean(collectionForRole(avatar)) || managedAvatars.has(avatar);
         if (local || marked) {
             try {
                 showStatus('正在检查随卡音乐并保存播放器…');
@@ -548,17 +554,17 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                     // Do not re-encode a large playlist once for every bound role.
                     const fontVariants=new Map();
                     for (const avatar of playlist.characterAvatars) {
-                        const font=sourceSnapshot(playlist,avatar).fontPreset;
+                        const snapshot=sourceSnapshot(playlist,avatar),font=snapshot.fontPreset+'|'+JSON.stringify(snapshot.sceneSet);
                         if(!fontVariants.has(font)){const base=await packagePlaylist(playlist,avatar,icons);fontVariants.set(font,base);prepared.set(avatar,base);continue;}
                         const payload=await withDesign(fontVariants.get(font),designForAvatar(avatar),icons);
                         signatures.set(payload,{id:playlist.id,avatar,signature:sourceSignature(sourceSnapshot(playlist,avatar))});
                         assertCapacity(analyzePayload(payload));checkSource(payload,avatar);prepared.set(avatar,payload);
                     }
                 }
-                const avatars = new Set(settings.playlists.flatMap((item) => item.characterAvatars));
+                const avatars = new Set([...settings.playlists.flatMap((item) => item.characterAvatars),...(settings.roleScenes||[]).filter(g=>g.scenes.length).map(g=>g.avatar)]);
                 for (const avatar of managedAvatars) avatars.add(avatar);
                 for (const avatar of avatars) {
-                    if (!playlistForCharacter(settings, avatar) && !getContext().characters.some(card => card.avatar === avatar)) { managedAvatars.delete(avatar); continue; }
+                    if (!collectionForRole(avatar) && !getContext().characters.some(card => card.avatar === avatar)) { managedAvatars.delete(avatar); continue; }
                     await syncAvatar(avatar, prepared);
                 }
             }),

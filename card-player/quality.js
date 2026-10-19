@@ -1,7 +1,7 @@
 import { MAX_PACKAGE_BYTES, MAX_AUDIO_BYTES, jsonForScript, normalizeCardConfig } from './config.js';
 import { base64Bytes } from '../base64.js';
 
-export const PLAYER_BUILD = '2.0.0-alpha.8';
+export const PLAYER_BUILD = '2.1.0-alpha.1';
 export const PAYLOAD_FORMAT = 1;
 export const byteSize = (value) =>
     new TextEncoder().encode(typeof value === 'string' ? value : JSON.stringify(value)).length;
@@ -40,6 +40,7 @@ export function analyzePayload(payload, script) {
             });
     }
     add('background', '背景', config.appearance?.image);
+    for(const [id,value]of Object.entries(config.sceneAssets||{})){const background=id.startsWith('background:');add(background?'background':'cover','场景'+(background?'背景':'封面'),value);}
     add('font', config.appearance?.fontName || '字体', config.appearance?.font);
     add('launcher-icon', '悬浮图标', config.appearance?.launcherIcon);
     add('playlist-cover', '歌单封面', payload.playlist?.cover);
@@ -114,6 +115,7 @@ export function readScriptPayload(content) {
         (config.appearance?.launcherIcon || '') !== (normalized.appearance.launcherIcon || '')
     )
         throw new Error('背景、字体或悬浮图标资源损坏。');
+    if(!sameData(config.sceneSet,normalized.sceneSet)||!sameData(config.sceneAssets,normalized.sceneAssets))throw new Error('场景、手记或场景图片不完整。');
     assertCapacity(analyzePayload(payload));
     return payload;
 }

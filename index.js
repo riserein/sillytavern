@@ -98,7 +98,7 @@ export function initialize(options = {}) {
     let membershipTrackId = null;
     let libraryDetail = false;
     let browsedPlaylistId = settings.activePlaylistId;
-    let activeSceneState=null, scenePicker=null, sceneManager=null, sceneVisualEpoch=0, sceneImageUrl=null, scenePreview=null, journalUI=null;
+    let activeSceneState=null, scenePicker=null, sceneManager=null, sceneVisualEpoch=0, sceneImageUrl=null, sceneCoverUrl=null, scenePreview=null, journalUI=null;
     const playbackQueue = createPlaybackQueue(id => activeSceneState && id===activeSceneState.queueKey ? activeSceneState.scene.trackIds.map(id=>findTrack(settings,id)).filter(Boolean) : getQueue(settings, id));
     playbackQueue.reset(settings.activePlaylistId);
     const librarySelection = new Set();
@@ -1049,14 +1049,15 @@ export function initialize(options = {}) {
 
     function sceneGroupForCurrent() {const group=scenePreview?.group||roleSceneGroup(settings,currentCharacterAvatar(freshContext()));return group?{...group,scenes:group.scenes.map(s=>({...s,playable:!sceneIssues(s,allTracks(settings)).length}))}:null;}
     async function applySceneVisuals(staged) {
-        const token=++sceneVisualEpoch,id=activeSceneState?.scene.backgroundId;
-        if(sceneImageUrl)URL.revokeObjectURL(sceneImageUrl);sceneImageUrl=null;
-        applyAppearance();scenePicker?.refresh();
-        if(!id)return;
-        try{const blob=staged?.get(id)||await store.get(id);if(disposed||token!==sceneVisualEpoch)return;
-            if(blob)sceneImageUrl=URL.createObjectURL(blob);else showStatus('场景背景在当前浏览器中缺失，请到音乐场景重新选择。',true);
-            applyAppearance();
-        }catch(error){if(!disposed&&token===sceneVisualEpoch)showStatus(error.message,true);}
+        const token=++sceneVisualEpoch,scene=activeSceneState?.scene;
+        if(sceneImageUrl)URL.revokeObjectURL(sceneImageUrl);if(sceneCoverUrl)URL.revokeObjectURL(sceneCoverUrl);sceneImageUrl=null;sceneCoverUrl=null;
+        applyAppearance();scenePicker?.refresh();scenePicker?.setCover(null);
+        for(const key of ['backgroundId','coverId']){const id=scene?.[key];if(!id)continue;
+            try{const blob=staged?.get(id)||await store.get(id);if(disposed||token!==sceneVisualEpoch)return;
+                if(blob){if(key==='backgroundId')sceneImageUrl=URL.createObjectURL(blob);else {sceneCoverUrl=URL.createObjectURL(blob);scenePicker?.setCover(sceneCoverUrl);}}else showStatus('场景图片在当前浏览器中缺失，请到音乐场景重新选择。',true);
+                applyAppearance();
+            }catch(error){if(!disposed&&token===sceneVisualEpoch)showStatus(error.message,true);}
+        }
     }
     async function activateScene(id,{group=roleSceneGroup(settings,currentCharacterAvatar(freshContext())),preview=false,remember=true,playState=null,staged}={}) {
         const avatar=currentCharacterAvatar(freshContext()),scene=group?.scenes.find(s=>s.id===id);
@@ -1992,7 +1993,7 @@ export function initialize(options = {}) {
         disposed = true;
         listening?.dispose(); transitions.dispose();
         journalUI?.dispose();
-        sceneManager?.dispose();scenePicker?.dispose();++sceneVisualEpoch;if(sceneImageUrl)URL.revokeObjectURL(sceneImageUrl);
+        sceneManager?.dispose();scenePicker?.dispose();++sceneVisualEpoch;if(sceneImageUrl)URL.revokeObjectURL(sceneImageUrl);if(sceneCoverUrl)URL.revokeObjectURL(sceneCoverUrl);
         designEditor?.dispose(); designFont?.dispose();
         lyricReader?.dispose(); readingControls?.dispose(); launcherControls?.dispose(); launcherAvoidance?.dispose(); designControls?.dispose(); designPresentation?.dispose();
         dataPanel?.dispose(); cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose(); retirement?.dispose(); options.onDispose?.();
@@ -2067,14 +2068,14 @@ export function initialize(options = {}) {
     journalUI=createJournal({panel,audio,getTrack:()=>findTrack(settings,settings.currentId),getTracks:()=>playbackQueue.tracks(),getScene:()=>activeSceneState?.scene,getGroup:()=>activeSceneState?.group||roleSceneGroup(settings,currentCharacterAvatar(freshContext())),onTrack:id=>{if(id===settings.currentId){if(audio.paused)void play();else void softPause();}else void selectTrack(id,true);},onLyrics:visible=>{if(visible){lyricReader?.reset();updateLyrics(true);}else lyricReader?.suspend();}});
     journalUI.apply(effectiveDesign());
     if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
-        cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback,getDesign:effectiveDesign});
+        cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback,getDesign:effectiveDesign,getScenes:()=>roleSceneGroup(settings,currentCharacterAvatar(freshContext())),openScenes:()=>sceneManager.open(currentCharacterAvatar(freshContext()))});
         query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
         if(options.account){
             dataPanel=createDataPanel({panel,settings,store,journal:maintenanceJournal,context,account:options.account,assertAccount:options.assertAccount||(async()=>{throw new Error('账号身份未确认，请重新登录并刷新。');}),flushMaker:()=>cardMaker.flush(),pausePlayback,setMaintenanceBusy});
         }
         query('[data-action="rebuild-native"]').addEventListener('click', async () => {
             const latest = freshContext(), avatar = latest.characters[latest.characterId]?.avatar;
-            if (latest.groupId || !avatar || !playlistForCharacter(settings, avatar)) { showStatus('请先打开已绑定歌单的单人角色卡。', true); return; }
+            if (latest.groupId || !avatar || (!playlistForCharacter(settings, avatar)&&!roleSceneGroup(settings,avatar)?.scenes.length)) { showStatus('请先打开已绑定歌单或已保存音乐场景的单人角色卡。', true); return; }
             try { await nativeExport.rebuild(avatar); showStatus('随卡播放器已按当前版本重建；歌曲和外观配置保留。请重新从酒馆导出 PNG / JSON。'); }
             catch (error) { showStatus(`重建未完成：${error.message}`, true); }
         });

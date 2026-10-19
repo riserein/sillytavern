@@ -14,3 +14,5 @@
 .stm-scene-manager [data-scene-selected] { margin-bottom:16px; }
 .stm-scene-manager textarea { font:inherit; color:var(--read-body); }
 .stm-scene-manager [data-scene-save-status] { min-height:1.5em; }
+
+.stm-player .stm-scene-cover{width:24px;height:24px;object-fit:cover;border-radius:4px;vertical-align:middle;margin-inline-end:8px}
