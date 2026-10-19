@@ -1,5 +1,6 @@
 /** Portable data only: never accept browser storage keys or executable configuration. */
 import { TRANSITION_DURATIONS } from '../listening.js';
+import { normalizeLyricOffset } from '../ui/lyric-timing.js';
 import { normalizeReading } from '../ui/reading.js';
 export const MAX_PACKAGE_BYTES = 30 * 1024 * 1024;
 export const MAX_AUDIO_BYTES = 20 * 1024 * 1024;
@@ -94,6 +95,7 @@ export function normalizeCardConfig(raw) {
             src,
             cover: portableImage(track.cover) || '',
             lyrics: String(track.lyrics || '').slice(0, 50000),
+            lyricOffsetMs: normalizeLyricOffset(track.lyricOffsetMs),
             ...(publicResource(track.lyricsSource) ? { lyricsSource: publicResource(track.lyricsSource) } : {}),
             sourceUrl: publicResource(track.sourceUrl) || '',
             attribution: String(track.attribution || '').slice(0, 1000),
@@ -110,6 +112,7 @@ export function normalizeCardConfig(raw) {
         transitionDuration: TRANSITION_DURATIONS.includes(raw.transitionDuration) ? raw.transitionDuration : 300,
         reading: normalizeReading(raw.reading),
         startCollapsed: raw.startCollapsed === true,
+        recipientDisplay: ['launcher','docked','collapsed'].includes(raw.recipientDisplay) ? raw.recipientDisplay : 'launcher',
     };
 }
 export function jsonForScript(value) {

@@ -63,7 +63,7 @@ export function nativeCardScript(payload, runtime, scriptId) {
         name: `角色音乐 · ${payload.config.title}`,
         content: `/* Riserein shared-UI card player. MIT. */\n(()=>{\n${runtime}\nconst reportStartupError=(error)=>{console.error('[Riserein card player]',error);const message='随卡播放器启动失败（${PLAYER_BUILD}）：'+(error?.message||String(error))+'。请保留此提示，联系角色卡制作端检查并重新导出。';try{const host=window.parent;if(host.toastr?.error)host.toastr.error(message,'角色音乐播放器',{timeOut:0,extendedTimeOut:0,closeButton:true,escapeHtml:true});else host.alert(message);}catch{console.error(message);}};\ntry{Promise.resolve(RisereinNativePlayer.startNativeCharacterPlayer(${payloadLiteral(payload)})).catch(reportStartupError);}catch(error){reportStartupError(error);}\n})();`,
         info: '由 Riserein 音乐播放器制作。原生 PNG/JSON 随卡播放器；共享完整版界面，无音乐导入功能。不依赖完整版插件，需要酒馆助手角色脚本权限；脚本会访问酒馆主页面，请仅启用可信来源的角色脚本。',
-        button: { enabled: false, buttons: [] },
+        button: { enabled: true, buttons: [{ name: '显示/隐藏角色音乐', visible: true }] },
         data: {},
         export_with: { data: true, button: true },
     };
@@ -114,7 +114,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
     const designForAvatar = avatar => normalizeDesign(settings.roleDesigns?.find(row => row.avatar === avatar)?.config || settings.uiDesign);
     const sourceSnapshot = (playlist, avatar) => ({
         playlist: structuredClone(playlist),
-        tracks: structuredClone(getQueue(settings, playlist.id)),
+        tracks: structuredClone(getQueue(settings, playlist.id)).map(track => ({...track,lyricOffsetMs:settings.lyricOffsets?.[track.id] ?? track.lyricOffsetMs})),
         ui: { ...Object.fromEntries(UI_KEYS.map((key) => [key, structuredClone(settings[key])])), uiDesign: designForAvatar(avatar), fontPreset:designForAvatar(avatar).fontPreset==='current'?settings.fontPreset:designForAvatar(avatar).fontPreset },
         fontPreset: designForAvatar(avatar).fontPreset==='current'?settings.fontPreset:designForAvatar(avatar).fontPreset,
         backgroundId: settings.backgroundId,
@@ -174,6 +174,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                 volume: author.volume,
                 mode: author.mode,
                 transitionDuration: author.ui.transitionDuration,
+                reading: author.ui.reading, recipientDisplay: author.ui.uiDesign.recipientDisplay,
                 startCollapsed: false,
             },
             {

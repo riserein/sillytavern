@@ -1,3 +1,5 @@
+import { normalizeLyricOffsets } from './ui/lyric-timing.js';
+import { normalizeVisibility } from './ui/visibility-state.js';
 import { BUILTIN_CATALOG } from './builtin-tracks.js';
 import { normalizePlatformTrack, normalizePlaylistSource } from './platforms/catalog.js';
 import { BUILTIN_ID, normalizeBuiltinCatalog, allTracks, findTrack } from './platforms/library.js';
@@ -80,6 +82,7 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
             ...(url ? { url } : {}),
             ...(typeof item.artist === 'string' && item.artist ? { artist: item.artist.slice(0, 120) } : {}),
             ...(typeof item.coverId === 'string' && /^cover:[a-f0-9-]{36}$/.test(item.coverId) ? { coverId: item.coverId } : {}),
+            ...(Number.isFinite(item.lyricOffsetMs) ? {lyricOffsetMs: Math.max(-60000,Math.min(60000,Math.round(item.lyricOffsetMs)))} : {}),
             ...(typeof item.lyrics === 'string' && item.lyrics ? { lyrics: item.lyrics.slice(0, MAX_LYRICS) } : {}),
             ...(typeof item.lyricsSource === 'string' && /^https:\/\/lrclib\.net\/api\/get\/\d+$/.test(item.lyricsSource) ? { lyricsSource: item.lyricsSource } : {}),
             ...(Number.isInteger(item.fallbackCover) && item.fallbackCover >= 0 && item.fallbackCover < COVER_COUNT ? { fallbackCover: item.fallbackCover } : {}),
@@ -131,6 +134,8 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
         visualMotion: MOTION_LEVELS.includes(raw.visualMotion) ? raw.visualMotion : null,
         accessibleControls: raw.accessibleControls === true,
         reading: normalizeReading(raw.reading),
+        visibility: normalizeVisibility(raw.visibility),
+        lyricOffsets: normalizeLyricOffsets(raw.lyricOffsets, allIds),
         personalDesign: raw.personalDesign && typeof raw.personalDesign === 'object' ? normalizeDesign(raw.personalDesign) : null,
         mode: PLAY_MODES.includes(raw.mode) ? raw.mode : 'list',
         currentId,

@@ -94,6 +94,8 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
     }
     if(restorePreferences){
         for(const [key,value] of Object.entries(incoming))if(!['tracks','playlists','fonts','favorites','designs','roleDesigns','uiDesign','personalDesign','recentPlays','playEvents','backgroundId','fontId','fontName','fontPreset','activePlaylistId','currentId'].includes(key))after[key]=structuredClone(value);
+        after.lyricOffsets={...before.lyricOffsets,...Object.fromEntries(Object.entries(incoming.lyricOffsets||{}).map(([id,value])=>[trackIds.get(id)||id,value]))};
+        if(after.visibility?.resume)after.visibility.resume.id=trackIds.get(after.visibility.resume.id)||after.visibility.resume.id;
         after.uiDesign=mappedDesign(incoming.uiDesign);
         after.personalDesign=incoming.personalDesign?mappedDesign(incoming.personalDesign):null;
         after.backgroundId=incoming.backgroundId?mappedAsset(incoming.backgroundId):null;
@@ -116,6 +118,7 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         copy.form['stm-maker-title']=copy.title;copy.form['stm-maker-collection']=playlistIds.get(copy.form['stm-maker-collection'])||copy.form['stm-maker-collection']||'';
         for(const track of copy.tracks){if(trackIds.has(track.id))track.id=trackIds.get(track.id);if(track.coverId&&assetIds.has(track.coverId))track.coverId=assetIds.get(track.coverId);}
         for(const key of ['backgroundId','fontId'])if(assetIds.has(copy.sourceSettings[key]))copy.sourceSettings[key]=assetIds.get(copy.sourceSettings[key]);
+        if(copy.sourceSettings.lyricOffsets)copy.sourceSettings.lyricOffsets=Object.fromEntries(Object.entries(copy.sourceSettings.lyricOffsets).map(([id,value])=>[trackIds.get(id)||id,value]));
         if(copy.sourceSettings.uiDesign)copy.sourceSettings.uiDesign=mappedDesign(copy.sourceSettings.uiDesign);
         projectWrites.push(copy);summary.projectsAdded++;
     }

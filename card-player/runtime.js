@@ -1,3 +1,6 @@
+import { createVisibilityController } from '../ui/visibility.js';
+import { normalizeVisibility } from '../ui/visibility-state.js';
+import { effectiveLyricOffset, normalizeLyricOffsets } from '../ui/lyric-timing.js';
 import { formatTime, nextTrackId } from '../core.js';
 import { playSymbol } from '../player-components.js';
 import { parseLyrics, currentLyricIndex } from '../media.js';
@@ -49,7 +52,7 @@ export function mountCardPlayer(input, scope) {
         expanded = true,
         mode = config.mode,
         lyricData,
-        lyricIndex = -1;
+        lyricIndex = -1, visibility = null;
     const positions = {};
     let fontFace = null,
         fontSource = '',
@@ -66,9 +69,9 @@ export function mountCardPlayer(input, scope) {
     }
     query('.volume input').value = String(Math.round(audio.volume * 100));
     const saved = preferences.read();
-    const personal = { volume: audio.volume, reading: normalizeReading(saved.reading || config.reading), favorites: normalizeFavorites(saved.favorites, new Set(config.tracks.map(track => track.id))), transitionDuration: TRANSITION_DURATIONS.includes(saved.transitionDuration) ? saved.transitionDuration : config.transitionDuration };
+    const personal = { volume: audio.volume, visibility: normalizeVisibility(saved.visibility || {state: config.recipientDisplay === 'docked' ? 'docked' : 'normal'}), lyricOffsets: normalizeLyricOffsets(saved.lyricOffsets), reading: normalizeReading(saved.reading || config.reading), favorites: normalizeFavorites(saved.favorites, new Set(config.tracks.map(track => track.id))), transitionDuration: TRANSITION_DURATIONS.includes(saved.transitionDuration) ? saved.transitionDuration : config.transitionDuration };
     const transitions = createAudioTransitions(audio, { getVolume: () => personal.volume, getDuration: () => personal.transitionDuration });
-    const persist = () => { void preferences.write(personal).then(ok => { if (!disposed && (!ok || preferences.sessionOnly)) query('.status').textContent = '个人偏好仅在本次会话有效。'; }); };
+    const persist = () => { personal.currentId = config.tracks[selected]?.id; void preferences.write(personal).then(ok => { if (!disposed && (!ok || preferences.sessionOnly)) query('.status').textContent = '个人偏好仅在本次会话有效。'; }); };
     const listen = (target, name, handler, extra = {}) => {
         target.addEventListener(name, handler, { ...extra, signal: abort.signal });
         listeners++;
@@ -102,18 +105,19 @@ export function mountCardPlayer(input, scope) {
     const lyricView = query('.lyrics');
     lyricView.setAttribute('role', 'region'); lyricView.setAttribute('aria-label', '角色歌词阅读'); lyricView.removeAttribute('tabindex');
     lyricView.innerHTML = '<header class="lyric-toolbar"><button data-action="back-cover" aria-label="返回角色音乐封面">返回封面</button><strong data-lyric-title></strong><span data-lyric-status></span><button data-action="resume-lyrics" hidden>回到当前歌词</button></header><div class="lyric-scroll" tabindex="0" role="region" aria-label="角色歌词正文"><div class="lyric-lines"></div></div>';
-    const reader = createLyricReader({ view: lyricView, scroller: query('.lyric-scroll'), lines: query('.lyric-lines'), getDefaultFollow: () => personal.reading.autoFollow, getCurrent: () => lyricIndex, getTitle: () => config.tracks[selected]?.title, onBack: () => { lyricView.hidden = true; query('.cover').focus({ preventScroll: true }); } });
-    const readingControls = createReadingControls({ panel: shadow, mount: query('.panel'), settings: personal, onChange(key) { updateAppearance(config.appearance); if (key === 'autoFollow') reader.reset(); reader.center(); persist(); } });
+    const reader = createLyricReader({ view: lyricView, scroller: query('.lyric-scroll'), lines: query('.lyric-lines'), getDefaultFollow: () => personal.reading.autoFollow, getCurrent: () => lyricIndex, getTitle: () => config.tracks[selected]?.title, audio, getReading: () => personal.reading, getTimeline: () => lyricData || {synced:false,lines:[]}, getTime: () => audio.currentTime - effectiveLyricOffset(config.tracks[selected], personal.lyricOffsets)/1000, getOffset: () => effectiveLyricOffset(config.tracks[selected], personal.lyricOffsets), onOffset: value => {personal.lyricOffsets[config.tracks[selected].id] = value; persist();}, onTime: () => progress(), isVisible: () => expanded && !lyricView.hidden, onBack: () => { lyricView.hidden = true; query('.cover').focus({ preventScroll: true }); } });
+    const readingControls = createReadingControls({ panel: shadow, mount: query('.panel'), settings: personal, onChange(key) { updateAppearance(config.appearance); if (key === 'autoFollow') reader.reset(); reader.invalidate(); persist(); } });
     readingControls.group.open = false; query('.panel').append(readingControls.group);
     const readingStyle = doc.createElement('style');
     readingStyle.textContent = '.head,.title,.artist,.time,.transport,.options,.listening-tools,.credit,.status,.hint,ol,.stm-reading-settings{background:var(--plate);border-radius:7px}p,.artist,.time,.hint,small{opacity:1}small,.time,.status,.hint,.listening-tools{font-size:12px}.artist,.time,.hint,small{color:var(--muted)}.play{color:var(--on-action)}.stm-reading-settings{padding:8px;margin:12px 0}.stm-reading-settings label{display:block;margin-top:8px;font-size:13px}.stm-reading-settings select{max-width:100%;color:var(--text);background:var(--plate);min-height:36px}.stm-reading-settings input[type=range]{width:100%}.stm-reading-settings output{float:right}.lyrics{display:flex;flex-direction:column;overflow:hidden;cursor:default;padding:0;background:transparent}.lyric-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px;background:var(--plate)}.lyric-toolbar button{min-height:36px;font-size:13px}.lyric-toolbar strong{flex:1;min-width:0;font-size:14px}.lyric-toolbar span{font-size:12px;color:var(--muted)}.lyric-scroll{flex:1;min-height:0;overflow:auto;touch-action:pan-y;overscroll-behavior:contain;background:color-mix(in srgb,var(--plate) 85%,transparent)}:host([data-lyric-background=transparent]) .lyric-scroll{background:transparent}.lyric-lines{padding:100px 8px}.lyrics .lyric-lines p{opacity:1;font-size:var(--lyric-size,20px);line-height:var(--lyric-height,1.9);color:var(--text);background:var(--plate);padding:3px 8px;border-radius:6px}.lyrics .lyric-lines .active{color:var(--accent);font-weight:650}';
+    readingStyle.textContent += '.lyrics .lyric-lines p{background:transparent;border-radius:0;color:var(--lyric-text)}.lyrics .lyric-lines .active{color:var(--lyric-current)}.lyrics .lyric-scroll,.stm-lyric-immersive{background:color-mix(in srgb,var(--lyric-plate) 95%,transparent)}:host([data-lyric-background=transparent]) .lyric-scroll,:host([data-lyric-background=transparent]) .stm-lyric-immersive{background:color-mix(in srgb,var(--lyric-plate) 90%,transparent)}:host([data-lyric-background=soft]) .lyric-scroll,:host([data-lyric-background=soft]) .stm-lyric-immersive{background:var(--lyric-plate)}.stm-lyric-immersive{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;padding:18px;overflow-wrap:anywhere}.stm-lyric-immersive p{background:transparent;max-width:100%;line-height:var(--lyric-height);font-size:var(--lyric-size);color:var(--lyric-text)}.stm-lyric-immersive [data-immersive-current]{font-size:calc(var(--lyric-size)*1.35);color:var(--lyric-current);font-weight:650}.stm-lyric-calibration{flex-basis:100%;font-size:12px}.stm-lyric-calibration small{display:block}.stm-visibility-controls{font-size:13px}.stm-visibility-controls button{min-height:40px}.stm-visibility-controls label{display:block}.stm-visibility-controls select{max-width:100%}.ball[data-display=docked]{width:44px;height:52px;border-radius:12px;background:var(--plate)}.ball[data-display=docked]::before{display:none}.stm-visibility-menu[open]{background:var(--plate);z-index:10}.stm-visibility-menu button{display:block;min-height:40px;font-size:13px}';
     shadow.append(readingStyle);
     function updateAppearance(raw) {
         const theme = normalizeAppearance(raw);
         const reading = readingPalette({ background: theme.background, text: theme.text, accent: theme.accent }, personal.reading.level);
         for (const key of ['accent', 'background', 'text'])
             root.style.setProperty(key === 'background' ? '--bg' : `--${key}`, key === 'text' ? reading.body : key === 'accent' ? reading.accent : theme[key]);
-        root.style.setProperty('--plate', reading.surface); root.style.setProperty('--muted', reading.secondary); root.style.setProperty('--on-action', readableColor('#ffffff', [reading.accent]));
+        root.style.setProperty('--lyric-plate', reading.lyricSurface); root.style.setProperty('--lyric-text', reading.lyrics); root.style.setProperty('--lyric-current', reading.current); root.style.setProperty('--plate', reading.surface); root.style.setProperty('--muted', reading.secondary); root.style.setProperty('--on-action', readableColor('#ffffff', [reading.accent]));
         root.style.setProperty('--lyric-size', personal.reading.lyricSize + 'px'); root.style.setProperty('--lyric-height', String(personal.reading.lineHeight)); root.dataset.lyricBackground = personal.reading.lyricBackground;
         const color = theme.background;
         const opacity = theme.image ? (theme.surface === 'clear' ? 0 : theme.opacity) : 1;
@@ -184,7 +188,7 @@ export function mountCardPlayer(input, scope) {
     }
     async function select(index, shouldPlay = false) {
         if (disposed) return;
-        const revision=++selectionRevision;
+        const revision=++selectionRevision, displayEpoch=visibility?.epoch;
         selectionPending=true; query('.seek').disabled=true;
         if(shouldPlay&&!audio.paused&&!audio.ended){if(!await transitions.fadeOut()||disposed||revision!==selectionRevision){if(revision===selectionRevision){selectionPending=false;progress();}return;}}
         selected = index;
@@ -228,7 +232,7 @@ export function mountCardPlayer(input, scope) {
         }
         render();
         renderFavorites();
-        if (shouldPlay) void play();
+        if (shouldPlay && visibility?.state !== 'hidden' && displayEpoch === visibility?.epoch) void play();
     }
     function advance(direction, ended = false) {
         const next = nextTrackId(config.tracks, config.tracks[selected].id, mode, { direction, ended });
@@ -272,7 +276,7 @@ export function mountCardPlayer(input, scope) {
         query('[data-time=elapsed]').textContent = formatTime(audio.currentTime);
         query('[data-time=duration]').textContent = formatTime(duration);
         if (lyricData?.synced) {
-            const next = currentLyricIndex(lyricData.lines, audio.currentTime);
+            const next = currentLyricIndex(lyricData.lines, audio.currentTime - effectiveLyricOffset(config.tracks[selected], personal.lyricOffsets)/1000);
             const lines = query('.lyric-lines').children;
             if (next !== lyricIndex) {
                 if (lines[lyricIndex]) lines[lyricIndex].classList.remove('active');
@@ -292,7 +296,7 @@ export function mountCardPlayer(input, scope) {
             else if (['pause', 'waiting', 'ended', 'error'].includes(name)) live = false;
             render();
         });
-    listen(audio, 'ended', () => { if (!sleep.ended() && !selectionPending) advance(1, true); });
+    listen(audio, 'ended', () => { if (visibility?.autoAdvanceAllowed !== false && !sleep.ended() && !selectionPending) advance(1, true); });
     listen(audio, 'error', () => {
         if (!disposed) query('.status').textContent = '音频加载失败：嵌入文件可能不受支持，或公开直链已失效。';
     });
@@ -323,6 +327,7 @@ export function mountCardPlayer(input, scope) {
         Object.assign(root.style, { left: `${position.x}px`, top: `${position.y}px`, right: 'auto', bottom: 'auto' });
     }
     function setExpanded(value) {
+        if(value) visibility?.restore();
         expanded = value;
         query('.panel').hidden = !value;
         query('.ball').hidden = value;
@@ -336,7 +341,7 @@ export function mountCardPlayer(input, scope) {
             if (
                 !event.isPrimary ||
                 event.button !== 0 ||
-                (event.target.closest('button,input') && event.target.closest('button,input') !== handle)
+                (event.target.closest('button,input,select,textarea,summary') && event.target.closest('button,input,select,textarea,summary') !== handle)
             )
                 return;
             suppressClick = false;
@@ -356,6 +361,7 @@ export function mountCardPlayer(input, scope) {
             const dx = event.clientX - drag.x,
                 dy = event.clientY - drag.y;
             if (!drag.moved && Math.hypot(dx, dy) < 6) return;
+            if(!drag.moved && handle===query('.ball')) visibility?.dragStart();
             drag.moved = true;
             suppressClick = true;
             positions[expanded ? 'panel' : 'ball'] = { x: drag.left + dx, y: drag.top + dy };
@@ -365,7 +371,8 @@ export function mountCardPlayer(input, scope) {
         for (const name of ['pointerup', 'pointercancel', 'lostpointercapture'])
             listen(handle, name, (event) => {
                 if (drag?.id === event.pointerId) {
-                    drag = null;
+                    const moved=drag.moved; drag = null;
+                    if(moved && handle===query('.ball'))visibility?.dragEnd(root.getBoundingClientRect(),{width:win.innerWidth,height:win.innerHeight});
                     if (handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId);
                 }
             });
@@ -401,6 +408,7 @@ export function mountCardPlayer(input, scope) {
         scriptId: scope.scriptId,
         root,
         updateAppearance,
+        get visibility() {return visibility;},
         get disposed() {
             return disposed;
         },
@@ -418,12 +426,13 @@ export function mountCardPlayer(input, scope) {
     };
     root.__risereinPlayer = api;
     doc.body.append(root);
-    setExpanded(!config.startCollapsed);
-    select(0);
+    visibility = createVisibilityController({panel:query('.panel'),launcher:query('.ball'),audio,getPreference:()=>personal.visibility,setPreference:value=>{personal.visibility=value;persist();},getTrackId:()=>config.tracks[selected]?.id,close:()=>setExpanded(false),open:()=>setExpanded(true),onHide:()=>{transitions.stop();sleep.cancel();reader.suspend();},hostDocument:doc,positionElement:root,recoveryId:roleId+':'+scope.scriptId,onPosition:p=>{positions.ball={x:p.x*win.innerWidth,y:p.y*win.innerHeight};},helperRecovery:scope.helperRecovery,preview:roleId==='preview'});
+    if(visibility.state==='normal')setExpanded(!config.startCollapsed && config.recipientDisplay !== 'collapsed');
+    select(Math.max(0,config.tracks.findIndex(track=>track.id===saved.currentId)));
     lifetime = watchRoleLifetime(scope, () => {
         if (disposed) return;
         disposed = true;
-        selectionRevision++; sleep.dispose(); transitions.dispose(); reader.dispose(); readingControls.dispose();
+        selectionRevision++; sleep.dispose(); transitions.dispose(); reader.dispose(); readingControls.dispose(); visibility?.dispose();
         abort.abort();
         listeners = 0;
         live = false;

@@ -3,6 +3,8 @@ export function colorChannels(value) {
   if (typeof value !== 'string') return null;
   const hex = value.trim().match(/^#([\da-f]{6}|[\da-f]{8})$/i);
   if (hex) return [0, 2, 4].map(at => parseInt(hex[1].slice(at, at + 2), 16)).concat(hex[1].length === 8 ? parseInt(hex[1].slice(6), 16) / 255 : 1);
+  const srgb = value.trim().match(/^color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\s*\)$/);
+  if(srgb)return [1,2,3].map(i=>Number(srgb[i])*255).concat(srgb[4]===undefined?1:Number(srgb[4]));
   const rgb = value.trim().match(/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)$/);
   return rgb ? [Number(rgb[1]), Number(rgb[2]), Number(rgb[3]), rgb[4] === undefined ? 1 : Number(rgb[4])] : null;
 }
@@ -46,7 +48,17 @@ export function readingPalette(source, level = 'clear') {
   const secondary = readableColor(source.muted || source.text, [surface], level === 'high' ? 7 : 4.5);
   const accent = readableColor(source.accent, [surface], level === 'high' ? 7 : 4.5);
   const selected = mixColor(surface, accent, .1);
-  return { background, surface, title: body, body, secondary, hint: secondary, button: body, disabled: mixColor(body, surface, .45), lyrics: body, current: accent, accent: readableColor(accent, [surface, selected], 4.5), selected, action: accent, onAction: readableColor('#ffffff', [accent], 4.5), error: readableColor('#dc555c', [surface], 4.5), warning: readableColor('#b57b35', [surface], 4.5) };
+  // One continuous scrim, not a rectangle behind each line. Bound arbitrary
+  // image pixels by both black and white under the least opaque (90%) scrim.
+  let lyricSurface = surface;
+  const lyricBackgrounds = color => ['#000000', '#ffffff'].map(bg => compositeColor(color + 'e5', bg));
+  const score = (ink, color) => Math.min(...lyricBackgrounds(color).map(bg => contrastRatio(ink, bg)));
+  const ink = score('#000000', surface) >= score('#ffffff', surface) ? '#000000' : '#ffffff';
+  const end = ink === '#000000' ? '#ffffff' : '#000000';
+  for (let step = 0; step <= 100 && score(ink, lyricSurface) < target; step++) lyricSurface = mixColor(surface, end, step / 100);
+  const lyrics = readableColor(source.text, lyricBackgrounds(lyricSurface), target);
+  const current = readableColor(source.accent, lyricBackgrounds(lyricSurface), level === 'high' ? 7 : 4.5);
+  return { background, surface, lyricSurface, title: body, body, secondary, hint: secondary, button: body, disabled: mixColor(body, surface, .45), lyrics, current, accent: readableColor(accent, [surface, selected], 4.5), selected, action: accent, onAction: readableColor('#ffffff', [accent], 4.5), error: readableColor('#dc555c', [surface], 4.5), warning: readableColor('#b57b35', [surface], 4.5) };
 }
 export function readabilityReport(source, components = {}) {
   const bg = compositeColor(source.background, '#ffffff');

@@ -63,6 +63,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 title: track.title,
                 artist: track.artist,
                 lyrics: track.lyrics,
+                lyricOffsetMs: track.lyricOffsetMs,
                 lyricsSource: track.lyricsSource,
                 coverId,
             };
@@ -92,6 +93,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
             mode: config.mode,
             volume: config.volume,
             builtinHidden: true,
+            visibility: { state: (payload.ui?.uiDesign?.recipientDisplay || config.recipientDisplay) === 'docked' ? 'docked' : 'normal' },
         };
         if (config.appearance.image) {
             settings.backgroundId = `background:${createTrackId(win.crypto)}`;
@@ -108,7 +110,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
             'transitionDuration',
             'visualMotion',
             'accessibleControls',
-            'reading',
+            'reading', 'visibility', 'lyricOffsets',
             'personalDesign',
             'theme',
             'colorScheme',
@@ -190,6 +192,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 store,
                 availableFonts: payload.fontFile ? [payload.fontFile] : [],
                 getInputElement:()=>doc.querySelector('#send_form'),
+                visibilityHostDocument: doc, recoveryId: scope.roleId + ':' + scope.scriptId, helperRecovery: scope.helperRecovery, previewRecovery: scope.roleId === 'preview',
             });
             mounted.panel.dataset.portable = 'true';
             mounted.panel.dataset.runtimeVersion = api.runtimeVersion;
@@ -235,7 +238,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 mounted.panel.querySelector('[data-view="appearance"]').append(license);
             }
             lifetime = watchRoleLifetime(scope, () => api.dispose());
-            if (!disposed) mounted.setOpen(!config.startCollapsed);
+            if (!disposed && mounted.visibility.state === 'normal') mounted.setOpen(!config.startCollapsed && (payload.ui?.uiDesign?.recipientDisplay || config.recipientDisplay) !== 'collapsed');
             return api;
         } catch (error) {
             api.dispose();

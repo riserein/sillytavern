@@ -17,6 +17,7 @@ export function buildSharedCardExports(
   const config = normalizeCardConfig(input),
     selected = normalizeDesign(design);
   selected.customization.iconId = null;
+  selected.recipientDisplay = config.recipientDisplay;
   // Explicit visual preference transport; never copy a host settings object.
   const uiKeys=['theme','colorScheme','surface','maskOpacity','customColors','clickEffects','fontPreset','transitionDuration','reading'];
   const safeUi=Object.fromEntries(uiKeys.filter(key=>Object.hasOwn(ui,key)).map(key=>[key,structuredClone(ui[key])]));

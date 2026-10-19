@@ -216,6 +216,7 @@ export function normalizeDesign(raw = {}) {
     theme: Object.hasOwn(DESIGN_THEMES, raw.theme) ? raw.theme : "inherit",
     launcher: Object.hasOwn(LAUNCHERS, raw.launcher) ? raw.launcher : "vinyl",
     allowRecipientLayout: raw.allowRecipientLayout === true,
+    recipientDisplay: member(raw.recipientDisplay, ["launcher", "docked", "collapsed"], "launcher"),
     customization,
   };
 }

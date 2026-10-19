@@ -6,9 +6,9 @@ import {normalizePlatformTrack} from '../platforms/catalog.js';
 import {PLAYER_BUILD} from '../card-player/quality.js';
 import {normalizeDesign,designReferences} from '../ui/config.js';
 const encoder=new TextEncoder();
-const TRACK_KEYS=['id','kind','title','artist','album','url','coverId','lyrics','lyricsSource','fallbackCover','platform','platformTrackId','remoteId','sourceUrl','playback','cover','duration','metadataStatus','restriction'];
-const FORM_KEYS=['stm-maker-title','stm-maker-collection','stm-maker-theme','stm-maker-surface','accent','background','text','color:accent','color:background','color:text','opacity','font','font-credit','collapsed'];
-const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode','transitionDuration','uiDesign','reading'];
+const TRACK_KEYS=['id','kind','title','artist','album','url','coverId','lyrics','lyricsSource','lyricOffsetMs','fallbackCover','platform','platformTrackId','remoteId','sourceUrl','playback','cover','duration','metadataStatus','restriction'];
+const FORM_KEYS=['stm-maker-title','stm-maker-collection','stm-maker-theme','stm-maker-surface','accent','background','text','color:accent','color:background','color:text','opacity','font','font-credit','collapsed','recipient-display','stm-maker-recipient-display'];
+const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode','transitionDuration','uiDesign','reading','lyricOffsets'];
 const pick=(object,keys)=>Object.fromEntries(keys.filter(key=>Object.hasOwn(object||{},key)).map(key=>[key,object[key]]));
 export const canonical=value=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)&&!(item instanceof Blob)?Object.fromEntries(Object.keys(item).sort().map(key=>[key,item[key]])):item);
 function cleanUrl(value,warnings) {

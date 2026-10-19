@@ -9,7 +9,7 @@ import {
   randomColors,
 } from "./config.js";
 import { COMPONENTS } from "./components.js";
-import { readableColors, readabilityReport, readingPalette } from "./contrast.js";
+import { readableColors, readabilityReport, readingPalette, contrastRatio, compositeColor } from "./contrast.js";
 import { sourceReadingPalette } from './reading.js';
 import { FONT_PRESETS } from "../fonts.js";
 /** Author-only editor. The preview is the live player, never a second Audio or iframe. */
@@ -113,7 +113,8 @@ export function createDesignEditor({
         ["size", "margin", "position"].includes(input.dataset.prop);
     const source = sourceReadingPalette(panel), checks = readabilityReport(source, working.components);
     const protectedColors = readingPalette(source, settings.reading?.level);
-    const protectedChecks = readabilityReport({ background: protectedColors.surface, text: protectedColors.body, muted: protectedColors.secondary, accent: protectedColors.current });
+    const p=protectedColors,lyricBases=['#000000','#ffffff'].map(bg=>compositeColor(p.lyricSurface+'e5',bg));
+    const protectedChecks=[['正文',p.body,[p.surface]],['辅助文字',p.secondary,[p.surface]],['歌词',p.lyrics,lyricBases],['当前歌词',p.current,lyricBases],['按钮文字',p.onAction,[p.action]],['选中项',p.accent,[p.surface,p.selected]]].map(([name,ink,bgs])=>({name,ratio:Math.min(...bgs.map(bg=>contrastRatio(ink,bg)))}));
     const low = checks.filter(check => check.ratio < check.target);
     q('[data-color-warning]').textContent = '原始配色：' + checks.map(check => `${check.name} ${check.ratio.toFixed(2)}:1`).join(' · ') +
       '。局部衬底与显示保护后：' + protectedChecks.map(check => `${check.name} ${check.ratio.toFixed(2)}:1`).join(' · ') +
@@ -280,6 +281,7 @@ export function createDesignEditor({
       left,
     );
     field("悬浮组件", "launcher", { options: LAUNCHERS }, left);
+    field("接收者默认显示方式", "recipientDisplay", { options: { launcher: "普通悬浮入口", docked: "贴边入口", collapsed: "收起窗口但显示悬浮入口" } }, left);
     field("字体", "fontPreset", {
       options: {
         current: "沿用外观中当前字体",

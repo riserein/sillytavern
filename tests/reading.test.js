@@ -39,8 +39,8 @@ test('low contrast custom colors are safe to display without mutating or silentl
     assert(contrastRatio(readableColors(colors).muted, readableColors(colors).background) >= 4.5);
 });
 test('new reading preferences normalize bounded data and old libraries retain their data', () => {
-    assert.deepEqual(normalizeReading(), { level: 'clear', lyricSize: 20, lineHeight: 1.9, autoFollow: true, lyricBackground: 'auto' });
-    assert.deepEqual(normalizeReading({ level: 'execute', lyricSize: Infinity, lineHeight: 0, autoFollow: false, lyricBackground: '<svg>' }), { level: 'clear', lyricSize: 20, lineHeight: 1.5, autoFollow: false, lyricBackground: 'auto' });
+    assert.deepEqual(normalizeReading(), { level: 'clear', lyricSize: 20, lineHeight: 1.9, autoFollow: true, lyricBackground: 'auto', displayMode: 'flow', nextLine: true });
+    assert.deepEqual(normalizeReading({ level: 'execute', lyricSize: Infinity, lineHeight: 0, autoFollow: false, lyricBackground: '<svg>' }), { level: 'clear', lyricSize: 20, lineHeight: 1.5, autoFollow: false, lyricBackground: 'auto', displayMode: 'flow', nextLine: true });
     const original = { tracks: [{ id: 'x', kind: 'local', title: '旧曲', lyrics: '[00:01]原始歌词' }], playlists: [{ id: 'l', name: '旧歌单', trackIds: ['x'], characterAvatars: ['old.png'] }], reading: { lyricSize: 26, level: 'high', autoFollow: false } };
     const next = normalizeSettings(original);
     assert.equal(next.tracks[0].lyrics, original.tracks[0].lyrics);

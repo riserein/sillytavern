@@ -54,7 +54,7 @@ function checkedImage(blob) {
 }
 /** Reads copies only. No writes to the library, playlist or IndexedDB. */
 export async function prepareCardPackage(
-    { id, title, tracks, appearance, volume, mode, transitionDuration, startCollapsed },
+    { id, title, tracks, appearance, volume, mode, transitionDuration, reading, lyricOffsets, recipientDisplay, startCollapsed },
     {
         getBlob,
         readFallback,
@@ -127,6 +127,7 @@ export async function prepareCardPackage(
                 src,
                 cover,
                 lyrics: track.lyrics,
+                lyricOffsetMs: lyricOffsets?.[track.id] ?? track.lyricOffsetMs,
                 lyricsSource: track.lyricsSource,
                 sourceUrl: track.sourceUrl || '',
                 attribution: track.license?.attribution || '',
@@ -168,7 +169,7 @@ export async function prepareCardPackage(
         appearance: theme,
         volume,
         mode,
-        transitionDuration,
+        transitionDuration, reading, recipientDisplay,
         startCollapsed,
     });
     return {
@@ -192,7 +193,7 @@ export function buildCardExports(config, runtime, scriptId) {
         id: scriptId,
         content: javascript,
         info: '由 Riserein 音乐播放器制作。角色脚本；音频已内嵌或使用公开直链，不依赖完整版插件。需要酒馆助手角色脚本权限，会访问酒馆主页面；请仅启用可信来源的脚本。',
-        button: { enabled: false, buttons: [] },
+        button: { enabled: true, buttons: [{ name: '显示/隐藏角色音乐', visible: true }] },
         data: {},
         export_with: { data: true, button: true },
     };

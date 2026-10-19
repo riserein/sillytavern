@@ -9,6 +9,8 @@ export function normalizeReading(raw = {}) {
         lineHeight: bounded(raw.lineHeight, 1.9, 1.5, 2.6),
         autoFollow: raw.autoFollow !== false,
         lyricBackground: ['auto', 'transparent', 'soft'].includes(raw.lyricBackground) ? raw.lyricBackground : 'auto',
+        displayMode: ['flow', 'centered', 'immersive'].includes(raw.displayMode) ? raw.displayMode : 'flow',
+        nextLine: raw.nextLine !== false,
     };
 }
 
@@ -44,10 +46,13 @@ export function applyReading(panel, launcher, input, design) {
 export function createReadingControls({ panel, settings, onChange, mount = panel.querySelector('#stm-appearance') }) {
     const group = panel.ownerDocument.createElement('details'), abort = new AbortController();
     group.className = 'stm-settings-group stm-reading-settings'; group.open = true;
-    group.innerHTML = '<summary>文字与阅读</summary><label for="stm-reading-level">文字显示</label><select id="stm-reading-level"><option value="standard">标准</option><option value="clear">清晰</option><option value="high">高对比度</option></select><label for="stm-lyric-size">歌词字号 <output data-reading-size></output></label><input id="stm-lyric-size" type="range" min="18" max="30" step="1"><label for="stm-lyric-height">歌词行距 <output data-reading-height></output></label><input id="stm-lyric-height" type="range" min="1.5" max="2.6" step="0.1"><label class="stm-check-label"><input id="stm-lyric-follow" type="checkbox">歌词自动跟随</label><label for="stm-lyric-background">歌词阅读背景</label><select id="stm-lyric-background"><option value="auto">自动</option><option value="transparent">透明</option><option value="soft">柔和遮罩</option></select><p class="stm-hint">手动滚动后暂停跟随，点击“回到当前歌词”恢复。透明背景仍保留文字局部衬底，保护复杂图片上的可读性。</p>';
+    group.innerHTML = '<summary>文字与阅读</summary><label for="stm-reading-level">文字显示</label><select id="stm-reading-level"><option value="standard">标准</option><option value="clear">清晰</option><option value="high">高对比度</option></select><label for="stm-lyric-size">歌词字号 <output data-reading-size></output></label><input id="stm-lyric-size" type="range" min="18" max="30" step="1"><label for="stm-lyric-height">歌词行距 <output data-reading-height></output></label><input id="stm-lyric-height" type="range" min="1.5" max="2.6" step="0.1"><label class="stm-check-label"><input id="stm-lyric-follow" type="checkbox">歌词自动跟随</label><label for="stm-lyric-background">歌词阅读背景</label><select id="stm-lyric-background"><option value="auto">自动</option><option value="transparent">透明</option><option value="soft">柔和遮罩</option></select><p class="stm-hint">手动滚动后暂停跟随，点击“回到当前歌词”恢复。透明模式仍保留一层整体柔和遮罩，不为每句歌词单独加框。</p>';
+    const modes = panel.ownerDocument.createElement('div');
+    modes.innerHTML = '<label for="stm-lyric-mode">歌词显示模式</label><select id="stm-lyric-mode"><option value="flow">连续滚动</option><option value="centered">居中阅读</option><option value="immersive">单句沉浸</option></select><label class="stm-check-label"><input id="stm-lyric-next" type="checkbox">单句模式显示下一句</label>';
+    group.prepend(modes);
     mount.prepend(group);
     const q = selector => group.querySelector(selector);
-    const fields = [['#stm-reading-level', 'level', 'change'], ['#stm-lyric-size', 'lyricSize', 'input'], ['#stm-lyric-height', 'lineHeight', 'input'], ['#stm-lyric-follow', 'autoFollow', 'change'], ['#stm-lyric-background', 'lyricBackground', 'change']];
+    const fields = [['#stm-lyric-mode', 'displayMode', 'change'], ['#stm-lyric-next', 'nextLine', 'change'], ['#stm-reading-level', 'level', 'change'], ['#stm-lyric-size', 'lyricSize', 'input'], ['#stm-lyric-height', 'lineHeight', 'input'], ['#stm-lyric-follow', 'autoFollow', 'change'], ['#stm-lyric-background', 'lyricBackground', 'change']];
     for (const [selector, key, event] of fields) q(selector).addEventListener(event, e => {
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'range' ? Number(e.target.value) : e.target.value;
         settings.reading = normalizeReading({ ...settings.reading, [key]: value }); onChange(key); refresh();

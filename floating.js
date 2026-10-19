@@ -17,7 +17,7 @@ export function positionFromRatio(position, size, viewport) {
 }
 
 /** Use pointer capture so dragging keeps working outside the handle, with both mouse and touch. */
-export function makeDraggable(element, handle, { getPosition, onPositionChange }) {
+export function makeDraggable(element, handle, { getPosition, onPositionChange, onDragStart = () => {}, onDragEnd = () => {} }) {
     const events = new AbortController();
     let active = null;
     let suppressClick = false;
@@ -62,14 +62,14 @@ export function makeDraggable(element, handle, { getPosition, onPositionChange }
         active = null;
         element.classList.remove('stm-dragging');
         if (handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId);
-        if (wasMoved) commit();
+        if (wasMoved) { commit(); onDragEnd(rect(), viewport()); }
     }
 
     const on = (target, type, callback, capture = false) => target.addEventListener(type, callback, { capture, signal: events.signal });
     on(handle, 'pointerdown', event => {
         if (!event.isPrimary || event.button !== 0 || active) return;
         suppressClick = false;
-        const control = event.target.closest?.('button, input, select, textarea, a');
+        const control = event.target.closest?.('button, input, select, textarea, a, summary');
         if (control && control !== handle) return;
         const bounds = rect();
         active = { id: event.pointerId, x: event.clientX, y: event.clientY, left: bounds.x, top: bounds.y, moved: false };
@@ -80,6 +80,7 @@ export function makeDraggable(element, handle, { getPosition, onPositionChange }
         const dx = event.clientX - active.x;
         const dy = event.clientY - active.y;
         if (!active.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+        if (!active.moved) onDragStart();
         active.moved = true;
         suppressClick = true;
         element.classList.add('stm-dragging');

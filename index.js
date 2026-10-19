@@ -1,3 +1,5 @@
+import { createVisibilityController } from './ui/visibility.js';
+import { effectiveLyricOffset } from './ui/lyric-timing.js';
 import { createLyricsLookup } from './lyrics.js';
 import { applyReading, createReadingControls } from './ui/reading.js';
 import { createLyricReader } from './ui/lyric-reader.js';
@@ -80,7 +82,7 @@ export function initialize(options = {}) {
     let online = null;
     let listening = null;
     let designEditor = null, designFont = null;
-    let designPresentation = null, designControls = null, readingControls = null, lyricReader = null, launcherControls = null, launcherAvoidance = null, previewDesign = null;
+    let designPresentation = null, designControls = null, readingControls = null, lyricReader = null, launcherControls = null, launcherAvoidance = null, previewDesign = null, visibility = null, fullRecoveryEntry = null;
     let platformLoadController = null;
     let objectUrl = null;
     let loadSequence = 0;
@@ -403,6 +405,7 @@ export function initialize(options = {}) {
     const launcherDrag = makeDraggable(launcher, launcher, {
         getPosition: () => settings.positions.launcher,
         onPositionChange: position => { settings.positions.launcher = position; save(); },
+        onDragStart: () => visibility?.dragStart(), onDragEnd: (bounds, viewport) => { visibility?.dragEnd(bounds, viewport); launcherAvoidance?.refresh(); },
     });
     const panelDrag = makeDraggable(panel, query('.stm-header'), {
         getPosition: () => settings.positions.panel,
@@ -669,7 +672,7 @@ export function initialize(options = {}) {
     readingControls = createReadingControls({ panel, settings, onChange(key) {
         refreshDesign(); menus.refresh();
         if (key === 'autoFollow') { lyricReader?.reset(); lyricReader?.center(); }
-        else lyricReader?.center();
+        else lyricReader?.invalidate();
         save();
     } });
     launcherControls=createLauncherControls({panel,group:designControls.group,getDesign:effectiveDesign,onChange:applyUserDesign,isPortable:(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__),
@@ -711,7 +714,7 @@ export function initialize(options = {}) {
         designPresentation.apply(previewDesign || effectiveDesign(), { motion: settings.visualMotion, accessible: settings.accessibleControls });
         applyReading(panel, launcher, settings.reading, previewDesign || effectiveDesign());
         designFont?.set((previewDesign||effectiveDesign()).fontPreset);
-        designControls?.refresh(); readingControls?.refresh(); launcherControls?.refresh(); launcherDrag.refresh(); panelDrag.refresh(); launcherAvoidance?.refresh();
+        designControls?.refresh(); readingControls?.refresh(); launcherControls?.refresh(); launcherDrag.refresh(); panelDrag.refresh(); launcherAvoidance?.refresh(); visibility?.refresh();
     }
     function applyUserDesign(value) {
         const config = normalizeDesign(value);
@@ -752,7 +755,7 @@ export function initialize(options = {}) {
     query('[data-action="toggle-lyrics"]').addEventListener('click', () => { if (settings.accessibleControls || effectiveDesign().customization.showLyricsButton) setLyricsOpen(true); });
     const lyricView = query('.stm-lyrics-view');
     const leaveLyrics = () => { setLyricsOpen(false); query('[data-action="toggle-lyrics"]').focus({ preventScroll: true }); };
-    lyricReader = createLyricReader({ view: lyricView, scroller: query('.stm-lyrics-scroll'), lines: query('.stm-lyrics-lines'), getDefaultFollow: () => settings.reading.autoFollow, getCurrent: () => activeLyric, getTitle: () => findTrack(settings, settings.currentId)?.title, onBack: leaveLyrics });
+    lyricReader = createLyricReader({ view: lyricView, scroller: query('.stm-lyrics-scroll'), lines: query('.stm-lyrics-lines'), getDefaultFollow: () => settings.reading.autoFollow, getCurrent: () => activeLyric, getTitle: () => findTrack(settings, settings.currentId)?.title, onBack: leaveLyrics, audio, getReading: () => settings.reading, getTimeline: () => lyricData, getTime: () => (audio.currentTime || 0) - effectiveLyricOffset(findTrack(settings, settings.currentId), settings.lyricOffsets) / 1000, getOffset: () => effectiveLyricOffset(findTrack(settings, settings.currentId), settings.lyricOffsets), onOffset: value => { if (settings.currentId) { settings.lyricOffsets[settings.currentId] = value; save(); } }, onTime: () => updateLyrics(), isVisible: () => !panel.hidden && !lyricView.hidden && currentPage === 'playback' });
     function renderLyrics(track) {
         lyricData = parseLyrics(track?.lyrics || '');
         activeLyric = -1;
@@ -779,14 +782,14 @@ export function initialize(options = {}) {
     }
     function updateLyrics(force = false) {
         if (!lyricData.synced) return;
-        const next = currentLyricIndex(lyricData.lines, audio.currentTime || 0);
+        const next = currentLyricIndex(lyricData.lines, (audio.currentTime || 0) - effectiveLyricOffset(findTrack(settings, settings.currentId), settings.lyricOffsets) / 1000);
         if (!force && next === activeLyric) return;
         activeLyric = next;
         const lines = query('.stm-lyrics-lines').children;
         Array.from(lines).forEach((line, index) => line.classList.toggle('stm-current-lyric', index === next));
         lyricReader.refresh();
         if (next >= 0 && !query('.stm-lyrics-view').hidden && currentPage === 'playback' && !panel.hidden) {
-            lyricReader.center();
+            lyricReader.center(force);
         }
     }
     async function renderMedia(track) {
@@ -1018,6 +1021,7 @@ export function initialize(options = {}) {
     }
 
     function setOpen(open, focus = true) {
+        if (open) visibility?.restore();
         const wasHidden = panel.hidden;
         panel.hidden = !open;
         launcher.setAttribute('aria-expanded', String(open));
@@ -1339,7 +1343,7 @@ export function initialize(options = {}) {
             const binding = playlistForCharacter(settings, avatar);
             browsedPlaylistId = binding?.id ?? null;
             librarySelection.clear();
-            const activated = await activatePlaylist(binding?.id ?? null, Boolean(binding));
+            const activated = await activatePlaylist(binding?.id ?? null, Boolean(binding) && visibility?.state === 'normal' && !(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__));
             if (!activated || revision !== roleRevision) return;
             if (binding) showStatus(`已打开「${binding.name}」，点击播放开始听歌。`);
         } else if (previous) {
@@ -1596,7 +1600,7 @@ export function initialize(options = {}) {
     }
 
     async function selectTrack(id, shouldPlay = false) {
-        const sequence = ++loadSequence;
+        const sequence = ++loadSequence, displayEpoch = visibility?.epoch;
         canAutoAdvance = false;
         selectionPending = true; updateProgress();
         try {
@@ -1644,7 +1648,7 @@ export function initialize(options = {}) {
             }
             audio.src = source;
             audio.load();
-            if (shouldPlay) await play();
+            if (shouldPlay && visibility?.state !== 'hidden' && displayEpoch === visibility?.epoch) await play();
         } catch (error) {
             if (sequence === loadSequence) showStatus(error.message || '读取音乐失败，请重新导入。', true);
         } finally {
@@ -1921,7 +1925,7 @@ export function initialize(options = {}) {
     }, 60000);
     audio.addEventListener('ended', () => {
         if (listening.timer.ended()) return;
-        if (!canAutoAdvance) return;
+        if (!canAutoAdvance || visibility?.autoAdvanceAllowed === false) return;
         const nextId = nextTrackId(playbackQueue.tracks().filter(track => platformService.canPlay(track)), settings.currentId, settings.mode, { ended: true });
         if (nextId) void selectTrack(nextId, true);
         else showStatus('播放列表已播放完毕。');
@@ -1947,7 +1951,7 @@ export function initialize(options = {}) {
         ++loadSequence;
         pausePlayback(); audio.removeAttribute('src'); audio.load();
         for (const stop of hostStops.splice(0)) stop();
-        launcherDrag.dispose(); panelDrag.dispose();
+        visibility?.dispose(); launcherDrag.dispose(); panelDrag.dispose();
         if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) delete window.__risereinFullMusicPlayer;
         ++mediaRevision; ++backgroundRevision; ++roleRevision;
         if (objectUrl) URL.revokeObjectURL(objectUrl);
@@ -1973,7 +1977,7 @@ export function initialize(options = {}) {
         const button = document.createElement('button');
         button.className = 'menu_button';
         button.type = 'button';
-        button.textContent = '♫ 打开音乐播放器';
+        button.textContent = '♫ 打开音乐播放器'; fullRecoveryEntry = button;
         button.addEventListener('click', () => setOpen(true));
         entry.append(button);
         settingsArea.append(entry);
@@ -2021,11 +2025,12 @@ export function initialize(options = {}) {
         for (const element of panel.querySelectorAll('[data-page="import"], #stm-page-import, [data-action="go-import"], [data-action="card-maker"], [data-action="rebuild-native"], [data-role="card-handoff"], [data-action="bind-roles"], #stm-role-bindings')) element.remove();
         query('.stm-queue-empty').textContent = '在曲库选择一首歌开始听歌。';
     }
+    visibility = createVisibilityController({ panel, launcher, audio, getPreference: () => settings.visibility, setPreference: value => { settings.visibility = value; save(); }, getTrackId: () => settings.currentId, close: () => setOpen(false, false), open: () => setOpen(true), onHide: () => { transitions.stop(); listening?.cancelSleep?.(); lyricReader?.suspend(); }, onStatus: text => showStatus(text), hostDocument: options.visibilityHostDocument || document, recoveryId: options.recoveryId || 'full', allowWand: (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__), onPosition: position => {settings.positions.launcher=position;save();}, helperRecovery: options.helperRecovery, preview: options.previewRecovery === true, externalRecovery: () => !!fullRecoveryEntry?.isConnected, getInput: options.getInputElement || (() => document.querySelector('#send_form')) });
     renderPlaylists();
     renderTracks();
     if (settings.currentId) void selectTrack(settings.currentId);
     if (!document.getElementById('preloader')) void syncRole(true);
-    return { panel, launcher, audio, settings, dispose, setOpen, setDesign: applyUserDesign, getDesign: effectiveDesign };
+    return { panel, launcher, audio, settings, dispose, setOpen, visibility, setDesign: applyUserDesign, getDesign: effectiveDesign };
 }
 
 async function startFullPlayer() {

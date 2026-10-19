@@ -1,5 +1,5 @@
 import { readScriptPayload, analyzePayload, PLAYER_BUILD } from '../card-player/quality.js';
-import { contrastRatio, colorChannels } from '../ui/contrast.js';
+import { contrastRatio, colorChannels, compositeColor } from '../ui/contrast.js';
 import { test, expect } from '@playwright/test';
 import { readFile, mkdir, writeFile, mkdtemp, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -675,8 +675,8 @@ for (const {mobile,layout} of [{mobile:false,layout:'vinyl'},{mobile:true,layout
             await recipient.locator('[data-action=toggle-lyrics]').click();
             await expect(recipient.locator('.stm-lyrics-lines p').first()).toHaveCSS('opacity','1');
             await expect(recipient.locator('.stm-lyrics-lines p').first()).toHaveCSS('font-size','23px');
-            const renderedLyric=await recipient.locator('.stm-lyrics-lines p').first().evaluate(node=>{const css=getComputedStyle(node);return {text:css.color,background:css.backgroundColor};});
-            expect(colorChannels(renderedLyric.background)[3]).toBe(1);expect(contrastRatio(renderedLyric.text,renderedLyric.background)).toBeGreaterThanOrEqual(4.5);
+            const renderedLyric=await recipient.locator('.stm-lyrics-lines p').first().evaluate(node=>{const css=getComputedStyle(node);return {text:css.color,background:css.backgroundColor,scrim:getComputedStyle(node.closest('.stm-lyrics-scroll')).backgroundColor};});
+            expect(colorChannels(renderedLyric.background)[3]).toBe(0);for(const image of ['#000000','#ffffff'])expect(contrastRatio(renderedLyric.text,compositeColor(renderedLyric.scrim,image))).toBeGreaterThanOrEqual(4.5);
             await recipient.locator('.stm-lyrics-lines p').first().evaluate(n=>n.click());
             await expect(recipient.locator('.stm-lyrics-view')).toBeVisible();
             await recipient.locator('[data-action=back-cover]').click();
@@ -699,6 +699,7 @@ for (const {mobile,layout} of [{mobile:false,layout:'vinyl'},{mobile:true,layout
                         audio: node.__risereinPlayer.audio,
                     }),
             );
+            await recipientVisibilityAcceptance(recipient, {layout,mobile,format:file.format});
             if (file.format === 'json') {
                 await recipient.locator('.stm-options [data-favorite-id]').click();
                 await expect(recipient.locator('.stm-options [data-favorite-id]')).toHaveAttribute('aria-pressed','true');
@@ -832,6 +833,9 @@ for (const {mobile,layout} of [{mobile:false,layout:'vinyl'},{mobile:true,layout
             await recipient.locator('#stm-player').screenshot({
                 path: `${screenshotDir}/native-${layout}-${mobile ? 'mobile' : 'desktop'}-${file.format}.png`,
             });
+            await recipient.locator('.stm-visibility-menu summary').click();
+            await recipient.locator('.stm-visibility-menu [data-display-hide]').click();
+            await expect.poll(()=>recipient.evaluate(()=>{const node=document.querySelector('[data-riserein-card-player]'),api=node.__risereinPlayer;const key=`riserein:card-native:v2:${encodeURIComponent(api.roleId)}:${encodeURIComponent(api.scriptId)}:${encodeURIComponent(node.dataset.risereinCardPlayer)}`;return JSON.parse(SillyTavern.getContext().accountStorage.getItem(key)||'{}').visibility?.state;})).toBe('hidden');
             await selectCard(recipient, blank);
             await expect(recipient.locator(root)).toHaveCount(0);
             expect(
@@ -845,8 +849,12 @@ for (const {mobile,layout} of [{mobile:false,layout:'vinyl'},{mobile:true,layout
                     );
                 }),
             ).toBe(true);
+            await expect(recipient.locator('[data-riserein-recovery]')).toHaveCount(0);
             await selectCard(recipient, avatar);
             await expect(recipient.locator(root)).toHaveCount(1);
+            await expect(recipient.locator('#stm-player')).toBeHidden();await expect(recipient.locator('.stm-launcher')).toBeHidden();
+            await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();await recipient.locator('.stm-launcher').click();
+            expect(await recipient.locator(root+' audio').evaluate(a=>a.paused)).toBe(true);
             if (file.format === 'json') {
                 await expect(recipient.locator('.stm-sleep-button')).toHaveAttribute('data-active','false');
                 await recipient.getByRole('tab',{name:'曲库',exact:true}).click();
@@ -1185,3 +1193,37 @@ test('actual full plugin activation replaces a playing carried player without le
  const payload={version:1,runtimeVersion:PLAYER_BUILD,config:{id:'coexist-real',title:'Coexist fixture',tracks:[{id:'coexist-tone',title:'Original tone',src:'data:audio/mpeg;base64,'+tone.toString('base64'),cover}],appearance:{},volume:.3},ui:{fontPreset:'inherit',uiDesign:{uiVersion:1,layout:'vinyl'}},playlist:{id:'coexist-list',name:'Coexist'},assets:Object.fromEntries(['forest','moon','sunroom'].map(name=>['assets/covers/'+name+'.png',cover]))};const script=nativeCardScript(payload,(await readFile(new URL('../card-player/dist/native-runtime.js',import.meta.url))).toString(),'coexist-script');const card=attachPlayerToCard({spec:'chara_card_v2',spec_version:'2.0',data:{name:'RSCP_Test_Coexist_'+crypto.randomUUID().slice(0,8),description:'Original coexist fixture',first_mes:'Opening.',extensions:{}}},script,payload.config.id);const avatar=await importCard(page,Buffer.from(JSON.stringify(card)),'json');await selectCard(page,avatar);await page.getByText(/^(确认|Confirm)$/,{exact:true}).last().click();await expect(page.locator('[data-riserein-card-player]')).toHaveCount(1);await page.locator('[data-action=play]').click();await expect.poll(()=>page.locator('#stm-player audio').evaluate(a=>a.currentTime)).toBeGreaterThan(.2);await page.evaluate(()=>{window.beforeFullApi=document.querySelector('[data-riserein-card-player]').__risereinPlayer;window.beforeFullAudio=beforeFullApi.audio;});
  await page.unroute('**/scripts/extensions/third-party/sillytavern/**');await page.evaluate(async()=>{SillyTavern.getContext().extensionSettings.disabledExtensions=[];await import('/scripts/extensions/third-party/sillytavern/index.js?coexist='+crypto.randomUUID());});await expect(page.locator('#stm-player:not([data-portable])')).toHaveCount(1);await expect(page.locator('[data-riserein-card-player]')).toHaveCount(0);expect(await page.evaluate(()=>beforeFullApi.disposed&&beforeFullAudio.paused&&!beforeFullAudio.getAttribute('src')&&Object.values(beforeFullApi.resourceCounts).every(n=>n===0))).toBe(true);expect(await page.evaluate(()=>TavernHelper.getScriptTrees({type:'character'}).some(row=>row.id==='coexist-script'))).toBe(true);expect(await page.locator('#stm-player audio').count()).toBe(1);expect(await page.evaluate(()=>!beforeFullAudio.isConnected)).toBe(true);
 });
+
+async function recipientVisibilityAcceptance(page,{layout,mobile,format}) {
+ const audio=page.locator('[data-riserein-card-player] audio');
+ for(const mode of ['flow','centered','immersive']){
+  await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('#stm-lyric-mode-trigger').click();await page.locator('#stm-lyric-mode-menu [data-value='+mode+']').click();
+  await page.getByRole('tab',{name:'播放',exact:true}).click();await page.locator('[data-action=toggle-lyrics]').click();
+  await expect(page.locator('.stm-lyrics-view')).toHaveAttribute('data-lyric-mode',mode);
+  expect(await page.evaluate(()=>window.__nativeOld.audio===document.querySelector('[data-riserein-card-player]').__risereinPlayer.audio&&!window.__nativeOld.audio.paused)).toBe(true);
+  await page.locator('[data-action=back-cover]').click();
+ }
+ await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('#stm-lyric-mode-trigger').click();await page.locator('#stm-lyric-mode-menu [data-value=flow]').click();await page.getByRole('tab',{name:'播放',exact:true}).click();
+ await page.locator('.stm-visibility-menu summary').click();await page.locator('.stm-visibility-menu [data-display-dock]').click();
+ await expect(page.locator('.stm-launcher')).toHaveAttribute('data-display','docked');expect(await audio.evaluate(a=>a.paused)).toBe(false);
+ await page.locator('.stm-launcher').click();await page.locator('.stm-visibility-menu summary').click();await page.locator('.stm-visibility-menu [data-display-hide]').click();
+ await expect(page.locator('#stm-player')).toBeHidden();await expect(page.locator('.stm-launcher')).toBeHidden();expect(await audio.evaluate(a=>a.paused)).toBe(true);
+ const time=await audio.evaluate(a=>a.currentTime);
+ await page.locator('#extensionsMenuButton').click();await expect(page.locator('[data-riserein-recovery]')).toContainText('已隐藏');
+ await expect(page.locator('#extensionsMenu')).toHaveCSS('opacity','1');
+ const recoveryStyle=await page.locator('[data-riserein-recovery]').evaluate(n=>({color:getComputedStyle(n).color,parent:getComputedStyle(n.parentElement).color,background:getComputedStyle(n).backgroundColor,height:n.getBoundingClientRect().height}));expect(recoveryStyle.color).toBe(recoveryStyle.parent);expect(colorChannels(recoveryStyle.background)[3]).toBe(0);expect(recoveryStyle.height).toBeGreaterThanOrEqual(40);
+ await page.screenshot({path:`${screenshotDir}/wand-hidden-${layout}-${format}-${mobile?'mobile':'desktop'}.png`});
+ await page.locator('[data-riserein-recovery]').click();await expect(page.locator('.stm-launcher')).toBeVisible();expect(await audio.evaluate(a=>a.paused)).toBe(true);expect(await audio.evaluate(a=>a.currentTime)).toBe(time);
+ await page.locator('.stm-launcher').click();
+ // Helper's script button is an independent, actually rendered fallback.
+ const helper=page.locator('[id^=script_container_] .qr--button').filter({hasText:'显示/隐藏角色音乐'});
+ await expect(helper).toBeVisible();
+ await page.evaluate(()=>{window.__savedWandMenu=document.getElementById('extensionsMenu');window.__savedWandMenu.remove();});
+ try {
+  await page.locator('.stm-visibility-menu summary').click();await page.locator('.stm-visibility-menu [data-display-hide]').click();
+  await expect(page.locator('.stm-launcher')).toBeHidden();await helper.click();await expect(page.locator('.stm-launcher')).toBeVisible();expect(await audio.evaluate(a=>a.paused)).toBe(true);
+  await page.screenshot({path:`${screenshotDir}/helper-recovery-${layout}-${format}-${mobile?'mobile':'desktop'}.png`});
+ } finally {await page.evaluate(()=>document.body.append(window.__savedWandMenu));}
+ await page.locator('.stm-launcher').click();await page.locator('[data-action=play]').click();await expect.poll(()=>audio.evaluate(a=>a.currentTime)).toBeGreaterThan(time+.1);
+ await expect(page.locator('[data-riserein-recovery]')).toHaveCount(1);
+}

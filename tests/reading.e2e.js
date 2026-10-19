@@ -28,21 +28,19 @@ test('rendered contrast matrix: all old palettes and all new layouts, schemes, s
         const canvas = document.createElement('canvas'); canvas.width = canvas.height = 80;
         const c = canvas.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, 80, 80); c.fillStyle = '#000'; c.fillRect(0, 0, 40, 40); c.fillRect(40, 40, 40, 40); const image = canvas.toDataURL();
         function sample(node) {
-            const css = getComputedStyle(node), layers = []; let parent = node, opaque = false, opacity = 1;
-            while (parent && parent !== document.body) {
-                const style = getComputedStyle(parent);
-                // display:contents has no painted box, whatever its computed color.
-                if (style.display === 'contents') { parent = parent.parentElement; continue; }
-                const color = style.backgroundColor, rgba = colorChannels(color);
-                opacity *= Number(style.opacity);
-                if (rgba) layers.push(color);
-                if (rgba?.[3] === 1) { opaque = true; break; }
-                parent = parent.parentElement;
+            const css = getComputedStyle(node), layers = []; let parent=node, opaque=false, opacity=1;
+            while(parent && parent!==document.body){
+                const style=getComputedStyle(parent);if(style.display==='contents'){parent=parent.parentElement;continue;}
+                opacity*=Number(style.opacity);
+                // An image may cover its element's background color. Bound it
+                // conservatively rather than pretend that HEX is the image.
+                if(style.backgroundImage!=='none')break;
+                const color=style.backgroundColor,rgba=colorChannels(color);if(rgba)layers.push(color);
+                if(rgba?.[3]===1){opaque=true;break;}parent=parent.parentElement;
             }
-            if (!opaque) return { safe: false, reason: 'no opaque reading plate' };
-            let bg = layers.pop();
-            for (const layer of layers.reverse()) bg = compositeColor(layer, bg);
-            return { safe: true, ratio: contrastRatio(compositeColor(css.color, bg), bg), opacity, size: parseFloat(css.fontSize), foreground: css.color, background: bg };
+            const bases=opaque?[layers.pop()]:['#000000','#ffffff'];
+            const backgrounds=bases.map(base=>layers.toReversed().reduce((bg,layer)=>compositeColor(layer,bg),base));
+            return {safe:true,ratio:Math.min(...backgrounds.map(bg=>contrastRatio(compositeColor(css.color,bg),bg))),opacity,size:parseFloat(css.fontSize),foreground:css.color,backgrounds,basis:opaque?'painted-opaque-box':'black-white-image-bounds'};
         }
         for (const row of rows) for (const scheme of ['dark', 'light']) for (const surface of ['matte', 'glass', 'clear']) for (const hasImage of [false, true]) {
             Object.assign(app.settings, { theme: row.theme, surface, colorScheme: scheme, customColors: row.custom ? { enabled: true, background: '#858585', text: '#898989', accent: '#888888' } : { ...app.settings.customColors, enabled: false } });
@@ -60,14 +58,16 @@ test('rendered contrast matrix: all old palettes and all new layouts, schemes, s
         }
         return { cases, failures };
     }, prefix);
-    await mkdir('docs/readability/results', { recursive: true });
-    await writeFile(`docs/readability/results/matrix-${info.project.name}.json`, JSON.stringify(result, null, 2));
+    await mkdir(process.env.ST_READING_REPORT_DIR || 'docs/readability/results', { recursive: true });
+    await writeFile(`${process.env.ST_READING_REPORT_DIR || 'docs/readability/results'}/matrix-${info.project.name}.json`, JSON.stringify(result, null, 2));
     expect(result.cases.length).toBe(384);
     expect(result.failures).toEqual([]);
 });
 
 test('manual reading survives new LRC lines; resume, text clicks, keys, reopening and song changes preserve audio', async ({ page }) => {
     await fixture(page);
+    // This regression asserts exact centering. Flow motion is tested separately.
+    await page.evaluate(() => { app.settings.reading.displayMode = 'centered'; });
     const audio = page.locator('#stm-player audio');
     await page.locator('[data-action=play]').click(); await expect.poll(() => audio.evaluate(a => a.currentTime)).toBeGreaterThan(.2);
     await page.locator('[data-action=toggle-lyrics]').click();
@@ -198,13 +198,13 @@ test('all reading levels and lyric backgrounds protect custom colors; real touch
             document.querySelector('[data-page=playback]').click(); document.querySelector('[data-action=toggle-lyrics]').click();
         }, { level, background });
         const data = await page.locator('.stm-lyrics-lines p:not(.stm-current-lyric)').first().evaluate(async n => {
-            const { contrastRatio } = await import('/scripts/extensions/third-party/sillytavern/ui/contrast.js'); const css = getComputedStyle(n);
-            return { ratio: contrastRatio(css.color, css.backgroundColor), opacity: css.opacity };
+            const { contrastRatio,compositeColor } = await import('/scripts/extensions/third-party/sillytavern/ui/contrast.js'); const css = getComputedStyle(n),mask=getComputedStyle(n.closest('.stm-lyrics-scroll')).backgroundColor;
+            return { ratio: Math.min(...['#000000','#ffffff'].map(bg=>contrastRatio(css.color,compositeColor(mask,bg)))), opacity: css.opacity };
         });
         expect(data.ratio).toBeGreaterThanOrEqual(level === 'high' ? 9 : 4.5); expect(data.opacity).toBe('1');
-        const currentRatio = await page.locator('.stm-current-lyric').evaluate(async n => { const { contrastRatio } = await import('/scripts/extensions/third-party/sillytavern/ui/contrast.js'); const c = getComputedStyle(n); return contrastRatio(c.color, c.backgroundColor); });
+        const currentRatio = await page.locator('.stm-current-lyric').evaluate(async n => { const { contrastRatio,compositeColor } = await import('/scripts/extensions/third-party/sillytavern/ui/contrast.js'); const c = getComputedStyle(n),mask=getComputedStyle(n.closest('.stm-lyrics-scroll')).backgroundColor; return Math.min(...['#000000','#ffffff'].map(bg=>contrastRatio(c.color,compositeColor(mask,bg)))); });
         expect(currentRatio).toBeGreaterThanOrEqual(level === 'high' ? 7 : 4.5);
-        if (background === 'transparent') await expect(page.locator('.stm-lyrics-scroll')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+        if (background === 'transparent') expect(await page.locator('.stm-lyrics-scroll').evaluate(async n=>{const {colorChannels}=await import('/scripts/extensions/third-party/sillytavern/ui/contrast.js');return colorChannels(getComputedStyle(n).backgroundColor)[3];})).toBeCloseTo(.9,2);
         await page.locator('[data-action=back-cover]').click();
     }
     await page.locator('[data-action=toggle-lyrics]').click();
@@ -232,12 +232,12 @@ test('old maker standalone preview uses the same readable colors and explicit ly
     await page.locator('.play').click(); await expect.poll(() => page.evaluate(() => legacyReadingApi.audio.currentTime)).toBeGreaterThan(.2);
     await page.locator('.cover').click();
     await expect(page.locator('.lyrics .lyric-lines p').first()).toHaveCSS('font-size', '24px');
-    const ratio = await page.locator('.lyrics .lyric-lines p:not(.active)').first().evaluate(async n => { const { contrastRatio } = await import('/scripts/extensions/third-party/sillytavern/ui/contrast.js'); const s = getComputedStyle(n); return contrastRatio(s.color, s.backgroundColor); });
+    const ratio = await page.locator('.lyrics .lyric-lines p:not(.active)').first().evaluate(async n => { const { contrastRatio,compositeColor } = await import('/scripts/extensions/third-party/sillytavern/ui/contrast.js'); const s = getComputedStyle(n),mask=getComputedStyle(n.closest('.lyric-scroll')).backgroundColor; return Math.min(...['#000000','#ffffff'].map(bg=>contrastRatio(s.color,compositeColor(mask,bg)))); });
     expect(ratio).toBeGreaterThanOrEqual(9);
     await page.locator('.lyric-scroll').focus(); await page.keyboard.press('PageDown');
     await expect(page.locator('.lyrics')).toHaveAttribute('data-follow', 'false');
     await page.locator('[data-action=resume-lyrics]').click(); await expect(page.locator('.lyrics')).toHaveAttribute('data-follow', 'true');
-    await page.locator('.head button').click(); await page.locator('.ball').click();
+    await page.getByRole('button',{name:'收起角色播放器',exact:true}).click(); await page.locator('.ball').click();
     await expect(page.locator('.lyric-scroll')).toBeFocused(); await expect(page.locator('.lyrics')).toHaveAttribute('data-follow', 'true');
     await page.locator('[data-action=back-cover]').click(); await expect(page.locator('.lyrics')).toBeHidden();
     expect(await page.evaluate(() => !legacyReadingApi.audio.paused)).toBe(true);
@@ -252,8 +252,8 @@ test('reading preferences persist through real IndexedDB binary ZIP restore incl
         const store = new LocalMusicStore(), projects = new CardProjectStore(), journal = new MaintenanceJournal();
         const reading = { level: 'high', lyricSize: 26, lineHeight: 2.3, autoFollow: false, lyricBackground: 'transparent' };
         const id = 'reading-backup-local'; await store.put(id, new Blob([new Uint8Array(tone)], { type: 'audio/mpeg' }));
-        const settings = normalizeSettings({ tracks: [{ id, title: '备份原音频', kind: 'local', lyrics: '[00:00]保留原文' }], reading });
-        await projects.save({ id: 'rscp:reading', title: '阅读草稿', tracks: [{ ...settings.tracks[0], exportBlob: await store.get(id) }], sourceSettings: { reading }, form: {} });
+        const settings = normalizeSettings({ tracks: [{ id, title: '备份原音频', kind: 'local', lyrics: '[00:00]保留原文' }], reading,lyricOffsets:{[id]:700},visibility:{state:'hidden',resume:{id,time:5}} });
+        await projects.save({ id: 'rscp:reading', title: '阅读草稿', tracks: [{ ...settings.tracks[0], exportBlob: await store.get(id) }], sourceSettings: { reading }, form: {'stm-maker-recipient-display':'docked'} });
         const backup = await createBackup({ settings, store, projects: await projects.list() });
         const inspected = await inspectBackup(backup.blob);
         const current = normalizeSettings();
@@ -262,11 +262,12 @@ test('reading preferences persist through real IndexedDB binary ZIP restore incl
         await applyRestore({ plan, store, projects, journal, settings: current, commitSettings: async next => { acknowledged = structuredClone(next); return 'confirmed'; } });
         await verifyReferences(acknowledged, store, await projects.list());
         const drafts = await projects.list();
-        const result = { reading: acknowledged.reading, draftReading: drafts.find(p => p.id !== 'rscp:reading').sourceSettings.reading, oldDraft: Boolean(drafts.find(p => p.id === 'rscp:reading')), bytes: (await store.get(acknowledged.tracks[0].id)).size, lyrics: acknowledged.tracks[0].lyrics };
+        const result = { offset: acknowledged.lyricOffsets[acknowledged.tracks[0].id], resume:acknowledged.visibility.resume, restoredId:acknowledged.tracks[0].id, reading: acknowledged.reading, draftReading: drafts.find(p => p.id !== 'rscp:reading').sourceSettings.reading, draftDisplay:drafts.find(p=>p.id!=='rscp:reading').form['stm-maker-recipient-display'],oldDraft: Boolean(drafts.find(p => p.id === 'rscp:reading')), bytes: (await store.get(acknowledged.tracks[0].id)).size, lyrics: acknowledged.tracks[0].lyrics };
         await store.close(); await projects.dispose(); await journal.close(); return result;
     }, { prefix, tone: [...tone] });
-    expect(restored.reading).toEqual({ level: 'high', lyricSize: 26, lineHeight: 2.3, autoFollow: false, lyricBackground: 'transparent' });
-    expect(restored.draftReading).toEqual(restored.reading); expect(restored.oldDraft).toBe(true); expect(restored.bytes).toBe(tone.length); expect(restored.lyrics).toBe('[00:00]保留原文');
+    expect(restored.draftDisplay).toBe('docked');expect(restored.offset).toBe(700);expect(restored.resume.id).toBe(restored.restoredId);expect(restored.resume.time).toBe(5);
+    expect(restored.reading).toEqual({ level: 'high', lyricSize: 26, lineHeight: 2.3, autoFollow: false, lyricBackground: 'transparent', displayMode: 'flow', nextLine: true });
+    expect({...restored.draftReading,displayMode:'flow',nextLine:true}).toEqual(restored.reading); expect(restored.oldDraft).toBe(true); expect(restored.bytes).toBe(tone.length); expect(restored.lyrics).toBe('[00:00]保留原文');
 });
 
 test('actual host reading controls, designer contrast warnings and layout changes retain one playing Audio', async ({ page }) => {

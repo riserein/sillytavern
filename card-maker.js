@@ -46,7 +46,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
     <label>遮罩不透明度<input type="range" data-maker="opacity" min="0" max="100" value="65" aria-label="导出遮罩不透明度"></label>
     <label class="stm-check-label"><input type="checkbox" data-maker="background">携带当前裁剪后的背景</label>
     <label class="stm-check-label"><input type="checkbox" data-maker="font">携带当前字体文件（如有）</label><label data-maker="font-credit-label" hidden>自定义字体的授权及署名说明<textarea data-maker="font-credit" rows="3" maxlength="30000" placeholder="内置字体自动附带许可；自定义字体请填写有权分发的授权说明，或取消携带字体。"></textarea></label>
-    <label class="stm-check-label"><input type="checkbox" data-maker="collapsed">进入角色时先显示黑胶悬浮球</label>
+    <label>接收者默认显示方式<select id="stm-maker-recipient-display" data-maker="recipient-display"><option value="launcher">普通悬浮入口</option><option value="docked">贴边入口</option><option value="collapsed">收起窗口但显示悬浮入口</option></select></label><label class="stm-check-label"><input type="checkbox" data-maker="collapsed">进入角色时先显示黑胶悬浮球</label>
     <p class="stm-hint">沿用当前音量与播放模式。进入角色自动显示，点击播放后开始；离开角色立即停止。</p>
     <h4>3 · 检查资源并导出</h4><p class="stm-hint">本地音频会随脚本内嵌，单首最多 20 MB，内嵌资源合计最多 30 MB。公开直链需要长期可访问。请仅分发你有权使用的资源。</p>
     <p class="stm-hint">制作端版本 ${PLAYER_BUILD}。恢复旧项目后点击“检查资源并生成预览”即可重建，不改变歌曲和配色。</p><button type="button" class="stm-secondary" data-maker="analyze">分析资源容量（不试听）</button><button type="button" class="stm-secondary" data-maker="verify-file">核对已导出的 PNG / JSON</button><input type="file" data-maker-file="verify" accept=".json,.png" hidden><details class="stm-maker-analysis"><summary>资源大小与验证状态</summary><pre data-maker="analysis" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
@@ -83,7 +83,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         openGeneration = 0;
     const draftRevisions = new Map(),
         recoveries = new Map();
-    const sourceKeys = ['backgroundId', 'fontPreset', 'fontId', 'fontName', 'volume', 'mode', 'transitionDuration', 'theme', 'colorScheme', 'surface', 'maskOpacity', 'customColors', 'clickEffects', 'uiDesign', 'reading'];
+    const sourceKeys = ['backgroundId', 'fontPreset', 'fontId', 'fontName', 'volume', 'mode', 'transitionDuration', 'theme', 'colorScheme', 'surface', 'maskOpacity', 'customColors', 'clickEffects', 'uiDesign', 'reading', 'lyricOffsets'];
     const formSnapshot = () =>
         Object.fromEntries(
             [
@@ -197,6 +197,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         tracks = project.tracks;
         collectionId = project.form['stm-maker-collection'] || '';
         sourceSettings = project.sourceSettings;
+        q('[data-maker=recipient-display]').value = project.form?.['stm-maker-recipient-display'] || project.form?.['recipient-display'] || normalizeDesign(sourceSettings.uiDesign).recipientDisplay;
         q('[data-maker=shared-design]').checked=project.form['shared-design']===true;
         projectAssets = project.assets || {};
         for (const node of element.querySelectorAll('input,textarea,select')) {
@@ -515,6 +516,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         projectId = `rscp:${createTrackId()}`;
         sourceSettings = Object.fromEntries(sourceKeys.map((key) => [key, structuredClone(settings[key])]));
         sourceSettings.uiDesign=normalizeDesign(getDesign());
+        q('[data-maker=recipient-display]').value=sourceSettings.uiDesign.recipientDisplay;
         q('[data-maker=shared-design]').checked=false;
         projectAssets = {};
         returnFocus = document.activeElement;
@@ -692,7 +694,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         '[data-maker-color],[data-maker=opacity],#stm-maker-surface',
     ))
         control.addEventListener('input', applyColors);
-    for (const name of ['background', 'font', 'collapsed', 'font-credit', 'shared-design'])
+    for (const name of ['background', 'font', 'collapsed', 'font-credit', 'shared-design', 'recipient-display'])
         q(`[data-maker=${name}]`).addEventListener('change', edits);
     q('[data-maker=font-credit]').addEventListener('input', edits);
     q('[data-maker=shared-design]').addEventListener('change',()=>{
@@ -702,6 +704,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
     });
     q('[data-maker=capture-design]').addEventListener('click',()=>{
         sourceSettings.uiDesign=normalizeDesign(getDesign());
+        q('[data-maker=recipient-display]').value=sourceSettings.uiDesign.recipientDisplay;
         sourceSettings.fontPreset=sourceSettings.uiDesign.fontPreset==='current'?settings.fontPreset:sourceSettings.uiDesign.fontPreset;
         sourceSettings.fontId=settings.fontId;sourceSettings.fontName=settings.fontName;
         delete projectAssets.iconBlob;delete projectAssets.fontBlob;
@@ -773,7 +776,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     volume: sourceSettings.volume,
                     mode: sourceSettings.mode,
                     transitionDuration: sourceSettings.transitionDuration,
-                    reading: sourceSettings.reading,
+                    reading: sourceSettings.reading, lyricOffsets: sourceSettings.lyricOffsets, recipientDisplay: q('[data-maker=recipient-display]').value,
                     startCollapsed: q('[data-maker=collapsed]').checked,
                 },
                 {
@@ -1025,6 +1028,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                         sourceKeys.map((key) => [key, structuredClone(settings[key])]),
                     );
                     sourceSettings.uiDesign=normalizeDesign(getDesign());
+        q('[data-maker=recipient-display]').value=sourceSettings.uiDesign.recipientDisplay;
                     chooseCollection();
                     draftReady = true;
                     await saveDraft();

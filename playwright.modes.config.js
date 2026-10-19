@@ -1,0 +1,2 @@
+import { defineConfig } from '@playwright/test';
+export default defineConfig({testDir:'./tests',testMatch:'lyrics-modes.e2e.js',workers:1,timeout:90000,outputDir:'test-results/lyrics-modes',use:{baseURL:process.env.ST_BASE_URL||'http://127.0.0.1:8000',launchOptions:{executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium'},trace:'retain-on-failure',screenshot:'only-on-failure'},projects:[{name:'desktop',use:{viewport:{width:1000,height:900}}},{name:'mobile-chromium-emulation',use:{viewport:{width:390,height:844},hasTouch:true,isMobile:true}}]});

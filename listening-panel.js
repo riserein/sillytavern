@@ -103,5 +103,5 @@ export function createListeningPanel({ panel, settings, audio, getTrack, save, s
     group.innerHTML = '<summary>柔和播放过渡</summary><label for="stm-transition-duration">暂停、恢复与切歌</label><select id="stm-transition-duration"><option value="0">关闭</option><option value="150">150 ms</option><option value="300">300 ms</option><option value="500">500 ms</option><option value="800">800 ms</option></select><p class="stm-hint">只调整临时播放音量，不会改变你保存的音量；部分移动浏览器限制程序调整音量时，过渡可能不生效。</p>';
     query('#stm-appearance').append(group); query('#stm-transition-duration').value = String(settings.transitionDuration);
     render();
-    return { button, timer, render, update, detail(id) { mark(detail, id); }, dispose() { disposed = true; timer.dispose(); doc.removeEventListener('visibilitychange', check); } };
+    return { button, timer, cancelSleep: () => timer.cancel(), render, update, detail(id) { mark(detail, id); }, dispose() { disposed = true; timer.dispose(); doc.removeEventListener('visibilitychange', check); } };
 }
