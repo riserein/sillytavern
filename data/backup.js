@@ -1,3 +1,4 @@
+import {ambientReferences,ambientShapeKnown,normalizeAmbientLibrary,normalizeSoundscape} from '../ambient.js';
 import {normalizeSceneSet,sceneAssetReferences} from '../music-scenes.js';
 import {normalizeSettings} from '../core.js';
 import {referencedAssets} from '../asset-retirement.js';
@@ -9,7 +10,7 @@ import {normalizeDesign,designReferences} from '../ui/config.js';
 const encoder=new TextEncoder();
 const TRACK_KEYS=['id','kind','title','artist','album','url','coverId','lyrics','lyricOriginal','lyricsSource','lyricOffsetMs','fallbackCover','platform','platformTrackId','remoteId','sourceUrl','playback','cover','duration','metadataStatus','restriction'];
 const FORM_KEYS=['stm-maker-title','stm-maker-collection','stm-maker-theme','stm-maker-surface','accent','background','text','color:accent','color:background','color:text','opacity','font','font-credit','collapsed','recipient-display','stm-maker-recipient-display','shared-design'];
-const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode','transitionDuration','uiDesign','reading','coverColorMode','lyricOffsets','sceneSet','theme','colorScheme','surface','maskOpacity','customColors','clickEffects'];
+const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode','transitionDuration','uiDesign','reading','ambientLibrary','soundscape','coverColorMode','lyricOffsets','sceneSet','theme','colorScheme','surface','maskOpacity','customColors','clickEffects'];
 const pick=(object,keys)=>Object.fromEntries(keys.filter(key=>Object.hasOwn(object||{},key)).map(key=>[key,object[key]]));
 export const canonical=value=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)&&!(item instanceof Blob)?Object.fromEntries(Object.keys(item).sort().map(key=>[key,item[key]])):item);
 function cleanUrl(value,warnings) {
@@ -30,6 +31,7 @@ function trackMetadata(track,warnings) {
 }
 export function safeSettings(raw,warnings=new Set(),catalog=raw?.builtinCatalog) {
     const safe=JSON.parse(JSON.stringify(normalizeSettings(raw,Date.now(),catalog)));
+    safe.ambientLibrary=safe.ambientLibrary.map(row=>row.url?{...row,url:cleanUrl(row.url,warnings)}:row);
     safe.tracks=safe.tracks.map(track=>trackMetadata(track,warnings));
     for(const list of safe.playlists)if(list.source){list.source=pick(list.source,['platform','id','url','name','author','total','cover']);for(const key of ['url','cover'])if(list.source[key])list.source[key]=cleanUrl(list.source[key],warnings);}
     return safe;
@@ -39,7 +41,7 @@ function assertScenesPreserved(raw,safe) {
     if(raw.roleScenes.length!==safe.roleScenes.length)throw new Error('角色场景包含重复、无效或超限配置，未生成或恢复部分数据。');
     for(const group of raw.roleScenes){
         const copy=safe.roleScenes.find(g=>g.avatar===group.avatar);
-        if(!copy||!Array.isArray(group.scenes)||group.scenes.length!==copy.scenes.length||group.scenes.some(s=>{const next=copy.scenes.find(n=>n.id===s.id);return !next||!Array.isArray(s.trackIds)||s.trackIds.some(id=>!next.trackIds.includes(id));}))throw new Error('音乐场景包含超限或无效歌曲引用，未舍弃场景。');
+        if(!copy||!Array.isArray(group.scenes)||group.scenes.length!==copy.scenes.length||group.scenes.some(s=>{const next=copy.scenes.find(n=>n.id===s.id);return !next||(s.ambient?.id&&s.ambient.id!==next.ambient?.id)||!Array.isArray(s.trackIds)||s.trackIds.some(id=>!next.trackIds.includes(id));}))throw new Error('音乐场景包含超限或无效歌曲引用，未舍弃场景。');
         for(const note of group.notes||[])if(note.text?.trim()&&copy.notes.find(n=>n.trackId===note.trackId)?.text!==note.text)throw new Error('歌曲手记超限或重复，未截短保存备份。');
     }
 }
@@ -50,9 +52,11 @@ export function draftReferences(project) {
     if(project.sourceSettings?.fontPreset==='custom'&&project.sourceSettings?.fontId&&!project.assets?.fontBlob)ids.add(project.sourceSettings.fontId);
     if(!project.assets?.iconBlob)for(const id of designReferences(project.sourceSettings))ids.add(id);
     for(const id of sceneAssetReferences([project.sourceSettings?.sceneSet||{}]))if(!project.assets?.sceneBlobs?.[id]&&!id.endsWith(':original'))ids.add(id);
+    for(const id of ambientReferences(project.sourceSettings?.ambientLibrary))if(!project.assets?.ambientBlobs?.[id])ids.add(id);
     return ids;
 }
 export async function createBackup({settings,store,projects=[],version=PLAYER_BUILD,signal,onProgress=()=>{}}) {
+    if(!ambientShapeKnown(settings.ambientLibrary))throw new Error('环境音包含未知、无效或超限引用，未生成部分备份。');
     const warnings=new Set(),snapshot=safeSettings(settings,warnings),files=new Map(),resources=[];
     assertScenesPreserved(settings,snapshot);
     if(!Array.isArray(projects)||projects.length>10000)throw new Error('制作项目超过备份版本支持的数量，未生成部分备份。');
@@ -71,6 +75,7 @@ export async function createBackup({settings,store,projects=[],version=PLAYER_BU
     const drafts=[];
     for(const project of projects){
         const copy={...pick(project,['id','title','format','updatedAt','revision','runtimeVersion','editRevision']),sourceSettings:pick(project.sourceSettings,SOURCE_KEYS),form:pick(project.form,FORM_KEYS),assets:{},tracks:[]};
+        copy.sourceSettings.ambientLibrary=normalizeAmbientLibrary(copy.sourceSettings.ambientLibrary).map(row=>row.url?{...row,url:cleanUrl(row.url,warnings)}:row);copy.sourceSettings.soundscape=normalizeSoundscape(copy.sourceSettings.soundscape);if(copy.sourceSettings.ambientLibrary.length!==(project.sourceSettings?.ambientLibrary||[]).length)throw new Error('制作项目环境音数据无效或超限，未生成部分备份。');
         for(const track of project.tracks||[]){
             const row=trackMetadata(track,warnings);
             if(track.exportUrl)row.exportUrl=cleanUrl(track.exportUrl,warnings);
@@ -96,6 +101,7 @@ export async function createBackup({settings,store,projects=[],version=PLAYER_BU
             const set=normalizeSceneSet(copy.sourceSettings.sceneSet);assertScenesPreserved({roleScenes:[{avatar:'project',...copy.sourceSettings.sceneSet}]},{roleScenes:[{avatar:'project',...set}]});copy.sourceSettings.sceneSet=set;copy.assets.sceneBlobs={};
             for(const id of sceneAssetReferences([set])){const blob=project.assets?.sceneBlobs?.[id]||all.get(id);if(blob)copy.assets.sceneBlobs[id]=await add(blob,'项目场景图片');else if(!id.endsWith(':original'))throw new Error('项目场景图片缺失，未生成不完整备份。');}
         }
+        copy.assets.ambientBlobs={};for(const id of ambientReferences(copy.sourceSettings.ambientLibrary)){const blob=project.assets?.ambientBlobs?.[id]||all.get(id);if(!blob)throw new Error('制作项目环境音或封面缺失，未生成部分备份。');copy.assets.ambientBlobs[id]=await add(blob,'项目音景资源');}
         drafts.push(copy);
         onProgress({phase:'projects',done:drafts.length,total:projects.length});
     }
@@ -129,6 +135,7 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
         if(typeof project.id!=='string'||!project.id||projects.has(project.id)||!Array.isArray(project.tracks)||project.tracks.length>200||!plain(project.form)||!plain(project.sourceSettings))throw new Error('备份项目结构或 ID 无效。');
         projects.add(project.id);
         if(project.sourceSettings.sceneSet){const set=normalizeSceneSet(project.sourceSettings.sceneSet);assertScenesPreserved({roleScenes:[{avatar:'project',...project.sourceSettings.sceneSet}]},{roleScenes:[{avatar:'project',...set}]});const refs=sceneAssetReferences([set]);for(const [id,row]of Object.entries(project.assets?.sceneBlobs||{})){if(!refs.has(id))throw new Error('项目场景资源有未知引用。');expectResource(row);}for(const id of refs)if(!id.endsWith(':original')&&!project.assets?.sceneBlobs?.[id])throw new Error('项目场景图片缺失。');}
+        const ambient=normalizeAmbientLibrary(project.sourceSettings.ambientLibrary);if(ambient.length!==(project.sourceSettings.ambientLibrary||[]).length)throw new Error('项目环境音配置无效。');const refs=ambientReferences(ambient);for(const [id,row]of Object.entries(project.assets?.ambientBlobs||{})){if(!refs.has(id))throw new Error('项目环境音存在未知资源引用。');expectResource(row);}for(const id of refs)if(!project.assets?.ambientBlobs?.[id])throw new Error('项目环境音文件缺失。');
         for(const track of project.tracks){if(track.exportBlob)expectResource(track.exportBlob);if(track.exportCover)expectResource(track.exportCover);}
         for(const key of ['imageBlob','imageOriginalBlob','fontBlob','iconBlob'])if(project.assets?.[key])expectResource(project.assets[key]);
     }
@@ -147,6 +154,7 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
     if(normalizedCatalog.some((track,i)=>!track||track.id!==manifest.catalog[i].id)||new Set(normalizedCatalog.map(t=>t.id)).size!==normalizedCatalog.length)throw new Error('默认来源记录无效或重复。');
     const safe=safeSettings(manifest.settings,warnings,{version:1,tracks:manifest.catalog});
     assertScenesPreserved(manifest.settings,safe);
+    if(safe.ambientLibrary.length!==(manifest.settings.ambientLibrary||[]).length)throw new Error('环境音包含无效、重复或超限数据，未丢弃资源。');
     if(safe.tracks.length!==manifest.settings.tracks.length||safe.playlists.length!==manifest.settings.playlists.length||['designs','roleDesigns'].some(key=>Array.isArray(manifest.settings[key])&&safe[key].length!==manifest.settings[key].length))throw new Error('备份包含无效或重复曲目/歌单/设计，不能静默舍弃。');
     if(resourceIds.size!==referencedAssets(safe).size)throw new Error('备份资源清单包含未知引用，未导入。');
     for(const id of referencedAssets(safe))if(!resourceIds.has(id))throw new Error('备份缺少有效曲库引用的资源。');
@@ -159,6 +167,7 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
         })};
         for(const key of ['imageBlob','imageOriginalBlob','fontBlob','iconBlob'])if(project.assets?.[key])row.assets[key]=binary(project.assets[key]);
         if(row.sourceSettings.sceneSet){row.sourceSettings.sceneSet=normalizeSceneSet(row.sourceSettings.sceneSet);row.assets.sceneBlobs=Object.fromEntries(Object.entries(project.assets?.sceneBlobs||{}).map(([id,resource])=>[id,binary(resource)]));}
+        row.assets.ambientBlobs=Object.fromEntries(Object.entries(project.assets?.ambientBlobs||{}).map(([id,resource])=>[id,binary(resource)]));
         if(row.sourceSettings.uiDesign)row.sourceSettings.uiDesign=normalizeDesign(row.sourceSettings.uiDesign);
         return row;
     });

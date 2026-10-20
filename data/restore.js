@@ -1,3 +1,4 @@
+import {ambientReferences,MAX_AMBIENT} from '../ambient.js';
 import {normalizeSettings,createTrackId,MAX_TRACKS,MAX_PLAYLISTS} from '../core.js';
 import {MAX_FONTS} from '../fonts.js';
 import {referencedAssets} from '../asset-retirement.js';
@@ -20,13 +21,14 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         const digest=await checksum(blobs.get(track.id),{signal});byHash.set(digest.sha256,track.id);existingDigests.set(track.id,digest.sha256);onProgress({phase:'duplicates',done:++done,total:before.tracks.length});
     }
     for(const font of before.fonts)if(blobs.has(font.id))fontHashes.set((await checksum(blobs.get(font.id),{signal})).sha256,font.id);
+    for(const id of ambientReferences(before.ambientLibrary))if(blobs.has(id)&&!existingDigests.has(id))existingDigests.set(id,(await checksum(blobs.get(id),{signal})).sha256);
     const resourceRows=new Map(backup.manifest.resources.map(row=>[row.id,row]));
     for(const id of resourceRows.keys())if(refs.has(id)&&!blobs.has(id))assetIds.set(id,id);
     const mappedAsset=id=>{
         if(!id)return id;
         if(assetIds.has(id))return assetIds.get(id);
         if(id.endsWith(':original')){const value=mappedAsset(id.slice(0,-9))+':original';assetIds.set(id,value);return value;}
-        const prefix=id.startsWith('cover:')?'cover:':id.startsWith('background:')?'background:':id.startsWith('font:')?'font:':'';
+        const prefix=id.startsWith('ambient-source:')?'ambient-source:':id.startsWith('ambient:')?'ambient:':id.startsWith('cover:')?'cover:':id.startsWith('background:')?'background:':id.startsWith('font:')?'font:':'';
         const value=refs.has(id)&&!blobs.has(id)?id:prefix+createTrackId();assetIds.set(id,value);if(prefix==='background:'&&source.has(id+':original'))assetIds.set(id+':original',value+':original');return value;
     };
     const summary={mode,tracksAdded:0,duplicateAudio:0,trackConflicts:0,playlistsAdded:0,playlistsMerged:0,projectsAdded:0,projectConflicts:0,skippedProjects:0,bindingsUnmapped:0,remoteTracks:backup.remoteTracks};
@@ -93,6 +95,18 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         if(!old)after.roleDesigns.push({avatar,config:mappedDesign(row.config)});
         else if(restorePreferences&&mode!=='missing')old.config=mappedDesign(row.config);
     }
+    const ambientIds=new Map(),ambientHashes=new Map();summary.ambientsAdded=0;summary.duplicateAmbientAudio=0;
+    for(const row of before.ambientLibrary||[]){const id=row.resourceId||row.id,hash=existingDigests.get(id);if(row.kind==='local'&&hash)ambientHashes.set(hash,id);}
+
+    for(const row of incoming.ambientLibrary||[]){
+        const old=after.ambientLibrary.find(r=>r.id===row.id),oldResource=old?.resourceId||old?.id,newResource=row.resourceId||row.id;
+        const hash=row.kind==='local'?resourceRows.get(newResource)?.sha256:null;if(hash&&ambientHashes.has(hash)){summary.duplicateAmbientAudio++;if(mode!=='copy')assetIds.set(newResource,ambientHashes.get(hash));}
+        const same=old&&(row.kind==='url'&&old.kind==='url'&&row.url===old.url||row.kind==='local'&&old.kind==='local'&&resourceRows.get(newResource)?.sha256===existingDigests.get(oldResource));
+        if(old&&(mode==='missing'||mode==='merge'&&same)){ambientIds.set(row.id,old.id);if(row.kind==='local')assetIds.set(newResource,oldResource);continue;}
+        const next=old||mode==='copy'?'ambient:'+createTrackId():row.id;ambientIds.set(row.id,next);
+        after.ambientLibrary.push({...row,id:next,...(row.kind==='local'?{resourceId:mappedAsset(newResource)}:{}),coverId:row.coverId?mappedAsset(row.coverId):null});summary.ambientsAdded++;if(hash)ambientHashes.set(hash,mappedAsset(newResource));
+    }
+    if(after.ambientLibrary.length>MAX_AMBIENT)throw new Error('恢复后环境音超过 50 项，未写入或舍弃文件。');
     summary.scenesAdded=0; summary.sceneConflicts=0; summary.draftScenes=0;
     const sceneIds=new Map();
     for(const group of incoming.roleScenes||[]) {
@@ -101,7 +115,7 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         const old=after.roleScenes.find(row=>row.avatar===avatar);
         if(old&&mode==='missing')continue;
         const used=new Set(old?.scenes.map(s=>s.id)||[]);
-        const copy=remapSceneSet(group,{trackId:id=>trackIds.get(id)||id,assetId:mappedAsset,sceneId:id=>{
+        const copy=remapSceneSet(group,{ambientId:id=>ambientIds.get(id)||id,trackId:id=>trackIds.get(id)||id,assetId:mappedAsset,sceneId:id=>{
             const conflict=used.has(id);if(conflict)summary.sceneConflicts++;
             const next=conflict||mode==='copy'?'scene:'+createTrackId():id;used.add(next);sceneIds.set(group.avatar+'\n'+id,next);return next;
         }});
@@ -124,7 +138,8 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         const old=after.scenePreferences.find(p=>p.avatar===avatar);if(old)old.sceneId=sceneId;else after.scenePreferences.push({avatar,sceneId});
     }
     if(restorePreferences){
-        for(const [key,value] of Object.entries(incoming))if(!['lyricOverrides','tracks','playlists','fonts','favorites','designs','roleDesigns','roleScenes','scenePreferences','uiDesign','personalDesign','recentPlays','playEvents','backgroundId','fontId','fontName','fontPreset','activePlaylistId','currentId'].includes(key))after[key]=structuredClone(value);
+        for(const [key,value] of Object.entries(incoming))if(!['ambientLibrary','soundscape','lyricOverrides','tracks','playlists','fonts','favorites','designs','roleDesigns','roleScenes','scenePreferences','uiDesign','personalDesign','recentPlays','playEvents','backgroundId','fontId','fontName','fontPreset','activePlaylistId','currentId'].includes(key))after[key]=structuredClone(value);
+        after.soundscape={...incoming.soundscape,id:ambientIds.get(incoming.soundscape?.id)||incoming.soundscape?.id||null};
         after.lyricOverrides=[...before.lyricOverrides,...(incoming.lyricOverrides||[]).map(row=>({...row,trackId:trackIds.get(row.trackId)||row.trackId}))].filter((row,i,all)=>all.findLastIndex(r=>r.trackId===row.trackId)===i);
         after.lyricOffsets={...before.lyricOffsets,...Object.fromEntries(Object.entries(incoming.lyricOffsets||{}).map(([id,value])=>[trackIds.get(id)||id,value]))};
         if(after.visibility?.resume)after.visibility.resume.id=trackIds.get(after.visibility.resume.id)||after.visibility.resume.id;
@@ -152,7 +167,13 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         for(const key of ['backgroundId','fontId'])if(assetIds.has(copy.sourceSettings[key]))copy.sourceSettings[key]=assetIds.get(copy.sourceSettings[key]);
         if(copy.sourceSettings.lyricOffsets)copy.sourceSettings.lyricOffsets=Object.fromEntries(Object.entries(copy.sourceSettings.lyricOffsets).map(([id,value])=>[trackIds.get(id)||id,value]));
         if(copy.sourceSettings.uiDesign)copy.sourceSettings.uiDesign=mappedDesign(copy.sourceSettings.uiDesign);
-        if(copy.sourceSettings.sceneSet){copy.sourceSettings.sceneSet=remapSceneSet(copy.sourceSettings.sceneSet,{trackId:id=>trackIds.get(id)||id,assetId:mappedAsset,sceneId:id=>mode==='copy'?'scene:'+createTrackId():id});if(copy.assets?.sceneBlobs)copy.assets.sceneBlobs=Object.fromEntries(Object.entries(copy.assets.sceneBlobs).map(([id,blob])=>[mappedAsset(id),blob]));}
+        if(copy.sourceSettings.ambientLibrary){
+            for(const row of copy.sourceSettings.ambientLibrary)if(!ambientIds.has(row.id))ambientIds.set(row.id,mode==='copy'?'ambient:'+createTrackId():row.id);
+            copy.sourceSettings.ambientLibrary=copy.sourceSettings.ambientLibrary.map(row=>({...row,id:ambientIds.get(row.id),...(row.kind==='local'?{resourceId:mappedAsset(row.resourceId||row.id)}:{}),coverId:row.coverId?mappedAsset(row.coverId):null}));
+            if(copy.assets?.ambientBlobs)copy.assets.ambientBlobs=Object.fromEntries(Object.entries(copy.assets.ambientBlobs).map(([id,blob])=>[mappedAsset(id),blob]));
+            if(copy.sourceSettings.soundscape)copy.sourceSettings.soundscape.id=ambientIds.get(copy.sourceSettings.soundscape.id)||copy.sourceSettings.soundscape.id;
+        }
+        if(copy.sourceSettings.sceneSet){copy.sourceSettings.sceneSet=remapSceneSet(copy.sourceSettings.sceneSet,{ambientId:id=>ambientIds.get(id)||id,trackId:id=>trackIds.get(id)||id,assetId:mappedAsset,sceneId:id=>mode==='copy'?'scene:'+createTrackId():id});if(copy.assets?.sceneBlobs)copy.assets.sceneBlobs=Object.fromEntries(Object.entries(copy.assets.sceneBlobs).map(([id,blob])=>[mappedAsset(id),blob]));}
         projectWrites.push(copy);summary.projectsAdded++;
     }
     if(after.tracks.length>MAX_TRACKS||after.playlists.length>MAX_PLAYLISTS||after.fonts.length>MAX_FONTS)throw new Error(`恢复后将有 ${after.tracks.length} 首歌曲、${after.playlists.length} 个歌单、${after.fonts.length} 款字体，超过现有限制（200 / 50 / 20）；未写入或舍弃内容，请改选仅恢复缺失内容或调整后重试。`);
@@ -164,14 +185,15 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
     for(const [id,blob] of planned)if(finalRefs.has(id))assetWrites.push([id,blob]);
     for(const id of finalRefs)if(!blobs.has(id)&&!assetWrites.some(([key])=>key===id))throw new Error('恢复后仍有缺失资源引用；当前曲库与备份均未修改。');
     const checked=normalizeSettings(after);
-    if(checked.tracks.length!==after.tracks.length||checked.playlists.length!==after.playlists.length||checked.fonts.length!==after.fonts.length)throw new Error('恢复计划会丢弃无效或冲突项目，已阻止执行。');
+    if(checked.tracks.length!==after.tracks.length||checked.playlists.length!==after.playlists.length||checked.fonts.length!==after.fonts.length||checked.ambientLibrary.length!==after.ambientLibrary.length)throw new Error('恢复计划会丢弃无效或冲突项目，已阻止执行。');
     const reusedAssets=[];
     for(const id of finalRefs)if(blobs.has(id))reusedAssets.push({id,bytes:blobs.get(id).size,sha256:existingDigests.get(id)||(await checksum(blobs.get(id),{signal})).sha256});
-    return {before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),reusedAssets,assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0)+(p.assets?.iconBlob?.size||0)+Object.values(p.assets?.sceneBlobs||{}).reduce((n,b)=>n+(b?.size||0),0),0)};
+    return {before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),reusedAssets,assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0)+(p.assets?.iconBlob?.size||0)+Object.values(p.assets?.ambientBlobs||{}).reduce((n,b)=>n+(b?.size||0),0)+Object.values(p.assets?.sceneBlobs||{}).reduce((n,b)=>n+(b?.size||0),0),0)};
 }
 export async function verifyReferences(settings,store,projects=[]) {
     const missing=[];
     for(const id of referencedAssets(settings))if(!(await store.get(id) instanceof Blob))missing.push(id);
+    for(const project of projects)for(const id of ambientReferences(project.sourceSettings?.ambientLibrary))if(!project.assets?.ambientBlobs?.[id]&&!(await store.get(id) instanceof Blob))missing.push('project-ambient:'+project.id);
     for(const project of projects)for(const track of project.tracks||[])if(track.kind==='local'&&!track.exportBlob&&!track.exportUrl&&!(await store.get(track.id) instanceof Blob))missing.push(`project:${project.id}`);
     if(missing.length)throw new Error(`恢复引用核对失败：${missing.length} 项资源缺失；暂存内容已保留，请勿清空浏览器。`);
     return {passed:true,resources:referencedAssets(settings).size,projects:projects.length};
@@ -215,6 +237,7 @@ export async function rollbackStaging({op,store,projects,journal,protectedSettin
         for(const track of project.tracks||[]){if(track.kind==='local')refs.add(track.id);if(track.coverId)refs.add(track.coverId);}
         for(const key of ['backgroundId','fontId'])if(project.sourceSettings?.[key]){refs.add(project.sourceSettings[key]);if(key==='backgroundId')refs.add(project.sourceSettings[key]+':original');}
     }
+    for(const project of await projects.list())for(const id of ambientReferences(project.sourceSettings?.ambientLibrary))refs.add(id);
     for(const project of await projects.list())for(const id of sceneAssetReferences([project.sourceSettings?.sceneSet||{}]))refs.add(id);
     const remove=[];
     for(const row of op.assets){

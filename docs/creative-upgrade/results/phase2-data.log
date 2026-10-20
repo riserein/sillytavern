@@ -1,0 +1,26 @@
+
+Running 12 tests using 1 worker
+
+(node:335273) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:335273) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/card-data.e2e.js:43:1 › complete ZIP download includes actual library/project bytes and excludes host credentials; preview is read-only (4.2s)
+  ✓   2 tests/card-data.e2e.js:54:1 › ZIP restores into a clean account with actual IDB, checked role remapping and preserved original project IDs (8.1s)
+  ✓   3 tests/card-data.e2e.js:64:1 › failed settings save keeps staged bytes and old settings; explicit readback safely rolls back only owned data (8.1s)
+  ✓   4 tests/card-data.e2e.js:73:1 › restore locks edits while server verification is pending and restores control states afterwards (8.3s)
+  ✓   5 tests/card-data.e2e.js:81:1 › damaged backup never mutates existing IDB or visible settings (3.2s)
+  ✓   6 tests/card-data.e2e.js:86:1 › same-origin account stores and project IDs are isolated and never automatically adopt legacy bytes (503ms)
+  ✓   7 tests/card-data.e2e.js:99:1 › legacy UI requires ownership and explicit selection/copy; music/font/project bytes survive and original DB stays intact (4.4s)
+  ✓   8 tests/card-data.e2e.js:109:1 › storage UI previews then deletes only acknowledged unused resources in actual IDB (3.4s)
+  ✓   9 tests/card-data.e2e.js:116:1 › real quota failure aborts a binary batch and its ownership records without deleting prior bytes (1.5s)
+  ✓  10 tests/card-data.e2e.js:128:1 › design templates and draft icon bytes survive actual ZIP and IndexedDB restore with role remapping (7.0s)
+  ✓  11 tests/card-data.e2e.js:133:1 › scene metadata, notes, journal design and draft image bytes survive a full ZIP restore in actual IndexedDB (6.0s)
+  ✓  12 tests/card-data.e2e.js:145:1 › ambient originals, covers, scene defaults and draft copies survive real IndexedDB ZIP restore (9.0s)
+
+  12 passed (1.1m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

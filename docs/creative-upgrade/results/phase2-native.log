@@ -1,0 +1,99 @@
+
+Running 2 tests using 1 worker
+
+(node:334806) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:334806) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@281
+  ✘  1 tests/card-native.e2e.js:2007:37 › soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · desktop (42.0s)
+(node:335071) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:335071) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@281
+  ✘  2 tests/card-native.e2e.js:2007:37 › soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · touch (50.3s)
+
+
+  1) tests/card-native.e2e.js:2007:37 › soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · desktop 
+
+    Error: locator.click: Error: strict mode violation: locator('[data-display-hide]') resolved to 2 elements:
+        1) <button type="button" data-display-hide="" class="stm-secondary">隐藏角色音乐</button> aka getByRole('button', { name: '隐藏角色音乐', exact: true })
+        2) <button type="button" data-display-hide="" class="stm-secondary">隐藏角色音乐</button> aka locator('#stm-appearance').getByText('隐藏角色音乐')
+
+    Call log:
+    [2m  - waiting for locator('[data-display-hide]')[22m
+
+
+      1296 |   await recipient.evaluate(async()=>{await TavernHelper.createChatMessages([{role:'user',message:'Sound lifecycle.'},{role:'assistant',message:'First.'}]);const i=SillyTavern.getContext().chat.length-1;await TavernHelper.setChatMessages([{message_id:i,swipe_id:0,swipes:['First.','Second.']}]);const {swipe_right,saveChat,openCharacterChat}=await import('/script.js');await swipe_right();await saveChat({force:true});await openCharacterChat('RSCP_Test_SoundChat_'+crypto.randomUUID());});expect(await recipient.evaluate(()=>beforeSound.main===document.querySelector('[data-riserein-card-player] audio:not([data-ambient-audio])')&&beforeSound.aux===document.querySelector('[data-ambient-audio]'))).toBe(true);
+      1297 |   await mkdir(screenshotDir,{recursive:true});await recipient.locator('#stm-player').screenshot({path:`${screenshotDir}/soundscape-${file.format}-${mobile?'touch':'desktop'}.png`});await selectCard(recipient,other);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('B 独立音景');expect(await recipient.evaluate(()=>beforeSound.main.paused&&beforeSound.aux.paused&&!beforeSound.aux.isConnected&&Object.values(beforeSound.api.resourceCounts).every(v=>v===0))).toBe(true);await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);expect(await aux.evaluate(a=>a.volume)).toBeCloseTo(.15);
+    > 1298 |   await selectCard(recipient,avatar);await permit();await recipient.locator('.stm-soundscape summary').click();await expect(recipient.locator('[data-sound=enabled]')).not.toBeChecked();await recipient.locator('[data-sound=enabled]').check();await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('[data-display-hide]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);expect(await main.evaluate(a=>a.paused)).toBe(true);await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);
+           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+      1299 |  }
+      1300 | });
+      1301 |
+        at /workspace/sillytavern/tests/card-native.e2e.js:1298:468
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/creative-native-phase2/card-native.e2e.js-soundsc-840e6-olated-dual-audio-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/creative-native-phase2/card-native.e2e.js-soundsc-840e6-olated-dual-audio-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/creative-native-phase2/card-native.e2e.js-soundsc-840e6-olated-dual-audio-·-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase2/card-native.e2e.js-soundsc-840e6-olated-dual-audio-·-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase2/card-native.e2e.js-soundsc-840e6-olated-dual-audio-·-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-native.e2e.js:2007:37 › soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · touch 
+
+    Error: locator.click: Error: strict mode violation: locator('[data-display-hide]') resolved to 2 elements:
+        1) <button type="button" data-display-hide="" class="stm-secondary">隐藏角色音乐</button> aka getByRole('button', { name: '隐藏角色音乐', exact: true })
+        2) <button type="button" data-display-hide="" class="stm-secondary">隐藏角色音乐</button> aka locator('#stm-appearance').getByText('隐藏角色音乐')
+
+    Call log:
+    [2m  - waiting for locator('[data-display-hide]')[22m
+
+
+      1296 |   await recipient.evaluate(async()=>{await TavernHelper.createChatMessages([{role:'user',message:'Sound lifecycle.'},{role:'assistant',message:'First.'}]);const i=SillyTavern.getContext().chat.length-1;await TavernHelper.setChatMessages([{message_id:i,swipe_id:0,swipes:['First.','Second.']}]);const {swipe_right,saveChat,openCharacterChat}=await import('/script.js');await swipe_right();await saveChat({force:true});await openCharacterChat('RSCP_Test_SoundChat_'+crypto.randomUUID());});expect(await recipient.evaluate(()=>beforeSound.main===document.querySelector('[data-riserein-card-player] audio:not([data-ambient-audio])')&&beforeSound.aux===document.querySelector('[data-ambient-audio]'))).toBe(true);
+      1297 |   await mkdir(screenshotDir,{recursive:true});await recipient.locator('#stm-player').screenshot({path:`${screenshotDir}/soundscape-${file.format}-${mobile?'touch':'desktop'}.png`});await selectCard(recipient,other);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('B 独立音景');expect(await recipient.evaluate(()=>beforeSound.main.paused&&beforeSound.aux.paused&&!beforeSound.aux.isConnected&&Object.values(beforeSound.api.resourceCounts).every(v=>v===0))).toBe(true);await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);expect(await aux.evaluate(a=>a.volume)).toBeCloseTo(.15);
+    > 1298 |   await selectCard(recipient,avatar);await permit();await recipient.locator('.stm-soundscape summary').click();await expect(recipient.locator('[data-sound=enabled]')).not.toBeChecked();await recipient.locator('[data-sound=enabled]').check();await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('[data-display-hide]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);expect(await main.evaluate(a=>a.paused)).toBe(true);await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);
+           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+      1299 |  }
+      1300 | });
+      1301 |
+        at /workspace/sillytavern/tests/card-native.e2e.js:1298:468
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/creative-native-phase2/card-native.e2e.js-soundsc-8b631-isolated-dual-audio-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/creative-native-phase2/card-native.e2e.js-soundsc-8b631-isolated-dual-audio-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/creative-native-phase2/card-native.e2e.js-soundsc-8b631-isolated-dual-audio-·-touch/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase2/card-native.e2e.js-soundsc-8b631-isolated-dual-audio-·-touch/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase2/card-native.e2e.js-soundsc-8b631-isolated-dual-audio-·-touch/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/card-native.e2e.js:2007:37 › soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · desktop 
+    tests/card-native.e2e.js:2007:37 › soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · touch 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

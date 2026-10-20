@@ -1,0 +1,17 @@
+✔ one lazy auxiliary audio reuses identical sources and never touches a main player (2.707005ms)
+✔ old asynchronous local reads cannot revive a reset or a newer ambient source (0.713627ms)
+✔ fade-out precedes loading the new source and cancellation releases all scheduled frames (0.969804ms)
+✔ late play completion after pause cannot leave ghost audio (0.466124ms)
+✔ ambient failures are separate and can retry on the same managed channel (0.733427ms)
+✔ scene defaults respect explicit listener off/volume while preserving legacy settings (1.823202ms)
+✔ portable ambient sources deduplicate bytes and reuse a main recording without serializing it twice (13.421731ms)
+✔ missing, unsupported and oversized environmental assets block the entire export before replacement (14.349731ms)
+✔ ZIP restores ambient library, scene references and independent project binaries with complete ID remapping (30.822437ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 126.682215

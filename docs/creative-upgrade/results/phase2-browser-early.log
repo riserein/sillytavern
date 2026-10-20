@@ -1,0 +1,58 @@
+
+Running 3 tests using 1 worker
+
+(node:331341) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:331341) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/ambient.e2e.js:7:1 › two actual audio channels keep independent levels, pause intent, history and complete hiding (3.6s)
+  ✓  2 [desktop] › tests/ambient.e2e.js:19:1 › shared scene ambience preserves progress and rapid role changes cannot revive old loads (5.4s)
+  ✘  3 [desktop] › tests/ambient.e2e.js:27:1 › actual media failure on the auxiliary URL leaves main playback alive (7.0s)
+
+
+  1) [desktop] › tests/ambient.e2e.js:27:1 › actual media failure on the auxiliary URL leaves main playback alive 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('.stm-status')
+    Expected substring: [32m"环境音无法加载"[39m
+    Received string:    [31m"Failed to load because no supported source was found."[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 5000ms[22m
+    [2m  - waiting for locator('.stm-status')[22m
+    [2m    9 × locator resolved to <p role="status" aria-live="polite" class="stm-status stm-error">Failed to load because no supported source was fo…</p>[22m
+    [2m      - unexpected value "Failed to load because no supported source was found."[22m
+
+
+      27 | test('actual media failure on the auxiliary URL leaves main playback alive',async({page})=>{
+      28 |  await fixture(page);await page.locator('[data-action=play]').click();await page.locator('.stm-soundscape summary').click();await page.locator('[data-sound-action=library]').click();await page.route('https://audio.example/missing.mp3',r=>r.fulfill({status:404,body:'missing'}));
+    > 29 |  await page.locator('#stm-ambient-library [name=name]').fill('失效音源');await page.locator('#stm-ambient-library [name=url]').fill('https://audio.example/missing.mp3');await page.locator('#stm-ambient-library button[type=submit]').click();await page.locator('[data-ambient-action=listen]').click();await expect(page.locator('.stm-status')).toContainText('环境音无法加载');expect(await page.evaluate(()=>!app.audio.paused&&app.audio===originalAudio)).toBe(true);await page.evaluate(()=>app.dispose());expect(await page.evaluate(()=>liveURLs.size)).toBe(0);
+         |                                                                                                                                                                                                                                                                                                                                                  ^
+      30 | });
+      31 |
+        at /workspace/sillytavern/tests/ambient.e2e.js:29:338
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/ambient/ambient.e2e.js-actual-medi-935cd--leaves-main-playback-alive-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/ambient/ambient.e2e.js-actual-medi-935cd--leaves-main-playback-alive-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/ambient/ambient.e2e.js-actual-medi-935cd--leaves-main-playback-alive-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/ambient/ambient.e2e.js-actual-medi-935cd--leaves-main-playback-alive-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop] › tests/ambient.e2e.js:27:1 › actual media failure on the auxiliary URL leaves main playback alive 
+  2 passed (17.4s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

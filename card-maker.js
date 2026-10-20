@@ -1,3 +1,4 @@
+import {selectedAmbient} from './ambient.js';
 import {normalizeDesign} from './ui/config.js';
 import {prepareDesignIcon} from './ui/images.js';
 import {buildSharedCardExports} from './card-player/shared-export.js';
@@ -84,7 +85,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         openGeneration = 0;
     const draftRevisions = new Map(),
         recoveries = new Map();
-    const sourceKeys = ['backgroundId', 'fontPreset', 'fontId', 'fontName', 'volume', 'mode', 'transitionDuration', 'theme', 'colorScheme', 'surface', 'maskOpacity', 'customColors', 'clickEffects', 'uiDesign', 'reading', 'coverColorMode', 'lyricOffsets'];
+    const sourceKeys = ['backgroundId', 'fontPreset', 'fontId', 'fontName', 'volume', 'mode', 'transitionDuration', 'theme', 'colorScheme', 'surface', 'maskOpacity', 'customColors', 'clickEffects', 'uiDesign', 'reading', 'ambientLibrary', 'soundscape', 'coverColorMode', 'lyricOffsets'];
     const formSnapshot = () =>
         Object.fromEntries(
             [
@@ -125,7 +126,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                 const resources = await captureProjectResources(
                     snapshot.tracks,
                     {
-                        sceneSet:snapshot.sourceSettings.sceneSet, imageId: snapshot.sourceSettings.backgroundId,
+                        ambientLibrary:snapshot.sourceSettings.ambientLibrary, sceneSet:snapshot.sourceSettings.sceneSet, imageId: snapshot.sourceSettings.backgroundId,
                         iconId: snapshot.sourceSettings.uiDesign?.customization?.iconId,
                         fontId:
                             snapshot.sourceSettings.fontPreset === 'custom'
@@ -137,7 +138,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                 );
                 snapshot.tracks = resources.tracks;
                 snapshot.assets = {
-                    sceneBlobs:resources.appearance.sceneBlobs, imageOriginalBlob:resources.appearance.imageOriginalBlob, imageBlob: resources.appearance.imageBlob,
+                    ambientBlobs:resources.appearance.ambientBlobs, sceneBlobs:resources.appearance.sceneBlobs, imageOriginalBlob:resources.appearance.imageOriginalBlob, imageBlob: resources.appearance.imageBlob,
                     fontBlob: resources.appearance.fontBlob,
                     iconBlob: resources.appearance.iconBlob,
                 };
@@ -515,7 +516,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         opened = true;
         draftReady = false;
         projectId = `rscp:${createTrackId()}`;
-        sourceSettings = Object.fromEntries(sourceKeys.map((key) => [key, structuredClone(settings[key])]));
+        sourceSettings = Object.fromEntries(sourceKeys.map((key) => [key, structuredClone(settings[key])]));sourceSettings.ambientLibrary=structuredClone(selectedAmbient(settings.ambientLibrary,null,settings.soundscape));
         sourceSettings.uiDesign=normalizeDesign(getDesign());
         q('[data-maker=recipient-display]').value=sourceSettings.uiDesign.recipientDisplay;
         q('[data-maker=shared-design]').checked=sourceSettings.uiDesign.layout==='journal';
@@ -772,7 +773,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                 {
                     id: projectId,
                     title: q('#stm-maker-title').value,
-                    tracks, sceneSet:sourceSettings.sceneSet,
+                    tracks, ambientLibrary:sourceSettings.ambientLibrary, soundscape:sourceSettings.soundscape, sceneSet:sourceSettings.sceneSet,
                     appearance: appearance(),
                     volume: sourceSettings.volume,
                     mode: sourceSettings.mode,
@@ -781,7 +782,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     startCollapsed: q('[data-maker=collapsed]').checked,
                 },
                 {
-                    getBlob: (id) => projectAssets.sceneBlobs?.[id]||store.get(id),
+                    getBlob: (id) => projectAssets.ambientBlobs?.[id]||projectAssets.sceneBlobs?.[id]||store.get(id),
                     readFallback: async (index, signal) =>
                         prepareCover(await fetchBlob(fallbackCoverUrl(index), signal)),
                     readPublicImage: (url, signal) => {
@@ -819,7 +820,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                         message(`正在检查 ${progress.index + 1}/${progress.total}：${progress.title}`),
                 },
             );
-            const requiredShared=Boolean(result.config.sceneSet)||sourceSettings.uiDesign?.layout==='journal';if(requiredShared)q('[data-maker=shared-design]').checked=true;
+            const requiredShared=Boolean(result.config.sceneSet||result.config.ambientLibrary?.length)||sourceSettings.uiDesign?.layout==='journal';if(requiredShared)q('[data-maker=shared-design]').checked=true;
             const shared=requiredShared||q('[data-maker=shared-design]').checked;
             const response = await fetch(new URL(shared?'./card-player/dist/native-runtime.js':'./card-player/dist/runtime.js', import.meta.url), {
                 signal: own.signal,
@@ -896,7 +897,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         const existing=new Map(tracks.map(t=>[t.id,t])),available=new Map([...allTracks(settings),...tracks].map(t=>[t.id,t]));
         // Keep unfinished/unselected references as metadata so validation can explain them.
         const ids=[...new Set(group.scenes.flatMap(s=>s.trackIds))];for(const id of ids)if(!existing.has(id)&&available.has(id))tracks.push({...available.get(id)});
-        sourceSettings.sceneSet=structuredClone(group);delete sourceSettings.sceneSet.avatar;sourceSettings.uiDesign=normalizeDesign(getDesign());q('[data-maker=shared-design]').checked=true;
+        sourceSettings.ambientLibrary=structuredClone(selectedAmbient(settings.ambientLibrary,group,settings.soundscape));sourceSettings.soundscape=structuredClone(settings.soundscape);sourceSettings.sceneSet=structuredClone(group);delete sourceSettings.sceneSet.avatar;sourceSettings.uiDesign=normalizeDesign(getDesign());q('[data-maker=shared-design]').checked=true;
         q('[data-maker=scene-status]').textContent='已读取 '+group.scenes.length+' 个场景。源角色后续修改不会自动覆盖此项目；需要时重新读取。';edits();renderTracks();
     });
     for (const [name, key, extension, mime] of [
@@ -996,7 +997,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     const resources = await captureProjectResources(
                         structuredClone(tracks),
                         {
-                            sceneSet:sourceSettings.sceneSet, imageId: sourceSettings.backgroundId,
+                            ambientLibrary:sourceSettings.ambientLibrary, sceneSet:sourceSettings.sceneSet, imageId: sourceSettings.backgroundId,
                             iconId: sourceSettings.uiDesign?.customization?.iconId,
                             fontId: sourceSettings.fontPreset === 'custom' ? sourceSettings.fontId : null,
                             ...projectAssets,
@@ -1008,7 +1009,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                         tracks: resources.tracks,
                         sourceSettings: structuredClone(sourceSettings),
                         assets: {
-                            sceneBlobs:resources.appearance.sceneBlobs, imageOriginalBlob:resources.appearance.imageOriginalBlob, imageBlob: resources.appearance.imageBlob,
+                            ambientBlobs:resources.appearance.ambientBlobs, sceneBlobs:resources.appearance.sceneBlobs, imageOriginalBlob:resources.appearance.imageOriginalBlob, imageBlob: resources.appearance.imageBlob,
                             fontBlob: resources.appearance.fontBlob,
                     iconBlob: resources.appearance.iconBlob,
                         },
@@ -1037,7 +1038,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                     projectAssets = {};
                     sourceSettings = Object.fromEntries(
                         sourceKeys.map((key) => [key, structuredClone(settings[key])]),
-                    );
+                    );sourceSettings.ambientLibrary=structuredClone(selectedAmbient(settings.ambientLibrary,null,settings.soundscape));
                     sourceSettings.uiDesign=normalizeDesign(getDesign());
         q('[data-maker=recipient-display]').value=sourceSettings.uiDesign.recipientDisplay;
                     chooseCollection();

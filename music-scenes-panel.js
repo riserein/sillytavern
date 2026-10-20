@@ -1,3 +1,4 @@
+import {normalizeSceneAmbient} from './ambient.js';
 import { createTrackId, playlistForCharacter } from './core.js';
 import { allTracks } from './platforms/library.js';
 import { DESIGN_THEMES } from './ui/config.js';
@@ -42,6 +43,8 @@ export function createSceneManager({panel,settings,store,getContext,save,onSaved
     panel.append(root);let draft=null,avatar=null,selected=null,baseline='',epoch=0,dirty=false,saving=false,processing=0,previousInert=false;const staged=new Map();
     const q=s=>root.querySelector(s),current=()=>draft?.scenes.find(s=>s.id===selected);
     for(const [id,theme] of Object.entries(DESIGN_THEMES))q('[data-scene-field=themeId]').append(new Option(theme.name,id));
+    const ambientControls=doc.createElement('fieldset');ambientControls.className='stm-scene-ambient';ambientControls.innerHTML='<legend>场景音景</legend><label>环境音<select data-scene-ambient="id" id="stm-scene-ambient"></select></label><label>环境音音量<input type="range" min="0" max="100" step="1" data-scene-ambient="volume"></label><label class="stm-check-label"><input type="checkbox" data-scene-ambient="enabled">默认开启环境音</label><label>切换过渡<select data-scene-ambient="fade"><option value="0">无过渡</option><option value="500">0.5 秒</option><option value="1000">1 秒</option><option value="2000">2 秒</option></select></label><p class="stm-hint">先在音景 → 环境音库添加音源。玩家明确关闭或调整音量时，个人设置优先。</p>';
+    q('[data-scene-fields]').append(ambientControls);
     q('[data-scene-role]').id='stm-scene-role';q('[data-scene-field=themeId]').id='stm-scene-theme';const menus=createSelectMenus(panel,{controlsRoot:root});
     const noteSetting=doc.createElement('label');noteSetting.className='stm-check-label';noteSetting.innerHTML='<input type="checkbox" data-scene-show-notes>在手账中显示歌曲手记';q('[data-scene-selected]').before(noteSetting);
     function roles(){return (getContext().characters||[]).filter(c=>c.avatar&&c.avatar!=='none');}
@@ -57,6 +60,7 @@ export function createSceneManager({panel,settings,store,getContext,save,onSaved
         const s=current();if(!s){menus.refresh();return;}
         for(const key of ['name','description','themeId'])q(`[data-scene-field=${key}]`).value=s[key];
         q('[data-scene-field=default]').checked=draft.defaultSceneId===s.id;q('[data-scene-field=included]').checked=s.included;
+        const ambient=normalizeSceneAmbient(s.ambient),select=q('[data-scene-ambient=id]');select.replaceChildren(new Option('无环境音',''),...(settings.ambientLibrary||[]).map(row=>new Option(row.title,row.id)));if(ambient.id&&!settings.ambientLibrary.some(row=>row.id===ambient.id))select.append(new Option('缺少环境音：'+ambient.id,ambient.id));select.value=ambient.id||'';q('[data-scene-ambient=volume]').value=Math.round(ambient.volume*100);q('[data-scene-ambient=enabled]').checked=ambient.enabled;q('[data-scene-ambient=fade]').value=String(ambient.fade);
         q('[data-scene-show-notes]').checked=draft.showNotes;
         q('[data-scene-counter]').value=textLength(s.description)+' / 300';
         q('[data-scene-resources]').textContent=`封面：${s.coverId?'已选择':'沿用歌曲'} · 背景：${s.backgroundId?'已选择':'沿用播放器'}`;
@@ -70,7 +74,7 @@ export function createSceneManager({panel,settings,store,getContext,save,onSaved
         }
         const library=q('[data-scene-library]');library.replaceChildren();
         for(const track of tracks){const label=doc.createElement('label');label.className='stm-check-label';const box=doc.createElement('input');box.type='checkbox';box.dataset.sceneTrack=track.id;box.checked=s.trackIds.includes(track.id);box.disabled=track.kind==='platform'&&!['full','preview'].includes(track.playback);label.append(box,doc.createTextNode(track.title+(box.disabled?' · 仅来源记录':'')));library.append(label);}
-        q('[data-scene-issues]').textContent=sceneIssues(s,tracks).join('；');
+        q('[data-scene-issues]').textContent=sceneIssues(s,tracks,settings.ambientLibrary||[]).join('；');
     }
     function close(force=false){if(saving&&!force)return;epoch++;root.hidden=true;root.inert=previousInert;menus.close();staged.clear();void onPreview?.(null);draft=null;dirty=false;}
     function open(target){previousInert=root.inert;root.inert=false;epoch++;q('[data-scene-role]').replaceChildren(...roles().map(c=>new Option(c.name||c.avatar,c.avatar)));const list=roles();if(!list.length){onError(new Error('请先创建或导入一个单人角色。'));return;}root.hidden=false;load(target&&list.some(c=>c.avatar===target)?target:list[0].avatar);}
@@ -83,6 +87,7 @@ export function createSceneManager({panel,settings,store,getContext,save,onSaved
             if(e.target.matches('[data-scene-role]')){if(dirty&&!doc.defaultView.confirm('放弃尚未保存的场景修改？')){e.target.value=avatar;return;}epoch++;void onPreview?.(null);load(e.target.value);return;}
             const s=current();if(!s)return;const field=e.target.dataset.sceneField;
             if(e.target.matches('[data-scene-show-notes]'))draft.showNotes=e.target.checked;
+            if(e.target.dataset.sceneAmbient){const key=e.target.dataset.sceneAmbient,ambient=normalizeSceneAmbient(s.ambient);ambient[key]=key==='id'?e.target.value||null:key==='enabled'?e.target.checked:Number(e.target.value)/(key==='volume'?100:1);if(key==='id'){ambient.enabled=!!ambient.id;ambient.volume=settings.ambientLibrary.find(row=>row.id===ambient.id)?.volume??.25;}s.ambient=ambient;dirty=true;render();return;}
             if(field==='themeId')s.themeId=e.target.value;if(field==='default'&&e.target.checked)draft.defaultSceneId=s.id;if(field==='included')s.included=e.target.checked;
             if(e.target.dataset.sceneTrack){const id=e.target.dataset.sceneTrack;if(e.target.checked&&!s.trackIds.includes(id))s.trackIds.push(id);else if(!e.target.checked)s.trackIds=s.trackIds.filter(x=>x!==id);renderTracks();}
             if(e.target.dataset.sceneFile){const key=e.target.dataset.sceneFile,file=e.target.files[0],token=epoch,sceneId=s.id;e.target.value='';if(!file)return;validateImageFile(file);let blob;processing++;try{blob=await prepareCover(file);}finally{processing--;}if(token!==epoch||root.hidden||current()?.id!==sceneId)return;const id=(key==='coverId'?'cover:':'background:')+createTrackId();staged.set(id,blob);if(key==='backgroundId')staged.set(id+':original',file);s[key]=id;render();}
@@ -104,7 +109,7 @@ export function createSceneManager({panel,settings,store,getContext,save,onSaved
             else if(action.startsWith('scene-')||action.startsWith('track-')){
                 const sceneMove=action.startsWith('scene-'),ids=sceneMove?draft.scenes:s.trackIds,id=b.dataset.id,from=ids.findIndex(x=>sceneMove?x.id===id:x===id),to=from+(action.endsWith('up')?-1:1);
                 if(action==='track-remove')s.trackIds=ids.filter(x=>x!==id);else if(from>=0&&to>=0&&to<ids.length)[ids[from],ids[to]]=[ids[to],ids[from]];
-            }else if(action==='preview'&&s){if(processing)throw new Error('图片仍在处理，请稍后预览。');const issues=sceneIssues(s,allTracks(settings));if(issues.length)throw new Error(issues.join('；'));await onPreview?.({avatar,group:normalizeSceneSet(draft),sceneId:s.id,staged});return;}
+            }else if(action==='preview'&&s){if(processing)throw new Error('图片仍在处理，请稍后预览。');const issues=sceneIssues(s,allTracks(settings),settings.ambientLibrary||[]);if(issues.length)throw new Error(issues.join('；'));await onPreview?.({avatar,group:normalizeSceneSet(draft),sceneId:s.id,staged});return;}
             else if(action==='save'){
                 if(processing)throw new Error('图片仍在处理，请稍后保存。');
                 for(const field of root.querySelectorAll('input,textarea'))if(!field.reportValidity())return;

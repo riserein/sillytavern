@@ -1,3 +1,4 @@
+import {createSoundscape} from './ui/soundscape.js';
 import {coverPalette,createCoverSampler} from './ui/cover-colors.js';
 import {createSceneQuick} from './ui/scene-quick.js';
 import {effectiveLyricsTrack} from './lyric-document.js';
@@ -89,7 +90,7 @@ export function initialize(options = {}) {
     let online = null;
     let listening = null;
     let designEditor = null, designFont = null;
-    let designPresentation = null, designControls = null, readingControls = null, lyricReader = null, lyricEditor = null, sceneQuick = null, launcherControls = null, launcherAvoidance = null, previewDesign = null, visibility = null, fullRecoveryEntry = null;
+    let designPresentation = null, designControls = null, readingControls = null, lyricReader = null, lyricEditor = null, sceneQuick = null, soundscape = null, launcherControls = null, launcherAvoidance = null, previewDesign = null, visibility = null, fullRecoveryEntry = null;
     let platformLoadController = null;
     let objectUrl = null;
     let loadSequence = 0;
@@ -666,7 +667,7 @@ export function initialize(options = {}) {
     const playerUI = createPlayerUI(panel, launcher, audio);
     listening = createListeningPanel({ panel, settings, audio, getTrack: id => findTrack(settings, id), save, showPage, setSheetOpen,
         canPlay: track => platformService.canPlay(track),
-        onPlay: id => void toggleTrack(id), onStop: () => void softPause(),
+        onPlay: id => void toggleTrack(id), onStop: () => {soundscape?.engine.pause();void softPause();},
         onAdd(target, ids) {
             if (!settings.playlists.some(list => list.id === target)) throw new Error('请先创建一个歌单，再选择加入目标。');
             if (settings.tracks.length + ids.filter(id => !settings.tracks.some(track => track.id === id)).length > MAX_TRACKS) throw new Error('加入后会超过总曲库容量，请减少选择；未加入或舍弃歌曲。');
@@ -1094,6 +1095,7 @@ export function initialize(options = {}) {
         activeSceneState={avatar,group,scene,queueKey:'@scene:'+avatar+'\n'+scene.id};
         playbackQueue.reset(activeSceneState.queueKey);void applySceneVisuals(staged);
         renderTracks();
+        void soundscape?.applyScene(scene,{play:wasPlaying&&visibility?.state!=='hidden'});
         if(!keep)await selectTrack(scene.trackIds[0],wasPlaying&&visibility?.state!=='hidden');
         if(!disposed){scenePicker?.refresh();save();}
         return scene;
@@ -1364,7 +1366,7 @@ export function initialize(options = {}) {
     }
 
     async function activatePlaylist(id, open = false) {
-        if(activeSceneState||scenePreview){activeSceneState=null;scenePreview=null;void applySceneVisuals();}
+        if(activeSceneState||scenePreview){activeSceneState=null;scenePreview=null;void applySceneVisuals();void soundscape?.applyScene(null,{play:false});}
         settings.activePlaylistId = id === BUILTIN_ID && !settings.builtinHidden ? BUILTIN_ID : settings.playlists.some(playlist => playlist.id === id) ? id : null;
         const revision = ++viewRevision;
         playbackQueue.reset(settings.activePlaylistId);
@@ -1401,7 +1403,7 @@ export function initialize(options = {}) {
         if(maintenanceBusy)return;
         const avatar = currentCharacterAvatar(freshContext());
         if (!force && avatar === lastRoleAvatar) { renderRoleStatus(); return; }
-        sceneManager?.close(true);lyricEditor?.close(true);sceneQuick?.close();scenePreview=null;
+        sceneManager?.close(true);lyricEditor?.close(true);sceneQuick?.close();soundscape?.leaveRole();scenePreview=null;
         designEditor?.close();
         const previous = lastRoleAvatar;
         lastRoleAvatar = avatar;
@@ -2019,7 +2021,7 @@ export function initialize(options = {}) {
         if (disposed) return;
         disposed = true;
         listening?.dispose(); transitions.dispose();
-        journalUI?.dispose();sceneQuick?.dispose();coverSampler.clear();
+        journalUI?.dispose();soundscape?.dispose();sceneQuick?.dispose();coverSampler.clear();
         sceneManager?.dispose();scenePicker?.dispose();++sceneVisualEpoch;if(sceneImageUrl)URL.revokeObjectURL(sceneImageUrl);if(sceneCoverUrl)URL.revokeObjectURL(sceneCoverUrl);
         designEditor?.dispose(); designFont?.dispose();
         lyricEditor?.dispose(); lyricReader?.dispose(); readingControls?.dispose(); launcherControls?.dispose(); launcherAvoidance?.dispose(); designControls?.dispose(); designPresentation?.dispose();
@@ -2092,14 +2094,15 @@ export function initialize(options = {}) {
         const entry=document.createElement('button');entry.type='button';entry.className='stm-secondary';entry.dataset.action='music-scenes';entry.textContent='角色音乐场景';entry.addEventListener('click',()=>sceneManager.open(currentCharacterAvatar(freshContext())));query('[data-action=card-maker]').after(entry);
     }
     scenePicker=createScenePicker({panel,setOpen:open=>setSheetOpen('#stm-scenes',open),getGroup:sceneGroupForCurrent,getCurrent:()=>activeSceneState?.scene,onChoose:id=>{scenePreview=null;return activateScene(id);},onManage:(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)?null:()=>sceneManager.open(currentCharacterAvatar(freshContext())),onError:error=>showStatus(error.message,true)});
+    soundscape=createSoundscape({panel,mainAudio:audio,store,settings,isPortable:typeof __STM_PORTABLE__!=='undefined'&&__STM_PORTABLE__,onSave:save,onMainPlay:play,onMainPause:pausePlayback,onMainVolume:value=>{settings.volume=value;audio.volume=value;transitions.refresh();save();},onSheet:open=>setSheetOpen('#stm-ambient-library',open),onError:error=>showStatus(error.message,true),onRetire:retireAssets});menus.refresh();
     sceneQuick=createSceneQuick({launcher,panel,getScenes:()=>{const group=roleSceneGroup(settings,currentCharacterAvatar(freshContext()));return (group?.scenes||[]).filter(s=>s.included&&s.trackIds.length&&s.trackIds.every(id=>!!findTrack(settings,id)));},getCurrent:()=>activeSceneState?.scene.id,onChoose:id=>activateScene(id),isHidden:()=>visibility?.state==='hidden',getCover:cachedCover,onError:error=>showStatus(error.message,true)});
     journalUI=createJournal({panel,audio,getTrack:()=>findTrack(settings,settings.currentId),getTracks:()=>playbackQueue.tracks(),getScene:()=>activeSceneState?.scene,getGroup:()=>activeSceneState?.group||roleSceneGroup(settings,currentCharacterAvatar(freshContext())),onTrack:id=>{if(id===settings.currentId){if(audio.paused)void play();else void softPause();}else void selectTrack(id,true);},onLyrics:visible=>{if(visible){lyricReader?.reset();updateLyrics(true);}else lyricReader?.suspend();}});
     journalUI.apply(effectiveDesign());
     if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
-        cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback,getDesign:effectiveDesign,getScenes:()=>roleSceneGroup(settings,currentCharacterAvatar(freshContext())),openScenes:()=>sceneManager.open(currentCharacterAvatar(freshContext()))});
+        cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback:()=>{pausePlayback();soundscape?.engine.pause();},getDesign:effectiveDesign,getScenes:()=>roleSceneGroup(settings,currentCharacterAvatar(freshContext())),openScenes:()=>sceneManager.open(currentCharacterAvatar(freshContext()))});
         query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
         if(options.account){
-            dataPanel=createDataPanel({panel,settings,store,journal:maintenanceJournal,context,account:options.account,assertAccount:options.assertAccount||(async()=>{throw new Error('账号身份未确认，请重新登录并刷新。');}),flushMaker:()=>cardMaker.flush(),pausePlayback,setMaintenanceBusy});
+            dataPanel=createDataPanel({panel,settings,store,journal:maintenanceJournal,context,account:options.account,assertAccount:options.assertAccount||(async()=>{throw new Error('账号身份未确认，请重新登录并刷新。');}),flushMaker:()=>cardMaker.flush(),pausePlayback:()=>{pausePlayback();soundscape?.engine.pause();},setMaintenanceBusy});
         }
         query('[data-action="rebuild-native"]').addEventListener('click', async () => {
             const latest = freshContext(), avatar = latest.characters[latest.characterId]?.avatar;
@@ -2114,7 +2117,7 @@ export function initialize(options = {}) {
         for (const element of panel.querySelectorAll('[data-page="import"], #stm-page-import, [data-action="go-import"], [data-action="card-maker"], [data-action="rebuild-native"], [data-role="card-handoff"], [data-action="bind-roles"], #stm-role-bindings')) element.remove();
         query('.stm-queue-empty').textContent = '在曲库选择一首歌开始听歌。';
     }
-    visibility = createVisibilityController({ panel, launcher, audio, getPreference: () => settings.visibility, setPreference: value => { settings.visibility = value; save(); }, getTrackId: () => settings.currentId, close: () => setOpen(false, false), open: () => setOpen(true), onHide: () => { sceneQuick?.close();lyricEditor?.close(true);transitions.stop(); listening?.cancelSleep?.(); lyricReader?.suspend(); }, onStatus: text => showStatus(text), hostDocument: options.visibilityHostDocument || document, recoveryId: options.recoveryId || 'full', allowWand: (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__), onPosition: position => {settings.positions.launcher=position;save();}, helperRecovery: options.helperRecovery, preview: options.previewRecovery === true, externalRecovery: () => !!fullRecoveryEntry?.isConnected, getInput: options.getInputElement || (() => document.querySelector('#send_form')) });
+    visibility = createVisibilityController({ panel, launcher, audio, getPreference: () => settings.visibility, setPreference: value => { settings.visibility = value; save(); }, getTrackId: () => settings.currentId, close: () => setOpen(false, false), open: () => setOpen(true), onHide: () => { soundscape?.pauseAll({forget:true});sceneQuick?.close();lyricEditor?.close(true);transitions.stop(); listening?.cancelSleep?.(); lyricReader?.suspend(); }, onStatus: text => showStatus(text), hostDocument: options.visibilityHostDocument || document, recoveryId: options.recoveryId || 'full', allowWand: (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__), onPosition: position => {settings.positions.launcher=position;save();}, helperRecovery: options.helperRecovery, preview: options.previewRecovery === true, externalRecovery: () => !!fullRecoveryEntry?.isConnected, getInput: options.getInputElement || (() => document.querySelector('#send_form')) });
     renderPlaylists();
     renderTracks();
     if (settings.currentId) void selectTrack(settings.currentId);

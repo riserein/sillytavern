@@ -1,3 +1,4 @@
+import {ambientReferences} from '../ambient.js';
 import { sceneAssetReferences } from '../music-scenes.js';
 import { databaseName, getStorageScope } from '../data/identity.js';
 /** Separate database: never opens, upgrades or deletes the music library database. */
@@ -143,6 +144,7 @@ export async function captureProjectResources(tracks, appearance, getBlob) {
         if (!theme.fontBlob) throw new Error('字体丢失，未覆盖旧草稿。');
     }
     if(theme.iconId&&!theme.iconBlob){theme.iconBlob=await getBlob(theme.iconId);if(!theme.iconBlob)throw new Error('悬浮图标丢失，未覆盖旧草稿。');}
+    if(theme.ambientLibrary){theme.ambientBlobs={};for(const id of ambientReferences(theme.ambientLibrary)){const blob=appearance.ambientBlobs?.[id]||await getBlob(id);if(!blob)throw new Error('环境音资源缺失，未覆盖旧草稿。');theme.ambientBlobs[id]=blob;}}
     if(theme.sceneSet){theme.sceneBlobs={};for(const id of sceneAssetReferences([theme.sceneSet])){const blob=appearance.sceneBlobs?.[id]||await getBlob(id);if(blob)theme.sceneBlobs[id]=blob;else if(!id.endsWith(':original'))throw new Error('场景图片缺失，未覆盖旧草稿。');}}
     return { tracks: copies, appearance: theme };
 }

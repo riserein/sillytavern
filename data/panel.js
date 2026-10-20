@@ -81,7 +81,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
         const next=await makeRestorePlan({backup,current:settings,store,projects:await projects.list(),mode:q('mode').value,restorePreferences:q('preferences').checked,bindingMap,signal,onProgress:progress});
         const capacity=await checkCapacity(next.bytesToWrite,estimate);plan=next;
         const s=plan.summary;
-        q('preview-text').textContent=`备份：${backup.manifest.settings.tracks.length} 首 / ${backup.manifest.settings.playlists.length} 歌单 / ${backup.projects.length} 项目\n将新增：${s.tracksAdded} 首 / ${s.playlistsAdded} 歌单 / ${s.projectsAdded} 项目 / ${s.designsAdded||0} 设计 / ${s.scenesAdded||0} 场景（其中 ${s.draftScenes||0} 个草稿）\n场景 ID 冲突：${s.sceneConflicts||0}\n重复音频：${s.duplicateAudio}；歌曲 ID 冲突：${s.trackConflicts}；项目 ID 冲突：${s.projectConflicts}；按所选方式跳过已有项目：${s.skippedProjects}\n未映射或已有冲突的角色绑定：${s.bindingsUnmapped}\n暂存逻辑字节：${size(plan.bytesToWrite)}；${capacity.estimate?'空间估算已检查（仍可能发生配额错误）':'浏览器未提供配额估算，写入仍可能失败'}\n远程歌曲：${s.remoteTracks} 首，仅信息与 URL，不是离线音频\n${backup.manifest.warnings.join('\n')}\n仅在下方确认后写入。已有歌曲和草稿不会被清空或覆盖。`;
+        q('preview-text').textContent=`环境音：新增 ${next.summary.ambientsAdded||0} 项，检测到重复音频 ${next.summary.duplicateAmbientAudio||0} 项。\n`+`备份：${backup.manifest.settings.tracks.length} 首 / ${backup.manifest.settings.playlists.length} 歌单 / ${backup.projects.length} 项目\n将新增：${s.tracksAdded} 首 / ${s.playlistsAdded} 歌单 / ${s.projectsAdded} 项目 / ${s.designsAdded||0} 设计 / ${s.scenesAdded||0} 场景（其中 ${s.draftScenes||0} 个草稿）\n场景 ID 冲突：${s.sceneConflicts||0}\n重复音频：${s.duplicateAudio}；歌曲 ID 冲突：${s.trackConflicts}；项目 ID 冲突：${s.projectConflicts}；按所选方式跳过已有项目：${s.skippedProjects}\n未映射或已有冲突的角色绑定：${s.bindingsUnmapped}\n暂存逻辑字节：${size(plan.bytesToWrite)}；${capacity.estimate?'空间估算已检查（仍可能发生配额错误）':'浏览器未提供配额估算，写入仍可能失败'}\n远程歌曲：${s.remoteTracks} 首，仅信息与 URL，不是离线音频\n${backup.manifest.warnings.join('\n')}\n仅在下方确认后写入。已有歌曲和草稿不会被清空或覆盖。`;
         q('apply').disabled=false;status('恢复计划已核对，请检查数量、恢复方式和角色映射后确认。');
     }
     listen('backup',()=>run(async signal=>{
@@ -90,7 +90,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
     }));
     listen('choose',()=>q('file').click());
     q('file').addEventListener('change',()=>{const file=q('file').files[0];q('file').value='';if(!file)return;void run(async signal=>{
-        backup=null;invalidate();backup=await inspectBackup(file,{signal,onProgress:progress});q('restore').hidden=false;q('preferences').checked=!settings.tracks.length;bindings();status(`备份校验通过：${backup.manifest.settings.tracks.length} 首歌曲、${backup.projects.length} 个制作项目。请选择恢复方式并核对计划。`);
+        backup=null;invalidate();backup=await inspectBackup(file,{signal,onProgress:progress});q('restore').hidden=false;q('preferences').checked=!settings.tracks.length;bindings();status(`备份校验通过：${backup.manifest.settings.tracks.length} 首歌曲、${backup.projects.length} 个制作项目、${backup.manifest.settings.ambientLibrary?.length||0} 个环境音。请选择恢复方式并核对计划。`);
     });},{signal:listeners.signal});
     q('mode').addEventListener('change',invalidate,{signal:listeners.signal});q('preferences').addEventListener('change',invalidate,{signal:listeners.signal});
     listen('preview',()=>run(preview));
@@ -112,7 +112,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
     }));
     listen('scan',()=>run(async()=>{
         await flushMaker();scan=await storageSnapshot({settings,store,projects,journal,estimate});
-        const t=scan.totals;q('storage-text').textContent=`本地音频：${size(t.audio)}\n歌曲/歌单封面：${size(t.covers)}\n背景与原图：${size(t.backgrounds)}\n自定义字体：${size(t.fonts)}\n制作草稿内嵌副本：${size(t.drafts)}\n待回收资源：${size(t.retired)}\n未知/其他资源：${size(t.unknown)}（保留）\n${scan.quota?`整个站点已用 / 配额估算：${size(scan.quota.usage||0)} / ${size(scan.quota.quota||0)}`:'浏览器未提供空间估算'}\n可安全清理预览：${scan.candidates.length} 项，${size(scan.candidates.reduce((n,r)=>n+r.bytes,0))}\n${scan.unknownReferences?'检测到未知引用，清理已锁定。':''}${scan.pending.length?'有未完成恢复，清理已锁定。':''}`;
+        const t=scan.totals;q('storage-text').textContent=`本地音频：${size(t.audio)}\n独立环境音：${size(t.ambient||0)}\n歌曲/歌单封面：${size(t.covers)}\n背景与原图：${size(t.backgrounds)}\n自定义字体：${size(t.fonts)}\n制作草稿内嵌副本：${size(t.drafts)}\n待回收资源：${size(t.retired)}\n未知/其他资源：${size(t.unknown)}（保留）\n${scan.quota?`整个站点已用 / 配额估算：${size(scan.quota.usage||0)} / ${size(scan.quota.quota||0)}`:'浏览器未提供空间估算'}\n可安全清理预览：${scan.candidates.length} 项，${size(scan.candidates.reduce((n,r)=>n+r.bytes,0))}\n${scan.unknownReferences?'检测到未知引用，清理已锁定。':''}${scan.pending.length?'有未完成恢复，清理已锁定。':''}`;
         if(scan.pending.length)scan.candidates=[];q('clean').disabled=!scan.candidates.length;status('扫描完成；未删除任何资源。清理需再次确认与校验。');
     }));
     listen('clean',()=>{if(!scan?.candidates.length||!window.confirm(`清理已预览的 ${scan.candidates.length} 项未引用且保存已确认资源？其他及未知文件保留。`))return;

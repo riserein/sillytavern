@@ -1,0 +1,50 @@
+
+Running 24 tests using 1 worker
+
+(node:343227) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:343227) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/creative.e2e.js:6:1 › dragging, one-scene roles and complete hiding cannot accidentally open quick scenes (2.7s)
+  ✓   2 [desktop] › tests/creative.e2e.js:63:1 › cover palettes work in every layout and explicit scene and author colors keep precedence (7.2s)
+  ✓   3 [desktop] › tests/creative.e2e.js:139:1 › incomplete TXT stays a draft and concurrent lyric changes are never overwritten (11.9s)
+  ✓   4 [desktop] › tests/creative.e2e.js:183:1 › timeline shares the playing Audio, cancels drafts and saves exact metadata with undo (4.4s)
+  ✓   5 [desktop] › tests/creative.e2e.js:229:1 › cover colors leave the saved design and Audio untouched and fall back on tainted artwork (2.5s)
+  ✓   6 [desktop] › tests/creative.e2e.js:285:1 › quick scenes open from the launcher without opening the window or restarting shared music (2.6s)
+(node:343936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:343936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [mobile-320] › tests/creative.e2e.js:6:1 › dragging, one-scene roles and complete hiding cannot accidentally open quick scenes (2.7s)
+  ✓   8 [mobile-320] › tests/creative.e2e.js:63:1 › cover palettes work in every layout and explicit scene and author colors keep precedence (3.0s)
+  ✓   9 [mobile-320] › tests/creative.e2e.js:139:1 › incomplete TXT stays a draft and concurrent lyric changes are never overwritten (3.3s)
+  ✓  10 [mobile-320] › tests/creative.e2e.js:183:1 › timeline shares the playing Audio, cancels drafts and saves exact metadata with undo (4.6s)
+  ✓  11 [mobile-320] › tests/creative.e2e.js:229:1 › cover colors leave the saved design and Audio untouched and fall back on tainted artwork (2.0s)
+  ✓  12 [mobile-320] › tests/creative.e2e.js:285:1 › quick scenes open from the launcher without opening the window or restarting shared music (2.7s)
+(node:344398) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:344398) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [mobile-390] › tests/creative.e2e.js:6:1 › dragging, one-scene roles and complete hiding cannot accidentally open quick scenes (2.3s)
+  ✓  14 [mobile-390] › tests/creative.e2e.js:63:1 › cover palettes work in every layout and explicit scene and author colors keep precedence (3.0s)
+  ✓  15 [mobile-390] › tests/creative.e2e.js:139:1 › incomplete TXT stays a draft and concurrent lyric changes are never overwritten (2.9s)
+  ✓  16 [mobile-390] › tests/creative.e2e.js:183:1 › timeline shares the playing Audio, cancels drafts and saves exact metadata with undo (3.7s)
+  ✓  17 [mobile-390] › tests/creative.e2e.js:229:1 › cover colors leave the saved design and Audio untouched and fall back on tainted artwork (2.0s)
+  ✓  18 [mobile-390] › tests/creative.e2e.js:285:1 › quick scenes open from the launcher without opening the window or restarting shared music (2.9s)
+(node:344776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:344776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  19 [mobile-412] › tests/creative.e2e.js:6:1 › dragging, one-scene roles and complete hiding cannot accidentally open quick scenes (2.2s)
+  ✓  20 [mobile-412] › tests/creative.e2e.js:63:1 › cover palettes work in every layout and explicit scene and author colors keep precedence (3.0s)
+  ✓  21 [mobile-412] › tests/creative.e2e.js:139:1 › incomplete TXT stays a draft and concurrent lyric changes are never overwritten (3.1s)
+  ✓  22 [mobile-412] › tests/creative.e2e.js:183:1 › timeline shares the playing Audio, cancels drafts and saves exact metadata with undo (4.0s)
+  ✓  23 [mobile-412] › tests/creative.e2e.js:229:1 › cover colors leave the saved design and Audio untouched and fall back on tainted artwork (2.1s)
+  ✓  24 [mobile-412] › tests/creative.e2e.js:285:1 › quick scenes open from the launcher without opening the window or restarting shared music (2.8s)
+
+  24 passed (1.5m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

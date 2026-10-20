@@ -1,3 +1,4 @@
+import {selectedAmbient} from '../ambient.js';
 import {
     PLAYER_BUILD,
     analyzePayload,
@@ -124,6 +125,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
         ui: { ...Object.fromEntries(UI_KEYS.map((key) => [key, structuredClone(settings[key])])), uiDesign: designForAvatar(avatar), fontPreset:designForAvatar(avatar).fontPreset==='current'?settings.fontPreset:designForAvatar(avatar).fontPreset },
         fontPreset: designForAvatar(avatar).fontPreset==='current'?settings.fontPreset:designForAvatar(avatar).fontPreset,
         backgroundId: settings.backgroundId,
+        ambientLibrary:structuredClone(selectedAmbient(settings.ambientLibrary,roleSceneGroup(settings,avatar),settings.soundscape)),soundscape:structuredClone(settings.soundscape),
         volume: settings.volume,
         mode: settings.mode,
         surface: settings.surface,
@@ -181,7 +183,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
                 volume: author.volume,
                 mode: author.mode,
                 transitionDuration: author.ui.transitionDuration,
-                reading: author.ui.reading, recipientDisplay: author.ui.uiDesign.recipientDisplay,
+                ambientLibrary:author.ambientLibrary,soundscape:author.soundscape,reading: author.ui.reading, recipientDisplay: author.ui.uiDesign.recipientDisplay,
                 startCollapsed: false,
             },
             {

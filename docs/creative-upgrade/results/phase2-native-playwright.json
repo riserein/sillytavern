@@ -1,0 +1,236 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-native.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/creative-upgrade/results/phase2-native-playwright.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/creative-native-phase2",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-native.e2e.js"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-native.e2e.js",
+      "file": "card-native.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · desktop",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 360000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 41992,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: locator('[data-display-hide]') resolved to 2 elements:\n    1) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka getByRole('button', { name: '隐藏角色音乐', exact: true })\n    2) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka locator('#stm-appearance').getByText('隐藏角色音乐')\n\nCall log:\n\u001b[2m  - waiting for locator('[data-display-hide]')\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: locator('[data-display-hide]') resolved to 2 elements:\n    1) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka getByRole('button', { name: '隐藏角色音乐', exact: true })\n    2) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka locator('#stm-appearance').getByText('隐藏角色音乐')\n\nCall log:\n\u001b[2m  - waiting for locator('[data-display-hide]')\u001b[22m\n\n    at /workspace/sillytavern/tests/card-native.e2e.js:1298:468",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                      "column": 468,
+                      "line": 1298
+                    },
+                    "snippet": "  1296 |   await recipient.evaluate(async()=>{await TavernHelper.createChatMessages([{role:'user',message:'Sound lifecycle.'},{role:'assistant',message:'First.'}]);const i=SillyTavern.getContext().chat.length-1;await TavernHelper.setChatMessages([{message_id:i,swipe_id:0,swipes:['First.','Second.']}]);const {swipe_right,saveChat,openCharacterChat}=await import('/script.js');await swipe_right();await saveChat({force:true});await openCharacterChat('RSCP_Test_SoundChat_'+crypto.randomUUID());});expect(await recipient.evaluate(()=>beforeSound.main===document.querySelector('[data-riserein-card-player] audio:not([data-ambient-audio])')&&beforeSound.aux===document.querySelector('[data-ambient-audio]'))).toBe(true);\n  1297 |   await mkdir(screenshotDir,{recursive:true});await recipient.locator('#stm-player').screenshot({path:`${screenshotDir}/soundscape-${file.format}-${mobile?'touch':'desktop'}.png`});await selectCard(recipient,other);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('B 独立音景');expect(await recipient.evaluate(()=>beforeSound.main.paused&&beforeSound.aux.paused&&!beforeSound.aux.isConnected&&Object.values(beforeSound.api.resourceCounts).every(v=>v===0))).toBe(true);await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);expect(await aux.evaluate(a=>a.volume)).toBeCloseTo(.15);\n> 1298 |   await selectCard(recipient,avatar);await permit();await recipient.locator('.stm-soundscape summary').click();await expect(recipient.locator('[data-sound=enabled]')).not.toBeChecked();await recipient.locator('[data-sound=enabled]').check();await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('[data-display-hide]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);expect(await main.evaluate(a=>a.paused)).toBe(true);await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);\n       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^\n  1299 |  }\n  1300 | });\n  1301 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                        "column": 468,
+                        "line": 1298
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: locator('[data-display-hide]') resolved to 2 elements:\n    1) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka getByRole('button', { name: '隐藏角色音乐', exact: true })\n    2) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka locator('#stm-appearance').getByText('隐藏角色音乐')\n\nCall log:\n\u001b[2m  - waiting for locator('[data-display-hide]')\u001b[22m\n\n\n  1296 |   await recipient.evaluate(async()=>{await TavernHelper.createChatMessages([{role:'user',message:'Sound lifecycle.'},{role:'assistant',message:'First.'}]);const i=SillyTavern.getContext().chat.length-1;await TavernHelper.setChatMessages([{message_id:i,swipe_id:0,swipes:['First.','Second.']}]);const {swipe_right,saveChat,openCharacterChat}=await import('/script.js');await swipe_right();await saveChat({force:true});await openCharacterChat('RSCP_Test_SoundChat_'+crypto.randomUUID());});expect(await recipient.evaluate(()=>beforeSound.main===document.querySelector('[data-riserein-card-player] audio:not([data-ambient-audio])')&&beforeSound.aux===document.querySelector('[data-ambient-audio]'))).toBe(true);\n  1297 |   await mkdir(screenshotDir,{recursive:true});await recipient.locator('#stm-player').screenshot({path:`${screenshotDir}/soundscape-${file.format}-${mobile?'touch':'desktop'}.png`});await selectCard(recipient,other);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('B 独立音景');expect(await recipient.evaluate(()=>beforeSound.main.paused&&beforeSound.aux.paused&&!beforeSound.aux.isConnected&&Object.values(beforeSound.api.resourceCounts).every(v=>v===0))).toBe(true);await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);expect(await aux.evaluate(a=>a.volume)).toBeCloseTo(.15);\n> 1298 |   await selectCard(recipient,avatar);await permit();await recipient.locator('.stm-soundscape summary').click();await expect(recipient.locator('[data-sound=enabled]')).not.toBeChecked();await recipient.locator('[data-sound=enabled]').check();await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('[data-display-hide]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);expect(await main.evaluate(a=>a.paused)).toBe(true);await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);\n       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^\n  1299 |  }\n  1300 | });\n  1301 |\n    at /workspace/sillytavern/tests/card-native.e2e.js:1298:468"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-20T05:02:15.589Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/creative-native-phase2/card-native.e2e.js-soundsc-840e6-olated-dual-audio-·-desktop/test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/creative-native-phase2/card-native.e2e.js-soundsc-840e6-olated-dual-audio-·-desktop/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/creative-native-phase2/card-native.e2e.js-soundsc-840e6-olated-dual-audio-·-desktop/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/creative-native-phase2/card-native.e2e.js-soundsc-840e6-olated-dual-audio-·-desktop/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                    "column": 468,
+                    "line": 1298
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-6b5ff34d48b179f7c85e",
+          "file": "card-native.e2e.js",
+          "line": 2007,
+          "column": 37
+        },
+        {
+          "title": "soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · touch",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 360000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 50302,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: locator('[data-display-hide]') resolved to 2 elements:\n    1) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka getByRole('button', { name: '隐藏角色音乐', exact: true })\n    2) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka locator('#stm-appearance').getByText('隐藏角色音乐')\n\nCall log:\n\u001b[2m  - waiting for locator('[data-display-hide]')\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: locator('[data-display-hide]') resolved to 2 elements:\n    1) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka getByRole('button', { name: '隐藏角色音乐', exact: true })\n    2) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka locator('#stm-appearance').getByText('隐藏角色音乐')\n\nCall log:\n\u001b[2m  - waiting for locator('[data-display-hide]')\u001b[22m\n\n    at /workspace/sillytavern/tests/card-native.e2e.js:1298:468",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                      "column": 468,
+                      "line": 1298
+                    },
+                    "snippet": "  1296 |   await recipient.evaluate(async()=>{await TavernHelper.createChatMessages([{role:'user',message:'Sound lifecycle.'},{role:'assistant',message:'First.'}]);const i=SillyTavern.getContext().chat.length-1;await TavernHelper.setChatMessages([{message_id:i,swipe_id:0,swipes:['First.','Second.']}]);const {swipe_right,saveChat,openCharacterChat}=await import('/script.js');await swipe_right();await saveChat({force:true});await openCharacterChat('RSCP_Test_SoundChat_'+crypto.randomUUID());});expect(await recipient.evaluate(()=>beforeSound.main===document.querySelector('[data-riserein-card-player] audio:not([data-ambient-audio])')&&beforeSound.aux===document.querySelector('[data-ambient-audio]'))).toBe(true);\n  1297 |   await mkdir(screenshotDir,{recursive:true});await recipient.locator('#stm-player').screenshot({path:`${screenshotDir}/soundscape-${file.format}-${mobile?'touch':'desktop'}.png`});await selectCard(recipient,other);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('B 独立音景');expect(await recipient.evaluate(()=>beforeSound.main.paused&&beforeSound.aux.paused&&!beforeSound.aux.isConnected&&Object.values(beforeSound.api.resourceCounts).every(v=>v===0))).toBe(true);await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);expect(await aux.evaluate(a=>a.volume)).toBeCloseTo(.15);\n> 1298 |   await selectCard(recipient,avatar);await permit();await recipient.locator('.stm-soundscape summary').click();await expect(recipient.locator('[data-sound=enabled]')).not.toBeChecked();await recipient.locator('[data-sound=enabled]').check();await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('[data-display-hide]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);expect(await main.evaluate(a=>a.paused)).toBe(true);await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);\n       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^\n  1299 |  }\n  1300 | });\n  1301 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                        "column": 468,
+                        "line": 1298
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: locator('[data-display-hide]') resolved to 2 elements:\n    1) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka getByRole('button', { name: '隐藏角色音乐', exact: true })\n    2) <button type=\"button\" data-display-hide=\"\" class=\"stm-secondary\">隐藏角色音乐</button> aka locator('#stm-appearance').getByText('隐藏角色音乐')\n\nCall log:\n\u001b[2m  - waiting for locator('[data-display-hide]')\u001b[22m\n\n\n  1296 |   await recipient.evaluate(async()=>{await TavernHelper.createChatMessages([{role:'user',message:'Sound lifecycle.'},{role:'assistant',message:'First.'}]);const i=SillyTavern.getContext().chat.length-1;await TavernHelper.setChatMessages([{message_id:i,swipe_id:0,swipes:['First.','Second.']}]);const {swipe_right,saveChat,openCharacterChat}=await import('/script.js');await swipe_right();await saveChat({force:true});await openCharacterChat('RSCP_Test_SoundChat_'+crypto.randomUUID());});expect(await recipient.evaluate(()=>beforeSound.main===document.querySelector('[data-riserein-card-player] audio:not([data-ambient-audio])')&&beforeSound.aux===document.querySelector('[data-ambient-audio]'))).toBe(true);\n  1297 |   await mkdir(screenshotDir,{recursive:true});await recipient.locator('#stm-player').screenshot({path:`${screenshotDir}/soundscape-${file.format}-${mobile?'touch':'desktop'}.png`});await selectCard(recipient,other);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('B 独立音景');expect(await recipient.evaluate(()=>beforeSound.main.paused&&beforeSound.aux.paused&&!beforeSound.aux.isConnected&&Object.values(beforeSound.api.resourceCounts).every(v=>v===0))).toBe(true);await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);expect(await aux.evaluate(a=>a.volume)).toBeCloseTo(.15);\n> 1298 |   await selectCard(recipient,avatar);await permit();await recipient.locator('.stm-soundscape summary').click();await expect(recipient.locator('[data-sound=enabled]')).not.toBeChecked();await recipient.locator('[data-sound=enabled]').check();await recipient.locator('[data-action=play]').click();await expect.poll(()=>aux.evaluate(a=>!a.paused)).toBe(true);await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('[data-display-hide]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);expect(await main.evaluate(a=>a.paused)).toBe(true);await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();expect(await aux.evaluate(a=>a.paused)).toBe(true);await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);\n       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^\n  1299 |  }\n  1300 | });\n  1301 |\n    at /workspace/sillytavern/tests/card-native.e2e.js:1298:468"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-20T05:03:02.285Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/creative-native-phase2/card-native.e2e.js-soundsc-8b631-isolated-dual-audio-·-touch/test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/creative-native-phase2/card-native.e2e.js-soundsc-8b631-isolated-dual-audio-·-touch/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/creative-native-phase2/card-native.e2e.js-soundsc-8b631-isolated-dual-audio-·-touch/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/creative-native-phase2/card-native.e2e.js-soundsc-8b631-isolated-dual-audio-·-touch/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-native.e2e.js",
+                    "column": 468,
+                    "line": 1298
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-5feabb5bf9bd72eb04ac",
+          "file": "card-native.e2e.js",
+          "line": 2007,
+          "column": 37
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-20T05:02:14.537Z",
+    "duration": 102903.103,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

@@ -1,3 +1,4 @@
+import {normalizeSoundscape} from '../ambient.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { MAX_TRACKS, MAX_FILE_BYTES, createTrackId, normalizeSettings, normalizeUrl, titleFromUrl, nextTrackId, formatTime, validateAudioFile } from '../core.js';
@@ -8,7 +9,7 @@ const tracks = ['a', 'b', 'c'].map(id => ({ id, kind: 'local', title: id }));
 test('new playlists have safe playback defaults', () => {
     assert.deepEqual(normalizeSettings(), {
         tracks: [], volume: 0.6, mode: 'list', currentId: null, favorites: [], transitionDuration: 300,
-        uiDesign: normalizeDesign(), designs: [], roleDesigns: [], roleScenes: [], scenePreferences: [], visualMotion: null, accessibleControls: false, personalDesign: null, visibility: {version:1,state:"normal",edge:"right",snapMode:"snap",resume:null}, lyricOffsets: {}, lyricOverrides: [], coverColorMode: 'off',
+        uiDesign: normalizeDesign(), designs: [], roleDesigns: [], roleScenes: [], scenePreferences: [], visualMotion: null, accessibleControls: false, personalDesign: null, visibility: {version:1,state:"normal",edge:"right",snapMode:"snap",resume:null}, lyricOffsets: {}, lyricOverrides: [], coverColorMode: 'off', ambientLibrary: [], soundscape: normalizeSoundscape(),
         reading: { level: 'clear', lyricSize: 20, lineHeight: 1.9, autoFollow: true, lyricBackground: 'auto', displayMode: 'flow', nextLine: true },
         playlists: [], activePlaylistId: null, builtinHidden: false,
         backgroundId: null, recentPlays: [], playEvents: [],

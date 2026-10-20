@@ -48,6 +48,7 @@ export function buildSharedCardExports(
       projectId: config.id,
       design: selected,
       ...(config.sceneSet?{sceneSet:config.sceneSet}:{}),
+      ...(config.ambientLibrary?.length?{soundscape:config.soundscape,ambient:config.ambientLibrary.map(row=>({id:row.id,title:row.title,loop:row.loop,volume:row.volume,resource:row.url||(row.sourceTrackId?'共享歌曲资源：'+row.sourceTrackId:'内嵌环境音资源'),cover:row.coverKey?'内嵌封面':''}))}:{}),
       font: {
         name: config.appearance.fontName,
         license: config.appearance.fontLicense,

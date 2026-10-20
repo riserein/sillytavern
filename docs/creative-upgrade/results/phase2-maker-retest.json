@@ -1,0 +1,20 @@
+{
+  "status": "selected-tests-passed",
+  "version": "2.2.0",
+  "runtimeSha256": "9e1a3e79899867435d7b2f636eafe781570e6f8f8d4fe67632d8d1255b17fd1d",
+  "verifiedAt": "2026-10-20T05:12:04.831Z",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientMusicDatabase": false,
+  "recipientPluginAssetsBlocked": true,
+  "audio": "real browser decoding/playback of original synthetic MP3, not music API mocks",
+  "mobile": "Chromium viewport/touch emulation, not physical hardware",
+  "results": [
+    {
+      "name": "soundscape maker keeps draft audio after library deletion and exports independent dual-channel previews",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ]
+}

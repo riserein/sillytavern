@@ -30,3 +30,20 @@
 .stm-axis-workspace aside p,.stm-axis-workspace aside h4{margin:5px 0}
 .stm-player[data-cover-follow=true]::after{transition:background-color 450ms}
 @media(prefers-reduced-motion:reduce){.stm-player[data-cover-follow=true]::after{transition:none}}
+
+.stm-player .stm-soundscape{border-top:1px solid var(--ui-divider);padding:12px 0;margin:14px 0;background:transparent}
+.stm-soundscape summary{cursor:pointer;display:flex;gap:10px;align-items:center;min-height:40px;font-size:14px;color:var(--read-body)}
+.stm-soundscape summary img{width:30px;height:30px;border-radius:6px;object-fit:cover}
+.stm-soundscape [data-sound-status]{min-width:0;overflow-wrap:anywhere;font-size:12px;color:var(--read-secondary)}
+.stm-sound-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px 0}
+.stm-sound-controls label{min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px}
+.stm-sound-controls label input[type=range],.stm-sound-controls select{width:100%;min-width:0}
+.stm-sound-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.stm-player .stm-ambient-library{background:var(--read-surface);color:var(--read-body);z-index:65}
+.stm-ambient-library form{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:20px 0}
+.stm-ambient-library form label{flex:1 1 180px;min-width:0}
+.stm-ambient-list{list-style:none;margin:0;padding:0}.stm-ambient-list li{border-bottom:1px solid var(--ui-divider);padding:16px 0;display:flex;flex-wrap:wrap;gap:12px;align-items:center}.stm-ambient-list label{display:flex;gap:8px;align-items:center;min-width:0}.stm-ambient-list input[type=text]{width:140px;max-width:100%}
+.stm-player[data-layout=vinyl] .stm-sound-controls input[type=range]{accent-color:var(--read-accent)}
+.stm-player[data-layout=cassette] .stm-soundscape{border-inline:2px solid var(--ui-divider);padding-inline:12px}
+.stm-player[data-layout=journal] .stm-soundscape{font-family:inherit;border-top-style:dashed}
+.stm-sound-controls .stm-check-label{grid-column:1/-1}

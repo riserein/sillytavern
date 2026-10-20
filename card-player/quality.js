@@ -1,7 +1,7 @@
 import { MAX_PACKAGE_BYTES, MAX_AUDIO_BYTES, jsonForScript, normalizeCardConfig } from './config.js';
 import { base64Bytes } from '../base64.js';
 
-export const PLAYER_BUILD = '2.1.1';
+export const PLAYER_BUILD = '2.2.0';
 export const PAYLOAD_FORMAT = 1;
 export const byteSize = (value) =>
     new TextEncoder().encode(typeof value === 'string' ? value : JSON.stringify(value)).length;
@@ -39,6 +39,9 @@ export function analyzePayload(payload, script) {
                 external: false,
             });
     }
+    for(const row of config.ambientLibrary||[])if(row.sourceTrackId){const track=config.tracks.find(t=>t.id===row.sourceTrackId);rows.push({kind:'ambient-shared',name:row.title+' · 复用歌曲音源（不重复携带）',bytes:dataBytes(track.src),encodedBytes:0,external:!track.src.startsWith('data:'),shared:true});}
+    for(const [key,value]of Object.entries(config.ambientAssets||{}))add(key.startsWith('audio:')?'ambient-audio':'cover','音景 · '+key.slice(0,15),value);
+    for(const row of config.ambientLibrary||[])if(row.url)add('ambient-audio',row.title,row.url);
     add('background', '背景', config.appearance?.image);
     for(const [id,value]of Object.entries(config.sceneAssets||{})){const background=id.startsWith('background:');add(background?'background':'cover','场景'+(background?'背景':'封面'),value);}
     add('font', config.appearance?.fontName || '字体', config.appearance?.font);
@@ -46,12 +49,12 @@ export function analyzePayload(payload, script) {
     add('playlist-cover', '歌单封面', payload.playlist?.cover);
     for (const [name, value] of Object.entries(payload.assets || {})) add('fallback', name, value);
     const embeddedBytes = rows
-        .filter((row) => row.kind !== 'lyrics')
+        .filter((row) => row.kind !== 'lyrics'&&!row.shared)
         .reduce((sum, row) => sum + row.bytes, 0);
     const problems = [];
     for (const row of rows) {
         if(row.kind==='launcher-icon'&&row.bytes>1024*1024)problems.push('悬浮图标超过 1 MiB，请替换为较小的静态图片。');
-        if (row.kind === 'audio' && row.bytes > MAX_AUDIO_BYTES)
+        if (['audio','ambient-audio'].includes(row.kind) && row.bytes > MAX_AUDIO_BYTES)
             problems.push(`「${row.name}」超过单曲 20 MB；请降低音频码率或换成稳定公开直链。`);
         if (
             ['cover', 'background', 'playlist-cover', 'fallback'].includes(row.kind) &&
@@ -116,6 +119,7 @@ export function readScriptPayload(content) {
     )
         throw new Error('背景、字体或悬浮图标资源损坏。');
     if(!sameData(config.sceneSet,normalized.sceneSet)||!sameData(config.sceneAssets,normalized.sceneAssets))throw new Error('场景、手记或场景图片不完整。');
+    if(!sameData(config.ambientLibrary,normalized.ambientLibrary)||!sameData(config.ambientAssets,normalized.ambientAssets)||!sameData(config.soundscape,normalized.soundscape))throw new Error('环境音、音景配置或音频资源不完整。');
     assertCapacity(analyzePayload(payload));
     return payload;
 }
@@ -162,6 +166,7 @@ export function verifyCardObject(card, { script, characterData } = {}) {
         ...assertCapacity(analyzePayload(payload, actual)),
         runtimeVersion: payload.runtimeVersion || 'legacy',
         tracks: (payload.config || payload).tracks.length,
+        ambient: (payload.config || payload).ambientLibrary?.length||0,
         character: 'passed',
         static: 'passed',
         browser: 'not-tested',

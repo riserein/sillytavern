@@ -1,3 +1,6 @@
+import {prepareAmbientPackage} from './ambient-transport.js';
+import {checksum} from '../data/checksum.js';
+import {selectedAmbient} from '../ambient.js';
 import { PLAYER_BUILD, PAYLOAD_FORMAT, analyzePayload, assertCapacity, payloadLiteral } from './quality.js';
 import { sceneSelection, sceneAssetReferences } from '../music-scenes.js';
 import {
@@ -55,7 +58,7 @@ function checkedImage(blob) {
 }
 /** Reads copies only. No writes to the library, playlist or IndexedDB. */
 export async function prepareCardPackage(
-    { id, title, tracks, appearance, volume, mode, transitionDuration, reading, lyricOffsets, recipientDisplay, startCollapsed, sceneSet:sourceScenes },
+    { id, title, tracks, appearance, volume, mode, transitionDuration, reading, lyricOffsets, ambientLibrary=[], soundscape, recipientDisplay, startCollapsed, sceneSet:sourceScenes },
     {
         getBlob,
         readFallback,
@@ -73,6 +76,7 @@ export async function prepareCardPackage(
     const selected=sceneSelection(sourceScenes,tracks||[]);tracks=selected.tracks;
     if (!tracks?.length) throw new Error('歌单没有歌曲，请先导入音乐。');
     if (tracks.length > 200) throw new Error('一次最多导出 200 首，请拆分歌单。');
+    const wantedAmbient=selectedAmbient(ambientLibrary,selected.sceneSet,soundscape),mainHashes=new Map();
     let total = 0;
     const ready = [],
         errors = [];
@@ -105,6 +109,7 @@ export async function prepareCardPackage(
                 }
                 const mime = audioMime(blob, track.fileName || blob.name || track.title);
                 if (!mime) throw new Error('无法确认音频格式，请重新导入 MP3、WAV、OGG 等音频文件。');
+                if(wantedAmbient.some(row=>row.kind==='local'))mainHashes.set((await checksum(blob,{signal})).sha256,track.id);
                 src = await encodeBlob(add(blob, 'audio', track.title), mime);
             } else if (
                 track.kind === 'url' ||
@@ -147,6 +152,7 @@ export async function prepareCardPackage(
         signal?.throwIfAborted();const image=await getBlob(assetId);if(!image)throw new Error('场景封面或背景缺失，请重新选择；没有导出不完整场景。');
         const kind=assetId.startsWith('background:')?'background':'cover';sceneAssets[assetId]=await encodeBlob(add(checkedImage(image),kind,'场景'+(kind==='background'?'背景':'封面')));
     }
+    const ambient=await prepareAmbientPackage({library:ambientLibrary,sceneSet:selected.sceneSet,preference:soundscape,mainHashes,getBlob,encodeBlob,probeAudio,signal,add,audioMime,checkedImage,maxAudioBytes:MAX_AUDIO_BYTES});
     const theme = { ...appearance };
     if (theme.imageBlob || theme.imageId) {
         const image = theme.imageBlob || (await getBlob(theme.imageId));
@@ -177,7 +183,7 @@ export async function prepareCardPackage(
         appearance: theme,
         volume,
         mode,
-        transitionDuration, reading, recipientDisplay,
+        transitionDuration, reading, ...ambient, recipientDisplay,
         startCollapsed,
         ...(selected.sceneSet?{sceneSet:selected.sceneSet,sceneAssets}:{}),
     });
@@ -190,7 +196,7 @@ export async function prepareCardPackage(
 }
 export function buildCardExports(config, runtime, scriptId) {
     config = normalizeCardConfig(config);
-    if(config.sceneSet)throw new Error('音乐场景需要使用共享界面导出，不能套入旧经典播放器。');
+    if(config.sceneSet||config.ambientLibrary?.length)throw new Error('音乐场景与音景需要使用共享界面导出，不能套入旧经典播放器。');
     if (!runtime.includes('startCharacterPlayer') || runtime.includes('//# sourceMappingURL'))
         throw new Error('独立播放器文件不完整，请更新插件后刷新。');
     config.runtimeVersion = PLAYER_BUILD;

@@ -1,3 +1,6 @@
+import {normalizePortableAmbient} from './ambient-transport.js';
+import {publicResource} from '../public-resource.js';
+export {publicResource} from '../public-resource.js';
 /** Portable data only: never accept browser storage keys or executable configuration. */
 import { TRANSITION_DURATIONS } from '../listening.js';
 import { normalizeLyricOffset } from '../ui/lyric-timing.js';
@@ -21,33 +24,6 @@ export function portableAudio(value) {
     )
         return value;
     return publicResource(value);
-}
-export function publicResource(value) {
-    try {
-        const url = new URL(value),
-            host = url.hostname.toLowerCase().replace(/\.$/, '');
-        if (
-            url.protocol !== 'https:' ||
-            url.username ||
-            url.password ||
-            url.hash ||
-            host === 'localhost' ||
-            !host.includes('.') ||
-            /(?:\.local|\.localhost|\.internal|\.test|\.invalid)$/.test(host) ||
-            /^\d+\.\d+\.\d+\.\d+$/.test(host) ||
-            host.startsWith('[')
-        )
-            return null;
-        if (
-            [...url.searchParams.keys()].some((key) =>
-                /^(?:expires?|expiry|token|signature|sign|auth|x-amz-.+|x-goog-.+)$/i.test(key),
-            )
-        )
-            return null;
-        return url.href;
-    } catch {
-        return null;
-    }
 }
 export function portableImage(value) {
     return typeof value === 'string' &&
@@ -112,7 +88,10 @@ export function normalizeCardConfig(raw) {
         if(Object.keys(assets).length!==refs.length||refs.some(id=>!portableImage(assets[id])))throw new Error('随卡场景图片资源缺失或无效。');
         sceneData={sceneSet,sceneAssets:Object.fromEntries(refs.map(id=>[id,portableImage(assets[id])]))};
     }
+    const ambient=normalizePortableAmbient(raw,tracks,{portableAudio,portableImage});
+    for(const scene of sceneData.sceneSet?.scenes||[])if(scene.ambient?.id&&!ambient.ambientLibrary?.some(row=>row.id===scene.ambient.id))throw new Error('随卡场景引用的环境音缺失。');
     return {
+        ...ambient,
         id: raw.id,
         title: String(raw.title || '我的音乐').slice(0, 80),
         demo: raw.demo === true,

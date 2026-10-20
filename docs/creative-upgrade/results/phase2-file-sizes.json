@@ -1,0 +1,18 @@
+{
+  "version": "2.2.0",
+  "files": [
+    {
+      "operation": "soundscape-file",
+      "format": "json",
+      "mobile": true,
+      "bytes": 1622784
+    },
+    {
+      "operation": "soundscape-file",
+      "format": "png",
+      "mobile": true,
+      "bytes": 2238584
+    }
+  ],
+  "note": "真实酒馆原生下载的实际文件长度；两份环境音元数据仅携带一份相同音频。不是内存峰值。"
+}

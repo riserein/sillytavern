@@ -1,3 +1,4 @@
+const evidence=process.env.ST_CREATIVE_EVIDENCE||'docs/creative-upgrade';
 import {test,expect} from '@playwright/test';
 import {mkdir} from 'node:fs/promises';
 import {fixture} from './creative-fixture.js';
@@ -13,11 +14,11 @@ test('dragging, one-scene roles and complete hiding cannot accidentally open qui
 test('cover palettes work in every layout and explicit scene and author colors keep precedence',async({page},info)=>{
  await fixture(page);await page.evaluate(()=>{const c=document.createElement('canvas');c.width=c.height=8;const x=c.getContext('2d');x.fillStyle='#c46630';x.fillRect(0,0,8,8);document.querySelector('.stm-cover-image').src=c.toDataURL();});
  await expect.poll(()=>page.locator('.stm-cover-image').evaluate(n=>n.complete&&n.naturalWidth>0)).toBe(true);
- await mkdir('docs/creative-upgrade/layout-colors',{recursive:true});
+ await mkdir(evidence+'/layout-colors',{recursive:true});
  for(const layout of ['night','crystal','vinyl','cassette','pure','journal'])for(const scheme of ['light','dark']){
   const record=await page.evaluate(async({layout,scheme,prefix})=>{app.setDesign({layout});document.querySelector('[data-scheme-choice='+scheme+']').click();const mode=document.querySelector('#stm-cover-colors');mode.value='strong';mode.dispatchEvent(new Event('change'));const panel=document.querySelector('#stm-player'),css=getComputedStyle(panel),{contrastRatio}=await import(prefix+'ui/contrast.js');return {colors:panel.dataset.designColors,contrast:contrastRatio(css.getPropertyValue('--read-body').trim(),css.getPropertyValue('--read-surface').trim()),sameAudio:app.audio===originalAudio};},{layout,scheme,prefix});
   expect(record.colors).toBe('true');expect(record.contrast).toBeGreaterThanOrEqual(4.5);expect(record.sameAudio).toBe(true);
-  if(info.project.name==='desktop')await page.locator('#stm-player').screenshot({path:`docs/creative-upgrade/layout-colors/${layout}-${scheme}.png`});
+  if(info.project.name==='desktop')await page.locator('#stm-player').screenshot({path:`${evidence}/layout-colors/${layout}-${scheme}.png`});
  }
  await page.evaluate(()=>app.setDesign({layout:'crystal',customization:{colors:{background:'#16443a',text:'#fffdf2',accent:'#ffd088'}}}));
  expect(await page.locator('#stm-player').evaluate(n=>getComputedStyle(n).getPropertyValue('--design-background').trim())).toBe('#16443a');
@@ -45,7 +46,7 @@ test('timeline shares the playing Audio, cancels drafts and saves exact metadata
  await editor.locator('[data-axis-time="0"]').fill('00:00.400');await editor.locator('[data-axis-time="0"]').press('Tab');await editor.locator('[data-axis=undo]').click();await expect(editor.locator('[data-axis-time="0"]')).toHaveValue('00:00.200');await editor.locator('[data-axis=redo]').click();await editor.locator('[data-axis=save]').click();
  expect(await page.evaluate(()=>app.settings.tracks[0].lyrics)).toContain('[00:00.400]第一句');expect(await page.evaluate(()=>app.settings.tracks[0].lyricOriginal)).toContain('[ti:原始标题]');
  await editor.locator('[data-axis-time="0"]').fill('00:00.600');await editor.locator('[data-axis-time="0"]').press('Tab');await editor.locator('[data-axis=close]').click();expect(await page.evaluate(()=>app.settings.tracks[0].lyrics)).toContain('[00:00.400]第一句');
- await page.locator('[data-action=edit-lyric-axis]').evaluate(b=>b.click());await expect(editor).toBeVisible();await mkdir('docs/creative-upgrade/timeline',{recursive:true});await editor.screenshot({path:`docs/creative-upgrade/timeline/${info.project.name}.png`});
+ await page.locator('[data-action=edit-lyric-axis]').evaluate(b=>b.click());await expect(editor).toBeVisible();await mkdir(evidence+'/timeline',{recursive:true});await editor.screenshot({path:`${evidence}/timeline/${info.project.name}.png`});
  await editor.locator('[data-axis=restore]').click();expect(await page.evaluate(()=>app.settings.tracks[0].lyrics)).toContain('[00:00.20]第一句');await page.evaluate(()=>app.dispose());expect(await page.evaluate(()=>liveURLs.size)).toBe(0);
 });
 test('cover colors leave the saved design and Audio untouched and fall back on tainted artwork',async({page},info)=>{
@@ -58,12 +59,12 @@ test('cover colors leave the saved design and Audio untouched and fall back on t
  await page.evaluate(()=>{document.querySelector('.stm-cover-image').src='http://localhost:8000/creative-art.png';const s=document.querySelector('#stm-cover-colors');s.value='strong';s.dispatchEvent(new Event('change'));});
  await expect.poll(()=>page.evaluate(()=>{const img=document.querySelector('.stm-cover-image');return img.currentSrc.includes('creative-art.png')&&img.complete&&img.naturalWidth>0;})).toBe(true);
  expect(await page.evaluate(()=>getComputedStyle(document.querySelector('#stm-player')).getPropertyValue('--design-background')===baseArt)).toBe(true);
- await mkdir('docs/creative-upgrade/colors',{recursive:true});await page.locator('#stm-player').screenshot({path:`docs/creative-upgrade/colors/${info.project.name}.png`});await page.evaluate(()=>app.dispose());
+ await mkdir(evidence+'/colors',{recursive:true});await page.locator('#stm-player').screenshot({path:`${evidence}/colors/${info.project.name}.png`});await page.evaluate(()=>app.dispose());
 });
 test('quick scenes open from the launcher without opening the window or restarting shared music',async({page},info)=>{
  await fixture(page);await page.locator('[data-action=play]').click();await expect.poll(()=>page.evaluate(()=>app.audio.currentTime)).toBeGreaterThan(.1);await page.evaluate(()=>{window.beforeQuick=app.audio.src;app.setOpen(false);});
  const launcher=page.locator('#stm-launcher');if(info.project.name==='desktop')await launcher.click({button:'right'});else{const box=await launcher.boundingBox();await page.dispatchEvent('#stm-launcher','pointerdown',{pointerId:88,pointerType:'touch',clientX:box.x+15,clientY:box.y+15,button:0});await expect(page.locator('.stm-scene-quick')).toBeVisible();await page.dispatchEvent('#stm-launcher','pointerup',{pointerId:88,pointerType:'touch'});await launcher.evaluate(n=>n.click());}
  await expect(page.locator('.stm-scene-quick')).toBeVisible();await expect(page.locator('#stm-player')).toBeHidden();await page.locator('[data-quick-scene=memory]').click();await expect.poll(()=>page.evaluate(()=>app.getScene().id)).toBe('memory');expect(await page.evaluate(()=>app.audio===originalAudio&&app.audio.src===beforeQuick&&!app.audio.paused)).toBe(true);
- await launcher.click({button:'right'});await mkdir('docs/creative-upgrade/quick-scenes',{recursive:true});await page.locator('.stm-scene-quick').screenshot({path:`docs/creative-upgrade/quick-scenes/${info.project.name}.png`});
+ await launcher.click({button:'right'});await mkdir(evidence+'/quick-scenes',{recursive:true});await page.locator('.stm-scene-quick').screenshot({path:`${evidence}/quick-scenes/${info.project.name}.png`});
  await page.evaluate(()=>app.dispose());expect(await page.locator('.stm-scene-quick').count()).toBe(0);expect(await page.evaluate(()=>liveURLs.size)).toBe(0);
 });

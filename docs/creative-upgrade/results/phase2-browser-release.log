@@ -1,0 +1,42 @@
+
+Running 16 tests using 1 worker
+
+(node:339609) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:339609) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/ambient.e2e.js:7:1 › two actual audio channels keep independent levels, pause intent, history and complete hiding (4.7s)
+  ✓   2 [desktop] › tests/ambient.e2e.js:19:1 › shared scene ambience preserves progress and rapid role changes cannot revive old loads (5.9s)
+  ✓   3 [desktop] › tests/ambient.e2e.js:27:1 › actual media failure on the auxiliary URL leaves main playback alive (2.0s)
+  ✓   4 [desktop] › tests/ambient.e2e.js:32:1 › sleep-after-track stops both actual channels without advancing the playlist (3.5s)
+(node:339932) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:339932) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 [mobile-320] › tests/ambient.e2e.js:7:1 › two actual audio channels keep independent levels, pause intent, history and complete hiding (3.6s)
+  ✓   6 [mobile-320] › tests/ambient.e2e.js:19:1 › shared scene ambience preserves progress and rapid role changes cannot revive old loads (4.8s)
+  ✓   7 [mobile-320] › tests/ambient.e2e.js:27:1 › actual media failure on the auxiliary URL leaves main playback alive (1.8s)
+  ✓   8 [mobile-320] › tests/ambient.e2e.js:32:1 › sleep-after-track stops both actual channels without advancing the playlist (2.5s)
+(node:340219) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:340219) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [mobile-390] › tests/ambient.e2e.js:7:1 › two actual audio channels keep independent levels, pause intent, history and complete hiding (3.4s)
+  ✓  10 [mobile-390] › tests/ambient.e2e.js:19:1 › shared scene ambience preserves progress and rapid role changes cannot revive old loads (4.7s)
+  ✓  11 [mobile-390] › tests/ambient.e2e.js:27:1 › actual media failure on the auxiliary URL leaves main playback alive (1.6s)
+  ✓  12 [mobile-390] › tests/ambient.e2e.js:32:1 › sleep-after-track stops both actual channels without advancing the playlist (2.7s)
+(node:340493) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:340493) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [mobile-412] › tests/ambient.e2e.js:7:1 › two actual audio channels keep independent levels, pause intent, history and complete hiding (3.5s)
+  ✓  14 [mobile-412] › tests/ambient.e2e.js:19:1 › shared scene ambience preserves progress and rapid role changes cannot revive old loads (5.4s)
+  ✓  15 [mobile-412] › tests/ambient.e2e.js:27:1 › actual media failure on the auxiliary URL leaves main playback alive (1.4s)
+  ✓  16 [mobile-412] › tests/ambient.e2e.js:32:1 › sleep-after-track stops both actual channels without advancing the playlist (2.8s)
+
+  16 passed (58.6s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

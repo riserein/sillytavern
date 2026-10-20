@@ -1,0 +1,20 @@
+
+Running 6 tests using 1 worker
+
+(node:343398) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:343398) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser (1.7m)
+  ✓  2 tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser (1.4m)
+  ✓  3 tests/card-maker.e2e.js:582:1 › resource failures and edits prevent stale or partial exports without changing the original library (11.8s)
+  ✓  4 tests/card-maker.e2e.js:630:44 › maker shared design cassette exports independent JS, HTML and Helper JSON then plays in a clean recipient (37.0s)
+  ✓  5 tests/card-maker.e2e.js:630:44 › maker shared design journal exports independent JS, HTML and Helper JSON then plays in a clean recipient (33.2s)
+  ✓  6 tests/card-maker.e2e.js:640:1 › soundscape maker keeps draft audio after library deletion and exports independent dual-channel previews (17.0s)
+
+  6 passed (4.8m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

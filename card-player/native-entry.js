@@ -100,12 +100,20 @@ export function mountNativePlayer(payload, scope, options = {}) {
             const first=config.sceneSet.scenes.find(s=>s.id===config.sceneSet.defaultSceneId)?.trackIds[0];if(first)settings.currentId=first;
             for(const [id,value]of Object.entries(config.sceneAssets||{}))embedded.setData(id,value);
         }
+        if(config.ambientLibrary?.length){
+            const sources=new Map(),ambientCovers=new Map();
+            const sourceId=(key,value)=>{if(!sources.has(key)){const id='ambient-source:'+createTrackId(win.crypto);if(value.startsWith('data:'))embedded.setData(id,value);sources.set(key,{id,value});}return sources.get(key);};
+            settings.ambientLibrary=config.ambientLibrary.map(row=>{let source;if(row.sourceKey)source=sourceId(row.sourceKey,config.ambientAssets[row.sourceKey]);if(row.sourceTrackId){const track=config.tracks.find(t=>t.id===row.sourceTrackId);source={id:track.id,value:track.src};}
+                let coverId=null;if(row.coverKey){if(!ambientCovers.has(row.coverKey)){const id='cover:'+createTrackId(win.crypto);embedded.setData(id,config.ambientAssets[row.coverKey]);ambientCovers.set(row.coverKey,id);}coverId=ambientCovers.get(row.coverKey);}
+                const url=row.url||(source&&!source.value.startsWith('data:')?source.value:null);return {id:row.id,title:row.title,icon:row.icon,volume:row.volume,loop:row.loop,coverId,...(url?{kind:'url',url}:{kind:'local',resourceId:source.id})};});settings.soundscape=config.soundscape;
+        }
         if (config.appearance.image) {
             settings.backgroundId = `background:${createTrackId(win.crypto)}`;
             embedded.setBlob(settings.backgroundId, dataBlob(config.appearance.image, win));
         }
         if(config.appearance.launcherIcon){const id='cover:'+createTrackId(win.crypto);embedded.setBlob(id,dataBlob(config.appearance.launcherIcon,win));settings.uiDesign=normalizeDesign(settings.uiDesign);settings.uiDesign.customization.iconId=id;}
         const allowedState = [
+            'soundscape',
             'scenePreferences',
             'volume',
             'mode',

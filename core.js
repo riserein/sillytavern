@@ -1,3 +1,4 @@
+import {normalizeAmbientLibrary,normalizeSoundscape} from './ambient.js';
 import { normalizeLyricOffsets } from './ui/lyric-timing.js';
 import { normalizeLyricOverrides } from './lyric-document.js';
 import { normalizeVisibility } from './ui/visibility-state.js';
@@ -142,6 +143,8 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
         reading: normalizeReading(raw.reading),
         visibility: normalizeVisibility(raw.visibility),
         lyricOffsets: normalizeLyricOffsets(raw.lyricOffsets, allIds),
+        ambientLibrary: normalizeAmbientLibrary(raw.ambientLibrary),
+        soundscape: normalizeSoundscape(raw.soundscape),
         lyricOverrides: normalizeLyricOverrides(raw.lyricOverrides).filter(row=>allIds.has(row.trackId)),
         coverColorMode: ['soft','strong'].includes(raw.coverColorMode)?raw.coverColorMode:'off',
         personalDesign: raw.personalDesign && typeof raw.personalDesign === 'object' ? normalizeDesign(raw.personalDesign) : null,

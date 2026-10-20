@@ -1,3 +1,4 @@
+import {normalizeSceneAmbient} from './ambient.js';
 import { DESIGN_THEMES } from './ui/config.js';
 
 export const MAX_SCENES = 12;
@@ -24,6 +25,7 @@ export function normalizeSceneSet(raw = {}) {
             trackIds: [...new Set(Array.isArray(row.trackIds) ? row.trackIds.filter(identifier) : [])].slice(0, MAX_SCENE_TRACKS),
             coverId: asset(row.coverId, 'cover'), backgroundId: asset(row.backgroundId, 'background'),
             themeId: Object.hasOwn(DESIGN_THEMES, row.themeId) ? row.themeId : 'inherit',
+            ...(row.ambient&&typeof row.ambient==='object'?{ambient:normalizeSceneAmbient(row.ambient)}:{}),
             included: row.included !== false, order: scenes.length,
         });
         if (scenes.length === MAX_SCENES) break;
@@ -59,7 +61,7 @@ export function normalizeScenePreferences(rows) {
     return result;
 }
 
-export function sceneIssues(scene, tracks) {
+export function sceneIssues(scene, tracks, ambientLibrary) {
     const known = new Map(tracks.map(t => [t.id, t])), errors = [];
     if (!scene?.trackIds?.length) errors.push('尚未选择歌曲');
     for (const id of scene?.trackIds || []) {
@@ -67,6 +69,7 @@ export function sceneIssues(scene, tracks) {
         if (!track) errors.push('缺少歌曲：' + id);
         else if (track.kind === 'platform' && !['full', 'preview'].includes(track.playback)) errors.push('歌曲仅为来源记录，不能直接播放：' + track.title);
     }
+    if(scene?.ambient?.id&&ambientLibrary&&!ambientLibrary.some(r=>r.id===scene.ambient.id))errors.push('缺少环境音：'+scene.ambient.id);
     return errors;
 }
 
@@ -79,7 +82,7 @@ export function roleSceneGroup(settings, avatar) {
 export function selectedScene(settings, avatar, tracks) {
     const group = roleSceneGroup(settings, avatar);
     if (!group) return null;
-    const valid = group.scenes.filter(s => !sceneIssues(s, tracks).length);
+    const valid = group.scenes.filter(s => !sceneIssues(s, tracks, settings.ambientLibrary||[]).length);
     const remembered = (settings.scenePreferences || []).find(p => p.avatar === avatar)?.sceneId;
     return valid.find(s => s.id === remembered) || valid.find(s => s.id === group.defaultSceneId) || valid[0] || null;
 }
@@ -106,7 +109,7 @@ export function saveRoleScenes(settings, avatar, value) {
 
 export function rememberScene(settings, avatar, sceneId, tracks) {
     const group = roleSceneGroup(settings, avatar), scene = group?.scenes.find(s => s.id === sceneId);
-    if (!scene || sceneIssues(scene, tracks).length) throw new Error('这个场景尚未完成，请先检查歌曲资源。');
+    if (!scene || sceneIssues(scene, tracks, settings.ambientLibrary||[]).length) throw new Error('这个场景尚未完成，请先检查歌曲资源。');
     const rows = settings.scenePreferences ||= [], old = rows.find(r => r.avatar === avatar);
     if (old) old.sceneId = sceneId; else rows.push({ avatar, sceneId });
     return scene;
@@ -138,10 +141,10 @@ export function sceneSelection(group, tracks) {
     return {tracks:ids.map(id=>byId.get(id)),sceneSet:normalizeSceneSet({...checked,scenes,notes:checked.notes.filter(n=>ids.includes(n.trackId))})};
 }
 
-export function remapSceneSet(value, { trackId = id => id, assetId = id => id, sceneId = id => id } = {}) {
+export function remapSceneSet(value, { trackId = id => id, assetId = id => id, sceneId = id => id, ambientId = id => id } = {}) {
     const copy = normalizeSceneSet(value), ids = new Map(copy.scenes.map(s => [s.id, sceneId(s.id)]));
     copy.defaultSceneId = ids.get(copy.defaultSceneId) || null;
-    copy.scenes = copy.scenes.map(s => ({ ...s, id: ids.get(s.id), trackIds: s.trackIds.map(trackId), coverId: s.coverId ? assetId(s.coverId) : null, backgroundId: s.backgroundId ? assetId(s.backgroundId) : null }));
+    copy.scenes = copy.scenes.map(s => ({ ...s,...(s.ambient?{ambient:{...s.ambient,id:s.ambient.id?ambientId(s.ambient.id):null}}:{}), id: ids.get(s.id), trackIds: s.trackIds.map(trackId), coverId: s.coverId ? assetId(s.coverId) : null, backgroundId: s.backgroundId ? assetId(s.backgroundId) : null }));
     copy.notes = copy.notes.map(n => ({ ...n, trackId: trackId(n.trackId) }));
     return copy;
 }

@@ -1,8 +1,10 @@
+import {ambientReferences,ambientShapeKnown} from './ambient.js';
 const SETTINGS_KEY = 'riserein_music_player';
 import { designReferences } from './ui/config.js';
 import { sceneAssetReferences } from './music-scenes.js';
 export function referencedAssets(settings) {
     if (!settings || !Array.isArray(settings.tracks)) return null;
+    if(!ambientShapeKnown(settings.ambientLibrary))return null;
     const ids = new Set();
     for (const track of settings.tracks) {
         if (track.kind === 'local') ids.add(track.id);
@@ -14,6 +16,7 @@ export function referencedAssets(settings) {
     if (settings.backgroundId) { ids.add(settings.backgroundId); ids.add(`${settings.backgroundId}:original`); }
     for (const id of designReferences(settings)) ids.add(id);
     for (const id of sceneAssetReferences(settings.roleScenes)) ids.add(id);
+    for(const id of ambientReferences(settings.ambientLibrary))ids.add(id);
     return ids;
 }
 async function postedSettings(input, init) {
