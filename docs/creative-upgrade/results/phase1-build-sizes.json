@@ -1,0 +1,27 @@
+{
+  "version": "2.1.1",
+  "rows": [
+    {
+      "file": "card-player/dist/native-runtime.js",
+      "beforeBytes": 379481,
+      "afterBytes": 403409,
+      "deltaBytes": 23928,
+      "sha256": "15035205a07ab4aa6217c8d8e78ff86472b18db9247e96a0d392665e471427a0"
+    },
+    {
+      "file": "card-player/dist/shared-ui.js",
+      "beforeBytes": 336378,
+      "afterBytes": 360181,
+      "deltaBytes": 23803,
+      "sha256": "5325dcc663540c983f3ac397ebbffb886fe701a24e7d3c6e5c1c10cd0d2d01a8"
+    },
+    {
+      "file": "card-player/dist/runtime.js",
+      "beforeBytes": 75076,
+      "afterBytes": 75096,
+      "deltaBytes": 20,
+      "sha256": "569beee04fb07d14560339c64db30257d943fe6ffbdf9c8163762a4c8c110d03"
+    }
+  ],
+  "note": "文件字节数，不是运行内存或峰值"
+}

@@ -40,6 +40,7 @@ const UI_KEYS = [
     'transitionDuration',
     'uiDesign',
     'reading',
+    'coverColorMode',
 ];
 /** Same export_with semantics as the verified official Helper export hook. */
 export function helperExportSettings(settings) {

@@ -124,7 +124,8 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         const old=after.scenePreferences.find(p=>p.avatar===avatar);if(old)old.sceneId=sceneId;else after.scenePreferences.push({avatar,sceneId});
     }
     if(restorePreferences){
-        for(const [key,value] of Object.entries(incoming))if(!['tracks','playlists','fonts','favorites','designs','roleDesigns','roleScenes','scenePreferences','uiDesign','personalDesign','recentPlays','playEvents','backgroundId','fontId','fontName','fontPreset','activePlaylistId','currentId'].includes(key))after[key]=structuredClone(value);
+        for(const [key,value] of Object.entries(incoming))if(!['lyricOverrides','tracks','playlists','fonts','favorites','designs','roleDesigns','roleScenes','scenePreferences','uiDesign','personalDesign','recentPlays','playEvents','backgroundId','fontId','fontName','fontPreset','activePlaylistId','currentId'].includes(key))after[key]=structuredClone(value);
+        after.lyricOverrides=[...before.lyricOverrides,...(incoming.lyricOverrides||[]).map(row=>({...row,trackId:trackIds.get(row.trackId)||row.trackId}))].filter((row,i,all)=>all.findLastIndex(r=>r.trackId===row.trackId)===i);
         after.lyricOffsets={...before.lyricOffsets,...Object.fromEntries(Object.entries(incoming.lyricOffsets||{}).map(([id,value])=>[trackIds.get(id)||id,value]))};
         if(after.visibility?.resume)after.visibility.resume.id=trackIds.get(after.visibility.resume.id)||after.visibility.resume.id;
         after.uiDesign=mappedDesign(incoming.uiDesign);

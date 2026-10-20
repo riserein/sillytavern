@@ -3,7 +3,7 @@ import { normalizeDesign, designPalette } from './config.js';
 import { playSymbol } from '../player-components.js';
 
 /** Reuses the existing DOM and Audio. Applying a design never issues an audio command. */
-export function createDesignPresentation({ panel, launcher, audio, readIcon, onPlay, onNext, getTrackNumber = () => 0 }) {
+export function createDesignPresentation({ panel, launcher, audio, readIcon, onPlay, onNext, paletteTransform = value => value, getTrackNumber = () => 0 }) {
     const doc=panel.ownerDocument,abort=new AbortController();
     let disposed=false,revision=0,iconUrl=null,iconId=null,current=normalizeDesign();
     const underlying=new WeakMap();
@@ -60,7 +60,8 @@ export function createDesignPresentation({ panel, launcher, audio, readIcon, onP
             const fallbacks={background:'--stm-solid',surface:'--stm-subtle',text:'--stm-body',muted:'--stm-muted',accent:'--stm-accent',border:'--stm-line'};
             const paletteTheme=current.layout==='journal'&&current.theme==='inherit'?'journal-parchment':current.theme;
             const theme=designPalette(paletteTheme,root.dataset.colorScheme);
-            const palette=Object.fromEntries(Object.entries(fallbacks).map(([key,token])=>[key,c.colors[key]||theme[key]||computed.getPropertyValue(token).trim()]));
+            let palette=Object.fromEntries(Object.entries(fallbacks).map(([key,token])=>[key,c.colors[key]||theme[key]||computed.getPropertyValue(token).trim()]));
+            const transformed=paletteTransform(palette,current),dynamic=Object.keys(palette).some(key=>palette[key]!==transformed[key]);palette=transformed;
             root.dataset.layout=current.layout;root.dataset.designTheme=current.theme;root.dataset.launcher=current.launcher;
             root.dataset.accessibleControls=String(accessible);
             root.dataset.motion=motion||c.animationLevel;root.dataset.designMaterial=c.material;root.dataset.designBody=c.body;root.dataset.grooves=c.grooves;root.dataset.launcherShape=c.launcherShape;
@@ -74,7 +75,7 @@ export function createDesignPresentation({ panel, launcher, audio, readIcon, onP
                 const value=palette[key];
                 if(value)root.style.setProperty('--design-'+key,value);else root.style.removeProperty('--design-'+key);
             }
-            root.dataset.designColors=String(paletteTheme!=='inherit'||Object.values(c.colors).some(Boolean));
+            root.dataset.designColors=String(dynamic||paletteTheme!=='inherit'||Object.values(c.colors).some(Boolean));
             if(root.dataset.designColors==='true'){
                 root.style.setProperty('--design-glass','color-mix(in srgb,var(--design-background) 80%,transparent)');
                 root.style.setProperty('--design-selected','color-mix(in srgb,var(--design-accent) 15%,transparent)');

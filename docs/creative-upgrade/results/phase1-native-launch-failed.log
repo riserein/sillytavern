@@ -1,0 +1,297 @@
+
+Running 11 tests using 1 worker
+
+(node:315722) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315722) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 tests/card-native.e2e.js:33:1 › compact selected font stays fixed after native export and changes only on a new author export (1ms)
+(node:315750) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315750) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   2 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl (2ms)
+(node:315775) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315775) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   3 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean phone recipient · crystal (1ms)
+(node:315801) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315801) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   4 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · cassette (1ms)
+(node:315827) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315827) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   5 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean phone recipient · pure (1ms)
+(node:315853) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315853) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   6 tests/card-native.e2e.js:1070:1 › native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind (1ms)
+(node:315879) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315879) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   7 tests/card-native.e2e.js:1262:1 › saving local bindings and exporting an imported card never remove its unrelated carried player (1ms)
+(node:315905) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315905) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   8 tests/card-native.e2e.js:1394:1 › two designer-bound roles retain different layouts and selected fonts while sharing one playlist (1ms)
+(node:315931) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315931) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   9 tests/card-native.e2e.js:1524:1 › actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script (1ms)
+(node:315957) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315957) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  10 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop (1ms)
+(node:315984) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315984) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  11 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch (1ms)
+
+
+  1) tests/card-native.e2e.js:33:1 › compact selected font stays fixed after native export and changes only on a new author export 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-compact-ece3a-only-on-a-new-author-export/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-compact-ece3a-only-on-a-new-author-export/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean phone recipient · crystal 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-native--7f753-n-phone-recipient-·-crystal/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-native--7f753-n-phone-recipient-·-crystal/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · cassette 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-native--43f78-esktop-recipient-·-cassette/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-native--43f78-esktop-recipient-·-cassette/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean phone recipient · pure 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-native--5785f-lean-phone-recipient-·-pure/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-native--5785f-lean-phone-recipient-·-pure/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) tests/card-native.e2e.js:1070:1 › native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-native--53aa3-ly-its-own-script-on-unbind/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-native--53aa3-ly-its-own-script-on-unbind/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) tests/card-native.e2e.js:1262:1 › saving local bindings and exporting an imported card never remove its unrelated carried player 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-saving--b82a9-ts-unrelated-carried-player/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-saving--b82a9-ts-unrelated-carried-player/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) tests/card-native.e2e.js:1394:1 › two designer-bound roles retain different layouts and selected fonts while sharing one playlist 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-two-des-e247c--while-sharing-one-playlist/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-two-des-e247c--while-sharing-one-playlist/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) tests/card-native.e2e.js:1524:1 › actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-actual--b719f-altering-the-foreign-script/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-actual--b719f-altering-the-foreign-script/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-journal-c688e-nd-role-lifecycle-·-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11 failed
+    tests/card-native.e2e.js:33:1 › compact selected font stays fixed after native export and changes only on a new author export 
+    tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl 
+    tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean phone recipient · crystal 
+    tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · cassette 
+    tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean phone recipient · pure 
+    tests/card-native.e2e.js:1070:1 › native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind 
+    tests/card-native.e2e.js:1262:1 › saving local bindings and exporting an imported card never remove its unrelated carried player 
+    tests/card-native.e2e.js:1394:1 › two designer-bound roles retain different layouts and selected fonts while sharing one playlist 
+    tests/card-native.e2e.js:1524:1 › actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script 
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop 
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

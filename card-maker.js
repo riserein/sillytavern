@@ -84,7 +84,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
         openGeneration = 0;
     const draftRevisions = new Map(),
         recoveries = new Map();
-    const sourceKeys = ['backgroundId', 'fontPreset', 'fontId', 'fontName', 'volume', 'mode', 'transitionDuration', 'theme', 'colorScheme', 'surface', 'maskOpacity', 'customColors', 'clickEffects', 'uiDesign', 'reading', 'lyricOffsets'];
+    const sourceKeys = ['backgroundId', 'fontPreset', 'fontId', 'fontName', 'volume', 'mode', 'transitionDuration', 'theme', 'colorScheme', 'surface', 'maskOpacity', 'customColors', 'clickEffects', 'uiDesign', 'reading', 'coverColorMode', 'lyricOffsets'];
     const formSnapshot = () =>
         Object.fromEntries(
             [
@@ -838,7 +838,7 @@ export function createCardMaker({ panel, settings, store, context, getCollection
                 }
                 const assets={};for(const [i,name]of ['forest','moon','sunroom'].entries()){own.signal.throwIfAborted();const image=await fetchBlob(fallbackCoverUrl(i),own.signal,{maxBytes:10*1024*1024});assets['assets/covers/'+name+'.png']=await blobData(await prepareCover(image));}
                 extras.design=design;extras.assets=assets;
-                extras.ui=Object.fromEntries(['theme','colorScheme','surface','maskOpacity','customColors','clickEffects','fontPreset','transitionDuration','reading'].filter(key=>sourceSettings[key]!==undefined).map(key=>[key,structuredClone(sourceSettings[key])]));
+                extras.ui=Object.fromEntries(['theme','colorScheme','surface','maskOpacity','customColors','clickEffects','fontPreset','transitionDuration','reading','coverColorMode'].filter(key=>sourceSettings[key]!==undefined).map(key=>[key,structuredClone(sourceSettings[key])]));
                 extras.ui.surface=result.config.appearance.surface;extras.ui.maskOpacity={matte:result.config.appearance.opacity,glass:result.config.appearance.opacity};
                 extras.ui.customColors={enabled:true,accent:result.config.appearance.accent,background:result.config.appearance.background,text:result.config.appearance.text};
                 extras.fontFile=FONT_PRESETS[sourceSettings.fontPreset]?.file||'';

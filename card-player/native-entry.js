@@ -116,7 +116,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
             'transitionDuration',
             'visualMotion',
             'accessibleControls',
-            'reading', 'visibility', 'lyricOffsets',
+            'reading', 'visibility', 'lyricOffsets', 'lyricOverrides', 'coverColorMode',
             'personalDesign',
             'theme',
             'colorScheme',
@@ -130,7 +130,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
         const preferences=rolePreferences(scope,namespace,`riserein:card-native:v1:${encodeURIComponent(scope.roleId)}:${encodeURIComponent(config.id)}`);
         try {
             const saved = preferences.read();
-            for (const key of allowedState) if (Object.hasOwn(saved, key)) settings[key] = saved[key];
+            for (const key of allowedState) if (Object.hasOwn(saved, key) && (key!=='coverColorMode'||settings.uiDesign?.allowRecipientLayout)) settings[key] = saved[key];
             if(settings.personalDesign){settings.personalDesign=normalizeDesign(settings.personalDesign);settings.personalDesign.customization.iconId=settings.uiDesign?.customization?.iconId||null;if(settings.personalDesign.launcher==='custom'&&!settings.personalDesign.customization.iconId)settings.personalDesign.launcher=settings.uiDesign?.launcher||'vinyl';}
         } catch {
             /* Browser may block local storage; the player still works. */
@@ -144,7 +144,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 const state = context.extensionSettings.riserein_music_player;
                 try {
                     void preferences.write(Object.fromEntries(allowedState.map((key) => [key, state[key]]))).then(saved => {
-                        if (!disposed && (!saved || preferences.sessionOnly) && !warnedPreferences) {
+                        if (!disposed && (saved === false || preferences.sessionOnly) && !warnedPreferences) {
                             warnedPreferences = true;
                             win.toastr?.warning('当前环境无法持久保存个人偏好，收藏等设置仅在本次会话有效。');
                         }

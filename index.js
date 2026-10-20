@@ -1,3 +1,7 @@
+import {coverPalette,createCoverSampler} from './ui/cover-colors.js';
+import {createSceneQuick} from './ui/scene-quick.js';
+import {effectiveLyricsTrack} from './lyric-document.js';
+import {createLyricEditor} from './ui/lyric-editor.js';
 import { createVisibilityController } from './ui/visibility.js';
 import { effectiveLyricOffset } from './ui/lyric-timing.js';
 import { createLyricsLookup } from './lyrics.js';
@@ -85,7 +89,7 @@ export function initialize(options = {}) {
     let online = null;
     let listening = null;
     let designEditor = null, designFont = null;
-    let designPresentation = null, designControls = null, readingControls = null, lyricReader = null, launcherControls = null, launcherAvoidance = null, previewDesign = null, visibility = null, fullRecoveryEntry = null;
+    let designPresentation = null, designControls = null, readingControls = null, lyricReader = null, lyricEditor = null, sceneQuick = null, launcherControls = null, launcherAvoidance = null, previewDesign = null, visibility = null, fullRecoveryEntry = null;
     let platformLoadController = null;
     let objectUrl = null;
     let loadSequence = 0;
@@ -281,6 +285,7 @@ export function initialize(options = {}) {
             <label class="stm-check-label"><input type="checkbox" id="stm-hide-builtin">隐藏默认曲库</label>
             <p class="stm-hint" data-role="builtin-hint">默认歌曲由开发者随版本提供，不占自建歌单数量。</p>
             <div class="stm-scheme-control"><span>日夜外观</span><div class="stm-scheme-options" role="group" aria-label="日夜外观"><button type="button" data-scheme-choice="system">跟随系统</button><button type="button" data-scheme-choice="light">日间</button><button type="button" data-scheme-choice="dark">夜间</button></div><p class="stm-hint">保留当前配色与背景，自定义颜色优先。</p></div>
+            <label>封面自动取色<select id="stm-cover-colors"><option value="off">关闭 · 保留主题</option><option value="soft">柔和跟随</option><option value="strong">明显跟随</option></select></label><p class="stm-hint">仅分析当前封面；自定义颜色与场景配色优先。无法安全读取封面时保留主题。</p>
             <section class="stm-font-section">
                 <div class="stm-font-heading"><span>界面字体</span><button type="button" class="stm-secondary" data-action="import-font">＋ 导入字体</button></div>
                 <button type="button" id="stm-font" aria-label="选择界面字体" aria-expanded="false" aria-controls="stm-font-gallery"><strong>跟随酒馆</strong><span>预览与选择 ⌄</span></button>
@@ -344,7 +349,7 @@ export function initialize(options = {}) {
                     <div class="stm-platform-credit stm-hint" data-role="platform-credit" hidden></div>
                     <button type="button" class="stm-secondary" data-action="open-official" hidden>打开官方播放器</button>
                     <div class="stm-official-player" data-role="official-player" hidden></div>
-                    <div class="stm-detail-actions">
+                    <div class="stm-detail-actions"><button type="button" class="stm-secondary" data-action="edit-lyric-axis"><span>逐句歌词时间轴</span><small>标记、试听与校准</small></button>
                         <button type="button" class="stm-secondary" data-action="song-cover" aria-label="添加封面"><span>添加封面</span><small aria-hidden="true">上传喜欢的图片</small></button>
                         <button type="button" class="stm-secondary" data-action="find-song-lyrics"><span>查找歌词</span><small aria-hidden="true">搜索并预览歌词</small></button><button type="button" class="stm-secondary" data-action="song-lyrics" aria-label="导入歌词"><span>导入歌词</span><small aria-hidden="true">支持 LRC / TXT</small></button>
                         <button type="button" class="stm-secondary" data-action="clear-song-cover" aria-label="恢复随机封面"><span>恢复随机封面</span><small aria-hidden="true">使用内置插画</small></button>
@@ -671,7 +676,8 @@ export function initialize(options = {}) {
     });
     query('#stm-transition-duration').addEventListener('change', event => { settings.transitionDuration = Number(event.target.value); transitions.refresh(); save(); });
     menus.refresh();
-    designPresentation = createDesignPresentation({ panel, launcher, audio, readIcon: id => store.get(id), onPlay: toggleCurrent, onNext: () => advanceTrack(1), getTrackNumber: () => playbackQueue.tracks().findIndex(track => track.id === settings.currentId) + 1 });
+    const coverSampler=createCoverSampler(document);let sampledCover=null;
+    designPresentation = createDesignPresentation({ panel, launcher, audio, paletteTransform:(base,design)=>activeSceneState?.scene.themeId&&activeSceneState.scene.themeId!=='inherit'?base:coverPalette(base,sampledCover,settings.coverColorMode,{...(settings.customColors.enabled?{background:settings.customColors.background,text:settings.customColors.text,accent:settings.customColors.accent}:{}),...Object.fromEntries(Object.entries(design.customization.colors).filter(([,v])=>v))}), readIcon: id => store.get(id), onPlay: toggleCurrent, onNext: () => advanceTrack(1), getTrackNumber: () => playbackQueue.tracks().findIndex(track => track.id === settings.currentId) + 1 });
     designControls = createDesignControls({ panel, settings, getDesign: effectiveDesign, onChange: applyUserDesign,
         onAccessibility() { refreshDesign(); save(); }, isPortable: (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) });
     readingControls = createReadingControls({ panel, settings, onChange(key) {
@@ -718,6 +724,7 @@ export function initialize(options = {}) {
     function refreshDesign() {
         if (!designPresentation) return;
         designPresentation.apply(previewDesign || effectiveDesign(), { motion: settings.visualMotion, accessible: settings.accessibleControls });
+        panel.dataset.coverFollow=String(settings.coverColorMode!=='off');
         applyReading(panel, launcher, settings.reading, previewDesign || effectiveDesign());
         journalUI?.apply(previewDesign || effectiveDesign());
         designFont?.set((previewDesign||effectiveDesign()).fontPreset);
@@ -740,6 +747,10 @@ export function initialize(options = {}) {
 
     const coverImage = query('.stm-cover-image');
     coverImage.src = fallbackCoverUrl(0);
+    coverImage.addEventListener('load',()=>{if(disposed)return;sampledCover=coverSampler.sample(coverImage);refreshDesign();});
+    const coverMode=query('#stm-cover-colors');coverMode.value=settings.coverColorMode;
+    coverMode.disabled=typeof __STM_PORTABLE__!=='undefined'&&__STM_PORTABLE__&&!settings.uiDesign.allowRecipientLayout;
+    coverMode.addEventListener('change',()=>{if(coverMode.disabled)return;settings.coverColorMode=coverMode.value;refreshDesign();save();});
     coverImage.addEventListener('error', () => {
         const track = findTrack(settings, settings.currentId);
         const fallback = fallbackCoverUrl(track?.fallbackCover ?? 0);
@@ -765,6 +776,7 @@ export function initialize(options = {}) {
     const leaveLyrics = () => { setLyricsOpen(false); query('[data-action="toggle-lyrics"]').focus({ preventScroll: true }); };
     lyricReader = createLyricReader({ view: lyricView, scroller: query('.stm-lyrics-scroll'), lines: query('.stm-lyrics-lines'), getDefaultFollow: () => settings.reading.autoFollow, getCurrent: () => activeLyric, getTitle: () => findTrack(settings, settings.currentId)?.title, onBack: leaveLyrics, audio, getReading: () => settings.reading, getTimeline: () => lyricData, getTime: () => (audio.currentTime || 0) - effectiveLyricOffset(findTrack(settings, settings.currentId), settings.lyricOffsets) / 1000, getOffset: () => effectiveLyricOffset(findTrack(settings, settings.currentId), settings.lyricOffsets), onOffset: value => { if (settings.currentId) { settings.lyricOffsets[settings.currentId] = value; save(); } }, onTime: () => updateLyrics(), isVisible: () => !panel.hidden && !lyricView.hidden && currentPage === 'playback' });
     function renderLyrics(track) {
+        track=effectiveLyricsTrack(track,settings.lyricOverrides);
         lyricData = parseLyrics(track?.lyrics || '');
         activeLyric = -1;
         lyricReader.reset();
@@ -871,6 +883,21 @@ export function initialize(options = {}) {
         if (!findTrack(settings, id)) return null;
         try { return ensureLibraryTrack(settings, id); } catch (error) { showStatus(error.message, true); return null; }
     }
+    const lyricTrack=id=>effectiveLyricsTrack(findTrack(settings,id),settings.lyricOverrides);
+    lyricEditor=createLyricEditor({panel,audio,getTrack:lyricTrack,getOffset:id=>effectiveLyricOffset(findTrack(settings,id),settings.lyricOffsets),
+        onSelect:async id=>{if(settings.currentId!==id){if(!playbackQueue.tracks().some(t=>t.id===id))await activatePlaylist(settings.tracks.some(t=>t.id===id)?null:BUILTIN_ID);if(!playbackQueue.tracks().some(t=>t.id===id))throw new Error('此歌曲不在可用队列中，请先从歌单打开；未打开错误歌曲的时间轴。');await selectTrack(id,false);}if(settings.currentId!==id)throw new Error('歌曲加载已取消，请重试。');},
+        onPlay:()=>toggleCurrent(),onDisplay:open=>setSheetOpen('#stm-lyric-editor',open),onError:error=>showStatus(error.message,true),
+        onSave:(id,text)=>{const track=findTrack(settings,id);if(!track||disposed)throw new Error('歌曲已移除，未保存。');
+            if(typeof __STM_PORTABLE__!=='undefined'&&__STM_PORTABLE__){let row=settings.lyricOverrides.find(r=>r.trackId===id);if(!row){if(settings.lyricOverrides.length>=200)throw new Error('个人歌词修改已满，请先整理。');row={trackId:id,original:track.lyrics||''};settings.lyricOverrides.push(row);}row.lyrics=text;}
+            else {const target=editableDetailsTrack(id);if(!target)throw new Error('歌曲无法编辑，未保存。');if(target.lyricOriginal===undefined)target.lyricOriginal=target.lyrics||'';target.lyrics=text;}
+            save();if(settings.currentId===id)renderLyrics(track);
+        },
+        onRestore:id=>{const track=findTrack(settings,id);if(!track)return;
+            if(typeof __STM_PORTABLE__!=='undefined'&&__STM_PORTABLE__)settings.lyricOverrides=settings.lyricOverrides.filter(r=>r.trackId!==id);
+            else if(track.lyricOriginal!==undefined){track.lyrics=track.lyricOriginal;delete track.lyricOriginal;}
+            save();if(settings.currentId===id)renderLyrics(track);
+        }});
+    query('[data-action=edit-lyric-axis]').addEventListener('click',()=>void lyricEditor.open(detailsTrackId).catch(error=>showStatus(error.message,true)));
     const songCoverInput = query('[data-role="song-cover-file"]');
     const lyricsInput = query('[data-role="lyrics-file"]');
     query('[data-action="song-cover"]').addEventListener('click', () => songCoverInput.click());
@@ -1374,7 +1401,7 @@ export function initialize(options = {}) {
         if(maintenanceBusy)return;
         const avatar = currentCharacterAvatar(freshContext());
         if (!force && avatar === lastRoleAvatar) { renderRoleStatus(); return; }
-        sceneManager?.close(true);scenePreview=null;
+        sceneManager?.close(true);lyricEditor?.close(true);sceneQuick?.close();scenePreview=null;
         designEditor?.close();
         const previous = lastRoleAvatar;
         lastRoleAvatar = avatar;
@@ -1992,10 +2019,10 @@ export function initialize(options = {}) {
         if (disposed) return;
         disposed = true;
         listening?.dispose(); transitions.dispose();
-        journalUI?.dispose();
+        journalUI?.dispose();sceneQuick?.dispose();coverSampler.clear();
         sceneManager?.dispose();scenePicker?.dispose();++sceneVisualEpoch;if(sceneImageUrl)URL.revokeObjectURL(sceneImageUrl);if(sceneCoverUrl)URL.revokeObjectURL(sceneCoverUrl);
         designEditor?.dispose(); designFont?.dispose();
-        lyricReader?.dispose(); readingControls?.dispose(); launcherControls?.dispose(); launcherAvoidance?.dispose(); designControls?.dispose(); designPresentation?.dispose();
+        lyricEditor?.dispose(); lyricReader?.dispose(); readingControls?.dispose(); launcherControls?.dispose(); launcherAvoidance?.dispose(); designControls?.dispose(); designPresentation?.dispose();
         dataPanel?.dispose(); cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose(); retirement?.dispose(); options.onDispose?.();
         ++loadSequence;
         pausePlayback(); audio.removeAttribute('src'); audio.load();
@@ -2065,6 +2092,7 @@ export function initialize(options = {}) {
         const entry=document.createElement('button');entry.type='button';entry.className='stm-secondary';entry.dataset.action='music-scenes';entry.textContent='角色音乐场景';entry.addEventListener('click',()=>sceneManager.open(currentCharacterAvatar(freshContext())));query('[data-action=card-maker]').after(entry);
     }
     scenePicker=createScenePicker({panel,setOpen:open=>setSheetOpen('#stm-scenes',open),getGroup:sceneGroupForCurrent,getCurrent:()=>activeSceneState?.scene,onChoose:id=>{scenePreview=null;return activateScene(id);},onManage:(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)?null:()=>sceneManager.open(currentCharacterAvatar(freshContext())),onError:error=>showStatus(error.message,true)});
+    sceneQuick=createSceneQuick({launcher,panel,getScenes:()=>{const group=roleSceneGroup(settings,currentCharacterAvatar(freshContext()));return (group?.scenes||[]).filter(s=>s.included&&s.trackIds.length&&s.trackIds.every(id=>!!findTrack(settings,id)));},getCurrent:()=>activeSceneState?.scene.id,onChoose:id=>activateScene(id),isHidden:()=>visibility?.state==='hidden',getCover:cachedCover,onError:error=>showStatus(error.message,true)});
     journalUI=createJournal({panel,audio,getTrack:()=>findTrack(settings,settings.currentId),getTracks:()=>playbackQueue.tracks(),getScene:()=>activeSceneState?.scene,getGroup:()=>activeSceneState?.group||roleSceneGroup(settings,currentCharacterAvatar(freshContext())),onTrack:id=>{if(id===settings.currentId){if(audio.paused)void play();else void softPause();}else void selectTrack(id,true);},onLyrics:visible=>{if(visible){lyricReader?.reset();updateLyrics(true);}else lyricReader?.suspend();}});
     journalUI.apply(effectiveDesign());
     if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
@@ -2086,7 +2114,7 @@ export function initialize(options = {}) {
         for (const element of panel.querySelectorAll('[data-page="import"], #stm-page-import, [data-action="go-import"], [data-action="card-maker"], [data-action="rebuild-native"], [data-role="card-handoff"], [data-action="bind-roles"], #stm-role-bindings')) element.remove();
         query('.stm-queue-empty').textContent = '在曲库选择一首歌开始听歌。';
     }
-    visibility = createVisibilityController({ panel, launcher, audio, getPreference: () => settings.visibility, setPreference: value => { settings.visibility = value; save(); }, getTrackId: () => settings.currentId, close: () => setOpen(false, false), open: () => setOpen(true), onHide: () => { transitions.stop(); listening?.cancelSleep?.(); lyricReader?.suspend(); }, onStatus: text => showStatus(text), hostDocument: options.visibilityHostDocument || document, recoveryId: options.recoveryId || 'full', allowWand: (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__), onPosition: position => {settings.positions.launcher=position;save();}, helperRecovery: options.helperRecovery, preview: options.previewRecovery === true, externalRecovery: () => !!fullRecoveryEntry?.isConnected, getInput: options.getInputElement || (() => document.querySelector('#send_form')) });
+    visibility = createVisibilityController({ panel, launcher, audio, getPreference: () => settings.visibility, setPreference: value => { settings.visibility = value; save(); }, getTrackId: () => settings.currentId, close: () => setOpen(false, false), open: () => setOpen(true), onHide: () => { sceneQuick?.close();lyricEditor?.close(true);transitions.stop(); listening?.cancelSleep?.(); lyricReader?.suspend(); }, onStatus: text => showStatus(text), hostDocument: options.visibilityHostDocument || document, recoveryId: options.recoveryId || 'full', allowWand: (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__), onPosition: position => {settings.positions.launcher=position;save();}, helperRecovery: options.helperRecovery, preview: options.previewRecovery === true, externalRecovery: () => !!fullRecoveryEntry?.isConnected, getInput: options.getInputElement || (() => document.querySelector('#send_form')) });
     renderPlaylists();
     renderTracks();
     if (settings.currentId) void selectTrack(settings.currentId);

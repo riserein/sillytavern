@@ -1,0 +1,316 @@
+
+Running 11 tests using 1 worker
+
+(node:315763) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315763) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 tests/card-data.e2e.js:43:1 › complete ZIP download includes actual library/project bytes and excludes host credentials; preview is read-only (14ms)
+(node:315789) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315789) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   2 tests/card-data.e2e.js:54:1 › ZIP restores into a clean account with actual IDB, checked role remapping and preserved original project IDs (4ms)
+(node:315815) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315815) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   3 tests/card-data.e2e.js:64:1 › failed settings save keeps staged bytes and old settings; explicit readback safely rolls back only owned data (3ms)
+(node:315841) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315841) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   4 tests/card-data.e2e.js:73:1 › restore locks edits while server verification is pending and restores control states afterwards (3ms)
+(node:315867) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315867) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   5 tests/card-data.e2e.js:81:1 › damaged backup never mutates existing IDB or visible settings (3ms)
+(node:315893) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315893) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   6 tests/card-data.e2e.js:86:1 › same-origin account stores and project IDs are isolated and never automatically adopt legacy bytes (3ms)
+(node:315919) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315919) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   7 tests/card-data.e2e.js:99:1 › legacy UI requires ownership and explicit selection/copy; music/font/project bytes survive and original DB stays intact (3ms)
+(node:315945) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315945) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   8 tests/card-data.e2e.js:109:1 › storage UI previews then deletes only acknowledged unused resources in actual IDB (3ms)
+(node:315971) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315971) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   9 tests/card-data.e2e.js:116:1 › real quota failure aborts a binary batch and its ownership records without deleting prior bytes (16ms)
+(node:315997) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:315997) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  10 tests/card-data.e2e.js:128:1 › design templates and draft icon bytes survive actual ZIP and IndexedDB restore with role remapping (3ms)
+(node:316014) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:316014) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  11 tests/card-data.e2e.js:133:1 › scene metadata, notes, journal design and draft image bytes survive a full ZIP restore in actual IndexedDB (3ms)
+
+
+  1) tests/card-data.e2e.js:43:1 › complete ZIP download includes actual library/project bytes and excludes host credentials; preview is read-only 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-data-phase1/card-data.e2e.js-complete--38e4a-ntials-preview-is-read-only/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-data-phase1/card-data.e2e.js-complete--38e4a-ntials-preview-is-read-only/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-data.e2e.js:54:1 › ZIP restores into a clean account with actual IDB, checked role remapping and preserved original project IDs 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-data-phase1/card-data.e2e.js-ZIP-resto-41ec9-served-original-project-IDs/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-data-phase1/card-data.e2e.js-ZIP-resto-41ec9-served-original-project-IDs/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) tests/card-data.e2e.js:64:1 › failed settings save keeps staged bytes and old settings; explicit readback safely rolls back only owned data 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-data-phase1/card-data.e2e.js-failed-se-c4d8d--rolls-back-only-owned-data/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-data-phase1/card-data.e2e.js-failed-se-c4d8d--rolls-back-only-owned-data/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) tests/card-data.e2e.js:73:1 › restore locks edits while server verification is pending and restores control states afterwards 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-data-phase1/card-data.e2e.js-restore-l-cbbb2-s-control-states-afterwards/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-data-phase1/card-data.e2e.js-restore-l-cbbb2-s-control-states-afterwards/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) tests/card-data.e2e.js:81:1 › damaged backup never mutates existing IDB or visible settings ───
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-data-phase1/card-data.e2e.js-damaged-b-af1f9-ing-IDB-or-visible-settings/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-data-phase1/card-data.e2e.js-damaged-b-af1f9-ing-IDB-or-visible-settings/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) tests/card-data.e2e.js:86:1 › same-origin account stores and project IDs are isolated and never automatically adopt legacy bytes 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-data-phase1/card-data.e2e.js-same-orig-4a612-atically-adopt-legacy-bytes/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-data-phase1/card-data.e2e.js-same-orig-4a612-atically-adopt-legacy-bytes/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) tests/card-data.e2e.js:99:1 › legacy UI requires ownership and explicit selection/copy; music/font/project bytes survive and original DB stays intact 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-data-phase1/card-data.e2e.js-legacy-UI-0e8f9-nd-original-DB-stays-intact/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-data-phase1/card-data.e2e.js-legacy-UI-0e8f9-nd-original-DB-stays-intact/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) tests/card-data.e2e.js:109:1 › storage UI previews then deletes only acknowledged unused resources in actual IDB 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-data-phase1/card-data.e2e.js-storage-U-4aed8-sed-resources-in-actual-IDB/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-data-phase1/card-data.e2e.js-storage-U-4aed8-sed-resources-in-actual-IDB/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) tests/card-data.e2e.js:116:1 › real quota failure aborts a binary batch and its ownership records without deleting prior bytes 
+
+    Error: browserType.launchPersistentContext: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+      118 |  const scope='account-'+'3'.repeat(64),url='http://127.0.0.1:8000/data-quota';
+      119 |  try {
+    > 120 |   context=await chromium.launchPersistentContext(directory,{headless:true,executablePath:process.env.CHROMIUM_PATH});await context.route('**/data-quota',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><body></body>'}));let page=context.pages()[0];await page.goto(url);
+          |           ^
+      121 |   await page.evaluate(async({prefix,scope})=>{const {LocalMusicStore}=await import(prefix+'local-store.js');const s=new LocalMusicStore({scope});await s.put('old',new Blob(['safe']));await s.close();},{prefix,scope});await context.close();
+      122 |   context=await chromium.launchPersistentContext(directory,{headless:true,executablePath:process.env.CHROMIUM_PATH});await context.route('**/data-quota',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><body></body>'}));page=context.pages()[0];await page.goto(url);
+      123 |   const cdp=await context.newCDPSession(page);await cdp.send('Storage.overrideQuotaForOrigin',{origin:new URL(url).origin,quotaSize:1});
+        at /workspace/sillytavern/tests/card-data.e2e.js:120:11
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-data-phase1/card-data.e2e.js-real-quot-2c56b-ithout-deleting-prior-bytes/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-data-phase1/card-data.e2e.js-real-quot-2c56b-ithout-deleting-prior-bytes/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) tests/card-data.e2e.js:128:1 › design templates and draft icon bytes survive actual ZIP and IndexedDB restore with role remapping 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-data-phase1/card-data.e2e.js-design-te-e1bb5-restore-with-role-remapping/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-data-phase1/card-data.e2e.js-design-te-e1bb5-restore-with-role-remapping/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) tests/card-data.e2e.js:133:1 › scene metadata, notes, journal design and draft image bytes survive a full ZIP restore in actual IndexedDB 
+
+    Error: browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1194/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-data-phase1/card-data.e2e.js-scene-met-13d9f-restore-in-actual-IndexedDB/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-data-phase1/card-data.e2e.js-scene-met-13d9f-restore-in-actual-IndexedDB/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11 failed
+    tests/card-data.e2e.js:43:1 › complete ZIP download includes actual library/project bytes and excludes host credentials; preview is read-only 
+    tests/card-data.e2e.js:54:1 › ZIP restores into a clean account with actual IDB, checked role remapping and preserved original project IDs 
+    tests/card-data.e2e.js:64:1 › failed settings save keeps staged bytes and old settings; explicit readback safely rolls back only owned data 
+    tests/card-data.e2e.js:73:1 › restore locks edits while server verification is pending and restores control states afterwards 
+    tests/card-data.e2e.js:81:1 › damaged backup never mutates existing IDB or visible settings ────
+    tests/card-data.e2e.js:86:1 › same-origin account stores and project IDs are isolated and never automatically adopt legacy bytes 
+    tests/card-data.e2e.js:99:1 › legacy UI requires ownership and explicit selection/copy; music/font/project bytes survive and original DB stays intact 
+    tests/card-data.e2e.js:109:1 › storage UI previews then deletes only acknowledged unused resources in actual IDB 
+    tests/card-data.e2e.js:116:1 › real quota failure aborts a binary batch and its ownership records without deleting prior bytes 
+    tests/card-data.e2e.js:128:1 › design templates and draft icon bytes survive actual ZIP and IndexedDB restore with role remapping 
+    tests/card-data.e2e.js:133:1 › scene metadata, notes, journal design and draft image bytes survive a full ZIP restore in actual IndexedDB 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

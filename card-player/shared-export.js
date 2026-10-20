@@ -19,7 +19,7 @@ export function buildSharedCardExports(
   selected.customization.iconId = null;
   selected.recipientDisplay = config.recipientDisplay;
   // Explicit visual preference transport; never copy a host settings object.
-  const uiKeys=['theme','colorScheme','surface','maskOpacity','customColors','clickEffects','fontPreset','transitionDuration','reading'];
+  const uiKeys=['theme','colorScheme','surface','maskOpacity','customColors','clickEffects','fontPreset','transitionDuration','reading','coverColorMode'];
   const safeUi=Object.fromEntries(uiKeys.filter(key=>Object.hasOwn(ui,key)).map(key=>[key,structuredClone(ui[key])]));
   const payload = {
     version: 1,

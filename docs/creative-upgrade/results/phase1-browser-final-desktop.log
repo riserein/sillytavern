@@ -1,0 +1,18 @@
+
+Running 4 tests using 1 worker
+
+(node:320259) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:320259) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/creative.e2e.js:5:1 › incomplete TXT stays a draft and concurrent lyric changes are never overwritten (11.5s)
+  ✓  2 [desktop] › tests/creative.e2e.js:49:1 › timeline shares the playing Audio, cancels drafts and saves exact metadata with undo (5.0s)
+  ✓  3 [desktop] › tests/creative.e2e.js:95:1 › cover colors leave the saved design and Audio untouched and fall back on tainted artwork (2.0s)
+  ✓  4 [desktop] › tests/creative.e2e.js:151:1 › quick scenes open from the launcher without opening the window or restarting shared music (1.9s)
+
+  4 passed (21.7s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

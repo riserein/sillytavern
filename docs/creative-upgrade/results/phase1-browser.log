@@ -1,0 +1,51 @@
+
+Running 3 tests using 1 worker
+
+(node:312400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:312400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [desktop] › tests/creative.e2e.js:5:1 › timeline shares the playing Audio, cancels drafts and saves exact metadata with undo (3.0m)
+(node:316461) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:316461) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [desktop] › tests/creative.e2e.js:55:1 › cover colors leave the saved design and Audio untouched and fall back on tainted artwork (3.2s)
+  ✓  3 [desktop] › tests/creative.e2e.js:87:1 › quick scenes open from the launcher without opening the window or restarting shared music (2.9s)
+
+
+  1) [desktop] › tests/creative.e2e.js:5:1 › timeline shares the playing Audio, cancels drafts and saves exact metadata with undo 
+
+    [31mTest timeout of 180000ms exceeded.[39m
+
+    Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/creative/.playwright-artifacts-0/traces/eb45d1cee616018c2bfd-df2545e86bf5c5c8e54b.trace'
+
+    Error: page.evaluate: Target page, context or browser has been closed
+
+       8 |  await page.getByRole('tab',{name:'曲库',exact:true}).click();await page.locator('[data-collection-id=""]').click();await page.locator('[data-details-id=a]').click();
+       9 |  await page.locator('[data-action=edit-lyric-axis]').click();const editor=page.locator('#stm-lyric-editor');await expect(editor).toBeVisible();
+    > 10 |  expect(await page.evaluate(()=>app.audio===originalAudio&&!app.audio.paused)).toBe(true);
+         |             ^
+      11 |  await editor.locator('[data-axis-time="0"]').fill('00:00.400');await editor.locator('[data-axis-time="0"]').press('Tab');await editor.locator('[data-axis=undo]').click();await expect(editor.locator('[data-axis-time="0"]')).toHaveValue('00:00.200');await editor.locator('[data-axis=redo]').click();await editor.locator('[data-axis=save]').click();
+      12 |  expect(await page.evaluate(()=>app.settings.tracks[0].lyrics)).toContain('[00:00.400]第一句');expect(await page.evaluate(()=>app.settings.tracks[0].lyricOriginal)).toContain('[ti:原始标题]');
+      13 |  await editor.locator('[data-axis-time="0"]').fill('00:00.600');await editor.locator('[data-axis-time="0"]').press('Tab');await editor.locator('[data-axis=close]').click();expect(await page.evaluate(()=>app.settings.tracks[0].lyrics)).toContain('[00:00.400]第一句');
+        at /workspace/sillytavern/tests/creative.e2e.js:10:13
+
+    Error: ENOENT: no such file or directory, open '/workspace/sillytavern/test-results/creative/.playwright-artifacts-0/2c50412c6f588c6cabce3587aa663181.zip'
+
+    [31mTest timeout of 180000ms exceeded.[39m
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/creative/creative.e2e.js-timeline-s-581cb-es-exact-metadata-with-undo-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/creative/creative.e2e.js-timeline-s-581cb-es-exact-metadata-with-undo-desktop/error-context.md
+
+  1 failed
+    [desktop] › tests/creative.e2e.js:5:1 › timeline shares the playing Audio, cancels drafts and saves exact metadata with undo 
+  2 passed (6.1m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

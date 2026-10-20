@@ -40,3 +40,9 @@ test('a confirmed account mismatch stays blocked after disposal under a retained
  guard.dispose();host.Response=undefined;host.URL=undefined;
  const blocked=await host.fetch('/api/settings/save');assert.equal(blocked.status,409);assert.match((await blocked.json()).error,/账号已切换/);assert.equal(writes,0);
 });
+
+test('superseded personal saves are distinguished from real persistence failures',async()=>{
+ const checks=[],values=new Map(),storage={getItem:key=>values.get(key),setItem:(key,value)=>values.set(key,value)},account=accountPreferences({accountStorage:storage},()=>new Promise((resolve,reject)=>checks.push({resolve,reject}))),prefs=rolePreferences({preferences:account,hostWindow:{}},'key','old');
+ const first=prefs.write({volume:.1}),latest=prefs.write({volume:.8});await new Promise(r=>setTimeout(r,0));checks[1].resolve();checks[0].resolve();assert.equal(await first,null);assert.equal(await latest,true);assert.equal(JSON.parse(values.get('key')).volume,.8);
+ const denied=prefs.write({volume:.9});await new Promise(r=>setTimeout(r,0));checks[2].reject(new Error('changed account'));assert.equal(await denied,false);assert.equal(JSON.parse(values.get('key')).volume,.8);
+});

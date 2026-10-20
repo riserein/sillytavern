@@ -1,0 +1,88 @@
+
+Running 11 tests using 1 worker
+
+(node:316104) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:316104) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/card-native.e2e.js:33:1 › compact selected font stays fixed after native export and changes only on a new author export (52.1s)
+  ✓   2 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl (2.0m)
+  ✓   3 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean phone recipient · crystal (1.9m)
+  ✓   4 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean desktop recipient · cassette (2.0m)
+  ✓   5 tests/card-native.e2e.js:539:5 › native PNG and JSON carry the shared player to a clean phone recipient · pure (2.0m)
+  ✓   6 tests/card-native.e2e.js:1070:1 › native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind (16.0s)
+  ✓   7 tests/card-native.e2e.js:1262:1 › saving local bindings and exporting an imported card never remove its unrelated carried player (16.9s)
+  ✓   8 tests/card-native.e2e.js:1394:1 › two designer-bound roles retain different layouts and selected fonts while sharing one playlist (1.1m)
+  ✓   9 tests/card-native.e2e.js:1524:1 › actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script (10.0s)
+  ✓  10 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop (1.3m)
+Internal error: step id not found: fixture@354
+  ✘  11 tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch (1.6m)
+
+
+  1) tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+
+    TimeoutError: locator.click: Timeout 20000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.stm-visibility-menu summary')[22m
+    [2m    - locator resolved to <summary aria-label="播放器显示菜单">⋯</summary>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="toast-message">当前环境无法持久保存个人偏好，收藏等设置仅在本次会话有效。</div> from <div id="toast-container" class="toast-top-center">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div class="toast-message">当前环境无法持久保存个人偏好，收藏等设置仅在本次会话有效。</div> from <div id="toast-container" class="toast-top-center">…</div> subtree intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    36 × waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <div class="toast-message">当前环境无法持久保存个人偏好，收藏等设置仅在本次会话有效。</div> from <div id="toast-container" class="toast-top-center">…</div> subtree intercepts pointer events[22m
+    [2m     - retrying click action[22m
+    [2m       - waiting 500ms[22m
+
+
+      1271 |   expect(await recipient.evaluate(()=>journalOriginal.node.isConnected&&journalOriginal.audio===document.querySelector('[data-riserein-card-player] audio')&&!journalOriginal.audio.paused)).toBe(true);
+      1272 |   await selectCard(recipient,other);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('角色 B 的清晨');await click('button[data-journal-page=notes]');await expect(recipient.locator('[data-journal-note]')).toHaveText('B 独立手记');expect(await recipient.evaluate(()=>journalOriginal.audio.paused&&!journalOriginal.audio.isConnected&&Object.values(journalOriginal.api.resourceCounts).every(v=>v===0))).toBe(true);
+    > 1273 |   await selectCard(recipient,avatar);await permit();await expect(recipient.locator('[data-scene-open]')).toContainText('旧日回忆');
+           |                                                           ^
+      1274 |   // Hide preference must survive role exit/re-entry; restore through the actual wand menu.
+      1275 |   await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('.stm-visibility-menu [data-display-hide]').click();await expect(recipient.locator('#stm-launcher')).toBeHidden();await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);await selectCard(recipient,avatar);await permit();await expect(recipient.locator('#stm-player')).toBeHidden();await expect(recipient.locator('#stm-launcher')).toBeHidden();await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();await expect(recipient.locator('#stm-launcher')).toBeVisible();await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);
+      1276 |  }
+        at /workspace/sillytavern/tests/card-native.e2e.js:1273:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/creative-native-phase1/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/creative-native-phase1/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/creative-native-phase1/card-native.e2e.js-journal-0e450--and-role-lifecycle-·-touch/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  Slow test file: tests/card-native.e2e.js (13.5m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 failed
+    tests/card-native.e2e.js:1696:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch 
+  10 passed (13.6m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

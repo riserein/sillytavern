@@ -71,7 +71,7 @@ export function mountCardPlayer(input, scope) {
     const saved = preferences.read();
     const personal = { volume: audio.volume, visibility: normalizeVisibility(saved.visibility || {state: config.recipientDisplay === 'docked' ? 'docked' : 'normal'}), lyricOffsets: normalizeLyricOffsets(saved.lyricOffsets), reading: normalizeReading(saved.reading || config.reading), favorites: normalizeFavorites(saved.favorites, new Set(config.tracks.map(track => track.id))), transitionDuration: TRANSITION_DURATIONS.includes(saved.transitionDuration) ? saved.transitionDuration : config.transitionDuration };
     const transitions = createAudioTransitions(audio, { getVolume: () => personal.volume, getDuration: () => personal.transitionDuration });
-    const persist = () => { personal.currentId = config.tracks[selected]?.id; void preferences.write(personal).then(ok => { if (!disposed && (!ok || preferences.sessionOnly)) query('.status').textContent = '个人偏好仅在本次会话有效。'; }); };
+    const persist = () => { personal.currentId = config.tracks[selected]?.id; void preferences.write(personal).then(ok => { if (!disposed && (ok === false || preferences.sessionOnly)) query('.status').textContent = '个人偏好仅在本次会话有效。'; }); };
     const listen = (target, name, handler, extra = {}) => {
         target.addEventListener(name, handler, { ...extra, signal: abort.signal });
         listeners++;

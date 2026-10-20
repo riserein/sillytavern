@@ -1,0 +1,134 @@
+{
+  "status": "selected-tests-passed",
+  "version": "2.1.1",
+  "largeFixture": false,
+  "coverage": "partial-or-selected-tests; see runner report for overall status",
+  "verifiedAt": "2026-10-20T04:39:58.274Z",
+  "runtimeSha256": "15035205a07ab4aa6217c8d8e78ff86472b18db9247e96a0d392665e471427a0",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "operation": "journal-scenes-export",
+      "mobile": false,
+      "format": "json",
+      "bytes": 1809144,
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "One",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "One · 封面",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "One · 歌词",
+          "bytes": 39,
+          "encodedBytes": 39,
+          "external": false
+        },
+        {
+          "kind": "audio",
+          "name": "Two",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Two · 封面",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "场景封面",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "background",
+          "name": "场景背景",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 1032816,
+      "payloadBytes": 1382479,
+      "scriptBytes": 1806674,
+      "problems": [],
+      "jsonPlayerBytes": 1806674,
+      "pngPlayerBytes": 2408900,
+      "pngUncompactedPlayerBytes": 4817800,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1214790,
+      "milliseconds": 1296
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1809144,
+      "milliseconds": 972
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 2487064,
+      "milliseconds": 1425
+    }
+  ],
+  "performanceRecords": []
+}
