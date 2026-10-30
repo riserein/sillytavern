@@ -1,3 +1,5 @@
+import {createCollageEditor} from './collage-editor.js';
+import {collageReferences,validateCollage,mapCollageAssets} from './collage-model.js';
 import {
   LAYOUTS,
   LAUNCHERS,
@@ -25,6 +27,7 @@ export function createDesignEditor({
   bind,
   readIcon,
   writeIcon,
+  writeCollage,
   retireAssets,
   showPage,
   setOpen,
@@ -40,6 +43,7 @@ export function createDesignEditor({
   entry.dataset.action = "open-designer";
   entry.textContent = "打开播放器设计器 · 我的设计";
   panel.querySelector(".stm-design-settings summary").after(entry);
+  let collageTools=null;
   let root = null,
     history = null,
     selected = "cover",
@@ -66,6 +70,7 @@ export function createDesignEditor({
     if (root) q("[data-editor-status]").textContent = text;
   };
   function update(value, { commit = true } = {}) {
+    if(value?.collage)validateCollage(value.collage);
     working = normalizeDesign(value);
     if (commit) history.push(working);
     preview(working);
@@ -79,7 +84,7 @@ export function createDesignEditor({
   }
   function refresh() {
     if (!root) return;
-    const journalFields=q('[data-journal-fields]');if(journalFields)journalFields.hidden=working.layout!=='journal';
+    collageTools?.refresh();const journalFields=q('[data-journal-fields]');if(journalFields)journalFields.hidden=working.layout!=='journal';
     for (const element of root.querySelectorAll("[data-field]")) {
       const field = element.dataset.field,
         value = field.startsWith("c.")
@@ -129,6 +134,8 @@ export function createDesignEditor({
       section = root.dataset.section,
       rect = canvas.getBoundingClientRect();
     panel.dataset.editorHidden = String(narrow && section !== "preview");
+    panel.dataset.collagePreviewDevice=root.dataset.device;
+    panel.dispatchEvent(new CustomEvent('stm:collage-preview-device'));
     const mobile = root.dataset.device === "mobile",
       width = Math.min(rect.width - 20, mobile ? 390 : 660),
       height = Math.max(300, Math.min(rect.height - 20, 850));
@@ -195,6 +202,7 @@ export function createDesignEditor({
     if (frame !== null) win.cancelAnimationFrame(frame);
     frame = null;
     panel.removeAttribute("data-editor-preview");
+    panel.removeAttribute("data-collage-preview-device");
     panel.removeAttribute("data-editor-hidden");
     for (const key of ["left", "top", "width", "height"])
       panel.style.removeProperty("--editor-" + key);
@@ -202,7 +210,7 @@ export function createDesignEditor({
     void previewScene?.(null);
     preview(null);
     root.remove();
-    root = null;
+    collageTools?.dispose();collageTools=null;root = null;
     for (const id of imported) retireAssets([id]);
     imported.clear();
     if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
@@ -365,6 +373,8 @@ export function createDesignEditor({
     const journalFields=doc.createElement('details');journalFields.dataset.journalFields='';journalFields.open=true;
     const journalHeading=doc.createElement('summary');journalHeading.textContent='私人音乐手账';journalFields.append(journalHeading);q('[data-detail-fields]').append(journalFields);
     for(const [label,id,min,max,step] of [['纸张纹理','journalTexture',0,.08,.005],['页面留白','journalPadding',12,28,1],['双页左页比例','journalRatio',.35,.65,.01],['标题字重','journalWeight',400,800,50],['翻页时长','journalDuration',250,450,10]])field(label,'c.'+id,{min,max,step},journalFields);
+    field('排版模式','c.journalMode',{options:{book:'书本 · 原有纸张主题',free:'自由排版 · 独立页面'}},journalFields);
+    collageTools=createCollageEditor({host:journalFields,panel,getDesign:()=>working,update,readImage:readIcon,writeImage:async(file,signal,optimize)=>{const id=await writeCollage(file,signal,optimize);imported.add(id);return id;},retire:retireAssets,notice,guard});
     field('书页边缘','c.journalEdges',{checkbox:true},journalFields);field('柔和翻页','c.journalFlip',{checkbox:true},journalFields);field('装订线','c.journalBinding',{options:{stitch:'细线装订',ring:'金属双线',none:'无装订线'}},journalFields);field('默认右页','c.journalTab',{options:{lyrics:'歌词',notes:'角色手记',collection:'曲目目录'}},journalFields);field('装饰线颜色','c.journalLine',{color:true},journalFields);
     const sceneChoices=getScenes();if(sceneChoices.length){const label=doc.createElement('label'),select=doc.createElement('select');label.textContent='联合预览音乐场景';select.dataset.editorScene='';select.append(new Option('当前场景',''));for(const scene of sceneChoices)select.append(new Option(scene.name,scene.id));label.append(select);journalFields.append(label);listen(select,'change',()=>{void action(async()=>{const token=epoch;guard();await previewScene?.(select.value||null);if(root&&token===epoch){preview(working);notice('仅预览此场景；未覆盖保存的场景、个人选择或设计。');}});});}
     field("允许接收端修改布局", "allowRecipientLayout", { checkbox: true });
@@ -523,8 +533,7 @@ export function createDesignEditor({
           }
           save();
           rebuildTemplates();
-          if (operation === "delete" && row.config.customization.iconId)
-            retireAssets([row.config.customization.iconId]);
+          if(operation === "delete")retireAssets([row.config.customization.iconId,...collageReferences(row.config)].filter(Boolean));
           notice("我的设计已更新。");
         }),
       );
@@ -532,6 +541,7 @@ export function createDesignEditor({
       action(async () => {
         const config = structuredClone(working),
           id = config.customization.iconId;
+        const images={};let imageBytes=0;for(const id of collageReferences(config)){const blob=await readIcon(id);if(!blob)throw new Error("拼贴图片缺失，未导出不完整模板。");imageBytes+=blob.size;if(imageBytes>8*1024*1024)throw new Error("拼贴图片超过 8 MiB。");images[id]=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob);});}
         let icon;
         if (config.launcher === "custom" && id) {
           const blob = await readIcon(id);
@@ -554,7 +564,7 @@ export function createDesignEditor({
                   format: "riserein-player-design",
                   version: 1,
                   name: q("[data-template-name]").value || "我的设计",
-                  config,
+                  config,images,
                   ...(icon ? { icon } : {}),
                 },
                 null,
@@ -605,8 +615,8 @@ export function createDesignEditor({
         const turn = epoch,
           signal = editorAbort.signal,
           before = JSON.stringify(working);
-        if (file.size > 2 * 1024 * 1024)
-          throw new Error("设计文件超过 2 MiB。");
+        if (file.size > 13 * 1024 * 1024)
+          throw new Error("设计文件超过 13 MiB。");
         const template = validateTemplate(JSON.parse(await file.text()));
         signal.throwIfAborted();
         template.config.customization.iconId = null;
@@ -620,6 +630,8 @@ export function createDesignEditor({
           imported.add(id);
           template.config.customization.iconId = id;
         }
+        const imageIds=new Map();let imageBytes=0;for(const [oldId,data]of Object.entries(template.images)){signal.throwIfAborted();const blob=await(await fetch(data,{signal})).blob();imageBytes+=blob.size;if(imageBytes>8*1024*1024)throw new Error("模板拼贴图片超过 8 MiB。");const id=await writeCollage(blob,signal,false);imported.add(id);imageIds.set(oldId,id);}
+        template.config=mapCollageAssets(template.config,id=>imageIds.get(id));
         guard();
         if (turn !== epoch) return;
         if (before !== JSON.stringify(working))

@@ -1,0 +1,105 @@
+
+Running 4 tests using 1 worker
+
+(node:5425) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5425) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [desktop] › tests/journal-create.e2e.js:50:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association (3.9s)
+(node:5569) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5569) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [desktop] › tests/journal-create.e2e.js:110:1 › real IDB serializes conflicting saves, isolates accounts/scripts and makes private restore idempotent (1.4s)
+  ✓  3 [desktop] › tests/journal-create.e2e.js:205:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (3.0s)
+  ✘  4 [desktop] › tests/journal-create.e2e.js:243:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design (3.0m)
+
+
+  1) [desktop] › tests/journal-create.e2e.js:50:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association 
+
+    Error: locator.click: Error: strict mode violation: locator('[data-journal-page=notes]') resolved to 2 elements:
+        1) <div data-edges="true" class="stm-journal" data-binding="stitch" data-journal-page="notes">…</div> aka locator('div').filter({ hasText: 'PERSONAL MUSIC JOURNAL 轻点查看歌词 歌曲 b让旋律陪着故事继续歌曲 b合成测试音已暂停 · 点击播放继续播放进度0:002:00' })
+        2) <button type="button" aria-pressed="true" data-journal-page="notes">Notes｜角色手记</button> aka getByRole('button', { name: 'Notes｜角色手记' })
+
+    Call log:
+    [2m  - waiting for locator('[data-journal-page=notes]')[22m
+
+
+       7 | test('private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association',async({page},info)=>{
+       8 |  await privateFixture(page);await page.locator('[data-note-text]').fill('私人文字 <img onerror="window.noteInjected=1">');await page.locator('[data-note-action=save]').click();await expect(page.locator('[data-note-status]')).toContainText('已保存到本机');expect(await page.evaluate(()=>JSON.stringify(app.settings).includes('私人文字'))).toBe(false);await page.locator('[data-note-action=new]').click();await page.locator('[data-note-text]').fill('尚未保存的歌曲 A 草稿');await page.evaluate(()=>app.chooseScene('morning'));await expect(page.locator('[data-note-text]')).toHaveValue('尚未保存的歌曲 A 草稿');await expect(page.locator('[data-note-association]')).toContainText('歌曲 a');page.on('dialog',d=>d.accept());await page.locator('[data-note-action=cancel]').click();await page.locator('[data-note-all]').check();await expect(page.locator('[data-note-list] li')).toHaveCount(1);
+    >  9 |  await page.evaluate(()=>{ctx.characterId=1;emitSceneChat();});await expect.poll(()=>page.evaluate(()=>app.getScene()?.id)).toBe('other');await page.locator('[data-journal-page=notes]').click();await page.locator('[data-note-tab=mine]').click();await expect(page.locator('[data-note-list] li')).toHaveCount(0);await page.evaluate(()=>{ctx.characterId=0;emitSceneChat();});await page.locator('[data-journal-page=notes]').click();await page.locator('[data-note-tab=mine]').click();await expect(page.locator('[data-note-list] li')).toHaveCount(1);expect(await page.evaluate(()=>window.noteInjected)).toBeUndefined();await mkdir('docs/creative-upgrade/journal',{recursive:true});await page.locator('.stm-private-notes').screenshot({path:`docs/creative-upgrade/journal/private-${info.project.name}.png`});await page.evaluate(()=>app.dispose());
+         |                                                                                                                                                                                           ^
+      10 |  const stored=await page.evaluate(async prefix=>{const {PrivateNotesStore}=await import(prefix+'private-notes.js'),store=new PrivateNotesStore({authorize:async()=>notebookAccount});try{return await store.list({role:'A.png',script:'full-player',project:''});}finally{store.close();}},prefix);expect(stored).toHaveLength(1);expect(stored[0].text).toContain('私人文字');
+      11 | });
+      12 | test('real IDB serializes conflicting saves, isolates accounts/scripts and makes private restore idempotent',async({page})=>{
+        at /workspace/sillytavern/tests/journal-create.e2e.js:9:187
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/journal-create/journal-create.e2e.js-priv-785c2-keep-their-song-association-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/journal-create/journal-create.e2e.js-priv-785c2-keep-their-song-association-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/journal-create/journal-create.e2e.js-priv-785c2-keep-their-song-association-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/journal-create/journal-create.e2e.js-priv-785c2-keep-their-song-association-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop] › tests/journal-create.e2e.js:243:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design 
+
+    [31mTest timeout of 180000ms exceeded.[39m
+
+    Error: locator.click: Test timeout of 180000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.stm-design-editor').locator('[data-step=properties]')[22m
+    [2m    - locator resolved to <button data-step="properties">3 · 属性</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not visible[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is not visible[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    342 × waiting for element to be visible, enabled and stable[22m
+    [2m        - element is not visible[22m
+    [2m      - retrying click action[22m
+    [2m        - waiting 500ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+
+
+      18 | });
+      19 | test('designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design',async({page},info)=>{
+    > 20 |  await fixture(page);await journal(page);await page.locator('[data-action=play]').click();await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('[data-action=open-designer]').click();const editor=page.locator('.stm-design-editor');if(page.viewportSize().width<850)await editor.locator('[data-step=properties]').click();await editor.locator('[data-field="c.journalMode"]').selectOption('free');await editor.locator('[data-collage-tool=editing]').check();await editor.locator('[data-collage-tool=type]').selectOption('text');await editor.locator('[data-collage-do=add]').click();await editor.locator('[data-collage-tool=text]').fill('安全文字 <script>neverRun()</script>');await editor.locator('[data-collage-tool=text]').press('Tab');await expect(page.locator('.stm-collage-item[data-type=text]')).toHaveText('安全文字 <script>neverRun()</script>');expect(await page.evaluate(()=>app.settings.uiDesign.customization.journalMode)).toBe('book');await editor.locator('[data-collage-property=x]').fill('10');await editor.locator('[data-collage-property=x]').press('Tab');await editor.locator('[data-collage-do=copy]').click();await expect(page.locator('.stm-collage-item[data-type=text]')).toHaveCount(2);await editor.locator('[data-undo]').click();await expect(page.locator('.stm-collage-item[data-type=text]')).toHaveCount(1);await editor.locator('[data-redo]').click();await expect(page.locator('.stm-collage-item[data-type=text]')).toHaveCount(2);await mkdir('docs/creative-upgrade/journal',{recursive:true});await editor.screenshot({path:`docs/creative-upgrade/journal/designer-${info.project.name}.png`});page.on('dialog',d=>d.accept());await editor.locator('[data-editor-close]').click();await expect(page.locator('.stm-journal')).toBeVisible();expect(await page.evaluate(()=>app.settings.uiDesign.customization.journalMode)).toBe('book');expect(await page.evaluate(()=>app.audio===originalAudio&&!app.audio.paused)).toBe(true);await page.evaluate(()=>app.dispose());
+         |                                                                                                                                                                                                                                                                                                               ^
+      21 | });
+      22 |
+        at /workspace/sillytavern/tests/journal-create.e2e.js:20:303
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/journal-create/journal-create.e2e.js-desi-40d6b-preserves-saved-book-design-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/journal-create/journal-create.e2e.js-desi-40d6b-preserves-saved-book-design-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/journal-create/journal-create.e2e.js-desi-40d6b-preserves-saved-book-design-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/journal-create/journal-create.e2e.js-desi-40d6b-preserves-saved-book-design-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [desktop] › tests/journal-create.e2e.js:50:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association 
+    [desktop] › tests/journal-create.e2e.js:243:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design 
+  2 passed (3.3m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

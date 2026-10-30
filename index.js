@@ -1,3 +1,6 @@
+import {checksum} from './data/checksum.js';
+import {translationTimeline,translationForRow} from './translations.js';
+import {createTranslationEditor} from './ui/translation-editor.js';
 import {createSoundscape} from './ui/soundscape.js';
 import {coverPalette,createCoverSampler} from './ui/cover-colors.js';
 import {createSceneQuick} from './ui/scene-quick.js';
@@ -51,8 +54,10 @@ import { createLauncherControls } from './ui/launcher-controls.js';
 import { createLauncherAvoidance } from './ui/launcher-avoidance.js';
 import { roleSceneGroup, selectedScene, rememberScene, sceneIssues } from './music-scenes.js';
 import { createScenePicker, createSceneManager } from './music-scenes-panel.js';
+import {createCollage} from './ui/collage.js';
+import { createPrivateNotes } from './ui/private-notes.js';
 import { createJournal } from './ui/journal.js';
-import { prepareDesignIcon } from './ui/images.js';
+import { prepareCollageImage, prepareDesignIcon } from './ui/images.js';
 
 const SETTINGS_KEY = 'riserein_music_player';
 // Keep the build-time guard explicit at author-only branches: esbuild can then
@@ -90,7 +95,7 @@ export function initialize(options = {}) {
     let online = null;
     let listening = null;
     let designEditor = null, designFont = null;
-    let designPresentation = null, designControls = null, readingControls = null, lyricReader = null, lyricEditor = null, sceneQuick = null, soundscape = null, launcherControls = null, launcherAvoidance = null, previewDesign = null, visibility = null, fullRecoveryEntry = null;
+    let designPresentation = null, designControls = null, readingControls = null, lyricReader = null, lyricEditor = null, translationEditor = null, sceneQuick = null, soundscape = null, launcherControls = null, launcherAvoidance = null, previewDesign = null, visibility = null, fullRecoveryEntry = null;
     let platformLoadController = null;
     let objectUrl = null;
     let loadSequence = 0;
@@ -103,7 +108,7 @@ export function initialize(options = {}) {
     let membershipTrackId = null;
     let libraryDetail = false;
     let browsedPlaylistId = settings.activePlaylistId;
-    let activeSceneState=null, scenePicker=null, sceneManager=null, sceneVisualEpoch=0, sceneImageUrl=null, sceneCoverUrl=null, scenePreview=null, journalUI=null;
+    let activeSceneState=null, scenePicker=null, sceneManager=null, sceneVisualEpoch=0, sceneImageUrl=null, sceneCoverUrl=null, scenePreview=null, journalUI=null, privateNotes=null,collageUI=null;
     const playbackQueue = createPlaybackQueue(id => activeSceneState && id===activeSceneState.queueKey ? activeSceneState.scene.trackIds.map(id=>findTrack(settings,id)).filter(Boolean) : getQueue(settings, id));
     playbackQueue.reset(settings.activePlaylistId);
     const librarySelection = new Set();
@@ -350,7 +355,7 @@ export function initialize(options = {}) {
                     <div class="stm-platform-credit stm-hint" data-role="platform-credit" hidden></div>
                     <button type="button" class="stm-secondary" data-action="open-official" hidden>打开官方播放器</button>
                     <div class="stm-official-player" data-role="official-player" hidden></div>
-                    <div class="stm-detail-actions"><button type="button" class="stm-secondary" data-action="edit-lyric-axis"><span>逐句歌词时间轴</span><small>标记、试听与校准</small></button>
+                    <div class="stm-detail-actions"><button type="button" class="stm-secondary" data-action="edit-translation"><span>双语歌词 · 匹配译文</span><small>预览并确认逐句对应</small></button><button type="button" class="stm-secondary" data-action="edit-lyric-axis"><span>逐句歌词时间轴</span><small>标记、试听与校准</small></button>
                         <button type="button" class="stm-secondary" data-action="song-cover" aria-label="添加封面"><span>添加封面</span><small aria-hidden="true">上传喜欢的图片</small></button>
                         <button type="button" class="stm-secondary" data-action="find-song-lyrics"><span>查找歌词</span><small aria-hidden="true">搜索并预览歌词</small></button><button type="button" class="stm-secondary" data-action="song-lyrics" aria-label="导入歌词"><span>导入歌词</span><small aria-hidden="true">支持 LRC / TXT</small></button>
                         <button type="button" class="stm-secondary" data-action="clear-song-cover" aria-label="恢复随机封面"><span>恢复随机封面</span><small aria-hidden="true">使用内置插画</small></button>
@@ -362,7 +367,7 @@ export function initialize(options = {}) {
                 </div>
             </section>
         </div>
-        <section class="stm-lyrics-view" aria-label="歌词阅读" hidden><header class="stm-lyrics-toolbar"><button type="button" class="stm-secondary" data-action="back-cover" aria-label="返回封面">返回封面</button><strong data-lyric-title></strong><span data-lyric-status></span><button type="button" class="stm-secondary" data-action="resume-lyrics" hidden>回到当前歌词</button></header><div class="stm-lyrics-scroll" tabindex="0" role="region" aria-label="歌词正文"><div class="stm-lyrics-lines"></div></div></section>
+        <section class="stm-lyrics-view" aria-label="歌词阅读" hidden><header class="stm-lyrics-toolbar"><button type="button" class="stm-secondary" data-action="back-cover" aria-label="返回封面">返回封面</button><strong data-lyric-title></strong><span data-lyric-status></span><button type="button" class="stm-secondary" data-action="resume-lyrics" hidden>回到当前歌词</button></header><p class="stm-hint" data-lyric-note hidden></p><details class="stm-translation-credit" data-lyric-credit hidden><summary>译文来源</summary><p></p></details><div class="stm-lyrics-scroll" tabindex="0" role="region" aria-label="歌词正文"><div class="stm-lyrics-lines"></div></div></section>
         <button type="button" class="stm-resize-handle" aria-label="调整播放器大小" title="拖动调整大小，也可用方向键微调"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 16 8-8M13 16l3-3"/></svg></button>
         <section class="stm-crop-editor" role="dialog" aria-modal="true" aria-label="裁剪背景图片" hidden>
             <div class="stm-page-heading"><h3>裁剪背景图片</h3><span>拖动图片，留下喜欢的区域</span></div>
@@ -681,7 +686,7 @@ export function initialize(options = {}) {
     designPresentation = createDesignPresentation({ panel, launcher, audio, paletteTransform:(base,design)=>activeSceneState?.scene.themeId&&activeSceneState.scene.themeId!=='inherit'?base:coverPalette(base,sampledCover,settings.coverColorMode,{...(settings.customColors.enabled?{background:settings.customColors.background,text:settings.customColors.text,accent:settings.customColors.accent}:{}),...Object.fromEntries(Object.entries(design.customization.colors).filter(([,v])=>v))}), readIcon: id => store.get(id), onPlay: toggleCurrent, onNext: () => advanceTrack(1), getTrackNumber: () => playbackQueue.tracks().findIndex(track => track.id === settings.currentId) + 1 });
     designControls = createDesignControls({ panel, settings, getDesign: effectiveDesign, onChange: applyUserDesign,
         onAccessibility() { refreshDesign(); save(); }, isPortable: (typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__) });
-    readingControls = createReadingControls({ panel, settings, onChange(key) {
+    readingControls = createReadingControls({ panel, settings, getTranslationState:()=>lyricData, onChange(key) {
         refreshDesign(); menus.refresh();
         if (key === 'autoFollow') { lyricReader?.reset(); lyricReader?.center(); }
         else lyricReader?.invalidate();
@@ -703,6 +708,7 @@ export function initialize(options = {}) {
         designFont=createDesignFontLayer(panel,launcher,text=>showStatus(text,true));
         designEditor=createDesignEditor({panel,launcher,settings,getDesign:effectiveDesign,getContext:()=>options.context||globalThis.SillyTavern?.getContext?.()||context,
             getScenes:()=>sceneGroupForCurrent()?.scenes.filter(s=>s.playable)||[],previewScene:id=>{const avatar=currentCharacterAvatar(freshContext()),group=roleSceneGroup(settings,avatar);return previewScene(id&&group?{avatar,group:structuredClone(group),sceneId:id}:null);},
+            async writeCollage(file,signal,optimize){const blob=await prepareCollageImage(file,{signal,optimize});signal?.throwIfAborted();const digest=await checksum(blob,{signal});for(const [oldId,oldBlob]of await store.entries())if(typeof oldId==='string'&&oldId.startsWith('cover:')&&oldBlob?.size===blob.size&&(await checksum(oldBlob,{signal})).sha256===digest.sha256){signal?.throwIfAborted();return oldId;}const id='cover:'+createTrackId();await store.put(id,blob);if(signal?.aborted){retireAssets([id]);signal.throwIfAborted();}return id;},
             preview(value){previewDesign=value;refreshDesign();},apply:applyUserDesign,save,readIcon:id=>store.get(id),retireAssets,showPage,setOpen,
             async writeIcon(file,signal){const blob=await prepareDesignIcon(file,{signal}),id='cover:'+createTrackId();signal.throwIfAborted();await store.put(id,blob);if(signal.aborted){await store.delete(id).catch(()=>{});signal.throwIfAborted();}return id;},
             async bind(avatar,playlistId,config){
@@ -727,7 +733,7 @@ export function initialize(options = {}) {
         designPresentation.apply(previewDesign || effectiveDesign(), { motion: settings.visualMotion, accessible: settings.accessibleControls });
         panel.dataset.coverFollow=String(settings.coverColorMode!=='off');
         applyReading(panel, launcher, settings.reading, previewDesign || effectiveDesign());
-        journalUI?.apply(previewDesign || effectiveDesign());
+        const nextDesign=previewDesign||effectiveDesign();if(nextDesign.customization.journalMode==='free'){journalUI?.apply(nextDesign);collageUI?.apply(nextDesign);}else{collageUI?.apply(nextDesign);journalUI?.apply(nextDesign);}
         designFont?.set((previewDesign||effectiveDesign()).fontPreset);
         designControls?.refresh(); readingControls?.refresh(); launcherControls?.refresh(); launcherDrag.refresh(); panelDrag.refresh(); launcherAvoidance?.refresh(); visibility?.refresh();
     }
@@ -758,6 +764,7 @@ export function initialize(options = {}) {
         if (coverImage.src !== fallback) coverImage.src = fallback;
     });
     function setLyricsOpen(open) {
+        if(collageUI?.active){collageUI.show(open?'lyrics':'music');return;}
         if(journalUI?.active){journalUI.show(open?'lyrics':'player');return;}
         query('.stm-lyrics-view').hidden = !open;
         panel.dataset.lyricsOpen = String(open);
@@ -778,9 +785,9 @@ export function initialize(options = {}) {
     lyricReader = createLyricReader({ view: lyricView, scroller: query('.stm-lyrics-scroll'), lines: query('.stm-lyrics-lines'), getDefaultFollow: () => settings.reading.autoFollow, getCurrent: () => activeLyric, getTitle: () => findTrack(settings, settings.currentId)?.title, onBack: leaveLyrics, audio, getReading: () => settings.reading, getTimeline: () => lyricData, getTime: () => (audio.currentTime || 0) - effectiveLyricOffset(findTrack(settings, settings.currentId), settings.lyricOffsets) / 1000, getOffset: () => effectiveLyricOffset(findTrack(settings, settings.currentId), settings.lyricOffsets), onOffset: value => { if (settings.currentId) { settings.lyricOffsets[settings.currentId] = value; save(); } }, onTime: () => updateLyrics(), isVisible: () => !panel.hidden && !lyricView.hidden && currentPage === 'playback' });
     function renderLyrics(track) {
         track=effectiveLyricsTrack(track,settings.lyricOverrides);
-        lyricData = parseLyrics(track?.lyrics || '');
-        activeLyric = -1;
-        lyricReader.reset();
+        lyricData = translationTimeline(track);
+        activeLyric = -1;lyricView.dataset.hasTranslation=String(!!lyricData.translationAvailable);readingControls?.refresh();
+        lyricReader.reset();query('[data-lyric-note]').hidden=true;const credit=query('[data-lyric-credit]');credit.hidden=!lyricData.translationSource;credit.querySelector('p').textContent=lyricData.translationSource||'';
         const target = query('.stm-lyrics-lines'); target.replaceChildren();
         if (!track?.lyrics?.trim()) {
             const empty = document.createElement('p'); empty.className = 'stm-no-lyrics';
@@ -796,16 +803,18 @@ export function initialize(options = {}) {
             return;
         }
         for (const line of lyricData.lines) {
-            const paragraph = document.createElement('p'); paragraph.textContent = line.text;
+            const paragraph = document.createElement('p'),original=document.createElement('span');original.dataset.lyricOriginal='';original.textContent=line.text;paragraph.append(original);if(line.translation){const translation=document.createElement('span');translation.dataset.lyricTranslation='';translation.textContent=line.translation;paragraph.append(translation);paragraph.classList.add('stm-has-translation');}if(lyricData.degraded)paragraph.classList.add('stm-raw-lyrics');
             target.append(paragraph);
         }
+        lyricView.dataset.hasTranslation=String(!!lyricData.translationAvailable);
+        const note=query('[data-lyric-note]');note.textContent=lyricData.notice||(lyricData.unmatchedBindings?'部分译文与当前原文不对应，原译文保留；请由制作端重新确认。':'');note.hidden=!note.textContent;
         updateLyrics(true);
     }
     function updateLyrics(force = false) {
         if (!lyricData.synced) return;
         const next = currentLyricIndex(lyricData.lines, (audio.currentTime || 0) - effectiveLyricOffset(findTrack(settings, settings.currentId), settings.lyricOffsets) / 1000);
         if (!force && next === activeLyric) return;
-        activeLyric = next;
+        activeLyric = next;collageUI?.syncTranslation();
         const lines = query('.stm-lyrics-lines').children;
         Array.from(lines).forEach((line, index) => line.classList.toggle('stm-current-lyric', index === next));
         lyricReader.refresh();
@@ -885,7 +894,7 @@ export function initialize(options = {}) {
         try { return ensureLibraryTrack(settings, id); } catch (error) { showStatus(error.message, true); return null; }
     }
     const lyricTrack=id=>effectiveLyricsTrack(findTrack(settings,id),settings.lyricOverrides);
-    lyricEditor=createLyricEditor({panel,audio,getTrack:lyricTrack,getOffset:id=>effectiveLyricOffset(findTrack(settings,id),settings.lyricOffsets),
+    lyricEditor=createLyricEditor({panel,audio,getTranslation:(id,row)=>translationForRow(lyricTrack(id),row),getTrack:lyricTrack,getOffset:id=>effectiveLyricOffset(findTrack(settings,id),settings.lyricOffsets),
         onSelect:async id=>{if(settings.currentId!==id){if(!playbackQueue.tracks().some(t=>t.id===id))await activatePlaylist(settings.tracks.some(t=>t.id===id)?null:BUILTIN_ID);if(!playbackQueue.tracks().some(t=>t.id===id))throw new Error('此歌曲不在可用队列中，请先从歌单打开；未打开错误歌曲的时间轴。');await selectTrack(id,false);}if(settings.currentId!==id)throw new Error('歌曲加载已取消，请重试。');},
         onPlay:()=>toggleCurrent(),onDisplay:open=>setSheetOpen('#stm-lyric-editor',open),onError:error=>showStatus(error.message,true),
         onSave:(id,text)=>{const track=findTrack(settings,id);if(!track||disposed)throw new Error('歌曲已移除，未保存。');
@@ -898,6 +907,7 @@ export function initialize(options = {}) {
             else if(track.lyricOriginal!==undefined){track.lyrics=track.lyricOriginal;delete track.lyricOriginal;}
             save();if(settings.currentId===id)renderLyrics(track);
         }});
+    if(!(typeof __STM_PORTABLE__!=='undefined'&&__STM_PORTABLE__)){translationEditor=createTranslationEditor({panel,getTrack:id=>findTrack(settings,id),onDisplay:open=>setSheetOpen('#stm-translation-editor',open),onError:error=>showStatus(error.message,true),onSave:(id,value)=>{const track=editableDetailsTrack(id);if(!track)throw new Error('歌曲无法编辑。');if(value)track.translation=value;else delete track.translation;save();if(settings.currentId===id)renderLyrics(track);}});query('[data-action=edit-translation]').addEventListener('click',()=>{try{translationEditor.open(detailsTrackId);}catch(error){showStatus(error.message,true);}});}else query('[data-action=edit-translation]').remove();
     query('[data-action=edit-lyric-axis]').addEventListener('click',()=>void lyricEditor.open(detailsTrackId).catch(error=>showStatus(error.message,true)));
     const songCoverInput = query('[data-role="song-cover-file"]');
     const lyricsInput = query('[data-role="lyrics-file"]');
@@ -1403,7 +1413,7 @@ export function initialize(options = {}) {
         if(maintenanceBusy)return;
         const avatar = currentCharacterAvatar(freshContext());
         if (!force && avatar === lastRoleAvatar) { renderRoleStatus(); return; }
-        sceneManager?.close(true);lyricEditor?.close(true);sceneQuick?.close();soundscape?.leaveRole();scenePreview=null;
+        sceneManager?.close(true);lyricEditor?.close(true);translationEditor?.close(true);sceneQuick?.close();soundscape?.leaveRole();scenePreview=null;
         designEditor?.close();
         const previous = lastRoleAvatar;
         lastRoleAvatar = avatar;
@@ -1503,7 +1513,7 @@ export function initialize(options = {}) {
         renderHistory();
         listening.render();
         updatePlayback();
-        journalUI?.sync();
+        journalUI?.sync();collageUI?.sync();privateNotes?.sync();
     }
 
     function songButton(track, label, detail, playTrack) {
@@ -2021,10 +2031,10 @@ export function initialize(options = {}) {
         if (disposed) return;
         disposed = true;
         listening?.dispose(); transitions.dispose();
-        journalUI?.dispose();soundscape?.dispose();sceneQuick?.dispose();coverSampler.clear();
+        privateNotes?.dispose();collageUI?.dispose();journalUI?.dispose();soundscape?.dispose();sceneQuick?.dispose();coverSampler.clear();
         sceneManager?.dispose();scenePicker?.dispose();++sceneVisualEpoch;if(sceneImageUrl)URL.revokeObjectURL(sceneImageUrl);if(sceneCoverUrl)URL.revokeObjectURL(sceneCoverUrl);
         designEditor?.dispose(); designFont?.dispose();
-        lyricEditor?.dispose(); lyricReader?.dispose(); readingControls?.dispose(); launcherControls?.dispose(); launcherAvoidance?.dispose(); designControls?.dispose(); designPresentation?.dispose();
+        translationEditor?.dispose(); lyricEditor?.dispose(); lyricReader?.dispose(); readingControls?.dispose(); launcherControls?.dispose(); launcherAvoidance?.dispose(); designControls?.dispose(); designPresentation?.dispose();
         dataPanel?.dispose(); cardMaker?.dispose(); handoff?.dispose(); lyricsLookup?.dispose(); cropper.dispose(); nativeExport?.dispose(); retirement?.dispose(); options.onDispose?.();
         ++loadSequence;
         pausePlayback(); audio.removeAttribute('src'); audio.load();
@@ -2096,13 +2106,15 @@ export function initialize(options = {}) {
     scenePicker=createScenePicker({panel,setOpen:open=>setSheetOpen('#stm-scenes',open),getGroup:sceneGroupForCurrent,getCurrent:()=>activeSceneState?.scene,onChoose:id=>{scenePreview=null;return activateScene(id);},onManage:(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)?null:()=>sceneManager.open(currentCharacterAvatar(freshContext())),onError:error=>showStatus(error.message,true)});
     soundscape=createSoundscape({panel,mainAudio:audio,store,settings,isPortable:typeof __STM_PORTABLE__!=='undefined'&&__STM_PORTABLE__,onSave:save,onMainPlay:play,onMainPause:pausePlayback,onMainVolume:value=>{settings.volume=value;audio.volume=value;transitions.refresh();save();},onSheet:open=>setSheetOpen('#stm-ambient-library',open),onError:error=>showStatus(error.message,true),onRetire:retireAssets});menus.refresh();
     sceneQuick=createSceneQuick({launcher,panel,getScenes:()=>{const group=roleSceneGroup(settings,currentCharacterAvatar(freshContext()));return (group?.scenes||[]).filter(s=>s.included&&s.trackIds.length&&s.trackIds.every(id=>!!findTrack(settings,id)));},getCurrent:()=>activeSceneState?.scene.id,onChoose:id=>activateScene(id),isHidden:()=>visibility?.state==='hidden',getCover:cachedCover,onError:error=>showStatus(error.message,true)});
-    journalUI=createJournal({panel,audio,getTrack:()=>findTrack(settings,settings.currentId),getTracks:()=>playbackQueue.tracks(),getScene:()=>activeSceneState?.scene,getGroup:()=>activeSceneState?.group||roleSceneGroup(settings,currentCharacterAvatar(freshContext())),onTrack:id=>{if(id===settings.currentId){if(audio.paused)void play();else void softPause();}else void selectTrack(id,true);},onLyrics:visible=>{if(visible){lyricReader?.reset();updateLyrics(true);}else lyricReader?.suspend();}});
-    journalUI.apply(effectiveDesign());
+    journalUI=createJournal({panel,audio,onNotes:()=>privateNotes?.sync(),getTrack:()=>findTrack(settings,settings.currentId),getTracks:()=>playbackQueue.tracks(),getScene:()=>activeSceneState?.scene,getGroup:()=>activeSceneState?.group||roleSceneGroup(settings,currentCharacterAvatar(freshContext())),onTrack:id=>{if(id===settings.currentId){if(audio.paused)void play();else void softPause();}else void selectTrack(id,true);},onLyrics:visible=>{if(visible){lyricReader?.reset();updateLyrics(true);}else lyricReader?.suspend();}});
+    privateNotes=createPrivateNotes({host:panel.querySelector('[data-journal-pane=notes]'),author:panel.querySelector('[data-author-notes]'),authorize:options.notebookAuthorize||(async()=>{await options.assertAccount?.();return options.account;}),getScope:()=>({role:currentCharacterAvatar(freshContext())||'unbound',script:options.notebookScope?.script||'full-player',project:options.notebookScope?.project||''}),getTrack:()=>findTrack(settings,settings.currentId),getScene:()=>activeSceneState?.scene});
+    collageUI=createCollage({panel,getTrack:()=>findTrack(settings,settings.currentId),getTracks:()=>playbackQueue.tracks(),getGroup:()=>activeSceneState?.group||roleSceneGroup(settings,currentCharacterAvatar(freshContext())),getScene:()=>activeSceneState?.scene,getTranslation:()=>lyricData.lines[activeLyric]?.translation,onTrack:id=>{if(id===settings.currentId){if(audio.paused)void play();else void softPause();}else void selectTrack(id,true);},onNotes:()=>privateNotes?.sync(),onLyrics:visible=>{if(visible){lyricReader?.reset();updateLyrics(true);}else lyricReader?.suspend();},readBlob:id=>store.get(id)});
+    refreshDesign();
     if (!(typeof __STM_PORTABLE__ !== 'undefined' && __STM_PORTABLE__)) {
         cardMaker = createCardMaker({panel,settings,store,context,getCollectionId:()=>browsedPlaylistId,pausePlayback:()=>{pausePlayback();soundscape?.engine.pause();},getDesign:effectiveDesign,getScenes:()=>roleSceneGroup(settings,currentCharacterAvatar(freshContext())),openScenes:()=>sceneManager.open(currentCharacterAvatar(freshContext()))});
         query('[data-action="card-maker"]').addEventListener('click',()=>cardMaker.open());
         if(options.account){
-            dataPanel=createDataPanel({panel,settings,store,journal:maintenanceJournal,context,account:options.account,assertAccount:options.assertAccount||(async()=>{throw new Error('账号身份未确认，请重新登录并刷新。');}),flushMaker:()=>cardMaker.flush(),pausePlayback:()=>{pausePlayback();soundscape?.engine.pause();},setMaintenanceBusy});
+            dataPanel=createDataPanel({panel,settings,store,journal:maintenanceJournal,context,account:options.account,assertAccount:options.assertAccount||(async()=>{throw new Error('账号身份未确认，请重新登录并刷新。');}),flushMaker:()=>cardMaker.flush(),pausePlayback:()=>{pausePlayback();soundscape?.engine.pause();},setMaintenanceBusy,notesStore:privateNotes.store});
         }
         query('[data-action="rebuild-native"]').addEventListener('click', async () => {
             const latest = freshContext(), avatar = latest.characters[latest.characterId]?.avatar;

@@ -1,0 +1,50 @@
+
+Running 24 tests using 1 worker
+
+(node:16754) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:16754) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/ambient.e2e.js:7:1 › all layouts and five launcher types retain one main and one ambient Audio with unframed text (6.5s)
+  ✓   2 [desktop] › tests/ambient.e2e.js:18:1 › deleting a loading ambient cancels its actual delayed IndexedDB read before audio can start (2.7s)
+  ✓   3 [desktop] › tests/ambient.e2e.js:23:1 › two actual audio channels keep independent levels, pause intent, history and complete hiding (5.2s)
+  ✓   4 [desktop] › tests/ambient.e2e.js:35:1 › shared scene ambience preserves progress and rapid role changes cannot revive old loads (6.5s)
+  ✓   5 [desktop] › tests/ambient.e2e.js:43:1 › actual media failure on the auxiliary URL leaves main playback alive (2.0s)
+  ✓   6 [desktop] › tests/ambient.e2e.js:48:1 › sleep-after-track stops both actual channels without advancing the playlist (2.9s)
+(node:17159) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17159) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [mobile-320] › tests/ambient.e2e.js:7:1 › all layouts and five launcher types retain one main and one ambient Audio with unframed text (4.8s)
+  ✓   8 [mobile-320] › tests/ambient.e2e.js:18:1 › deleting a loading ambient cancels its actual delayed IndexedDB read before audio can start (1.8s)
+  ✓   9 [mobile-320] › tests/ambient.e2e.js:23:1 › two actual audio channels keep independent levels, pause intent, history and complete hiding (3.0s)
+  ✓  10 [mobile-320] › tests/ambient.e2e.js:35:1 › shared scene ambience preserves progress and rapid role changes cannot revive old loads (5.1s)
+  ✓  11 [mobile-320] › tests/ambient.e2e.js:43:1 › actual media failure on the auxiliary URL leaves main playback alive (1.6s)
+  ✓  12 [mobile-320] › tests/ambient.e2e.js:48:1 › sleep-after-track stops both actual channels without advancing the playlist (2.8s)
+(node:17534) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17534) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [mobile-390] › tests/ambient.e2e.js:7:1 › all layouts and five launcher types retain one main and one ambient Audio with unframed text (3.6s)
+  ✓  14 [mobile-390] › tests/ambient.e2e.js:18:1 › deleting a loading ambient cancels its actual delayed IndexedDB read before audio can start (1.9s)
+  ✓  15 [mobile-390] › tests/ambient.e2e.js:23:1 › two actual audio channels keep independent levels, pause intent, history and complete hiding (3.1s)
+  ✓  16 [mobile-390] › tests/ambient.e2e.js:35:1 › shared scene ambience preserves progress and rapid role changes cannot revive old loads (5.2s)
+  ✓  17 [mobile-390] › tests/ambient.e2e.js:43:1 › actual media failure on the auxiliary URL leaves main playback alive (1.8s)
+  ✓  18 [mobile-390] › tests/ambient.e2e.js:48:1 › sleep-after-track stops both actual channels without advancing the playlist (2.7s)
+(node:18029) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:18029) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  19 [mobile-412] › tests/ambient.e2e.js:7:1 › all layouts and five launcher types retain one main and one ambient Audio with unframed text (3.6s)
+  ✓  20 [mobile-412] › tests/ambient.e2e.js:18:1 › deleting a loading ambient cancels its actual delayed IndexedDB read before audio can start (1.8s)
+  ✓  21 [mobile-412] › tests/ambient.e2e.js:23:1 › two actual audio channels keep independent levels, pause intent, history and complete hiding (3.0s)
+  ✓  22 [mobile-412] › tests/ambient.e2e.js:35:1 › shared scene ambience preserves progress and rapid role changes cannot revive old loads (5.3s)
+  ✓  23 [mobile-412] › tests/ambient.e2e.js:43:1 › actual media failure on the auxiliary URL leaves main playback alive (2.0s)
+  ✓  24 [mobile-412] › tests/ambient.e2e.js:48:1 › sleep-after-track stops both actual channels without advancing the playlist (3.8s)
+
+  24 passed (1.5m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

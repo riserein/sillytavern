@@ -1,0 +1,18 @@
+
+Running 4 tests using 1 worker
+
+(node:6452) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6452) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/journal-create.e2e.js:50:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association (4.6s)
+  ✓  2 [desktop] › tests/journal-create.e2e.js:110:1 › real IDB serializes conflicting saves, isolates accounts/scripts and makes private restore idempotent (1.1s)
+  ✓  3 [desktop] › tests/journal-create.e2e.js:205:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (2.8s)
+  ✓  4 [desktop] › tests/journal-create.e2e.js:243:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design (3.2s)
+
+  4 passed (13.0s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

@@ -1,7 +1,8 @@
+import {collageReferences,validateCollage} from '../ui/collage-model.js';
 import { MAX_PACKAGE_BYTES, MAX_AUDIO_BYTES, jsonForScript, normalizeCardConfig } from './config.js';
 import { base64Bytes } from '../base64.js';
 
-export const PLAYER_BUILD = '2.2.0';
+export const PLAYER_BUILD = '2.3.0';
 export const PAYLOAD_FORMAT = 1;
 export const byteSize = (value) =>
     new TextEncoder().encode(typeof value === 'string' ? value : JSON.stringify(value)).length;
@@ -30,6 +31,7 @@ export function analyzePayload(payload, script) {
     for (const track of config.tracks) {
         add('audio', track.title, track.src);
         add('cover', `${track.title} · 封面`, track.cover);
+        if(track.translation)rows.push({kind:'lyrics',name:track.title+' · 译文与关联',bytes:byteSize(track.translation),encodedBytes:byteSize(track.translation),external:false});
         if (track.lyrics)
             rows.push({
                 kind: 'lyrics',
@@ -42,6 +44,7 @@ export function analyzePayload(payload, script) {
     for(const row of config.ambientLibrary||[])if(row.sourceTrackId){const track=config.tracks.find(t=>t.id===row.sourceTrackId);rows.push({kind:'ambient-shared',name:row.title+' · 复用歌曲音源（不重复携带）',bytes:dataBytes(track.src),encodedBytes:0,external:!track.src.startsWith('data:'),shared:true});}
     for(const [key,value]of Object.entries(config.ambientAssets||{}))add(key.startsWith('audio:')?'ambient-audio':'cover','音景 · '+key.slice(0,15),value);
     for(const row of config.ambientLibrary||[])if(row.url)add('ambient-audio',row.title,row.url);
+    for(const [id,data]of Object.entries(config.collageAssets||{}))add('collage-image','手账拼贴 · '+id,data);
     add('background', '背景', config.appearance?.image);
     for(const [id,value]of Object.entries(config.sceneAssets||{})){const background=id.startsWith('background:');add(background?'background':'cover','场景'+(background?'背景':'封面'),value);}
     add('font', config.appearance?.fontName || '字体', config.appearance?.font);
@@ -57,7 +60,7 @@ export function analyzePayload(payload, script) {
         if (['audio','ambient-audio'].includes(row.kind) && row.bytes > MAX_AUDIO_BYTES)
             problems.push(`「${row.name}」超过单曲 20 MB；请降低音频码率或换成稳定公开直链。`);
         if (
-            ['cover', 'background', 'playlist-cover', 'fallback'].includes(row.kind) &&
+            ['cover', 'background', 'playlist-cover', 'fallback','collage-image'].includes(row.kind) &&
             row.bytes > 2 * 1024 * 1024
         )
             problems.push(`「${row.name}」图片超过 2 MB；请裁剪或压缩图片。`);
@@ -110,6 +113,7 @@ export function readScriptPayload(content) {
     const normalized = normalizeCardConfig(config);
     // Do not let normalizers silently remove damaged resource references during validation.
     for (const [index, track] of config.tracks.entries()) {
+        if(!sameData(track.translation,normalized.tracks[index].translation))throw new Error('第 '+(index+1)+' 首译文数据损坏。');
         if (track.cover !== normalized.tracks[index].cover) throw new Error(`第 ${index + 1} 首封面损坏。`);
     }
     if (
@@ -120,6 +124,8 @@ export function readScriptPayload(content) {
         throw new Error('背景、字体或悬浮图标资源损坏。');
     if(!sameData(config.sceneSet,normalized.sceneSet)||!sameData(config.sceneAssets,normalized.sceneAssets))throw new Error('场景、手记或场景图片不完整。');
     if(!sameData(config.ambientLibrary,normalized.ambientLibrary)||!sameData(config.ambientAssets,normalized.ambientAssets)||!sameData(config.soundscape,normalized.soundscape))throw new Error('环境音、音景配置或音频资源不完整。');
+    if(!sameData(config.collageAssets,normalized.collageAssets))throw new Error('拼贴图片不完整。');
+    if(payload.ui?.uiDesign?.collage){validateCollage(payload.ui.uiDesign.collage);for(const id of collageReferences(payload.ui.uiDesign))if(!config.collageAssets?.[id])throw new Error('拼贴图片引用缺失。');}
     assertCapacity(analyzePayload(payload));
     return payload;
 }

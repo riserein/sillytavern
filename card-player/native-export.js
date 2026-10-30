@@ -172,7 +172,7 @@ export function createNativeCardExport({ settings, store, getContext, showStatus
             {
                 id: `native:${playlist.id}`,
                 title: playlist.name,
-                tracks: author.tracks, sceneSet:author.sceneSet,
+                tracks: author.tracks, sceneSet:author.sceneSet,collageDesign:author.ui.uiDesign,
                 appearance: {
                     imageId: author.backgroundId,
                     fontFile: preset?.file,

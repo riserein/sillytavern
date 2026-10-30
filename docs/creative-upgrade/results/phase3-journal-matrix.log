@@ -1,0 +1,42 @@
+
+Running 16 tests using 1 worker
+
+(node:7641) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7641) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/journal-create.e2e.js:50:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association (8.5s)
+  ✓   2 [desktop] › tests/journal-create.e2e.js:110:1 › real IDB serializes conflicting saves, isolates accounts/scripts and makes private restore idempotent (1.6s)
+  ✓   3 [desktop] › tests/journal-create.e2e.js:205:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (3.8s)
+  ✓   4 [desktop] › tests/journal-create.e2e.js:243:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design (4.6s)
+(node:8735) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:8735) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 [mobile-320] › tests/journal-create.e2e.js:50:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association (5.2s)
+  ✓   6 [mobile-320] › tests/journal-create.e2e.js:110:1 › real IDB serializes conflicting saves, isolates accounts/scripts and makes private restore idempotent (1.6s)
+  ✓   7 [mobile-320] › tests/journal-create.e2e.js:205:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (4.6s)
+  ✓   8 [mobile-320] › tests/journal-create.e2e.js:243:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design (7.2s)
+(node:9436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:9436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [mobile-390] › tests/journal-create.e2e.js:50:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association (7.9s)
+  ✓  10 [mobile-390] › tests/journal-create.e2e.js:110:1 › real IDB serializes conflicting saves, isolates accounts/scripts and makes private restore idempotent (1.9s)
+  ✓  11 [mobile-390] › tests/journal-create.e2e.js:205:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (4.5s)
+  ✓  12 [mobile-390] › tests/journal-create.e2e.js:243:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design (4.8s)
+(node:9964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:9964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [mobile-412] › tests/journal-create.e2e.js:50:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association (7.1s)
+  ✓  14 [mobile-412] › tests/journal-create.e2e.js:110:1 › real IDB serializes conflicting saves, isolates accounts/scripts and makes private restore idempotent (2.8s)
+  ✓  15 [mobile-412] › tests/journal-create.e2e.js:205:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (5.6s)
+  ✓  16 [mobile-412] › tests/journal-create.e2e.js:243:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design (7.3s)
+
+  16 passed (1.4m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

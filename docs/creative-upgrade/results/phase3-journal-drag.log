@@ -1,0 +1,30 @@
+
+Running 4 tests using 1 worker
+
+(node:19177) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19177) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/journal-create.e2e.js:459:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (4.0s)
+(node:19337) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19337) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [mobile-320] › tests/journal-create.e2e.js:459:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (4.0s)
+(node:19490) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19490) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [mobile-390] › tests/journal-create.e2e.js:459:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (4.1s)
+(node:19644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 [mobile-412] › tests/journal-create.e2e.js:459:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (3.9s)
+
+  4 passed (20.2s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

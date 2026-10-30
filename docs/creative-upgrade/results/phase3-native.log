@@ -1,0 +1,109 @@
+
+Running 2 tests using 1 worker
+
+(node:9179) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:9179) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/card-native.e2e.js:2284:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop (1.8m)
+(node:13019) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:13019) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 tests/card-native.e2e.js:2284:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch (1.4m)
+
+
+  1) tests/card-native.e2e.js:2284:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('.stm-status')
+    Expected substring: [32m"按当前版本重建"[39m
+    Received string:    [31m""[39m
+    Timeout: 60000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 60000ms[22m
+    [2m  - waiting for locator('.stm-status')[22m
+    [2m    4 × locator resolved to <p role="status" class="stm-status" aria-live="polite"></p>[22m
+    [2m      - unexpected value ""[22m
+    [2m    8 × locator resolved to <p role="status" aria-live="polite" class="stm-status stm-error">重建未完成：拼贴图片超过单项 2 MiB / 合计 8 MiB 上限。</p>[22m
+    [2m      - unexpected value "重建未完成：拼贴图片超过单项 2 MiB / 合计 8 MiB 上限。"[22m
+    [2m    50 × locator resolved to <p role="status" class="stm-status" aria-live="polite"></p>[22m
+    [2m       - unexpected value ""[22m
+
+
+      1303 |  test.setTimeout(300000);const {page:author,context:authorContext}=await session(browser),avatar=await createCard(author,'Creative23');await selectCard(author,avatar);await author.getByRole('tab',{name:'导入',exact:true}).click();await author.locator('[data-role=files]').setInputFiles({name:'CreativeSong.mp3',mimeType:'audio/mpeg',buffer:tone});await expect(author.locator('.stm-status')).toContainText('已导入 1 首');
+      1304 |  await author.evaluate(async({avatar,image})=>{const p='/scripts/extensions/third-party/sillytavern/',{saveRoleScenes}=await import(p+'music-scenes.js'),{normalizeDesign}=await import(p+'ui/config.js'),{defaultCollage,collageElement}=await import(p+'ui/collage-model.js'),{lyricAnchors,normalizeTranslation}=await import(p+'translations.js'),{LocalMusicStore}=await import(p+'local-store.js'),{PrivateNotesStore}=await import(p+'private-notes.js'),{getStorageScope}=await import(p+'data/identity.js');const s=SillyTavern.getContext().extensionSettings.riserein_music_player,track=s.tracks[0],store=new LocalMusicStore(),id='cover:'+crypto.randomUUID();await store.put(id,new Blob([new Uint8Array(image)],{type:'image/png'}));track.lyrics='[00:00]雨落书页\n[00:02]旧日回声';const anchors=lyricAnchors(track.lyrics);track.translation=normalizeTranslation({version:1,language:'English',sourceLanguage:'中文',source:'测试用原创歌词与自译，允许分发',sourceLyrics:'Rain on the page\nAn echo from the past',confirmed:true,distribute:true,rightsConfirmed:true,bindings:anchors.rows.map((r,i)=>({lineId:r.id,originalHash:r.originalHash,text:['Rain on the page','An echo from the past'][i]}))});const collage=defaultCollage();collage.pages.music.push({...collageElement('image','decoration'),assetId:id,desktop:{x:2,y:80,w:20,h:15},mobile:{x:2,y:80,w:20,h:15}});s.uiDesign=normalizeDesign({layout:'journal',theme:'journal-parchment',customization:{journalMode:'free'},collage});s.transitionDuration=0;saveRoleScenes(s,avatar,{scenes:[{id:'scene',name:'随卡创作验收',trackIds:[track.id]}],notes:[{trackId:track.id,text:'作者可分发手记'}]});const diary=new PrivateNotesStore({authorize:async()=>getStorageScope()});await diary.save({role:avatar,script:'full-player',project:'',trackId:track.id,trackTitle:track.title,text:'PRIVATE_CREATIVE23_MUST_NOT_TRAVEL'});diary.close();await store.close();},{avatar,image:Array.from(image)});
+    > 1305 |  await author.getByRole('tab',{name:'曲库',exact:true}).click();await author.locator('[data-action=rebuild-native]').click();await expect(author.locator('.stm-status')).toContainText('按当前版本重建',{timeout:60000});const files=[];for(const format of ['json','png']){await author.locator('#export_button').dispatchEvent('click');const pending=author.waitForEvent('download');await author.locator('.export_format[data-format='+format+']').dispatchEvent('click');const bytes=await readFile(await(await pending).path());files.push({format,bytes});const data=format==='json'?JSON.parse(bytes):null;if(data){const script=data.data.extensions.tavern_helper.scripts.find(s=>s.id===data.data.extensions.riserein_card_player.scriptId),payload=readScriptPayload(script.content);expect(script.content).not.toContain('PRIVATE_CREATIVE23_MUST_NOT_TRAVEL');expect(payload.ui.uiDesign.customization.journalMode).toBe('free');expect(Object.keys(payload.config.collageAssets)).toHaveLength(1);expect(payload.config.tracks[0].translation.bindings).toHaveLength(2);exportMetrics.push({operation:'creative23-file',mobile,format,bytes:bytes.length,...analyzePayload(payload,script)});}else exportMetrics.push({operation:'creative23-file',mobile,format,bytes:bytes.length});}await authorContext.close();
+           |                                                                                                                                                                        ^
+      1306 |  const {page:recipient}=await session(browser,{portable:true,mobile}),blank=await createCard(recipient,'CreativeBlank'),permit=async()=>{const prompt=recipient.getByText(/^(确认|Confirm)$/,{exact:true}).last();await expect.poll(async()=>await prompt.isVisible()||await recipient.locator(root).count()===1,{timeout:60000}).toBe(true);if(await prompt.isVisible())await prompt.click();await expect(recipient.locator(root)).toHaveCount(1);};
+      1307 |  for(const file of files){const received=await importCard(recipient,file.bytes,file.format);await selectCard(recipient,received);await permit();await expect(recipient.locator('.stm-collage')).toBeVisible();await expect.poll(()=>recipient.locator('.stm-collage-item[data-type=image] img').evaluate(n=>n.naturalWidth)).toBeGreaterThan(0);expect(await recipient.evaluate(async()=>!(await indexedDB.databases()).some(d=>d.name.startsWith('riserein-sillytavern-music')||d.name.startsWith('riserein-card-player-projects')))).toBe(true);await expect(recipient.locator('[data-action=open-designer],[data-action=edit-translation],[data-page=import]')).toHaveCount(0);
+      1308 |   await recipient.locator('.stm-collage [data-action=play]').click();await expect.poll(()=>recipient.locator(root+' audio:not([data-ambient-audio])').evaluate(a=>!a.paused&&a.currentTime>.1)).toBe(true);await recipient.locator(root).evaluate(n=>window.creativeOriginal={node:n,audio:n.__risereinPlayer.audio,api:n.__risereinPlayer});await recipient.locator('[data-collage-page=lyrics]').click();for(const mode of ['flow','centered','immersive']){await recipient.locator('#stm-lyric-mode').evaluate((n,m)=>{n.value=m;n.dispatchEvent(new Event('change'));},mode);await recipient.evaluate(()=>{creativeOriginal.audio.currentTime=2.2;creativeOriginal.audio.dispatchEvent(new Event('timeupdate'));});await expect(recipient.locator(mode==='immersive'?'[data-immersive-current]':'.stm-current-lyric')).toContainText('An echo from the past');}
+        at /workspace/sillytavern/tests/card-native.e2e.js:1305:168
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native-phase3/card-native.e2e.js-v2-3-fr-d290c--Helper-recipient-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native-phase3/card-native.e2e.js-v2-3-fr-d290c--Helper-recipient-·-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native-phase3/card-native.e2e.js-v2-3-fr-d290c--Helper-recipient-·-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native-phase3/card-native.e2e.js-v2-3-fr-d290c--Helper-recipient-·-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-native.e2e.js:2284:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('.stm-status')
+    Expected substring: [32m"按当前版本重建"[39m
+    Received string:    [31m""[39m
+    Timeout: 60000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 60000ms[22m
+    [2m  - waiting for locator('.stm-status')[22m
+    [2m    3 × locator resolved to <p role="status" class="stm-status" aria-live="polite"></p>[22m
+    [2m      - unexpected value ""[22m
+    [2m    9 × locator resolved to <p role="status" aria-live="polite" class="stm-status stm-error">重建未完成：拼贴图片超过单项 2 MiB / 合计 8 MiB 上限。</p>[22m
+    [2m      - unexpected value "重建未完成：拼贴图片超过单项 2 MiB / 合计 8 MiB 上限。"[22m
+    [2m    51 × locator resolved to <p role="status" class="stm-status" aria-live="polite"></p>[22m
+    [2m       - unexpected value ""[22m
+
+
+      1303 | for(const mobile of [false,true])test(`v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · ${mobile?'touch':'desktop'}`,async({browser})=>{
+      1304 |  test.setTimeout(300000);const {page:author,context:authorContext}=await session(browser),avatar=await createCard(author,'Creative23');await selectCard(author,avatar);await author.getByRole('tab',{name:'导入',exact:true}).click();await author.locator('[data-role=files]').setInputFiles({name:'CreativeSong.mp3',mimeType:'audio/mpeg',buffer:tone});await expect(author.locator('.stm-status')).toContainText('已导入 1 首');
+    > 1305 |  await author.evaluate(async({avatar,image})=>{const p='/scripts/extensions/third-party/sillytavern/',{saveRoleScenes}=await import(p+'music-scenes.js'),{normalizeDesign}=await import(p+'ui/config.js'),{defaultCollage,collageElement}=await import(p+'ui/collage-model.js'),{lyricAnchors,normalizeTranslation}=await import(p+'translations.js'),{LocalMusicStore}=await import(p+'local-store.js'),{PrivateNotesStore}=await import(p+'private-notes.js'),{getStorageScope}=await import(p+'data/identity.js');const s=SillyTavern.getContext().extensionSettings.riserein_music_player,track=s.tracks[0],store=new LocalMusicStore(),id='cover:'+crypto.randomUUID();const {prepareCover}=await import(p+'media.js');await store.put(id,await prepareCover(new Blob([new Uint8Array(image)],{type:'image/png'})));track.lyrics='[00:00]雨落书页\n[00:02]旧日回声';const anchors=lyricAnchors(track.lyrics);track.translation=normalizeTranslation({version:1,language:'English',sourceLanguage:'中文',source:'测试用原创歌词与自译，允许分发',sourceLyrics:'Rain on the page\nAn echo from the past',confirmed:true,distribute:true,rightsConfirmed:true,bindings:anchors.rows.map((r,i)=>({lineId:r.id,originalHash:r.originalHash,text:['Rain on the page','An echo from the past'][i]}))});const collage=defaultCollage();collage.pages.music.push({...collageElement('image','decoration'),assetId:id,desktop:{x:2,y:80,w:20,h:15},mobile:{x:2,y:80,w:20,h:15}});s.uiDesign=normalizeDesign({layout:'journal',theme:'journal-parchment',customization:{journalMode:'free'},collage});s.transitionDuration=0;saveRoleScenes(s,avatar,{scenes:[{id:'scene',name:'随卡创作验收',trackIds:[track.id]}],notes:[{trackId:track.id,text:'作者可分发手记'}]});const diary=new PrivateNotesStore({authorize:async()=>getStorageScope()});await diary.save({role:avatar,script:'full-player',project:'',trackId:track.id,trackTitle:track.title,text:'PRIVATE_CREATIVE23_MUST_NOT_TRAVEL'});diary.close();await store.close();},{avatar,image:Array.from(image)});
+           |                                                                                                                                                                        ^
+      1306 |  await author.getByRole('tab',{name:'曲库',exact:true}).click();await author.locator('[data-action=rebuild-native]').click();await expect(author.locator('.stm-status')).toContainText('按当前版本重建',{timeout:60000});const files=[];for(const format of ['json','png']){await author.locator('#export_button').dispatchEvent('click');const pending=author.waitForEvent('download');await author.locator('.export_format[data-format='+format+']').dispatchEvent('click');const bytes=await readFile(await(await pending).path());files.push({format,bytes});const data=format==='json'?JSON.parse(bytes):null;if(data){const script=data.data.extensions.tavern_helper.scripts.find(s=>s.id===data.data.extensions.riserein_card_player.scriptId),payload=readScriptPayload(script.content);expect(script.content).not.toContain('PRIVATE_CREATIVE23_MUST_NOT_TRAVEL');expect(payload.ui.uiDesign.customization.journalMode).toBe('free');expect(Object.keys(payload.config.collageAssets)).toHaveLength(1);expect(payload.config.tracks[0].translation.bindings).toHaveLength(2);exportMetrics.push({operation:'creative23-file',mobile,format,bytes:bytes.length,...analyzePayload(payload,script)});}else exportMetrics.push({operation:'creative23-file',mobile,format,bytes:bytes.length});}await authorContext.close();
+      1307 |  const {page:recipient}=await session(browser,{portable:true,mobile}),blank=await createCard(recipient,'CreativeBlank'),permit=async()=>{const prompt=recipient.getByText(/^(确认|Confirm)$/,{exact:true}).last();await expect.poll(async()=>await prompt.isVisible()||await recipient.locator(root).count()===1,{timeout:60000}).toBe(true);if(await prompt.isVisible())await prompt.click();await expect(recipient.locator(root)).toHaveCount(1);};
+      1308 |  for(const file of files){const received=await importCard(recipient,file.bytes,file.format);await selectCard(recipient,received);await permit();await expect(recipient.locator('.stm-collage')).toBeVisible();await expect.poll(()=>recipient.locator('.stm-collage-item[data-type=image] img').evaluate(n=>n.naturalWidth)).toBeGreaterThan(0);expect(await recipient.evaluate(async()=>!(await indexedDB.databases()).some(d=>d.name.startsWith('riserein-sillytavern-music')||d.name.startsWith('riserein-card-player-projects')))).toBe(true);await expect(recipient.locator('[data-action=open-designer],[data-action=edit-translation],[data-page=import]')).toHaveCount(0);
+        at /workspace/sillytavern/tests/card-native.e2e.js:1305:168
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native-phase3/card-native.e2e.js-v2-3-fr-23020-an-Helper-recipient-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native-phase3/card-native.e2e.js-v2-3-fr-23020-an-Helper-recipient-·-touch/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native-phase3/card-native.e2e.js-v2-3-fr-23020-an-Helper-recipient-·-touch/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native-phase3/card-native.e2e.js-v2-3-fr-23020-an-Helper-recipient-·-touch/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/card-native.e2e.js:2284:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop 
+    tests/card-native.e2e.js:2284:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

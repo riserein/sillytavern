@@ -1,0 +1,58 @@
+
+Running 32 tests using 1 worker
+
+(node:22312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:22312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/journal-create.e2e.js:52:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association (4.5s)
+  ✓   2 [desktop] › tests/journal-create.e2e.js:112:1 › real IDB serializes conflicting saves, isolates accounts/scripts and makes private restore idempotent (1.0s)
+  ✓   3 [desktop] › tests/journal-create.e2e.js:207:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (2.7s)
+  ✓   4 [desktop] › tests/journal-create.e2e.js:245:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design (3.3s)
+  ✓   5 [desktop] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (3.9s)
+  ✓   6 [desktop] › tests/journal-create.e2e.js:347:1 › private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB (3.7s)
+  ✓   7 [desktop] › tests/journal-create.e2e.js:431:1 › landscape, zoom and long text retain reachable real transport and mobile coordinates (3.8s)
+  ✓   8 [desktop] › tests/journal-create.e2e.js:459:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (8.1s)
+(node:23358) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:23358) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [mobile-320] › tests/journal-create.e2e.js:52:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association (7.7s)
+  ✓  10 [mobile-320] › tests/journal-create.e2e.js:112:1 › real IDB serializes conflicting saves, isolates accounts/scripts and makes private restore idempotent (2.5s)
+  ✓  11 [mobile-320] › tests/journal-create.e2e.js:207:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (6.1s)
+  ✓  12 [mobile-320] › tests/journal-create.e2e.js:245:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design (6.8s)
+  ✓  13 [mobile-320] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (4.9s)
+  ✓  14 [mobile-320] › tests/journal-create.e2e.js:347:1 › private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB (3.1s)
+  ✓  15 [mobile-320] › tests/journal-create.e2e.js:431:1 › landscape, zoom and long text retain reachable real transport and mobile coordinates (3.4s)
+  ✓  16 [mobile-320] › tests/journal-create.e2e.js:459:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (7.7s)
+(node:24263) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:24263) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  17 [mobile-390] › tests/journal-create.e2e.js:52:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association (7.1s)
+  ✓  18 [mobile-390] › tests/journal-create.e2e.js:112:1 › real IDB serializes conflicting saves, isolates accounts/scripts and makes private restore idempotent (2.3s)
+  ✓  19 [mobile-390] › tests/journal-create.e2e.js:207:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (4.9s)
+  ✓  20 [mobile-390] › tests/journal-create.e2e.js:245:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design (5.6s)
+  ✓  21 [mobile-390] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (6.4s)
+  ✓  22 [mobile-390] › tests/journal-create.e2e.js:347:1 › private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB (3.5s)
+  ✓  23 [mobile-390] › tests/journal-create.e2e.js:431:1 › landscape, zoom and long text retain reachable real transport and mobile coordinates (3.5s)
+  ✓  24 [mobile-390] › tests/journal-create.e2e.js:459:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (6.8s)
+(node:25358) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25358) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  25 [mobile-412] › tests/journal-create.e2e.js:52:1 › private diary persists in real IndexedDB, stays scoped by role, and drafts keep their song association (8.6s)
+  ✓  26 [mobile-412] › tests/journal-create.e2e.js:112:1 › real IDB serializes conflicting saves, isolates accounts/scripts and makes private restore idempotent (2.6s)
+  ✓  27 [mobile-412] › tests/journal-create.e2e.js:207:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (7.5s)
+  ✓  28 [mobile-412] › tests/journal-create.e2e.js:245:1 › designer free collage is staged, supports independent geometry and history, and cancel preserves saved book design (8.6s)
+  ✓  29 [mobile-412] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (7.4s)
+  ✓  30 [mobile-412] › tests/journal-create.e2e.js:347:1 › private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB (4.5s)
+  ✓  31 [mobile-412] › tests/journal-create.e2e.js:431:1 › landscape, zoom and long text retain reachable real transport and mobile coordinates (4.9s)
+  ✓  32 [mobile-412] › tests/journal-create.e2e.js:459:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (11.7s)
+
+  32 passed (3.0m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

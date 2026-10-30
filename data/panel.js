@@ -6,16 +6,16 @@ import {legacySummary,legacyProjects,prepareLegacyCopy} from './legacy.js';
 import {CardProjectStore} from '../card-player/project-store.js';
 import {createSelectMenus} from '../select-menu.js';
 const size=n=>`${(n/1048576).toFixed(2)} MiB`;
-export function createDataPanel({panel,settings,store,journal,context,account,assertAccount,flushMaker=async()=>{},pausePlayback=()=>{},setMaintenanceBusy=()=>{}}) {
+export function createDataPanel({panel,settings,store,journal,context,account,assertAccount,flushMaker=async()=>{},pausePlayback=()=>{},setMaintenanceBusy=()=>{},notesStore}) {
     const root=document.createElement('details');root.className='stm-data-tools';root.dataset.role='data-tools';
     root.innerHTML=`<summary>数据备份与恢复</summary><p class="stm-hint" data-data="identity"></p>
     <p class="stm-hint">完整备份包含当前账号曲库、本地原文件、歌词、歌单与绑定、图片、字体、外观、历史及全部已保存制作草稿。远程音频只保存信息和链接。</p>
-    <button type="button" class="stm-secondary" data-data="backup">导出完整备份 ZIP</button>
+    <label class="stm-check-label"><input type="checkbox" data-data="notes-export">包含私人手记（含私人文字，请勿分享此备份）</label><button type="button" class="stm-secondary" data-data="backup">导出完整备份 ZIP</button>
     <button type="button" class="stm-secondary" data-data="choose">选择备份文件</button><input type="file" data-data="file" accept=".zip,application/zip" hidden>
     <section data-data="restore" hidden><label>恢复方式<select id="stm-restore-mode" data-data="mode"><option value="merge">合并：保留已有信息，补入新内容</option><option value="missing">仅恢复缺失：不覆盖已有条目</option><option value="copy">独立副本：新歌曲、歌单和项目 ID</option></select></label>
     <label class="stm-check-label"><input type="checkbox" data-data="preferences">同时恢复备份中的外观、阅读偏好、音量、模式和窗口位置</label>
     <p class="stm-hint">重复音频按真实字节识别；合并保留现有歌曲信息，要保留两份不同编辑请选择独立副本。同一平台歌曲按平台标识复用。角色绑定须在下方核对，不按旧编号自动绑定。</p>
-    <div data-data="bindings"></div><button type="button" class="stm-secondary" data-data="preview">核对恢复计划</button><pre class="stm-hint" data-data="preview-text"></pre><button type="button" class="stm-primary" data-data="apply" disabled>确认恢复</button></section>
+    <div data-data="bindings"></div><p class="stm-hint" data-data="notes-count"></p><button type="button" class="stm-secondary" data-data="notes-restore" hidden>单独恢复私人手记副本</button><button type="button" class="stm-secondary" data-data="preview">核对恢复计划</button><pre class="stm-hint" data-data="preview-text"></pre><button type="button" class="stm-primary" data-data="apply" disabled>确认恢复</button></section>
     <details><summary>旧设备数据归属确认</summary><p class="stm-hint" data-data="legacy-count">正在检查旧库…</p><label class="stm-check-label"><input type="checkbox" data-data="ownership">我确认旧库中待选择的数据属于当前账号</label><button type="button" class="stm-secondary" data-data="legacy-preview">显示旧草稿并选择</button><div data-data="legacy-projects"></div><button type="button" class="stm-secondary" data-data="legacy-copy" disabled>预览复制到当前账号</button><p class="stm-hint">只复制所选旧草稿及当前曲库所引用的文件。原数据库不删除、不改名、不清空；其他账号数据不会自动认领。</p></details>
     <details><summary>存储空间</summary><button type="button" class="stm-secondary" data-data="scan">扫描空间与安全清理预览</button><pre class="stm-hint" data-data="storage-text"></pre><button type="button" class="stm-secondary" data-data="clean" disabled>确认清理预览中的资源</button><button type="button" class="stm-secondary" data-data="persist">申请保留浏览器存储</button><p class="stm-hint">各分类显示逻辑文件字节，草稿副本另计；浏览器配额是整个站点估算，不能当作当前账号专属空间。未知、其他账号、旧库及保存未确认的资源不会清理。</p></details>
     <details><summary>未完成恢复记录</summary><button type="button" class="stm-secondary" data-data="recover">核对未完成恢复</button><pre class="stm-hint" data-data="recovery-text"></pre></details>
@@ -23,6 +23,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
     <p class="stm-hint" role="status" aria-live="polite" data-data="status"></p><button type="button" class="stm-secondary" data-data="reload" hidden>刷新酒馆以应用恢复的数据</button>`;
     panel.querySelector('[data-view=appearance]').append(root);
     const q=name=>root.querySelector(`[data-data="${name}"]`),listeners=new AbortController(),projects=new CardProjectStore();
+    let restoredNoteMappings=null;
     let disposed=false,job=null,activePromise=Promise.resolve(),backup=null,plan=null,scan=null,legacyRows=[],bindingMenus=null,lastProgress=0,publishing=false,legacyPreviewed=false;
     const urls=new Set(),timers=new Set(),scope=account?.key;
     const estimate=()=>navigator.storage?.estimate?.()||Promise.resolve(null);
@@ -62,7 +63,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
     };
     function bindings(){
         bindingMenus?.dispose();q('bindings').replaceChildren();
-        const avatars=[...new Set([...backup.manifest.settings.playlists.flatMap(list=>list.characterAvatars),...(backup.manifest.settings.roleDesigns||[]).map(row=>row.avatar),...(backup.manifest.settings.roleScenes||[]).map(row=>row.avatar)])];
+        const avatars=[...new Set([...backup.manifest.settings.playlists.flatMap(list=>list.characterAvatars),...(backup.manifest.settings.roleDesigns||[]).map(row=>row.avatar),...(backup.manifest.settings.roleScenes||[]).map(row=>row.avatar),...(backup.manifest.privateNotes||[]).map(row=>row.role)])];
         const characters=context.characters||[];
         for(const [i,avatar]of avatars.entries()){
             const label=document.createElement('label');label.textContent=`原绑定：${avatar} → `;
@@ -85,18 +86,19 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
         q('apply').disabled=false;status('恢复计划已核对，请检查数量、恢复方式和角色映射后确认。');
     }
     listen('backup',()=>run(async signal=>{
-        await flushMaker();const result=await createBackup({settings,store,projects:await projects.list(),signal,onProgress:progress});
+        await flushMaker();const result=await createBackup({settings,store,projects:await projects.list(),signal,onProgress:progress,...(q('notes-export').checked?{privateNotes:await notesStore.list()}:{} )});
         signal.throwIfAborted();download(result.blob);status(`完整备份已生成：${size(result.bytes)}；${result.counts.tracks} 首歌曲、${result.counts.playlists} 个歌单、${result.counts.projects} 个项目。远程歌曲只备份链接。${result.manifest.warnings.join(' ')}`);
     }));
     listen('choose',()=>q('file').click());
     q('file').addEventListener('change',()=>{const file=q('file').files[0];q('file').value='';if(!file)return;void run(async signal=>{
-        backup=null;invalidate();backup=await inspectBackup(file,{signal,onProgress:progress});q('restore').hidden=false;q('preferences').checked=!settings.tracks.length;bindings();status(`备份校验通过：${backup.manifest.settings.tracks.length} 首歌曲、${backup.projects.length} 个制作项目、${backup.manifest.settings.ambientLibrary?.length||0} 个环境音。请选择恢复方式并核对计划。`);
+        backup=null;restoredNoteMappings=null;invalidate();backup=await inspectBackup(file,{signal,onProgress:progress});q('restore').hidden=false;q('preferences').checked=!settings.tracks.length;bindings();q('notes-count').textContent=`私人手记：${backup.manifest.privateNotes?.length||0} 条；与曲库分开确认恢复，原内容不覆盖。`;q('notes-restore').hidden=!backup.manifest.privateNotes?.length;status(`备份校验通过：${backup.manifest.settings.tracks.length} 首歌曲、${backup.projects.length} 个制作项目、${backup.manifest.settings.ambientLibrary?.length||0} 个环境音。请选择恢复方式并核对计划。`);
     });},{signal:listeners.signal});
     q('mode').addEventListener('change',invalidate,{signal:listeners.signal});q('preferences').addEventListener('change',invalidate,{signal:listeners.signal});
     listen('preview',()=>run(preview));
     listen('apply',()=>{if(!plan||!window.confirm('按已核对计划恢复？现有内容保留；同名或冲突按预览处理。恢复期间请勿切换账号或关闭页面。'))return;
-        void run(async signal=>{const current=plan;plan=null;await checkCapacity(current.bytesToWrite,estimate);await applyRestore({plan:current,store,projects,journal,settings,commitSettings:committer.commit,assertAccount,signal,onProgress:progress});scan=null;q('reload').hidden=false;status('恢复完成，资源引用与酒馆保存已核对。点击“刷新酒馆”应用曲库和外观；原有数据未清空。');},{mutating:true});
+        void run(async signal=>{const current=plan;plan=null;await checkCapacity(current.bytesToWrite,estimate);await applyRestore({plan:current,store,projects,journal,settings,commitSettings:committer.commit,assertAccount,signal,onProgress:progress});restoredNoteMappings=current.noteMappings;scan=null;q('reload').hidden=false;status('恢复完成，资源引用与酒馆保存已核对。点击“刷新酒馆”应用曲库和外观；原有数据未清空。'+(backup?.manifest.privateNotes?.length?'私人手记尚未恢复，请单独确认恢复手记副本。':''));},{mutating:true});
     });
+    listen('notes-restore',()=>{if(!backup?.manifest.privateNotes?.length||!window.confirm('此备份包含私人文字。将手记恢复为独立副本？不会覆盖原手记；此步骤与曲库恢复分开提交。'))return;void run(async()=>{const roleMap=Object.fromEntries([...q('bindings').querySelectorAll('select')].map(n=>[n.dataset.sourceAvatar,n.value]));if(backup.manifest.privateNotes.some(n=>!roleMap[n.role]))throw new Error('请先核对每个私人手记原角色的映射；未静默丢弃或跨角色恢复。');const count=await notesStore.importCopies(backup.manifest.privateNotes.map(n=>({...n,trackId:restoredNoteMappings?.tracks[n.trackId]||n.trackId,sceneId:restoredNoteMappings?.scenes[n.role+'\n'+n.sceneId]||n.sceneId})),{roleMap,batchId:backup.hash});status(`已恢复 ${count} 条私人手记副本；重复确认不会覆盖或重复写入。曲库恢复状态独立。未匹配歌曲的手记保留原曲名，可在“显示本角色全部手记”中阅读。`);});});
     listen('legacy-preview',()=>run(async()=>{
         if(!q('ownership').checked)throw new Error('请先确认待选择的旧数据属于当前账号。');
         legacyRows=await legacyProjects();legacyPreviewed=true;q('legacy-projects').replaceChildren();

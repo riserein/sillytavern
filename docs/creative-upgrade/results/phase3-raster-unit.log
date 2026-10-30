@@ -1,0 +1,16 @@
+✔ free collage is opt-in and desktop/mobile coordinates remain independent (3.632482ms)
+✔ collage rejects executable fields, unknown nested structure, nonfinite/overflow coordinates and excess text (0.907469ms)
+✔ collage image references participate in every design group and safe remapping (1.06227ms)
+✔ safe templates require all collage images and exclude raw/remote resource injection (2.407134ms)
+✔ private notes have bounded plain text, whitelisted fields and explicit backup opt-in (29.799083ms)
+✔ collage images round-trip binary ZIP and project copies with remapped IDs (22.484016ms)
+✔ invalid formal translations stop a backup instead of being silently normalized away (0.791188ms)
+✔ backup rejects active or oversized raster headers before restoring collage images (0.759528ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 153.491019

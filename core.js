@@ -1,3 +1,4 @@
+import {normalizeTranslation} from './translations.js';
 import {normalizeAmbientLibrary,normalizeSoundscape} from './ambient.js';
 import { normalizeLyricOffsets } from './ui/lyric-timing.js';
 import { normalizeLyricOverrides } from './lyric-document.js';
@@ -68,6 +69,7 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
     for (const item of Array.isArray(raw.tracks) ? raw.tracks : []) {
         if (!item || typeof item.id !== 'string' || !item.id || ids.has(item.id)) continue;
         if (!['local', 'url', 'platform'].includes(item.kind)) continue;
+        const translation=normalizeTranslation(item.translation);
         const platformTrack = item.kind === 'platform' ? normalizePlatformTrack(item) : null;
         if (item.kind === 'platform' && !platformTrack) continue;
         const stableId = platformTrack?.id || item.id;
@@ -79,6 +81,7 @@ export function normalizeSettings(raw = {}, now = Date.now(), catalog = BUILTIN_
         ids.add(stableId);
         tracks.push({
             ...(platformTrack || {}),
+            ...(translation?{translation}:{}),
             id: stableId,
             kind: item.kind,
             title: String(item.title || '未命名音乐').slice(0, 160),

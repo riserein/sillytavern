@@ -1,10 +1,11 @@
+import {mapCollageAssets,collageReferences} from '../ui/collage-model.js';
 import {ambientReferences,MAX_AMBIENT} from '../ambient.js';
 import {normalizeSettings,createTrackId,MAX_TRACKS,MAX_PLAYLISTS} from '../core.js';
 import {MAX_FONTS} from '../fonts.js';
 import {referencedAssets} from '../asset-retirement.js';
 import {canonical} from './backup.js';
 import {checksum,hashText} from './checksum.js';
-import {normalizeDesign} from '../ui/config.js';
+import {normalizeDesign,designReferences} from '../ui/config.js';
 import { remapSceneSet, sceneAssetReferences, sceneIssues, MAX_SCENES, MAX_SCENE_ROLES, MAX_SCENE_TRACKS } from '../music-scenes.js';
 const cloneSettings=settings=>JSON.parse(JSON.stringify(normalizeSettings(settings)));
 export const settingsHash=settings=>hashText(canonical(cloneSettings(settings)));
@@ -81,7 +82,7 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         if(existing&&mode!=='copy')assetIds.set(font.id,existing);
         else {const id=mappedAsset(font.id);after.fonts.push({...font,id,hash:row.sha256});fontHashes.set(row.sha256,id);}
     }
-    const mappedDesign=value=>{const copy=normalizeDesign(value);if(copy.customization.iconId)copy.customization.iconId=mappedAsset(copy.customization.iconId);return copy;};
+    const mappedDesign=value=>{const copy=mapCollageAssets(normalizeDesign(value),mappedAsset);if(copy.customization.iconId)copy.customization.iconId=mappedAsset(copy.customization.iconId);return copy;};
     summary.designsAdded=0;summary.designConflicts=0;
     for(const design of incoming.designs||[]){
         const conflict=after.designs.some(row=>row.id===design.id);if(conflict)summary.designConflicts++;
@@ -167,6 +168,7 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
         for(const key of ['backgroundId','fontId'])if(assetIds.has(copy.sourceSettings[key]))copy.sourceSettings[key]=assetIds.get(copy.sourceSettings[key]);
         if(copy.sourceSettings.lyricOffsets)copy.sourceSettings.lyricOffsets=Object.fromEntries(Object.entries(copy.sourceSettings.lyricOffsets).map(([id,value])=>[trackIds.get(id)||id,value]));
         if(copy.sourceSettings.uiDesign)copy.sourceSettings.uiDesign=mappedDesign(copy.sourceSettings.uiDesign);
+        if(copy.assets?.collageBlobs)copy.assets.collageBlobs=Object.fromEntries(Object.entries(copy.assets.collageBlobs).map(([id,blob])=>[mappedAsset(id),blob]));
         if(copy.sourceSettings.ambientLibrary){
             for(const row of copy.sourceSettings.ambientLibrary)if(!ambientIds.has(row.id))ambientIds.set(row.id,mode==='copy'?'ambient:'+createTrackId():row.id);
             copy.sourceSettings.ambientLibrary=copy.sourceSettings.ambientLibrary.map(row=>({...row,id:ambientIds.get(row.id),...(row.kind==='local'?{resourceId:mappedAsset(row.resourceId||row.id)}:{}),coverId:row.coverId?mappedAsset(row.coverId):null}));
@@ -188,11 +190,12 @@ export async function makeRestorePlan({backup,current,store,projects=[],mode='me
     if(checked.tracks.length!==after.tracks.length||checked.playlists.length!==after.playlists.length||checked.fonts.length!==after.fonts.length||checked.ambientLibrary.length!==after.ambientLibrary.length)throw new Error('恢复计划会丢弃无效或冲突项目，已阻止执行。');
     const reusedAssets=[];
     for(const id of finalRefs)if(blobs.has(id))reusedAssets.push({id,bytes:blobs.get(id).size,sha256:existingDigests.get(id)||(await checksum(blobs.get(id),{signal})).sha256});
-    return {before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),reusedAssets,assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0)+(p.assets?.iconBlob?.size||0)+Object.values(p.assets?.ambientBlobs||{}).reduce((n,b)=>n+(b?.size||0),0)+Object.values(p.assets?.sceneBlobs||{}).reduce((n,b)=>n+(b?.size||0),0),0)};
+    return {noteMappings:{tracks:Object.fromEntries(trackIds),scenes:Object.fromEntries(sceneIds)},before,after:JSON.parse(JSON.stringify(checked)),beforeHash:settingsHash(before),afterHash:settingsHash(checked),projectVersions:projectVersions(projects),reusedAssets,assetWrites,projectWrites,summary,bytesToWrite:assetWrites.reduce((n,[,b])=>n+b.size,0)+projectWrites.reduce((n,p)=>n+p.tracks.reduce((v,t)=>v+(t.exportBlob?.size||0)+(t.exportCover?.size||0),0)+(p.assets?.imageBlob?.size||0)+(p.assets?.imageOriginalBlob?.size||0)+(p.assets?.fontBlob?.size||0)+(p.assets?.iconBlob?.size||0)+Object.values(p.assets?.collageBlobs||{}).reduce((n,b)=>n+(b?.size||0),0)+Object.values(p.assets?.ambientBlobs||{}).reduce((n,b)=>n+(b?.size||0),0)+Object.values(p.assets?.sceneBlobs||{}).reduce((n,b)=>n+(b?.size||0),0),0)};
 }
 export async function verifyReferences(settings,store,projects=[]) {
     const missing=[];
     for(const id of referencedAssets(settings))if(!(await store.get(id) instanceof Blob))missing.push(id);
+    for(const project of projects)for(const id of collageReferences(project.sourceSettings?.uiDesign))if(!project.assets?.collageBlobs?.[id]&&!(await store.get(id) instanceof Blob))missing.push('project-collage:'+project.id);
     for(const project of projects)for(const id of ambientReferences(project.sourceSettings?.ambientLibrary))if(!project.assets?.ambientBlobs?.[id]&&!(await store.get(id) instanceof Blob))missing.push('project-ambient:'+project.id);
     for(const project of projects)for(const track of project.tracks||[])if(track.kind==='local'&&!track.exportBlob&&!track.exportUrl&&!(await store.get(track.id) instanceof Blob))missing.push(`project:${project.id}`);
     if(missing.length)throw new Error(`恢复引用核对失败：${missing.length} 项资源缺失；暂存内容已保留，请勿清空浏览器。`);
@@ -237,6 +240,7 @@ export async function rollbackStaging({op,store,projects,journal,protectedSettin
         for(const track of project.tracks||[]){if(track.kind==='local')refs.add(track.id);if(track.coverId)refs.add(track.coverId);}
         for(const key of ['backgroundId','fontId'])if(project.sourceSettings?.[key]){refs.add(project.sourceSettings[key]);if(key==='backgroundId')refs.add(project.sourceSettings[key]+':original');}
     }
+    for(const project of await projects.list())for(const id of designReferences(project.sourceSettings))refs.add(id);
     for(const project of await projects.list())for(const id of ambientReferences(project.sourceSettings?.ambientLibrary))refs.add(id);
     for(const project of await projects.list())for(const id of sceneAssetReferences([project.sourceSettings?.sceneSet||{}]))refs.add(id);
     const remove=[];

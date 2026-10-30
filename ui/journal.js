@@ -1,9 +1,9 @@
 /** The book reuses the existing cover, controls and lyric reader DOM. It never
  * creates an Audio, parses LRC or writes author/recipient preferences. */
-export function createJournal({panel,audio,getTrack,getTracks,getGroup,getScene,onTrack,onLyrics}) {
+export function createJournal({panel,audio,getTrack,getTracks,getGroup,getScene,onTrack,onLyrics,onNotes=()=>{}}) {
     const doc=panel.ownerDocument,abort=new AbortController(),playback=panel.querySelector('[data-view=playback]');
     const book=doc.createElement('div');book.className='stm-journal';book.hidden=true;
-    book.innerHTML='<section class="stm-journal-left" aria-label="手账音乐页"><div class="stm-journal-edition">PERSONAL MUSIC JOURNAL</div><div data-journal-cover></div><div data-journal-controls></div><p class="stm-hint" data-journal-album></p></section><section class="stm-journal-right" aria-label="手账阅读页"><nav class="stm-journal-tabs" aria-label="手账栏目"><button type="button" data-journal-page="player">Music｜音乐</button><button type="button" data-journal-page="lyrics">Lyrics｜歌词</button><button type="button" data-journal-page="notes">Notes｜角色手记</button><button type="button" data-journal-page="collection">Collection｜曲目目录</button></nav><div class="stm-journal-reading"><section data-journal-pane="lyrics" aria-label="手账歌词"></section><section data-journal-pane="notes" aria-label="角色手记"><h3 data-journal-note-title></h3><h4 data-journal-scene-heading>场景随笔</h4><p data-journal-description></p><h4 data-journal-song-heading>歌曲手记</h4><p data-journal-note></p></section><section data-journal-pane="collection" aria-label="手账曲目目录"><h3 data-journal-collection-title></h3><ol></ol></section></div></section>';
+    book.innerHTML='<section class="stm-journal-left" aria-label="手账音乐页"><div class="stm-journal-edition">PERSONAL MUSIC JOURNAL</div><div data-journal-cover></div><div data-journal-controls></div><p class="stm-hint" data-journal-album></p></section><section class="stm-journal-right" aria-label="手账阅读页"><nav class="stm-journal-tabs" aria-label="手账栏目"><button type="button" data-journal-page="player">Music｜音乐</button><button type="button" data-journal-page="lyrics">Lyrics｜歌词</button><button type="button" data-journal-page="notes">Notes｜角色手记</button><button type="button" data-journal-page="collection">Collection｜曲目目录</button></nav><div class="stm-journal-reading"><section data-journal-pane="lyrics" aria-label="手账歌词"></section><section data-journal-pane="notes" aria-label="角色手记"><div data-author-notes><h3 data-journal-note-title></h3><h4 data-journal-scene-heading>场景随笔</h4><p data-journal-description></p><h4 data-journal-song-heading>歌曲手记</h4><p data-journal-note></p></div></section><section data-journal-pane="collection" aria-label="手账曲目目录"><h3 data-journal-collection-title></h3><ol></ol></section></div></section>';
     const sceneBar=playback.querySelector('.stm-scene-bar');if(sceneBar)sceneBar.after(book);else playback.prepend(book);
     const cover=panel.querySelector('.stm-cover-stage'),controls=panel.querySelector('.stm-player-controls'),lyrics=panel.querySelector('.stm-lyrics-view');
     const homes=[cover,controls,lyrics].map(node=>{const anchor=doc.createComment('journal-home');node.before(anchor);return {node,anchor};});
@@ -17,7 +17,7 @@ export function createJournal({panel,audio,getTrack,getTracks,getGroup,getScene,
         for(const b of book.querySelectorAll('[data-journal-page]'))b.setAttribute('aria-pressed',String(b.dataset.journalPage===next));
         for(const p of book.querySelectorAll('[data-journal-pane]'))p.hidden=p.dataset.journalPane!==next;
         lyrics.hidden=next!=='lyrics';panel.dataset.lyricsOpen='false';
-        onLyrics(next==='lyrics');
+        onLyrics(next==='lyrics');if(next==='notes')onNotes();
         animation?.cancel();animation=null;
         const target=next==='player'?q('.stm-journal-left'):q('.stm-journal-reading');
         if(animate&&!reduced.matches&&panel.dataset.motion!=='off'&&config?.customization.journalFlip!==false&&target.animate)animation=target.animate([{opacity:.8,transform:'translateX(7px)'},{opacity:1,transform:'none'}],{duration:config?.customization.journalDuration||320,easing:'ease-out'});
@@ -41,7 +41,7 @@ export function createJournal({panel,audio,getTrack,getTracks,getGroup,getScene,
         }
     }
     function apply(value){
-        config=value;const enabled=value.layout==='journal';
+        config=value;const enabled=value.layout==='journal'&&value.customization.journalMode!=='free';
         if(enabled&&!active){active=true;book.hidden=false;q('[data-journal-cover]').append(cover);q('[data-journal-controls]').append(controls);q('[data-journal-pane=lyrics]').append(lyrics);
             mobile=narrow();show(mobile?'player':value.customization.journalTab||'lyrics',{animate:false});
         } else if(!enabled&&active){

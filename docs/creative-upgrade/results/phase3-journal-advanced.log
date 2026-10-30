@@ -1,0 +1,216 @@
+
+Running 12 tests using 1 worker
+
+(node:10370) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10370) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 [desktop] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (11.3s)
+(node:10772) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10772) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [desktop] › tests/journal-create.e2e.js:336:1 › private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB (2.1s)
+  ✓   3 [desktop] › tests/journal-create.e2e.js:420:1 › landscape, zoom and long text retain reachable real transport and mobile coordinates (2.7s)
+(node:11242) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:11242) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   4 [mobile-320] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (8.8s)
+(node:11431) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:11431) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 [mobile-320] › tests/journal-create.e2e.js:336:1 › private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB (1.5s)
+  ✓   6 [mobile-320] › tests/journal-create.e2e.js:420:1 › landscape, zoom and long text retain reachable real transport and mobile coordinates (1.7s)
+(node:11859) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:11859) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   7 [mobile-390] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (7.8s)
+(node:12003) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12003) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 [mobile-390] › tests/journal-create.e2e.js:336:1 › private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB (1.6s)
+  ✓   9 [mobile-390] › tests/journal-create.e2e.js:420:1 › landscape, zoom and long text retain reachable real transport and mobile coordinates (1.6s)
+(node:12423) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12423) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  10 [mobile-412] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (7.7s)
+(node:12588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 [mobile-412] › tests/journal-create.e2e.js:336:1 › private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB (1.8s)
+  ✓  12 [mobile-412] › tests/journal-create.e2e.js:420:1 › landscape, zoom and long text retain reachable real transport and mobile coordinates (2.1s)
+
+
+  1) [desktop] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('.stm-design-editor').locator('[data-editor-status]')
+    Expected substring: [32m"图片已加入预览"[39m
+    Received string:    [31m"请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 5000ms[22m
+    [2m  - waiting for locator('.stm-design-editor').locator('[data-editor-status]')[22m
+    [2m    9 × locator resolved to <p role="status" data-editor-status="">请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。</p>[22m
+    [2m      - unexpected value "请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。"[22m
+
+
+      22 | });
+      23 | test('local collage art is real, safe templates carry bytes, and preview restores the original resource graph',async({page})=>{
+    > 24 |  await fixture(page);await journal(page);await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('[data-action=open-designer]').click();const editor=page.locator('.stm-design-editor');if(page.viewportSize().width<850)await editor.locator('[data-step=properties]').click();await editor.locator('[data-field="c.journalMode"]').selectOption('free');await editor.locator('[data-collage-tool=file]').setInputFiles({name:'forest.png',mimeType:'image/png',buffer:await readFile(new URL('../assets/covers/forest.png',import.meta.url))});await expect(editor.locator('[data-editor-status]')).toContainText('图片已加入预览');await expect.poll(()=>page.locator('.stm-collage-item[data-type=image] img').evaluate(n=>n.naturalWidth)).toBeGreaterThan(0);if(page.viewportSize().width<850)await editor.locator('[data-step=templates]').click();const pending=page.waitForEvent('download');await editor.locator('[data-template-export]').click();const file=await pending,data=JSON.parse(await readFile(await file.path(),'utf8'));expect(Object.keys(data.images)).toHaveLength(1);expect(JSON.stringify(data)).not.toContain('私人文字');const saved=JSON.stringify(await page.evaluate(()=>app.settings.uiDesign));await editor.locator('[data-template-file]').setInputFiles({name:'safe-template.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))});await expect(editor.locator('[data-editor-status]')).toContainText('导入检查通过');expect(JSON.stringify(await page.evaluate(()=>app.settings.uiDesign))).toBe(saved);await editor.locator('[data-template-name]').fill('携带图片的模板');await editor.locator('[data-template-save]').click();await expect(editor.locator('[data-editor-status]')).toContainText('保存');await editor.locator('[data-editor-close]').click();const refs=await page.evaluate(async prefix=>{const {designReferences}=await import(prefix+'ui/config.js');return [...designReferences(app.settings)];},prefix);expect(refs.length).toBeGreaterThan(0);expect(await page.evaluate(()=>liveURLs.size)).toBe(0);await page.evaluate(()=>app.dispose());
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^
+      25 | });
+      26 | test('private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB',async()=>{
+      27 |  const directory=await mkdtemp(join(tmpdir(),'stm-private-quota-'));let context;const url='http://127.0.0.1:8000/private-quota';
+        at /workspace/sillytavern/tests/journal-create.e2e.js:24:605
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [mobile-320] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('.stm-design-editor').locator('[data-editor-status]')
+    Expected substring: [32m"图片已加入预览"[39m
+    Received string:    [31m"请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 5000ms[22m
+    [2m  - waiting for locator('.stm-design-editor').locator('[data-editor-status]')[22m
+    [2m    9 × locator resolved to <p role="status" data-editor-status="">请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。</p>[22m
+    [2m      - unexpected value "请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。"[22m
+
+
+      22 | });
+      23 | test('local collage art is real, safe templates carry bytes, and preview restores the original resource graph',async({page})=>{
+    > 24 |  await fixture(page);await journal(page);await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('[data-action=open-designer]').click();const editor=page.locator('.stm-design-editor');if(page.viewportSize().width<850)await editor.locator('[data-step=properties]').click();await editor.locator('[data-field="c.journalMode"]').selectOption('free');await editor.locator('[data-collage-tool=file]').setInputFiles({name:'forest.png',mimeType:'image/png',buffer:await readFile(new URL('../assets/covers/forest.png',import.meta.url))});await expect(editor.locator('[data-editor-status]')).toContainText('图片已加入预览');await expect.poll(()=>page.locator('.stm-collage-item[data-type=image] img').evaluate(n=>n.naturalWidth)).toBeGreaterThan(0);if(page.viewportSize().width<850)await editor.locator('[data-step=templates]').click();const pending=page.waitForEvent('download');await editor.locator('[data-template-export]').click();const file=await pending,data=JSON.parse(await readFile(await file.path(),'utf8'));expect(Object.keys(data.images)).toHaveLength(1);expect(JSON.stringify(data)).not.toContain('私人文字');const saved=JSON.stringify(await page.evaluate(()=>app.settings.uiDesign));await editor.locator('[data-template-file]').setInputFiles({name:'safe-template.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))});await expect(editor.locator('[data-editor-status]')).toContainText('导入检查通过');expect(JSON.stringify(await page.evaluate(()=>app.settings.uiDesign))).toBe(saved);await editor.locator('[data-template-name]').fill('携带图片的模板');await editor.locator('[data-template-save]').click();await expect(editor.locator('[data-editor-status]')).toContainText('保存');await editor.locator('[data-editor-close]').click();const refs=await page.evaluate(async prefix=>{const {designReferences}=await import(prefix+'ui/config.js');return [...designReferences(app.settings)];},prefix);expect(refs.length).toBeGreaterThan(0);expect(await page.evaluate(()=>liveURLs.size)).toBe(0);await page.evaluate(()=>app.dispose());
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^
+      25 | });
+      26 | test('private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB',async()=>{
+      27 |  const directory=await mkdtemp(join(tmpdir(),'stm-private-quota-'));let context;const url='http://127.0.0.1:8000/private-quota';
+        at /workspace/sillytavern/tests/journal-create.e2e.js:24:605
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-320/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-320/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-320/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-320/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [mobile-390] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('.stm-design-editor').locator('[data-editor-status]')
+    Expected substring: [32m"图片已加入预览"[39m
+    Received string:    [31m"请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 5000ms[22m
+    [2m  - waiting for locator('.stm-design-editor').locator('[data-editor-status]')[22m
+    [2m    9 × locator resolved to <p role="status" data-editor-status="">请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。</p>[22m
+    [2m      - unexpected value "请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。"[22m
+
+
+      22 | });
+      23 | test('local collage art is real, safe templates carry bytes, and preview restores the original resource graph',async({page})=>{
+    > 24 |  await fixture(page);await journal(page);await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('[data-action=open-designer]').click();const editor=page.locator('.stm-design-editor');if(page.viewportSize().width<850)await editor.locator('[data-step=properties]').click();await editor.locator('[data-field="c.journalMode"]').selectOption('free');await editor.locator('[data-collage-tool=file]').setInputFiles({name:'forest.png',mimeType:'image/png',buffer:await readFile(new URL('../assets/covers/forest.png',import.meta.url))});await expect(editor.locator('[data-editor-status]')).toContainText('图片已加入预览');await expect.poll(()=>page.locator('.stm-collage-item[data-type=image] img').evaluate(n=>n.naturalWidth)).toBeGreaterThan(0);if(page.viewportSize().width<850)await editor.locator('[data-step=templates]').click();const pending=page.waitForEvent('download');await editor.locator('[data-template-export]').click();const file=await pending,data=JSON.parse(await readFile(await file.path(),'utf8'));expect(Object.keys(data.images)).toHaveLength(1);expect(JSON.stringify(data)).not.toContain('私人文字');const saved=JSON.stringify(await page.evaluate(()=>app.settings.uiDesign));await editor.locator('[data-template-file]').setInputFiles({name:'safe-template.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))});await expect(editor.locator('[data-editor-status]')).toContainText('导入检查通过');expect(JSON.stringify(await page.evaluate(()=>app.settings.uiDesign))).toBe(saved);await editor.locator('[data-template-name]').fill('携带图片的模板');await editor.locator('[data-template-save]').click();await expect(editor.locator('[data-editor-status]')).toContainText('保存');await editor.locator('[data-editor-close]').click();const refs=await page.evaluate(async prefix=>{const {designReferences}=await import(prefix+'ui/config.js');return [...designReferences(app.settings)];},prefix);expect(refs.length).toBeGreaterThan(0);expect(await page.evaluate(()=>liveURLs.size)).toBe(0);await page.evaluate(()=>app.dispose());
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^
+      25 | });
+      26 | test('private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB',async()=>{
+      27 |  const directory=await mkdtemp(join(tmpdir(),'stm-private-quota-'));let context;const url='http://127.0.0.1:8000/private-quota';
+        at /workspace/sillytavern/tests/journal-create.e2e.js:24:605
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-390/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-390/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-390/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-390/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [mobile-412] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('.stm-design-editor').locator('[data-editor-status]')
+    Expected substring: [32m"图片已加入预览"[39m
+    Received string:    [31m"请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 5000ms[22m
+    [2m  - waiting for locator('.stm-design-editor').locator('[data-editor-status]')[22m
+    [2m    9 × locator resolved to <p role="status" data-editor-status="">请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。</p>[22m
+    [2m      - unexpected value "请选择 2 MiB 以内的静态 PNG、JPEG 或 WebP 图片。"[22m
+
+
+      22 | });
+      23 | test('local collage art is real, safe templates carry bytes, and preview restores the original resource graph',async({page})=>{
+    > 24 |  await fixture(page);await journal(page);await page.getByRole('tab',{name:'外观',exact:true}).click();await page.locator('[data-action=open-designer]').click();const editor=page.locator('.stm-design-editor');if(page.viewportSize().width<850)await editor.locator('[data-step=properties]').click();await editor.locator('[data-field="c.journalMode"]').selectOption('free');await editor.locator('[data-collage-tool=file]').setInputFiles({name:'forest.png',mimeType:'image/png',buffer:await readFile(new URL('../assets/covers/forest.png',import.meta.url))});await expect(editor.locator('[data-editor-status]')).toContainText('图片已加入预览');await expect.poll(()=>page.locator('.stm-collage-item[data-type=image] img').evaluate(n=>n.naturalWidth)).toBeGreaterThan(0);if(page.viewportSize().width<850)await editor.locator('[data-step=templates]').click();const pending=page.waitForEvent('download');await editor.locator('[data-template-export]').click();const file=await pending,data=JSON.parse(await readFile(await file.path(),'utf8'));expect(Object.keys(data.images)).toHaveLength(1);expect(JSON.stringify(data)).not.toContain('私人文字');const saved=JSON.stringify(await page.evaluate(()=>app.settings.uiDesign));await editor.locator('[data-template-file]').setInputFiles({name:'safe-template.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))});await expect(editor.locator('[data-editor-status]')).toContainText('导入检查通过');expect(JSON.stringify(await page.evaluate(()=>app.settings.uiDesign))).toBe(saved);await editor.locator('[data-template-name]').fill('携带图片的模板');await editor.locator('[data-template-save]').click();await expect(editor.locator('[data-editor-status]')).toContainText('保存');await editor.locator('[data-editor-close]').click();const refs=await page.evaluate(async prefix=>{const {designReferences}=await import(prefix+'ui/config.js');return [...designReferences(app.settings)];},prefix);expect(refs.length).toBeGreaterThan(0);expect(await page.evaluate(()=>liveURLs.size)).toBe(0);await page.evaluate(()=>app.dispose());
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^
+      25 | });
+      26 | test('private-text quota failure preserves the previous note in a real persistent Chromium IndexedDB',async()=>{
+      27 |  const directory=await mkdtemp(join(tmpdir(),'stm-private-quota-'));let context;const url='http://127.0.0.1:8000/private-quota';
+        at /workspace/sillytavern/tests/journal-create.e2e.js:24:605
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-412/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-412/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-412/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/journal-advanced/journal-create.e2e.js-loca-05740-the-original-resource-graph-mobile-412/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [desktop] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph 
+    [mobile-320] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph 
+    [mobile-390] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph 
+    [mobile-412] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph 
+  8 passed (1.0m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

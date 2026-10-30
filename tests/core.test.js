@@ -10,7 +10,7 @@ test('new playlists have safe playback defaults', () => {
     assert.deepEqual(normalizeSettings(), {
         tracks: [], volume: 0.6, mode: 'list', currentId: null, favorites: [], transitionDuration: 300,
         uiDesign: normalizeDesign(), designs: [], roleDesigns: [], roleScenes: [], scenePreferences: [], visualMotion: null, accessibleControls: false, personalDesign: null, visibility: {version:1,state:"normal",edge:"right",snapMode:"snap",resume:null}, lyricOffsets: {}, lyricOverrides: [], coverColorMode: 'off', ambientLibrary: [], soundscape: normalizeSoundscape(),
-        reading: { level: 'clear', lyricSize: 20, lineHeight: 1.9, autoFollow: true, lyricBackground: 'auto', displayMode: 'flow', nextLine: true },
+        reading: { level: 'clear', lyricSize: 20, lineHeight: 1.9, autoFollow: true, lyricBackground: 'auto', displayMode: 'flow', nextLine: true, lyricLanguage:'both',translationSize:16,translationHeight:1.7,translationGap:6,originalColor:null,translationColor:null },
         playlists: [], activePlaylistId: null, builtinHidden: false,
         backgroundId: null, recentPlays: [], playEvents: [],
         customColors: { enabled: false, accent: '#dbc291', background: '#25211e', text: '#f0e9dc' },

@@ -1,3 +1,5 @@
+import {normalizeCollageAssets} from './collage-transport.js';
+import {portableTrackTranslation} from '../translations.js';
 import {normalizePortableAmbient} from './ambient-transport.js';
 import {publicResource} from '../public-resource.js';
 export {publicResource} from '../public-resource.js';
@@ -73,6 +75,7 @@ export function normalizeCardConfig(raw) {
             src,
             cover: portableImage(track.cover) || '',
             lyrics: String(track.lyrics || '').slice(0, 50000),
+            ...(track.translation?{translation:portableTrackTranslation(track)}:{}),
             lyricOffsetMs: normalizeLyricOffset(track.lyricOffsetMs),
             ...(publicResource(track.lyricsSource) ? { lyricsSource: publicResource(track.lyricsSource) } : {}),
             sourceUrl: publicResource(track.sourceUrl) || '',
@@ -92,6 +95,7 @@ export function normalizeCardConfig(raw) {
     for(const scene of sceneData.sceneSet?.scenes||[])if(scene.ambient?.id&&!ambient.ambientLibrary?.some(row=>row.id===scene.ambient.id))throw new Error('随卡场景引用的环境音缺失。');
     return {
         ...ambient,
+        ...(raw.collageAssets!==undefined?{collageAssets:normalizeCollageAssets(raw.collageAssets,portableImage)}:{}),
         id: raw.id,
         title: String(raw.title || '我的音乐').slice(0, 80),
         demo: raw.demo === true,

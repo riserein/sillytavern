@@ -5,7 +5,7 @@ export function createLyricReader({ view, scroller, lines, getDefaultFollow, get
     onTime = () => {}, getOffset = () => 0, onOffset = () => {}, isVisible = () => !view.hidden && !!view.getClientRects().length }) {
     const win = view.ownerDocument.defaultView, abort = new AbortController(), title = view.querySelector('[data-lyric-title]'), status = view.querySelector('[data-lyric-status]'), resume = view.querySelector('[data-action=resume-lyrics]');
     const immersive = view.ownerDocument.createElement('div'); immersive.className = 'stm-lyric-immersive'; immersive.hidden = true;
-    immersive.innerHTML = '<p data-immersive-current></p><p data-immersive-next></p>'; view.append(immersive);
+    immersive.innerHTML = '<p data-immersive-current><span data-lyric-original></span><span data-lyric-translation></span></p><p data-immersive-next><span data-lyric-original></span><span data-lyric-translation></span></p>'; view.append(immersive);
     const calibration = view.ownerDocument.createElement('details'); calibration.className = 'stm-lyric-calibration';
     calibration.innerHTML = '<summary>歌词时间校准 <output></output></summary><button type="button" class="stm-secondary" data-offset="-100">提前 0.1 秒</button><button type="button" class="stm-secondary" data-offset="100">延后 0.1 秒</button><button type="button" class="stm-secondary" data-offset="reset">重置校准</button><small>正值使歌词延后，不修改音频或原歌词时间戳。</small>';
     view.querySelector('header').append(calibration);
@@ -31,13 +31,14 @@ export function createLyricReader({ view, scroller, lines, getDefaultFollow, get
         status.textContent = !data.synced && mode === 'immersive' ? '无时间轴 · 阅读原文' : single ? '单句同步' : following ? '自动跟随' : '手动阅读';
         resume.hidden = single || following || index < 0;
         view.dataset.follow = String(following);
-        const text = data.lines[index]?.text || (index < 0 ? '等待歌词开始' : '');
-        if (single && text !== lastText) {
-            const current = immersive.querySelector('[data-immersive-current]'); current.textContent = text; lastText = text;
+        const text = data.lines[index]?.text || (index < 0 ? '等待歌词开始' : ''),translated=data.lines[index]?.translation||'',signature=text+'\0'+translated;
+        const paint=(node,original,translation)=>{node.querySelector('[data-lyric-original]').textContent=original;node.querySelector('[data-lyric-translation]').textContent=translation;node.classList.toggle('stm-has-translation',!!translation);};
+        if (single && signature !== lastText) {
+            const current = immersive.querySelector('[data-immersive-current]'); paint(current,text,translated); lastText = signature;
             current.getAnimations?.().forEach(item => item.cancel());
             if (!reduced.matches) current.animate?.([{ opacity: .85, transform: 'translateY(6px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 300, easing: 'ease-out' });
         }
-        immersive.querySelector('[data-immersive-next]').textContent = single && reading.nextLine !== false ? data.lines[index + 1]?.text || '' : '';
+        paint(immersive.querySelector('[data-immersive-next]'),single&&reading.nextLine!==false?data.lines[index+1]?.text||'':'',single&&reading.nextLine!==false?data.lines[index+1]?.translation||'':'');
         calibration.querySelector('output').textContent = (getOffset() / 1000).toFixed(1) + ' 秒';
         calibration.hidden = !data.synced;
         schedule();

@@ -19,6 +19,7 @@ export function lyricDocument(text){
   else rows.push({id:index+':0',line:index,at:0,start:0,end:0,text:raw.replace(/^\uFEFF/,''),time:null,original:''});
   if(/\[(?:-\d|\d+:)/.test(raw)&&!matches.length)issues.push({line:index+1,kind:'error',message:'无效或负数时间戳'});
  });
+ if(rows.reduce((n,row)=>n+row.text.length,0)>200000)throw new Error('多时间戳展开超过 200,000 字符；原文保留，请先减少重复时间戳再编辑。');
  if(rows.length>MAX_LYRIC_ROWS)throw new Error('歌词时间轴超过 1,200 行，未丢弃任何行。');
  const offsets=[...text.matchAll(/\[offset:([^\]]*)\]/gi)];
  if(offsets.length>1||offsets.some(m=>!/^[-+]?\d+$/.test(m[1])))issues.push({line:0,kind:'error',message:'offset 格式无效或有多个值'});

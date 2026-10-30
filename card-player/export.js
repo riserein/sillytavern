@@ -1,3 +1,5 @@
+import {prepareCollagePackage} from './collage-transport.js';
+import {portableTrackTranslation} from '../translations.js';
 import {prepareAmbientPackage} from './ambient-transport.js';
 import {checksum} from '../data/checksum.js';
 import {selectedAmbient} from '../ambient.js';
@@ -58,7 +60,7 @@ function checkedImage(blob) {
 }
 /** Reads copies only. No writes to the library, playlist or IndexedDB. */
 export async function prepareCardPackage(
-    { id, title, tracks, appearance, volume, mode, transitionDuration, reading, lyricOffsets, ambientLibrary=[], soundscape, recipientDisplay, startCollapsed, sceneSet:sourceScenes },
+    { id, title, tracks, appearance, volume, mode, transitionDuration, reading, lyricOffsets, ambientLibrary=[], soundscape, collageDesign, recipientDisplay, startCollapsed, sceneSet:sourceScenes },
     {
         getBlob,
         readFallback,
@@ -93,6 +95,7 @@ export async function prepareCardPackage(
         signal?.throwIfAborted();
         onProgress({ index, total: tracks.length, title: track.title });
         try {
+            const translated=portableTrackTranslation(track);
             let src;
             if (track.exportUrl) {
                 src = publicResource(track.exportUrl);
@@ -135,6 +138,7 @@ export async function prepareCardPackage(
                 src,
                 cover,
                 lyrics: track.lyrics,
+                ...(translated?{translation:translated}:{}),
                 lyricOffsetMs: lyricOffsets?.[track.id] ?? track.lyricOffsetMs,
                 lyricsSource: track.lyricsSource,
                 sourceUrl: track.sourceUrl || '',
@@ -153,6 +157,7 @@ export async function prepareCardPackage(
         const kind=assetId.startsWith('background:')?'background':'cover';sceneAssets[assetId]=await encodeBlob(add(checkedImage(image),kind,'场景'+(kind==='background'?'背景':'封面')));
     }
     const ambient=await prepareAmbientPackage({library:ambientLibrary,sceneSet:selected.sceneSet,preference:soundscape,mainHashes,getBlob,encodeBlob,probeAudio,signal,add,audioMime,checkedImage,maxAudioBytes:MAX_AUDIO_BYTES});
+    const collageAssets=await prepareCollagePackage(collageDesign,{getBlob,encodeBlob,add,checkedImage,signal});
     const theme = { ...appearance };
     if (theme.imageBlob || theme.imageId) {
         const image = theme.imageBlob || (await getBlob(theme.imageId));
@@ -178,6 +183,7 @@ export async function prepareCardPackage(
     signal?.throwIfAborted();
     const config = normalizeCardConfig({
         id,
+        ...(Object.keys(collageAssets).length?{collageAssets}:{}),
         title,
         tracks: ready,
         appearance: theme,
@@ -196,7 +202,7 @@ export async function prepareCardPackage(
 }
 export function buildCardExports(config, runtime, scriptId) {
     config = normalizeCardConfig(config);
-    if(config.sceneSet||config.ambientLibrary?.length)throw new Error('音乐场景与音景需要使用共享界面导出，不能套入旧经典播放器。');
+    if(config.sceneSet||config.ambientLibrary?.length||config.tracks.some(t=>t.translation))throw new Error('音乐场景、音景与双语歌词需要使用共享界面导出，不能套入旧经典播放器。');
     if (!runtime.includes('startCharacterPlayer') || runtime.includes('//# sourceMappingURL'))
         throw new Error('独立播放器文件不完整，请更新插件后刷新。');
     config.runtimeVersion = PLAYER_BUILD;

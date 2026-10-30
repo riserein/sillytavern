@@ -1,3 +1,4 @@
+import {normalizeCollage,collageReferences,validateCollage} from './collage-model.js';
 import { normalizeComponents } from "./components.js";
 /** Data only. A design cannot contain CSS, HTML, executable code or remote modules. */
 export const UI_VERSION = 1;
@@ -162,6 +163,7 @@ export function normalizeDesign(raw = {}) {
     raw = {};
   const input = raw.customization || {};
   const customization = {
+    journalMode:member(input.journalMode,['book','free'],'book'),
     journalTexture:number(input.journalTexture,.025,0,.08),
     journalPadding:number(input.journalPadding,16,12,28),
     journalRatio:number(input.journalRatio,.5,.35,.65),
@@ -236,6 +238,7 @@ export function normalizeDesign(raw = {}) {
     allowRecipientLayout: raw.allowRecipientLayout === true,
     recipientDisplay: member(raw.recipientDisplay, ["launcher", "docked", "collapsed"], "launcher"),
     customization,
+    ...(normalizeCollage(raw.collage)?{collage:normalizeCollage(raw.collage)}:{}),
   };
 }
 export function normalizeDesigns(rows) {
@@ -288,7 +291,7 @@ export function designReferences(settings) {
       ...(settings?.designs || []).map((row) => row.config),
       ...(settings?.roleDesigns || []).map((row) => row.config),
     ]
-      .map((config) => config?.customization?.iconId)
+      .flatMap((config) => [config?.customization?.iconId,...collageReferences(config)])
       .filter(Boolean),
   );
 }
@@ -321,6 +324,7 @@ export function validateTemplate(raw) {
     ].includes(raw.config.fontPreset)
   )
     throw new Error("设计字体类型不受支持。");
+  if(raw.config.collage)validateCollage(raw.config.collage);
   const components = raw.config.components;
   if (components) {
     const safe = normalizeComponents(components);
@@ -350,7 +354,7 @@ export function validateTemplate(raw) {
         "material",
         "body",
         "grooves",
-        "reelStyle", "nameplate", "journalBinding", "journalTab",
+        "reelStyle", "nameplate", "journalBinding", "journalTab", "journalMode",
         "launcherShape",
       ].includes(key) &&
       normalized.customization[key] !== value
@@ -407,6 +411,8 @@ export function validateTemplate(raw) {
       !/^data:image\/(?:png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(raw.icon))
   )
     throw new Error("设计图标格式或体积无效。");
+  if(raw.images!==undefined&&(!raw.images||typeof raw.images!=='object'||Array.isArray(raw.images)||Object.keys(raw.images).length>96||Object.entries(raw.images).some(([id,value])=>!collageReferences(normalized).has(id)||typeof value!=='string'||value.length>2800000||!/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(value))))throw new Error('拼贴模板图片格式或体积无效。');
+  for(const id of collageReferences(normalized))if(!raw.images?.[id])throw new Error('拼贴模板缺少图片。');
   return {
     name:
       String(raw.name || "导入的设计")
@@ -414,6 +420,7 @@ export function validateTemplate(raw) {
         .slice(0, 80) || "导入的设计",
     config: normalized,
     icon: raw.icon || null,
+    images: raw.images||{},
   };
 }
 export function randomColors(

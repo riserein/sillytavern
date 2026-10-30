@@ -51,8 +51,8 @@ test('unframed shell text stays readable over image extremes without changing sa
     }
 });
 test('new reading preferences normalize bounded data and old libraries retain their data', () => {
-    assert.deepEqual(normalizeReading(), { level: 'clear', lyricSize: 20, lineHeight: 1.9, autoFollow: true, lyricBackground: 'auto', displayMode: 'flow', nextLine: true });
-    assert.deepEqual(normalizeReading({ level: 'execute', lyricSize: Infinity, lineHeight: 0, autoFollow: false, lyricBackground: '<svg>' }), { level: 'clear', lyricSize: 20, lineHeight: 1.5, autoFollow: false, lyricBackground: 'auto', displayMode: 'flow', nextLine: true });
+    assert.deepEqual(normalizeReading(), { level: 'clear', lyricSize: 20, lineHeight: 1.9, autoFollow: true, lyricBackground: 'auto', displayMode: 'flow', nextLine: true, lyricLanguage:'both',translationSize:16,translationHeight:1.7,translationGap:6,originalColor:null,translationColor:null });
+    assert.deepEqual(normalizeReading({ level: 'execute', lyricSize: Infinity, lineHeight: 0, autoFollow: false, lyricBackground: '<svg>' }), { level: 'clear', lyricSize: 20, lineHeight: 1.5, autoFollow: false, lyricBackground: 'auto', displayMode: 'flow', nextLine: true, lyricLanguage:'both',translationSize:16,translationHeight:1.7,translationGap:6,originalColor:null,translationColor:null });
     const original = { tracks: [{ id: 'x', kind: 'local', title: '旧曲', lyrics: '[00:01]原始歌词' }], playlists: [{ id: 'l', name: '旧歌单', trackIds: ['x'], characterAvatars: ['old.png'] }], reading: { lyricSize: 26, level: 'high', autoFollow: false } };
     const next = normalizeSettings(original);
     assert.equal(next.tracks[0].lyrics, original.tracks[0].lyrics);

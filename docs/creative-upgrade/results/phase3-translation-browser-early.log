@@ -1,0 +1,64 @@
+
+Running 4 tests using 1 worker
+
+(node:350484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:350484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/translations.e2e.js:33:1 › TXT requires manual confirmation and real bilingual groups follow every display mode on one Audio (4.7s)
+  ✓  2 [desktop] › tests/translations.e2e.js:88:1 › time-axis preview and reordered timestamps retain original/translation correspondence (4.4s)
+  ✘  3 [desktop] › tests/translations.e2e.js:123:1 › untrusted translation text is literal and stale editors cannot clear a newer translation (7.9s)
+(node:350706) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:350706) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 [desktop] › tests/translations.e2e.js:149:1 › oversized timestamp expansion falls back to intact raw lyrics without interrupting playback (2.7s)
+
+
+  1) [desktop] › tests/translations.e2e.js:123:1 › untrusted translation text is literal and stale editors cannot clear a newer translation 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('#stm-translation-editor').locator('[data-translation-status]')
+    Expected substring: [32m"已保存"[39m
+    Received string:    [31m"原文或正式译文在编辑期间已改变，请重新读取；未覆盖新内容。"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 5000ms[22m
+    [2m  - waiting for locator('#stm-translation-editor').locator('[data-translation-status]')[22m
+    [2m    9 × locator resolved to <p role="status" class="stm-hint" data-translation-status="">原文或正式译文在编辑期间已改变，请重新读取；未覆盖新内容。</p>[22m
+    [2m      - unexpected value "原文或正式译文在编辑期间已改变，请重新读取；未覆盖新内容。"[22m
+
+
+      17 | });
+      18 | test('untrusted translation text is literal and stale editors cannot clear a newer translation',async({page})=>{
+    > 19 |  await fixture(page);const editor=await createTranslation(page),unsafe='<img src=x onerror="window.translationInjected=1">';await editor.locator('[data-translation-text]').first().fill(unsafe);await editor.locator('[data-translation-field=confirmed]').check();await editor.locator('[data-translation-action=save]').click();await expect(editor.locator('[data-translation-status]')).toContainText('已保存');await page.evaluate(()=>{app.settings.tracks[0].translation.source='另一个操作已经更新来源';});await editor.locator('[data-translation-action=clear]').click();await expect(editor.locator('[data-translation-status]')).toContainText('正式译文已改变');await editor.locator('[data-translation-action=close]').click();await page.getByRole('tab',{name:'播放',exact:true}).click();await page.locator('[data-action=toggle-lyrics]').click();await expect(page.locator('.stm-lyrics-lines [data-lyric-translation]').first()).toHaveText(unsafe);await expect(page.locator('.stm-lyrics-lines img')).toHaveCount(0);expect(await page.evaluate(()=>window.translationInjected)).toBeUndefined();await page.evaluate(()=>app.dispose());
+         |                                                                                                                                                                                                                                                                                                                                                                                              ^
+      20 | });
+      21 | test('oversized timestamp expansion falls back to intact raw lyrics without interrupting playback',async({page})=>{
+      22 |  await fixture(page);await details(page);const lyrics='[00:01]'.repeat(1100)+'x'.repeat(30000);await page.locator('[data-role=lyrics-file]').setInputFiles({name:'expanded.lrc',mimeType:'text/plain',buffer:Buffer.from(lyrics)});await page.locator('[data-action=close-details]').filter({hasText:'×'}).click();await page.getByRole('tab',{name:'播放',exact:true}).click();await page.locator('[data-action=play]').click();await page.locator('[data-action=toggle-lyrics]').click();await expect(page.locator('[data-lyric-note]')).toContainText('完整原文');expect(await page.locator('.stm-raw-lyrics').textContent()).toBe(lyrics);expect(await page.evaluate(()=>app.settings.tracks[0].lyrics.length)).toBe(lyrics.length);await expect.poll(()=>page.evaluate(()=>app.audio.currentTime)).toBeGreaterThan(.1);await page.evaluate(()=>app.dispose());expect(await page.evaluate(()=>liveURLs.size)).toBe(0);
+        at /workspace/sillytavern/tests/translations.e2e.js:19:382
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/translations/translations.e2e.js-untrus-e062d-t-clear-a-newer-translation-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/translations/translations.e2e.js-untrus-e062d-t-clear-a-newer-translation-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/translations/translations.e2e.js-untrus-e062d-t-clear-a-newer-translation-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/translations/translations.e2e.js-untrus-e062d-t-clear-a-newer-translation-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop] › tests/translations.e2e.js:123:1 › untrusted translation text is literal and stale editors cannot clear a newer translation 
+  3 passed (21.6s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

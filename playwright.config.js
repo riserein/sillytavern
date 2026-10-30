@@ -6,7 +6,7 @@ export default defineConfig({
     outputDir: 'test-results/full',
     testMatch: '*.e2e.js',
     // Card tests need Tavern Helper; virtual-mobile tests need touch projects.
-    testIgnore: ['**/creative.e2e.js', '**/ambient.e2e.js', '**/card-*.e2e.js', '**/mobile-virtual.e2e.js', '**/reading.e2e.js', '**/text-surfaces.e2e.js', '**/music-scenes.e2e.js', '**/lyrics-modes.e2e.js'],
+    testIgnore: ['**/journal-create.e2e.js', '**/translations.e2e.js', '**/creative.e2e.js', '**/ambient.e2e.js', '**/card-*.e2e.js', '**/mobile-virtual.e2e.js', '**/reading.e2e.js', '**/text-surfaces.e2e.js', '**/music-scenes.e2e.js', '**/lyrics-modes.e2e.js'],
     workers: 1,
     timeout: 45000,
     use: {

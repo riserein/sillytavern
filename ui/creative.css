@@ -47,3 +47,65 @@
 .stm-player[data-layout=cassette] .stm-soundscape{border-inline:2px solid var(--ui-divider);padding-inline:12px}
 .stm-player[data-layout=journal] .stm-soundscape{font-family:inherit;border-top-style:dashed}
 .stm-sound-controls .stm-check-label{grid-column:1/-1}
+
+.stm-player .stm-translation-editor{background:var(--read-surface);color:var(--read-body);z-index:65}
+.stm-translation-editor .stm-tool-scroll>label:not(.stm-check-label){display:block;margin:14px 0}
+.stm-translation-editor textarea{width:100%;box-sizing:border-box}
+.stm-translation-match{margin:16px 0;padding:0;list-style:none}.stm-translation-match li{padding:12px 0;border-bottom:1px solid var(--ui-divider)}
+.stm-translation-match p{background:transparent;white-space:pre-wrap;overflow-wrap:anywhere}
+.stm-translation-match select{width:100%;margin-bottom:10px}
+.stm-player [data-lyric-original]{color:var(--read-original,var(--read-lyrics))}
+.stm-player [data-lyric-translation]{display:block;font-size:var(--read-translation-size,16px);line-height:var(--read-translation-height,1.7);color:var(--read-translation,var(--read-secondary));margin-top:var(--read-translation-gap,6px);white-space:pre-wrap}
+.stm-player [data-lyric-translation]:empty{display:none}
+.stm-player[data-lyric-language=original] [data-lyric-translation]{display:none}
+.stm-player[data-lyric-language=translation] .stm-has-translation [data-lyric-original]{display:none}
+.stm-player .stm-current-lyric [data-lyric-original],.stm-player .stm-current-lyric [data-lyric-translation]{color:var(--read-current)}
+.stm-player .stm-raw-lyrics{white-space:pre-wrap;overflow-wrap:anywhere}
+.stm-player .stm-axis-translation{display:block;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--read-secondary)}
+.stm-axis-words{overflow-wrap:anywhere}
+
+.stm-player [data-immersive-current] [data-lyric-original],.stm-player [data-immersive-current] [data-lyric-translation]{color:var(--read-current)}
+
+.stm-translation-credit{padding:5px 0;font-size:12px;color:var(--read-secondary)}
+.stm-translation-credit p{max-height:100px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:transparent}
+/* One continuous reading region, never a background on paragraph/label text. */
+.stm-private-notes nav,.stm-collage>nav{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px}
+.stm-private-notes textarea{width:100%;min-height:130px;resize:vertical}
+.stm-private-notes ol{padding:0;list-style:none;max-height:220px;overflow:auto}
+.stm-private-notes li button{width:100%;text-align:start;overflow-wrap:anywhere;background:transparent;border:0}
+.stm-collage{position:relative;isolation:isolate;min-width:0}
+.stm-collage-canvas{position:relative;width:100%;isolation:isolate;min-width:0}
+.stm-collage-reading-region{position:absolute;background:color-mix(in srgb,var(--read-surface) 94%,transparent);pointer-events:none;z-index:100;border-radius:8px}
+.stm-collage-item{position:absolute;min-width:0;min-height:0;overflow:auto;overflow-wrap:anywhere;white-space:pre-wrap;color:var(--read-text);background:transparent}
+.stm-collage-item:not([data-type=image]):not([data-type=line]):not([data-type=cover]){z-index:calc(101 + var(--collage-z,10))!important}
+.stm-collage-item[data-type=image] img{width:100%;height:100%;object-fit:contain;display:block}
+.stm-collage-item[data-type=line] hr{border:0;border-top:1px solid currentColor;width:100%;margin:0}
+.stm-player.stm-night-ui .stm-collage-item .stm-cover-stage{width:100%;height:100%;max-width:100%;margin:0;box-shadow:none;aspect-ratio:auto}
+.stm-collage-item .stm-cover-image{width:100%;height:100%;object-fit:contain}
+.stm-player.stm-night-ui .stm-collage-item .stm-player-controls{display:block}
+.stm-player.stm-night-ui[data-reading] .stm-collage-item .stm-lyrics-view{position:relative;inset:auto;width:100%;height:100%;padding:0;border-radius:0;min-height:0}
+.stm-player.stm-night-ui .stm-collage-item .stm-transport{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.stm-collage-item .stm-volume{width:100%;float:none}
+.stm-collage-item .stm-options{float:none;flex-wrap:wrap}
+.stm-collage-item .stm-lyrics-scroll{min-height:0}
+.stm-collage-item ol{list-style:none;margin:0;padding:0}
+.stm-collage-item ol button{width:100%;text-align:start;background:transparent;border:0;white-space:normal}
+.stm-collage-item[data-type=title]{font-weight:600}
+.stm-player:has(.stm-collage:not([hidden])) [data-view=playback]>.stm-now{display:none}
+.stm-collage-item[data-type=note]{white-space:normal}
+.stm-collage-item[data-type=note]>section{height:100%;overflow:auto}
+.stm-player[data-editor-preview=true] .stm-collage-canvas[data-edit=true]{background-image:linear-gradient(#8882 1px,transparent 1px),linear-gradient(90deg,#8882 1px,transparent 1px);background-size:5% 5%;touch-action:none}
+.stm-collage-canvas[data-edit=true] .stm-collage-item{outline:1px dashed var(--read-secondary)}
+.stm-collage-canvas[data-edit=true] .stm-collage-item[data-selected=true]{outline:2px solid var(--read-accent)}
+.stm-collage-canvas[data-edit=true] .stm-collage-item>*{pointer-events:none}
+.stm-collage-canvas[data-edit=true] .stm-collage-item{touch-action:none;cursor:move}
+.stm-collage-canvas[data-edit=true] .stm-collage-item::after{content:'';position:absolute;bottom:0;right:0;width:18px;height:18px;border-right:3px solid var(--read-accent);border-bottom:3px solid var(--read-accent)}
+.stm-collage-canvas[data-edit=true]::after{content:'';position:absolute;inset:0 50% 0 auto;pointer-events:none;border-right:1px dashed var(--read-accent);z-index:200}
+.stm-collage-tools{display:grid;gap:10px}
+.stm-collage-tools label{display:grid;gap:5px}
+.stm-collage-tools select[multiple]{min-height:120px}
+.stm-collage>nav button,.stm-private-notes nav button{font:inherit;font-size:13px;padding:6px 2px;border:0;border-bottom:1px solid transparent;color:var(--read-secondary);background:transparent}
+.stm-collage>nav button[aria-pressed=true],.stm-private-notes nav button[aria-pressed=true]{color:var(--read-accent);border-bottom-color:currentColor}
+.stm-collage-item[data-type=cover]{z-index:100!important}
+.stm-collage-reading-region{z-index:99}
+.stm-collage[data-separate-title=true] .stm-player-controls .stm-now{display:none}

@@ -1,3 +1,7 @@
+import {checkCollageImages} from '../ui/raster.js';
+import {collageReferences,validateCollage} from '../ui/collage-model.js';
+import {validatePrivateNotes} from '../private-notes.js';
+import {normalizeTranslation} from '../translations.js';
 import {ambientReferences,ambientShapeKnown,normalizeAmbientLibrary,normalizeSoundscape} from '../ambient.js';
 import {normalizeSceneSet,sceneAssetReferences} from '../music-scenes.js';
 import {normalizeSettings} from '../core.js';
@@ -8,7 +12,7 @@ import {normalizePlatformTrack} from '../platforms/catalog.js';
 import {PLAYER_BUILD} from '../card-player/quality.js';
 import {normalizeDesign,designReferences} from '../ui/config.js';
 const encoder=new TextEncoder();
-const TRACK_KEYS=['id','kind','title','artist','album','url','coverId','lyrics','lyricOriginal','lyricsSource','lyricOffsetMs','fallbackCover','platform','platformTrackId','remoteId','sourceUrl','playback','cover','duration','metadataStatus','restriction'];
+const TRACK_KEYS=['id','kind','title','artist','album','url','coverId','lyrics','translation','lyricOriginal','lyricsSource','lyricOffsetMs','fallbackCover','platform','platformTrackId','remoteId','sourceUrl','playback','cover','duration','metadataStatus','restriction'];
 const FORM_KEYS=['stm-maker-title','stm-maker-collection','stm-maker-theme','stm-maker-surface','accent','background','text','color:accent','color:background','color:text','opacity','font','font-credit','collapsed','recipient-display','stm-maker-recipient-display','shared-design'];
 const SOURCE_KEYS=['backgroundId','fontPreset','fontId','fontName','volume','mode','transitionDuration','uiDesign','reading','ambientLibrary','soundscape','coverColorMode','lyricOffsets','sceneSet','theme','colorScheme','surface','maskOpacity','customColors','clickEffects'];
 const pick=(object,keys)=>Object.fromEntries(keys.filter(key=>Object.hasOwn(object||{},key)).map(key=>[key,object[key]]));
@@ -24,7 +28,7 @@ function cleanUrl(value,warnings) {
     } catch {throw new Error('备份中发现不能跨设备使用的远程地址，请先修正对应歌曲。');}
 }
 function trackMetadata(track,warnings) {
-    const row=pick(track,TRACK_KEYS);
+    const row=pick(track,TRACK_KEYS);if(track.translation&&canonical(normalizeTranslation(track.translation))!==canonical(track.translation))throw new Error('译文结构无效，未生成部分备份。');
     for(const key of ['url','sourceUrl','cover','lyricsSource'])if(row[key])row[key]=cleanUrl(row[key],warnings);
     if(track.license){row.license=pick(track.license,['code','url','attribution','sourceUrl']);for(const key of ['url','sourceUrl'])if(row.license[key])row.license[key]=cleanUrl(row.license[key],warnings);}
     return row;
@@ -50,18 +54,21 @@ export function draftReferences(project) {
     for(const track of project.tracks||[]){if(track.kind==='local'&&!track.exportBlob&&!track.exportUrl)ids.add(track.id);if(track.coverId&&!track.exportCover)ids.add(track.coverId);}
     if(project.sourceSettings?.backgroundId&&!project.assets?.imageBlob)ids.add(project.sourceSettings.backgroundId);
     if(project.sourceSettings?.fontPreset==='custom'&&project.sourceSettings?.fontId&&!project.assets?.fontBlob)ids.add(project.sourceSettings.fontId);
-    if(!project.assets?.iconBlob)for(const id of designReferences(project.sourceSettings))ids.add(id);
+    const icon=project.sourceSettings?.uiDesign?.customization?.iconId;if(icon&&!project.assets?.iconBlob)ids.add(icon);for(const id of collageReferences(project.sourceSettings?.uiDesign))if(!project.assets?.collageBlobs?.[id])ids.add(id);
     for(const id of sceneAssetReferences([project.sourceSettings?.sceneSet||{}]))if(!project.assets?.sceneBlobs?.[id]&&!id.endsWith(':original'))ids.add(id);
     for(const id of ambientReferences(project.sourceSettings?.ambientLibrary))if(!project.assets?.ambientBlobs?.[id])ids.add(id);
     return ids;
 }
-export async function createBackup({settings,store,projects=[],version=PLAYER_BUILD,signal,onProgress=()=>{}}) {
+export async function createBackup({settings,store,projects=[],version=PLAYER_BUILD,privateNotes,signal,onProgress=()=>{}}) {
     if(!ambientShapeKnown(settings.ambientLibrary))throw new Error('环境音包含未知、无效或超限引用，未生成部分备份。');
+    for(const config of [settings.uiDesign,settings.personalDesign,...(settings.designs||[]).map(r=>r.config),...(settings.roleDesigns||[]).map(r=>r.config),...projects.map(p=>p.sourceSettings?.uiDesign)])if(config?.collage)validateCollage(config.collage);
+    for(const track of [...(settings.tracks||[]),...projects.flatMap(p=>p.tracks||[])])if(track.translation&&canonical(normalizeTranslation(track.translation))!==canonical(track.translation))throw new Error('译文结构无效，未静默丢弃生成备份。');
     const warnings=new Set(),snapshot=safeSettings(settings,warnings),files=new Map(),resources=[];
     assertScenesPreserved(settings,snapshot);
     if(!Array.isArray(projects)||projects.length>10000)throw new Error('制作项目超过备份版本支持的数量，未生成部分备份。');
     for(const key of ['tracks','playlists','fonts','designs','roleDesigns'])if(Array.isArray(settings[key])&&settings[key].length!==snapshot[key].length)throw new Error('当前资料包含超限、重复或无效条目，未静默删减生成备份；请先核对曲库和设计。');
     const all=new Map(await store.entries());
+    for(const config of [settings.uiDesign,settings.personalDesign,...(settings.designs||[]).map(r=>r.config),...(settings.roleDesigns||[]).map(r=>r.config)])await checkCollageImages(config,id=>all.get(id));
     const add=async(blob,label)=>{
         signal?.throwIfAborted();
         if(!(blob instanceof Blob))throw new Error(`${label} 文件缺失，未生成不完整备份。`);
@@ -102,11 +109,14 @@ export async function createBackup({settings,store,projects=[],version=PLAYER_BU
             for(const id of sceneAssetReferences([set])){const blob=project.assets?.sceneBlobs?.[id]||all.get(id);if(blob)copy.assets.sceneBlobs[id]=await add(blob,'项目场景图片');else if(!id.endsWith(':original'))throw new Error('项目场景图片缺失，未生成不完整备份。');}
         }
         copy.assets.ambientBlobs={};for(const id of ambientReferences(copy.sourceSettings.ambientLibrary)){const blob=project.assets?.ambientBlobs?.[id]||all.get(id);if(!blob)throw new Error('制作项目环境音或封面缺失，未生成部分备份。');copy.assets.ambientBlobs[id]=await add(blob,'项目音景资源');}
+        await checkCollageImages(copy.sourceSettings.uiDesign,id=>project.assets?.collageBlobs?.[id]||all.get(id));
+        copy.assets.collageBlobs={};for(const id of collageReferences(copy.sourceSettings.uiDesign)){const blob=project.assets?.collageBlobs?.[id]||all.get(id);if(!blob)throw new Error('项目拼贴图片缺失，未生成部分备份。');copy.assets.collageBlobs[id]=await add(blob,'项目拼贴图片');}
         drafts.push(copy);
         onProgress({phase:'projects',done:drafts.length,total:projects.length});
     }
     const catalog=(settings.builtinCatalog?.tracks||[]).filter(track=>settings.currentId===track.id||settings.favorites?.some(row=>row.trackId===track.id)||settings.playlists.some(list=>list.trackIds.includes(track.id))||settings.roleScenes?.some(group=>group.scenes.some(scene=>scene.trackIds.includes(track.id)))).map(track=>trackMetadata(track,warnings));
     const manifest={format:'riserein-music-backup',version:1,appVersion:version,createdAt:new Date().toISOString(),settings:snapshot,catalog,projects:drafts,resources,warnings:[...warnings],remoteAudio:'metadata-and-URLs-only; not offline audio'};
+    if(privateNotes!==undefined)manifest.privateNotes=validatePrivateNotes(privateNotes);
     const manifestBlob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
     if(manifestBlob.size>64*1024*1024)throw new Error('备份目录超过 64 MiB 上限，未生成部分备份。');
     const manifestHash=await checksum(manifestBlob,{signal}),sidecar=new Blob([manifestHash.sha256+'\n'],{type:'text/plain'}),sideHash=await checksum(sidecar,{signal});
@@ -123,6 +133,8 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
     const manifest=JSON.parse(await meta.blob.text());
     if(manifest.format!=='riserein-music-backup'||manifest.version!==1)throw new Error('不支持此备份版本，请使用兼容版本播放器。');
     if(!plain(manifest.settings)||!Array.isArray(manifest.settings.tracks)||manifest.settings.tracks.length>200||!Array.isArray(manifest.settings.playlists)||manifest.settings.playlists.length>50||!Array.isArray(manifest.projects)||manifest.projects.length>10000||!Array.isArray(manifest.resources)||manifest.resources.length>10000)throw new Error('备份目录结构或数量超限。');
+    if(manifest.privateNotes!==undefined)manifest.privateNotes=validatePrivateNotes(manifest.privateNotes);
+    for(const track of [...manifest.settings.tracks,...manifest.projects.flatMap(p=>p.tracks||[])])if(track.translation&&canonical(normalizeTranslation(track.translation))!==canonical(track.translation))throw new Error('译文结构无效，未丢弃翻译恢复。');
     const referenced=new Map(),resourceIds=new Set();
     const expectResource=row=>{
         if(!plain(row)||typeof row.path!=='string'||row.path!==`assets/${row.sha256}.bin`||!Number.isSafeInteger(row.bytes)||row.bytes<0||row.bytes>128*1024*1024||typeof row.type!=='string'||row.type.length>200)throw new Error('备份资源记录无效。');
@@ -134,6 +146,7 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
     for(const project of manifest.projects){
         if(typeof project.id!=='string'||!project.id||projects.has(project.id)||!Array.isArray(project.tracks)||project.tracks.length>200||!plain(project.form)||!plain(project.sourceSettings))throw new Error('备份项目结构或 ID 无效。');
         projects.add(project.id);
+        if(project.sourceSettings.uiDesign?.collage)validateCollage(project.sourceSettings.uiDesign.collage);const collageRefs=collageReferences(project.sourceSettings.uiDesign);for(const [id,row]of Object.entries(project.assets?.collageBlobs||{})){if(!collageRefs.has(id))throw new Error('项目拼贴资源有未知引用。');expectResource(row);}for(const id of collageRefs)if(!project.assets?.collageBlobs?.[id])throw new Error('项目拼贴图片缺失。');
         if(project.sourceSettings.sceneSet){const set=normalizeSceneSet(project.sourceSettings.sceneSet);assertScenesPreserved({roleScenes:[{avatar:'project',...project.sourceSettings.sceneSet}]},{roleScenes:[{avatar:'project',...set}]});const refs=sceneAssetReferences([set]);for(const [id,row]of Object.entries(project.assets?.sceneBlobs||{})){if(!refs.has(id))throw new Error('项目场景资源有未知引用。');expectResource(row);}for(const id of refs)if(!id.endsWith(':original')&&!project.assets?.sceneBlobs?.[id])throw new Error('项目场景图片缺失。');}
         const ambient=normalizeAmbientLibrary(project.sourceSettings.ambientLibrary);if(ambient.length!==(project.sourceSettings.ambientLibrary||[]).length)throw new Error('项目环境音配置无效。');const refs=ambientReferences(ambient);for(const [id,row]of Object.entries(project.assets?.ambientBlobs||{})){if(!refs.has(id))throw new Error('项目环境音存在未知资源引用。');expectResource(row);}for(const id of refs)if(!project.assets?.ambientBlobs?.[id])throw new Error('项目环境音文件缺失。');
         for(const track of project.tracks){if(track.exportBlob)expectResource(track.exportBlob);if(track.exportCover)expectResource(track.exportCover);}
@@ -152,6 +165,7 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
     manifest.catalog=manifest.catalog.map(track=>trackMetadata(track,warnings));
     const normalizedCatalog=manifest.catalog.map(normalizePlatformTrack);
     if(normalizedCatalog.some((track,i)=>!track||track.id!==manifest.catalog[i].id)||new Set(normalizedCatalog.map(t=>t.id)).size!==normalizedCatalog.length)throw new Error('默认来源记录无效或重复。');
+    for(const config of [manifest.settings.uiDesign,manifest.settings.personalDesign,...(manifest.settings.designs||[]).map(r=>r.config),...(manifest.settings.roleDesigns||[]).map(r=>r.config)])if(config?.collage)validateCollage(config.collage);
     const safe=safeSettings(manifest.settings,warnings,{version:1,tracks:manifest.catalog});
     assertScenesPreserved(manifest.settings,safe);
     if(safe.ambientLibrary.length!==(manifest.settings.ambientLibrary||[]).length)throw new Error('环境音包含无效、重复或超限数据，未丢弃资源。');
@@ -167,9 +181,11 @@ export async function inspectBackup(file,{signal,onProgress=()=>{}}={}) {
         })};
         for(const key of ['imageBlob','imageOriginalBlob','fontBlob','iconBlob'])if(project.assets?.[key])row.assets[key]=binary(project.assets[key]);
         if(row.sourceSettings.sceneSet){row.sourceSettings.sceneSet=normalizeSceneSet(row.sourceSettings.sceneSet);row.assets.sceneBlobs=Object.fromEntries(Object.entries(project.assets?.sceneBlobs||{}).map(([id,resource])=>[id,binary(resource)]));}
+        row.assets.collageBlobs=Object.fromEntries(Object.entries(project.assets?.collageBlobs||{}).map(([id,resource])=>[id,binary(resource)]));
         row.assets.ambientBlobs=Object.fromEntries(Object.entries(project.assets?.ambientBlobs||{}).map(([id,resource])=>[id,binary(resource)]));
         if(row.sourceSettings.uiDesign)row.sourceSettings.uiDesign=normalizeDesign(row.sourceSettings.uiDesign);
         return row;
     });
+    const rawAssets=new Map(manifest.resources.map(row=>[row.id,binary(row)]));for(const config of [safe.uiDesign,safe.personalDesign,...safe.designs.map(r=>r.config),...safe.roleDesigns.map(r=>r.config)])await checkCollageImages(config,id=>rawAssets.get(id));for(const project of hydrated)await checkCollageImages(project.sourceSettings.uiDesign,id=>project.assets.collageBlobs?.[id]);
     return {manifest:{...manifest,settings:safe,warnings:[...warnings]},projects:hydrated,assets:manifest.resources.map(row=>[row.id,binary(row)]),hash:digest.sha256,bytes:file.size,remoteTracks:safe.tracks.filter(t=>t.kind!=='local').length};
 }

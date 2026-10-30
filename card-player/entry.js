@@ -42,6 +42,7 @@ export function createCharacterScope() {
         roleId,
         scriptId,
         preferences: accountPreferences(context,authorize),
+        async notebookAccount(){await authorize();return accountSession.account;},
         currentRole,
         helperRecovery: typeof getButtonEvent === 'function' ? { scriptId, available: () => { const visit = rows => rows.some(row => row.type === 'folder' ? row.enabled && visit(row.scripts || []) : row.id === scriptId && row.enabled && row.button?.enabled && row.button.buttons?.some(button => button.name === '显示/隐藏角色音乐' && button.visible)); return visit(getScriptTrees({type:'character'})); }, subscribe(handler) { const event = getButtonEvent('显示/隐藏角色音乐'); eventOn(event, handler); return () => eventRemoveListener(event, handler); } } : null,
         onRoleChange(handler) {
@@ -61,6 +62,7 @@ export function createCharacterScope() {
             if(!accountSession){
                 const session={controller:new AbortController(),callbacks:new Set()};accountSession=session;
                 session.ready=identifyAccount({fetcher:hostWindow.fetch.bind(hostWindow),headers:context.getRequestHeaders?.()||{},signal:session.controller.signal}).then(account=>{
+                    session.account=account;
                     if(!session.controller.signal.aborted)session.guard=createAccountGuard({account,context,host:hostWindow,onMismatch:()=>{for(const callback of [...session.callbacks])callback();}});
                 });void session.ready.catch(()=>{});
             }

@@ -43,7 +43,7 @@ try {
         '--define:import.meta.url="https://rscp.invalid/index.js"',
     ]);
     const compiled = await readFile(join(temporary, 'shared.js'), 'utf8');
-    if (/indexedDB\.open|api\/extensions|createNativeCardExport|createAssetRetirement|api\/settings\/save|PLAYER STUDIO/.test(compiled))
+    if (/riserein-sillytavern-music|riserein-card-player-projects|CardProjectStore|api\/extensions|createNativeCardExport|createAssetRetirement|api\/settings\/save|PLAYER STUDIO/.test(compiled))
         throw new Error('Portable target still contains full-plugin storage or authoring entry');
     const css =
         (await readFile(join(root, 'style.css'), 'utf8')) +
@@ -60,12 +60,12 @@ try {
     build('card-player/native-entry.js', 'native-runtime.js', ['--global-name=RisereinNativePlayer']);
     const license = await readFile(join(root, 'LICENSE'), 'utf8');
     const output = `/*\n${license}*/\n` + (await readFile(join(temporary, 'native-runtime.js'), 'utf8'));
-    if (output.includes('//# sourceMappingURL') || /indexedDB\.open|import\(/.test(output))
+    if (output.includes('//# sourceMappingURL') || /riserein-sillytavern-music|riserein-card-player-projects|CardProjectStore|import\(/.test(output))
         throw new Error('Unexpected external runtime dependency');
     await writeFile(join(temporary, 'native.ready'), output);
     await rename(join(temporary, 'native.ready'), join(dist, 'native-runtime.js'));
     console.log(
-        `Built shared-UI native card player (${Buffer.byteLength(output)} bytes). No full plugin, API search or IndexedDB dependency.`,
+        `Built shared-UI native card player (${Buffer.byteLength(output)} bytes). No full plugin or music/project database dependency; isolated private-text notebook only.`,
     );
 } finally {
     await rm(temporary, { recursive: true, force: true });

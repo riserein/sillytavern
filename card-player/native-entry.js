@@ -1,3 +1,4 @@
+import {mapCollageAssets,collageReferences} from '../ui/collage-model.js';
 import { PLAYER_BUILD } from './quality.js';
 import { createCharacterScope } from './entry.js';
 import { watchRoleLifetime } from './lifecycle.js';
@@ -62,7 +63,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
                 id: track.id,
                 title: track.title,
                 artist: track.artist, album:track.album,
-                lyrics: track.lyrics,
+                lyrics: track.lyrics,translation:track.translation,
                 lyricOffsetMs: track.lyricOffsetMs,
                 lyricsSource: track.lyricsSource,
                 coverId,
@@ -83,6 +84,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
             playlist.coverId = coverFor(playlist.cover);
             delete playlist.cover;
         }
+        const collageIds=new Map();for(const [id,data]of Object.entries(config.collageAssets||{}))collageIds.set(id,coverFor(data));
         covers.clear();
         const settings = {
             ...payload.ui,
@@ -95,6 +97,8 @@ export function mountNativePlayer(payload, scope, options = {}) {
             builtinHidden: true,
             visibility: { state: (payload.ui?.uiDesign?.recipientDisplay || config.recipientDisplay) === 'docked' ? 'docked' : 'normal' },
         };
+        for(const id of collageReferences(settings.uiDesign))if(!collageIds.has(id))throw new Error('随卡拼贴图片缺失。');
+        settings.uiDesign=mapCollageAssets(settings.uiDesign,id=>collageIds.get(id));
         if(config.sceneSet){
             settings.roleScenes=[{avatar,...config.sceneSet}];
             const first=config.sceneSet.scenes.find(s=>s.id===config.sceneSet.defaultSceneId)?.trackIds[0];if(first)settings.currentId=first;
@@ -204,6 +208,7 @@ export function mountNativePlayer(payload, scope, options = {}) {
             mounted = mountSharedPlayer(own.environment, {
                 context,
                 store,
+                notebookAuthorize:scope.notebookAccount,notebookScope:{script:scope.scriptId,project:config.id},
                 availableFonts: payload.fontFile ? [payload.fontFile] : [],
                 getInputElement:()=>doc.querySelector('#send_form'),
                 visibilityHostDocument: doc, recoveryId: scope.roleId + ':' + scope.scriptId, helperRecovery: scope.helperRecovery, previewRecovery: scope.roleId === 'preview',

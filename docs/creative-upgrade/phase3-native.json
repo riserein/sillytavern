@@ -1,0 +1,26 @@
+{
+  "status": "incomplete-or-failed",
+  "version": "2.2.0",
+  "largeFixture": false,
+  "coverage": "partial-or-selected-tests; see runner report for overall status",
+  "verifiedAt": "2026-10-30T08:30:49.442Z",
+  "runtimeSha256": "a01ab13cdaa1625b76470633927d1f0682ec0b84c061ca41babfe9ba8fc591b5",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch",
+      "status": "failed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [],
+  "performanceRecords": []
+}

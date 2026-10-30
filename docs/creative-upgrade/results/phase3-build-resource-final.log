@@ -1,0 +1,5 @@
+
+> sillytavern-music-player@2.3.0 build:card-native
+> node scripts/build-native-player.mjs
+
+Built shared-UI native card player (474043 bytes). No full plugin or music/project database dependency; isolated private-text notebook only.
