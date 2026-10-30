@@ -67,7 +67,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
         const characters=context.characters||[];
         for(const [i,avatar]of avatars.entries()){
             const label=document.createElement('label');label.textContent=`原绑定：${avatar} → `;
-            const select=document.createElement('select');select.id='stm-restore-bind-'+i;select.dataset.sourceAvatar=avatar;select.append(new Option('暂不绑定，导入后再选择',''));
+            const select=document.createElement('select');select.id='stm-restore-bind-'+i;select.dataset.sourceAvatar=avatar;select.append(new Option('暂不绑定，导入后再选择',''));if(avatar==='unbound'&&backup.manifest.privateNotes?.some(n=>n.role==='unbound')){select.append(new Option('公共播放器（不绑定角色卡）','unbound'));select.value='unbound';}
             for(const card of characters)select.append(new Option(String(card.name||card.avatar),card.avatar));
             select.addEventListener('change',invalidate,{signal:listeners.signal});label.append(select);q('bindings').append(label);
         }
@@ -77,7 +77,7 @@ export function createDataPanel({panel,settings,store,journal,context,account,as
         if(!backup)throw new Error('请先选择并校验备份文件。');
         await flushMaker();
         const bindingMap=Object.fromEntries([...q('bindings').querySelectorAll('select')].map(node=>[node.dataset.sourceAvatar,node.value]));
-        const allowed=new Set((context.characters||[]).map(c=>c.avatar));
+        const allowed=new Set((context.characters||[]).map(c=>c.avatar));if(backup.manifest.privateNotes?.some(n=>n.role==='unbound'))allowed.add('unbound');
         if(Object.values(bindingMap).some(v=>v&&!allowed.has(v)))throw new Error('角色列表已改变，请重新选择绑定。');
         const next=await makeRestorePlan({backup,current:settings,store,projects:await projects.list(),mode:q('mode').value,restorePreferences:q('preferences').checked,bindingMap,signal,onProgress:progress});
         const capacity=await checkCapacity(next.bytesToWrite,estimate);plan=next;

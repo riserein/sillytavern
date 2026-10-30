@@ -1,3 +1,4 @@
+const listeningEvidence=process.env.ST_LISTENING_EVIDENCE||'docs/v2/listening';
 import { test, expect } from '@playwright/test';
 import { readFile, mkdir } from 'node:fs/promises';
 const prefix = '/scripts/extensions/third-party/sillytavern/';
@@ -38,8 +39,8 @@ test('actual host favorites persist, ZIP includes them, batch addition/deletion 
     await tab(page, '外观'); const saved=page.waitForResponse(r=>r.url().endsWith('/api/settings/save')&&r.ok()); await page.locator('[data-color=accent]').fill('#aabbcc'); await saved;
     await page.reload();await expect(page.locator('#stm-launcher')).toBeVisible();await page.waitForFunction(()=>!document.getElementById('preloader'));await page.locator('#stm-launcher').click();
     expect((await state(page)).favorites.length).toBe(1);await tab(page,'曲库');await page.locator('.stm-favorites-entry').click();await expect(page.locator('.stm-favorite-list li')).toHaveCount(1);
-    await mkdir('docs/v2/listening',{recursive:true});await page.locator('#stm-player').screenshot({path:'docs/v2/listening/favorites-desktop.png'});
-    await page.setViewportSize({width:390,height:844});await page.locator('#stm-player').screenshot({path:'docs/v2/listening/favorites-mobile-emulation.png'});
+    await mkdir(listeningEvidence,{recursive:true});await page.locator('#stm-player').screenshot({path:listeningEvidence+'/favorites-desktop.png'});
+    await page.setViewportSize({width:390,height:844});await page.locator('#stm-player').screenshot({path:listeningEvidence+'/favorites-mobile-emulation.png'});
     await page.locator('[data-favorite-home]').click();await page.locator('.stm-collection-open[data-collection-id=""]').click();await page.getByRole('button',{name:'歌曲详情：A',exact:true}).click();
     page.once('dialog',d=>d.accept());await page.locator('[data-action=detail-delete]').click();expect((await state(page)).favorites).toEqual([]);expect((await state(page)).tracks.length).toBe(1);
 });

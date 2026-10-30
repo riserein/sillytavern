@@ -1,3 +1,4 @@
+const ambientEvidence=process.env.ST_AMBIENT_EVIDENCE||'docs/creative-upgrade';
 import {test,expect} from '@playwright/test';
 import {readFile,mkdir} from 'node:fs/promises';
 import {fixture} from './creative-fixture.js';
@@ -7,11 +8,11 @@ const ambient=page=>page.locator('audio[data-ambient-audio]');
 test('all layouts and five launcher types retain one main and one ambient Audio with unframed text',async({page},info)=>{
  await fixture(page);await library(page);await page.locator('[data-ambient-action=listen]').first().click();await expect.poll(()=>ambient(page).evaluate(a=>!a.paused)).toBe(true);await page.locator('[data-ambient-action=close]').click();await page.locator('[data-action=play]').click();
  await page.evaluate(async prefix=>{const {LocalMusicStore}=await import(prefix+'local-store.js'),{prepareCover}=await import(prefix+'media.js'),store=new LocalMusicStore();window.soundIcon='cover:'+crypto.randomUUID();await store.put(soundIcon,await prepareCover(await(await fetch(prefix+'assets/covers/moon.png')).blob()));await store.close();window.soundOriginal=document.querySelector('[data-ambient-audio]');},prefix);
- await mkdir('docs/creative-upgrade/soundscape-layouts',{recursive:true});
+ await mkdir(ambientEvidence+'/soundscape-layouts',{recursive:true});
  for(const layout of ['night','crystal','vinyl','cassette','pure','journal']){
   for(const launcher of ['vinyl','cd','cassette','capsule','custom']){await page.evaluate(({layout,launcher})=>app.setDesign({layout,launcher,customization:{iconId:soundIcon}}),{layout,launcher});expect(await page.evaluate(()=>app.audio===originalAudio&&!app.audio.paused&&document.querySelector('[data-ambient-audio]')===soundOriginal&&!soundOriginal.paused)).toBe(true);}
   expect(await page.locator('.stm-soundscape label').first().evaluate(n=>getComputedStyle(n).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
-  if(info.project.name==='desktop'||info.project.name==='mobile-320')await page.locator('.stm-soundscape').screenshot({path:`docs/creative-upgrade/soundscape-layouts/${layout}-${info.project.name}.png`});
+  if(info.project.name==='desktop'||info.project.name==='mobile-320')await page.locator('.stm-soundscape').screenshot({path:`${ambientEvidence}/soundscape-layouts/${layout}-${info.project.name}.png`});
  }
  await page.evaluate(()=>app.dispose());expect(await page.evaluate(()=>liveURLs.size)).toBe(0);
 });
@@ -30,7 +31,7 @@ test('two actual audio channels keep independent levels, pause intent, history a
  await page.locator('[data-sound=keep]').uncheck();await expect.poll(()=>ambient(page).evaluate(a=>a.paused)).toBe(true);await page.locator('[data-action=play]').click();await expect.poll(()=>ambient(page).evaluate(a=>!a.paused)).toBe(true);
  await page.locator('[data-sound-action=all]').click();expect(await page.evaluate(()=>app.audio.paused)).toBe(true);expect(await ambient(page).evaluate(a=>a.paused)).toBe(true);await page.locator('[data-sound-action=all]').click();await expect.poll(()=>page.evaluate(()=>!app.audio.paused)).toBe(true);await expect.poll(()=>ambient(page).evaluate(a=>!a.paused)).toBe(true);
  expect(await page.evaluate(()=>app.settings.playEvents.every(e=>['a','b','c'].includes(e.trackId)))).toBe(true);expect(await page.locator('#stm-player audio').count()).toBe(2);
- await mkdir('docs/creative-upgrade/soundscape',{recursive:true});await page.locator('#stm-player').screenshot({path:`docs/creative-upgrade/soundscape/controls-${info.project.name}.png`});await page.evaluate(()=>app.visibility.setState('hidden'));expect(await page.evaluate(()=>app.audio.paused)).toBe(true);expect(await ambient(page).evaluate(a=>a.paused)).toBe(true);await page.evaluate(()=>app.visibility.restore());expect(await ambient(page).evaluate(a=>a.paused)).toBe(true);await page.evaluate(()=>app.dispose());expect(await page.evaluate(()=>liveURLs.size)).toBe(0);
+ await mkdir(ambientEvidence+'/soundscape',{recursive:true});await page.locator('#stm-player').screenshot({path:`${ambientEvidence}/soundscape/controls-${info.project.name}.png`});await page.evaluate(()=>app.visibility.setState('hidden'));expect(await page.evaluate(()=>app.audio.paused)).toBe(true);expect(await ambient(page).evaluate(a=>a.paused)).toBe(true);await page.evaluate(()=>app.visibility.restore());expect(await ambient(page).evaluate(a=>a.paused)).toBe(true);await page.evaluate(()=>app.dispose());expect(await page.evaluate(()=>liveURLs.size)).toBe(0);
 });
 test('shared scene ambience preserves progress and rapid role changes cannot revive old loads',async({page},info)=>{
  await fixture(page);await library(page);await page.locator('[data-ambient-action=close]').click();await page.evaluate(async()=>{const [rain,sea]=app.settings.ambientLibrary,scenes=app.settings.roleScenes[0].scenes;for(const s of scenes)s.ambient={id:s.id==='morning'?sea.id:rain.id,enabled:true,volume:.25,fade:s.id==='morning'?500:0};app.settings.soundscape={};await app.chooseScene('rain');});

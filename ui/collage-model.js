@@ -1,3 +1,4 @@
+import {createTrackId} from "../ids.js";
 /** Flat, data-only pages. Coordinates are percentages of independent desktop/mobile
  * canvases, with separate defaults rather than scaled desktop pixel positions. */
 export const COLLAGE_PAGES = ["music", "lyrics", "notes", "collection"];
@@ -37,7 +38,7 @@ const rect = (value, fallback) => {
     h: num(value?.h, fallback.h, 2, 100 - y),
   };
 };
-export function collageElement(type, id = "e-" + crypto.randomUUID()) {
+export function collageElement(type, id = "e-" + createTrackId()) {
   if (!Object.hasOwn(COLLAGE_TYPES, type))
     throw new Error("不支持此拼贴元素。");
   return {

@@ -12,7 +12,7 @@ async function importTracks(page,names=['雨落旧书页','海岸来信','未寄
 async function collection(page,id=''){await tab(page,'曲库');await page.locator(`.stm-collection-open[data-collection-id="${id}"]`).click();}
 async function createList(page,name){await tab(page,'曲库');await page.locator('[data-action=new-playlist]').click();await page.locator('#stm-new-playlist').fill(name);await page.getByRole('button',{name:'新建',exact:true}).click();return page.locator('#stm-library-playlist').inputValue();}
 const settings=page=>page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player);
-async function shot(page,name){await expect(page.locator('.stm-status')).toHaveText('',{timeout:8500});await page.locator('#stm-player').evaluate(panel=>panel.querySelector(':focus')?.blur());await page.mouse.move(0,0);await page.locator('#stm-player').screenshot({path:`docs/night-ui-${name}.png`,animations:'disabled'});}
+async function shot(page,name){await expect(page.locator('.stm-status')).toHaveText('',{timeout:8500});await page.locator('#stm-player').evaluate(panel=>panel.querySelector(':focus')?.blur());await page.mouse.move(0,0);await page.locator('#stm-player').screenshot({path:`${process.env.ST_NIGHT_EVIDENCE||'docs'}/night-ui-${name}.png`,animations:'disabled'});}
 
 test.beforeEach(async({page})=>{
     await page.setViewportSize({width:1280,height:1000});

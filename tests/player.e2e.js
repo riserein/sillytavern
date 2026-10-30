@@ -127,6 +127,9 @@ function waitForPlayerSave(page, predicate) {
 
 test.beforeEach(async ({ page }) => {
     // Only reset the extension in a disposable ST profile; all other APIs and the loader are real.
+    // These full-plugin scenarios decline only their own generated carried script.
+    // Recipient permission/execution is verified independently in card-native.e2e.js.
+    await page.addLocatorHandler(page.getByRole('heading',{name:/^角色卡 'STM_Test_.*中包含酒馆助手可用的嵌入式脚本$/}),async()=>{await page.getByRole('button',{name:/^(取消|Cancel)$/,exact:true}).last().click();});
     await page.route('**/api/settings/get', async route => {
         const response = await route.fetch();
         const body = await response.json();
@@ -838,7 +841,7 @@ test('cropping chooses the actual region, layers themes and materials, persists 
     await page.getByRole('button', { name: '清透', exact: true }).click();
     await saved;
     expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::before').filter)).toBe('none');
-    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::after').opacity)).toBe('0');
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).getPropertyValue('--stm-mask-opacity').trim())).toBe('0');
     const filters = [];
     for (const surface of ['matte', 'glass']) {
         await page.locator(`[data-surface-choice="${surface}"]`).click();
@@ -901,19 +904,20 @@ test('crop dragging, cancellation and invalid image recovery work on a small scr
 
 test('mask transparency is independent per material, preserves clear mode, and persists across reloads', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' });
+    expect(await page.locator('#stm-player').evaluate(element=>getComputedStyle(element,'::after').opacity)).toBe('1');
     await importBackground(page);
     await page.getByRole('button', { name: '使用此区域', exact: true }).click();
     await expect(page.locator('.stm-crop-editor')).toBeHidden();
     await page.getByRole('button', { name: '毛玻璃', exact: true }).click();
     await page.getByRole('slider', { name: '遮罩透明度', exact: true }).fill('80');
     await expect(page.locator('[data-role="mask-transparency"]')).toHaveText('80%');
-    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::after').opacity)).toBe('0.2');
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).getPropertyValue('--stm-mask-opacity').trim())).toBe('0.2');
     await page.getByRole('button', { name: '雾面', exact: true }).click();
     await page.getByRole('slider', { name: '遮罩透明度', exact: true }).fill('25');
-    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::after').opacity)).toBe('0.75');
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).getPropertyValue('--stm-mask-opacity').trim())).toBe('0.75');
     await page.getByRole('button', { name: '清透', exact: true }).click();
     await expect(page.getByRole('slider', { name: '遮罩透明度', exact: true })).toBeDisabled();
-    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::after').opacity)).toBe('0');
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).getPropertyValue('--stm-mask-opacity').trim())).toBe('0');
     await page.getByRole('button', { name: '毛玻璃', exact: true }).click();
     await expect(page.getByRole('slider', { name: '遮罩透明度', exact: true })).toHaveValue('80');
     const saved = waitForPlayerSave(page, settings => settings.maskOpacity?.glass === .2 && settings.maskOpacity?.matte === .75);
@@ -929,9 +933,9 @@ test('mask transparency is independent per material, preserves clear mode, and p
     await page.getByRole('button', { name: '移除图片', exact: true }).click();
     await expect(page.getByRole('slider', { name: '遮罩透明度', exact: true })).toHaveValue('3');
     await page.getByRole('slider', { name: '遮罩透明度', exact: true }).fill('50');
-    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgba(247, 241, 230, 0.5)');
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).getPropertyValue('--stm-matte').trim())).toBe('rgba(247, 241, 230, 0.5)');
     await page.emulateMedia({ colorScheme: 'dark' });
-    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgba(37, 33, 30, 0.5)');
+    expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element).getPropertyValue('--stm-matte').trim())).toBe('rgba(37, 33, 30, 0.5)');
 });
 
 test('custom accent, background and text colors update both controls, preserve music and image, and restore presets', async ({ page }) => {
@@ -976,13 +980,10 @@ test('custom accent, background and text colors update both controls, preserve m
 });
 
 test('click halos animate, clean up, respect reduced motion and never turn drags into clicks', async ({ page }) => {
-    await page.clock.install();
+    await page.evaluate(()=>{window.haloEvidence=null;const observer=new MutationObserver(()=>{const element=document.querySelector('#stm-player .stm-click-wave'),animation=element?.getAnimations()[0];if(animation){window.haloEvidence={duration:animation.effect.getTiming().duration,pointerEvents:getComputedStyle(element).pointerEvents};observer.disconnect();}});observer.observe(document.body,{childList:true,subtree:true});});
     await playerPage(page, '最近播放');
-    await expect(page.locator('#stm-player .stm-click-wave')).toHaveCount(1);
-    const wave = await page.locator('#stm-player .stm-click-wave').evaluate(element => {
-        const animation = element.getAnimations()[0];
-        return { duration: animation.effect.getTiming().duration, pointerEvents: getComputedStyle(element).pointerEvents };
-    });
+    await expect.poll(()=>page.evaluate(()=>window.haloEvidence)).not.toBeNull();
+    const wave = await page.evaluate(()=>window.haloEvidence);
     expect(wave.duration).toBe(480);
     expect(wave.pointerEvents).toBe('none');
     await expect(page.locator('#stm-player .stm-click-wave')).toHaveCount(0);
@@ -1089,7 +1090,7 @@ test('retired font selections fall back after reload without fetching removed fi
     })).toBe(true);
     expect(removedRequests).toEqual([]);
     await page.locator('#stm-font-gallery').evaluate(element => { element.scrollTop = 0; });
-    await page.locator('#stm-player').screenshot({path:'docs/fonts.png'});
+    await page.locator('#stm-player').screenshot({path:process.env.ST_PLAYER_FONT_SHOT||'docs/fonts.png'});
 });
 
 test('the bundled Poxiao font works offline, custom fonts persist, and font changes stay inside the player', async ({ page }) => {

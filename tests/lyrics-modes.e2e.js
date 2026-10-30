@@ -31,7 +31,7 @@ test('three modes, continuous motion, immediate highlight, calibration and free 
    await page.locator('.stm-lyrics-scroll').evaluate(n=>{n.dispatchEvent(new WheelEvent('wheel',{deltaY:100}));n.scrollTo({top:0,behavior:'instant'});});
    await page.locator('[data-action=resume-lyrics]').click();
    await page.waitForTimeout(80);
-   const samples=await page.evaluate(async()=>{const s=document.querySelector('.stm-lyrics-scroll'),a=[];for(let i=0;i<20;i++){await new Promise(requestAnimationFrame);a.push({top:s.scrollTop,time:app.audio.currentTime,index:document.querySelector('.stm-current-lyric')?.textContent});}return a});
+   const samples=await page.evaluate(async mode=>{const s=document.querySelector('.stm-lyrics-scroll'),a=[];if(mode==='centered'){const before=document.querySelector('.stm-current-lyric')?.textContent;for(let i=0;i<180&&document.querySelector('.stm-current-lyric')?.textContent===before;i++)await new Promise(requestAnimationFrame);}for(let i=0;i<20;i++){await new Promise(requestAnimationFrame);a.push({top:s.scrollTop,time:app.audio.currentTime,index:document.querySelector('.stm-current-lyric')?.textContent});}return a},value);
    evidence.push({mode:value,samples});
    const diffs=samples.slice(1).map((v,i)=>Math.abs(v.top-samples[i].top));expect(Math.max(...diffs)).toBeLessThan(35);
    expect(samples.at(-1).top).toBeGreaterThan(samples[0].top);
@@ -118,7 +118,7 @@ test('classic standalone runtime supports author-docked entry, personal hiding a
  await page.locator('.ball').click();await expect(page.locator('.panel')).toBeVisible();await page.locator('.play').click();await expect.poll(()=>page.evaluate(()=>legacyApp.audio.currentTime)).toBeGreaterThan(.1);
  await page.locator('.stm-visibility-controls [data-display-hide]').click();const hiddenTime=await page.evaluate(()=>legacyApp.audio.currentTime);await page.evaluate(()=>legacyApp.audio.dispatchEvent(new Event('ended')));await page.waitForTimeout(100);expect(await page.evaluate(()=>legacyApp.audio.currentTime)).toBe(hiddenTime);await expect(page.locator('.ball')).toBeHidden();await expect(page.locator('.panel')).toBeHidden();expect(await page.evaluate(()=>legacyApp.audio.paused)).toBe(true);
  await page.locator('.rscp-preview-recovery').click();await expect(page.locator('.ball')).toBeVisible();expect(await page.evaluate(()=>legacyApp.audio.paused)).toBe(true);
- await page.locator('.ball').click();await page.locator('.stm-reading-settings summary').click();await page.locator('#stm-lyric-mode').selectOption('immersive');await page.locator('.cover').click();await expect(page.locator('.lyrics')).toHaveAttribute('data-lyric-mode','immersive');
+ await page.locator('.ball').click();await page.locator('.stm-reading-settings > summary').click();await page.locator('#stm-lyric-mode').selectOption('immersive');await page.locator('.cover').click();await expect(page.locator('.lyrics')).toHaveAttribute('data-lyric-mode','immersive');
  await page.screenshot({path:`${reportRoot}/screenshots/classic-${info.project.name}.png`});await page.evaluate(()=>legacyApp.dispose());await expect(page.locator('[data-riserein-recovery]')).toHaveCount(0);expect(await page.evaluate(()=>legacyApp.audio.paused)).toBe(true);
 });
 

@@ -1,3 +1,4 @@
+import {createTrackId} from "../ids.js";
 import {
   COLLAGE_PAGES,
   COLLAGE_TYPES,
@@ -231,7 +232,7 @@ export function createCollageEditor({
           selected = new Set();
           for (const row of copies) {
             const copy = structuredClone(row);
-            copy.id = "e-" + crypto.randomUUID();
+            copy.id = "e-" + createTrackId();
             copy.locked = false;
             for (const device of ["mobile", "desktop"]) {
               copy[device].x = Math.min(

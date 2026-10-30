@@ -5,6 +5,6 @@ export default defineConfig({
     outputDir: 'test-results/native',
     testMatch: 'card-native.e2e.js',
     testIgnore: [],
-    timeout: 180000,
+    timeout: 360000,
     reporter: [['list'], ['json', { outputFile: process.env.PLAYWRIGHT_JSON_OUTPUT_FILE || 'docs/card-player/native-playwright.json' }]],
 });

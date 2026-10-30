@@ -1,3 +1,5 @@
+import {createTrackId} from './ids.js';
+export {createTrackId};
 import {normalizeTranslation} from './translations.js';
 import {normalizeAmbientLibrary,normalizeSoundscape} from './ambient.js';
 import { normalizeLyricOffsets } from './ui/lyric-timing.js';
@@ -30,15 +32,6 @@ function normalizePosition(position) {
     return { x: Math.min(1, Math.max(0, position.x)), y: Math.min(1, Math.max(0, position.y)) };
 }
 
-/** randomUUID is unavailable on some HTTP LAN installations; getRandomValues is not. */
-export function createTrackId(source = globalThis.crypto) {
-    if (source.randomUUID) return source.randomUUID();
-    const bytes = source.getRandomValues(new Uint8Array(16));
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
-    const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
-    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
-}
 
 export function normalizeUrl(value) {
     let url;

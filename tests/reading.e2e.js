@@ -238,7 +238,7 @@ test('reading preferences persist through real IndexedDB binary ZIP restore incl
         const { LocalMusicStore } = await import(prefix + 'local-store.js'), { CardProjectStore } = await import(prefix + 'card-player/project-store.js'), { MaintenanceJournal } = await import(prefix + 'data/journal.js');
         const { createBackup, inspectBackup } = await import(prefix + 'data/backup.js'), { makeRestorePlan, applyRestore, verifyReferences } = await import(prefix + 'data/restore.js'), { normalizeSettings } = await import(prefix + 'core.js');
         const store = new LocalMusicStore(), projects = new CardProjectStore(), journal = new MaintenanceJournal();
-        const reading = { level: 'high', lyricSize: 26, lineHeight: 2.3, autoFollow: false, lyricBackground: 'transparent' };
+        const reading = { level: 'high', lyricSize: 26, lineHeight: 2.3, autoFollow: false, lyricBackground: 'transparent',lyricLanguage:'translation',translationSize:21,translationHeight:2.1,translationGap:10,originalColor:'#deccaa',translationColor:'#bbddcc' };
         const id = 'reading-backup-local'; await store.put(id, new Blob([new Uint8Array(tone)], { type: 'audio/mpeg' }));
         const settings = normalizeSettings({ tracks: [{ id, title: '备份原音频', kind: 'local', lyrics: '[00:00]保留原文' }], reading,lyricOffsets:{[id]:700},visibility:{state:'hidden',resume:{id,time:5}} });
         await projects.save({ id: 'rscp:reading', title: '阅读草稿', tracks: [{ ...settings.tracks[0], exportBlob: await store.get(id) }], sourceSettings: { reading }, form: {'stm-maker-recipient-display':'docked'} });
@@ -254,7 +254,7 @@ test('reading preferences persist through real IndexedDB binary ZIP restore incl
         await store.close(); await projects.dispose(); await journal.close(); return result;
     }, { prefix, tone: [...tone] });
     expect(restored.draftDisplay).toBe('docked');expect(restored.offset).toBe(700);expect(restored.resume.id).toBe(restored.restoredId);expect(restored.resume.time).toBe(5);
-    expect(restored.reading).toEqual({ level: 'high', lyricSize: 26, lineHeight: 2.3, autoFollow: false, lyricBackground: 'transparent', displayMode: 'flow', nextLine: true });
+    expect(restored.reading).toEqual({ level: 'high', lyricSize: 26, lineHeight: 2.3, autoFollow: false, lyricBackground: 'transparent', displayMode: 'flow', nextLine: true,lyricLanguage:'translation',translationSize:21,translationHeight:2.1,translationGap:10,originalColor:'#deccaa',translationColor:'#bbddcc' });
     expect({...restored.draftReading,displayMode:'flow',nextLine:true}).toEqual(restored.reading); expect(restored.oldDraft).toBe(true); expect(restored.bytes).toBe(tone.length); expect(restored.lyrics).toBe('[00:00]保留原文');
 });
 
