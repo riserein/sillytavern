@@ -1,0 +1,167 @@
+{
+  "method": "Serial alternating baseline and v2.3, 3 trials each after other browser jobs finished. Same synthetic 29 MiB WAV and night layout; 384 MiB V8 old-space limit, not process limit. 500 ms samples are not true peaks.",
+  "standalone": {
+    "baseline": {
+      "runtimeSha256": "2e659089527fcef33ecd40265d4420c9b9c459e719778308146bed01d340331f",
+      "trialFiles": [
+        "large-baseline-final-1.json",
+        "large-baseline-final-2.json",
+        "large-baseline-final-3.json"
+      ],
+      "mountMedianMs": 188.29999999981374,
+      "firstCanPlayMedianMs": 590.5,
+      "heartbeatLargestObservedMs": 235.40000000037253,
+      "maximumObservedSampledHeapBytes": 58431828,
+      "maximumObservedSummedRssBytes": 809279488,
+      "cleanupAllZero": true
+    },
+    "v230": {
+      "runtimeSha256": "a13afd2e96a542acc1ca5d342a7af53db798a6b78939f00038778536c12e86d3",
+      "trialFiles": [
+        "large-v230-final-1.json",
+        "large-v230-final-2.json",
+        "large-v230-final-3.json"
+      ],
+      "mountMedianMs": 203.5,
+      "firstCanPlayMedianMs": 629,
+      "heartbeatLargestObservedMs": 250.40000000037253,
+      "maximumObservedSampledHeapBytes": 52486312,
+      "maximumObservedSummedRssBytes": 816496640,
+      "cleanupAllZero": true
+    }
+  },
+  "nativeLarge": {
+    "report": "native-large-final.json",
+    "runtimeSha256": "a13afd2e96a542acc1ca5d342a7af53db798a6b78939f00038778536c12e86d3",
+    "exportMetrics": [
+      {
+        "format": "json",
+        "bytes": 42289729,
+        "milliseconds": 46293
+      },
+      {
+        "format": "resource-breakdown",
+        "rows": [
+          {
+            "kind": "audio",
+            "name": "Large synthetic 0",
+            "bytes": 20971520,
+            "encodedBytes": 27962050,
+            "external": false
+          },
+          {
+            "kind": "cover",
+            "name": "Large synthetic 0 · 封面",
+            "bytes": 92776,
+            "encodedBytes": 123727,
+            "external": false
+          },
+          {
+            "kind": "audio",
+            "name": "Large synthetic 1",
+            "bytes": 8388608,
+            "encodedBytes": 11184834,
+            "external": false
+          },
+          {
+            "kind": "cover",
+            "name": "Large synthetic 1 · 封面",
+            "bytes": 93796,
+            "encodedBytes": 125087,
+            "external": false
+          },
+          {
+            "kind": "font",
+            "name": "游趣体",
+            "bytes": 1531668,
+            "encodedBytes": 2042261,
+            "external": false
+          },
+          {
+            "kind": "fallback",
+            "name": "assets/covers/forest.png",
+            "bytes": 92776,
+            "encodedBytes": 123727,
+            "external": false
+          },
+          {
+            "kind": "fallback",
+            "name": "assets/covers/moon.png",
+            "bytes": 68286,
+            "encodedBytes": 91071,
+            "external": false
+          },
+          {
+            "kind": "fallback",
+            "name": "assets/covers/sunroom.png",
+            "bytes": 93796,
+            "encodedBytes": 125087,
+            "external": false
+          }
+        ],
+        "embeddedBytes": 31333226,
+        "payloadBytes": 41786940,
+        "scriptBytes": 42287259,
+        "problems": [],
+        "jsonPlayerBytes": 42287259,
+        "pngPlayerBytes": 56383012,
+        "pngUncompactedPlayerBytes": 112766024,
+        "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+        "static": "passed",
+        "browser": "not-tested",
+        "tavern": "not-tested"
+      },
+      {
+        "format": "png",
+        "bytes": 56461176,
+        "milliseconds": 94431
+      },
+      {
+        "nativeWritesBeforeFontChange": 1,
+        "expected": "one binding write; unchanged JSON/PNG exports reuse the stored player despite Helper schema key order"
+      },
+      {
+        "rawPngBytes": 112845733,
+        "compactPngBytes": 56461176,
+        "packagedFontReadsAcrossBindingAndTwoExports": 1
+      },
+      {
+        "operation": "native-import",
+        "format": "png",
+        "bytes": 56461176,
+        "milliseconds": 43390
+      },
+      {
+        "operation": "native-import",
+        "format": "json",
+        "bytes": 41936692,
+        "milliseconds": 33029
+      }
+    ],
+    "measurements": [
+      {
+        "label": "author",
+        "sampledHeapMaxBytes": 1087467852,
+        "sampledSummedRssMaxBytes": 3667091456,
+        "longTaskMaxMs": 6976,
+        "roleDisplayAndPlayable": []
+      },
+      {
+        "label": "recipient",
+        "sampledHeapMaxBytes": 1452609172,
+        "sampledSummedRssMaxBytes": 3166470144,
+        "longTaskMaxMs": 3445,
+        "roleDisplayAndPlayable": [
+          {
+            "fromRoleEntryToDisplayMs": 12739.599999999627,
+            "fromRoleEntryToPlayableMs": 14347.5
+          },
+          {
+            "fromRoleEntryToDisplayMs": 9475.299999999814,
+            "fromRoleEntryToPlayableMs": 10838.199999999255
+          }
+        ]
+      }
+    ]
+  }
+}

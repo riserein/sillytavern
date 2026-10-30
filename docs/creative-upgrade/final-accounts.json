@@ -1,0 +1,142 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.accounts.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/creative-upgrade/final-accounts.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/final-accounts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-accounts.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-accounts.e2e.js",
+      "file": "card-accounts.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "real SillyTavern accounts isolate library/drafts and reject an old page saving into the new account",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 0,
+                  "error": {
+                    "message": "Error: ENOENT: no such file or directory, open '/proc/387092/cmdline'",
+                    "stack": "Error: ENOENT: no such file or directory, open '/proc/387092/cmdline'\n    at /workspace/sillytavern/tests/card-accounts.e2e.js:8:17",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-accounts.e2e.js",
+                      "column": 17,
+                      "line": 8
+                    },
+                    "snippet": "   6 |  if(process.env.ST_MULTI_FIXTURE!=='1')throw new Error('Requires explicit disposable multi-account fixture');\n   7 |  const marker=JSON.parse(await readFile('/workspace/scratch/stm-v133-multi-fixture.json','utf8'));\n>  8 |  const command=(await readFile(`/proc/${marker.pid}/cmdline`,'utf8')).split('\\0');\n     |                 ^\n   9 |  expect(marker.purpose).toBe('music-plugin-v133-isolation-only');expect(marker.port).toBe(8133);\n  10 |  expect(command[command.indexOf('--dataRoot')+1]).toBe('/workspace/scratch/stm-v133-multi-data');expect(command[command.indexOf('--port')+1]).toBe('8133');\n  11 | });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-accounts.e2e.js",
+                        "column": 17,
+                        "line": 8
+                      },
+                      "message": "Error: ENOENT: no such file or directory, open '/proc/387092/cmdline'\n\n   6 |  if(process.env.ST_MULTI_FIXTURE!=='1')throw new Error('Requires explicit disposable multi-account fixture');\n   7 |  const marker=JSON.parse(await readFile('/workspace/scratch/stm-v133-multi-fixture.json','utf8'));\n>  8 |  const command=(await readFile(`/proc/${marker.pid}/cmdline`,'utf8')).split('\\0');\n     |                 ^\n   9 |  expect(marker.purpose).toBe('music-plugin-v133-isolation-only');expect(marker.port).toBe(8133);\n  10 |  expect(command[command.indexOf('--dataRoot')+1]).toBe('/workspace/scratch/stm-v133-multi-data');expect(command[command.indexOf('--port')+1]).toBe('8133');\n  11 | });\n    at /workspace/sillytavern/tests/card-accounts.e2e.js:8:17"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T08:57:59.324Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/final-accounts/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-accounts.e2e.js",
+                    "column": 17,
+                    "line": 8
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "caa230fccb85f643e6e7-d25817a7a6a32acb9ebd",
+          "file": "card-accounts.e2e.js",
+          "line": 63,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-30T08:57:58.237Z",
+    "duration": 1222.5249999999999,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

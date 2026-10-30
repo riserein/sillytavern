@@ -1,0 +1,184 @@
+{
+  "label": "baseline-final-1",
+  "layout": "night",
+  "environment": "isolated desktop Chromium renderer with a 384 MiB V8 old-space limit (not a process-memory limit), not a physical phone",
+  "browser": "154.0.8037.57",
+  "embeddedAudioBytes": 30408704,
+  "runtimeSha256": "2e659089527fcef33ecd40265d4420c9b9c459e719778308146bed01d340331f",
+  "performanceSamples": [
+    {
+      "label": "large-baseline-final-1",
+      "samplingMilliseconds": 500,
+      "scope": "whole isolated Chromium browser and its process RSS; standalone player fixture without Tavern Helper; not a true memory peak",
+      "samples": [
+        {
+          "at": "2026-10-30T09:55:11.015Z",
+          "usedJSHeapBytes": 616392,
+          "rss": [
+            {
+              "type": "browser",
+              "pid": 57147,
+              "bytes": 130887680
+            },
+            {
+              "type": "renderer",
+              "pid": 57234,
+              "bytes": 35995648
+            },
+            {
+              "type": "renderer",
+              "pid": 57235,
+              "bytes": 52727808
+            },
+            {
+              "type": "renderer",
+              "pid": 57225,
+              "bytes": 61505536
+            },
+            {
+              "type": "GPU",
+              "pid": 57186,
+              "bytes": 41025536
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "pid": 57189,
+              "bytes": 62750720
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "pid": 57202,
+              "bytes": 23187456
+            }
+          ]
+        },
+        {
+          "at": "2026-10-30T09:55:12.710Z",
+          "usedJSHeapBytes": 48776168,
+          "rss": [
+            {
+              "type": "browser",
+              "pid": 57147,
+              "bytes": 134565888
+            },
+            {
+              "type": "renderer",
+              "pid": 57234,
+              "bytes": 35995648
+            },
+            {
+              "type": "renderer",
+              "pid": 57235,
+              "bytes": 287227904
+            },
+            {
+              "type": "renderer",
+              "pid": 57225,
+              "bytes": 94720000
+            },
+            {
+              "type": "GPU",
+              "pid": 57186,
+              "bytes": 41091072
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "pid": 57189,
+              "bytes": 62951424
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "pid": 57202,
+              "bytes": 23437312
+            }
+          ]
+        },
+        {
+          "at": "2026-10-30T09:55:13.214Z",
+          "usedJSHeapBytes": 48980568,
+          "rss": [
+            {
+              "type": "browser",
+              "pid": 57147,
+              "bytes": 159551488
+            },
+            {
+              "type": "renderer",
+              "pid": 57234,
+              "bytes": 35995648
+            },
+            {
+              "type": "renderer",
+              "pid": 57235,
+              "bytes": 327417856
+            },
+            {
+              "type": "renderer",
+              "pid": 57225,
+              "bytes": 94728192
+            },
+            {
+              "type": "GPU",
+              "pid": 57186,
+              "bytes": 49491968
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "pid": 57189,
+              "bytes": 62951424
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "pid": 57202,
+              "bytes": 23441408
+            },
+            {
+              "type": "audio.mojom.AudioService",
+              "pid": 57261,
+              "bytes": 55685120
+            }
+          ]
+        }
+      ],
+      "events": {
+        "longTasks": [
+          {
+            "start": 189.79999999981374,
+            "duration": 1498
+          },
+          {
+            "start": 2019.5999999996275,
+            "duration": 62
+          }
+        ],
+        "roles": []
+      },
+      "maximumObservedJSHeapBytes": 48980568,
+      "maximumObservedSummedRssBytes": 809263104
+    }
+  ],
+  "result": {
+    "beforeHeapBytes": 111888752,
+    "afterHeapBytes": 89140346,
+    "mountMilliseconds": 207.40000000037253,
+    "firstCanPlayMilliseconds": 637.1000000005588,
+    "maxHeartbeatGapMilliseconds": 235.40000000037253,
+    "progress": 0.218381,
+    "resourceCounts": {
+      "timers": 0,
+      "frames": 0,
+      "urls": 0,
+      "observers": 0,
+      "listeners": 0,
+      "requests": 0,
+      "fonts": 0,
+      "subscriptions": 0,
+      "blobs": 0,
+      "encodedAudio": 0,
+      "pendingDecodes": 0
+    },
+    "remainingRoots": 0
+  },
+  "milliseconds": 2376,
+  "status": "completed"
+}

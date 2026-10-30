@@ -1,0 +1,114 @@
+
+Running 7 tests using 1 worker
+
+(node:42392) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42392) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@288
+  ✘  1 tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser (2.7m)
+(node:43504) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43504) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@253
+  ✘  2 tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser (2.8m)
+(node:45434) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45434) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 tests/card-maker.e2e.js:582:1 › resource failures and edits prevent stale or partial exports without changing the original library (31.1s)
+  ✓  4 tests/card-maker.e2e.js:630:44 › maker shared design cassette exports independent JS, HTML and Helper JSON then plays in a clean recipient (1.1m)
+  ✓  5 tests/card-maker.e2e.js:630:44 › maker shared design journal exports independent JS, HTML and Helper JSON then plays in a clean recipient (55.2s)
+  ✓  6 tests/card-maker.e2e.js:640:1 › soundscape maker keeps draft audio after library deletion and exports independent dual-channel previews (26.6s)
+  ✓  7 tests/card-maker.e2e.js:651:1 › free collage and bilingual maker projects retain image/audio copies and export working shared JS, Helper and HTML without private notes (22.1s)
+
+
+  1) tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser 
+
+    [31mTest timeout of 150000ms exceeded.[39m
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+      178 |             return node === old.node && node.__risereinPlayer.audio === old.audio && !old.audio.paused;
+      179 |         }),
+    > 180 |     ).toBe(true);
+          |       ^
+      181 |     await expect
+      182 |         .poll(() => page.locator(root + ' audio').evaluate((audio) => audio.currentTime))
+      183 |         .toBeGreaterThanOrEqual(floor);
+        at continuous (/workspace/sillytavern/tests/card-maker.e2e.js:180:7)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:529:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser 
+
+    [31mTest timeout of 150000ms exceeded.[39m
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('[data-riserein-card-player] .lyrics .active')
+    Expected: [32m"第二句"[39m
+    Received: [31m""[39m
+
+    Call log:
+    [2m  - Expect "toHaveText" with timeout 5000ms[22m
+    [2m  - waiting for locator('[data-riserein-card-player] .lyrics .active')[22m
+
+
+      489 |         await recipient.locator(root + ' .seek').dispatchEvent('input');
+      490 |         await recipient.getByRole('button', { name: '显示角色音乐歌词', exact: true }).click();
+    > 491 |         await expect(recipient.locator(root + ' .lyrics .active')).toHaveText('第二句');
+          |                                                                    ^
+      492 |         await recipient.getByRole('button', { name: '返回角色音乐封面', exact: true }).click();
+      493 |         await recipient.getByRole('button', { name: '暂停角色音乐', exact: true }).click();
+      494 |         const paused = await recipient.locator(root + ' audio').evaluate((audio) => audio.currentTime);
+        at /workspace/sillytavern/tests/card-maker.e2e.js:491:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser 
+    tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser 
+  5 passed (9.5m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

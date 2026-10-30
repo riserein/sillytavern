@@ -1,0 +1,9 @@
+{
+  "source": "real shared player browser fixture, not a full Tavern/Helper acceptance test",
+  "browser": "154.0.8037.57",
+  "colors": {
+    "off": "#182220",
+    "strong": "#393140"
+  },
+  "originalAudio": true
+}

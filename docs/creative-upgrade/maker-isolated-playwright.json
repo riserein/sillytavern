@@ -1,0 +1,647 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-export.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/creative-upgrade/maker-isolated-playwright.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/maker-isolated",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-maker.e2e.js"
+        ],
+        "timeout": 150000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-maker.e2e.js",
+      "file": "card-maker.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 150000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1164,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:274:58",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                      "column": 16,
+                      "line": 94
+                    },
+                    "snippet": "  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 94
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n\n  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:274:58"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 27
+                      },
+                      "message": "Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js\n\n  25 | }\n  26 | async function home(page) {\n> 27 |     await page.evaluate(async () => {\n     |                ^\n  28 |         const { closeCurrentChat } = await import('/script.js');\n  29 |         await closeCurrentChat();\n  30 |     });\n    at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:216:19"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:07:53.448Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                    "column": 16,
+                    "line": 94
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-2681b78b59441b4c7aff",
+          "file": "card-maker.e2e.js",
+          "line": 271,
+          "column": 5
+        },
+        {
+          "title": "maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 150000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1546,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:274:58",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                      "column": 16,
+                      "line": 94
+                    },
+                    "snippet": "  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 94
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n\n  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:274:58"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 27
+                      },
+                      "message": "Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js\n\n  25 | }\n  26 | async function home(page) {\n> 27 |     await page.evaluate(async () => {\n     |                ^\n  28 |         const { closeCurrentChat } = await import('/script.js');\n  29 |         await closeCurrentChat();\n  30 |     });\n    at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:216:19"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:07:57.582Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                    "column": 16,
+                    "line": 94
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-8f22af7492e03695974a",
+          "file": "card-maker.e2e.js",
+          "line": 271,
+          "column": 5
+        },
+        {
+          "title": "resource failures and edits prevent stale or partial exports without changing the original library",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 150000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1143,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:585:22",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                      "column": 16,
+                      "line": 94
+                    },
+                    "snippet": "  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 94
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n\n  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:585:22"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 27
+                      },
+                      "message": "Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js\n\n  25 | }\n  26 | async function home(page) {\n> 27 |     await page.evaluate(async () => {\n     |                ^\n  28 |         const { closeCurrentChat } = await import('/script.js');\n  29 |         await closeCurrentChat();\n  30 |     });\n    at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:216:19"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:08:02.519Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-resource-ff8ac-anging-the-original-library/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-resource-ff8ac-anging-the-original-library/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-resource-ff8ac-anging-the-original-library/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                    "column": 16,
+                    "line": 94
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-e5d4104f60a71c608eef",
+          "file": "card-maker.e2e.js",
+          "line": 582,
+          "column": 1
+        },
+        {
+          "title": "maker shared design cassette exports independent JS, HTML and Helper JSON then plays in a clean recipient",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1191,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:631:67",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                      "column": 16,
+                      "line": 94
+                    },
+                    "snippet": "  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 94
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n\n  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:631:67"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 27
+                      },
+                      "message": "Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js\n\n  25 | }\n  26 | async function home(page) {\n> 27 |     await page.evaluate(async () => {\n     |                ^\n  28 |         const { closeCurrentChat } = await import('/script.js');\n  29 |         await closeCurrentChat();\n  30 |     });\n    at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:216:19"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:08:07.204Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-maker-sh-afa75--plays-in-a-clean-recipient/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-maker-sh-afa75--plays-in-a-clean-recipient/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-maker-sh-afa75--plays-in-a-clean-recipient/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                    "column": 16,
+                    "line": 94
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-25181639bdc4d7d2e5d2",
+          "file": "card-maker.e2e.js",
+          "line": 630,
+          "column": 44
+        },
+        {
+          "title": "maker shared design journal exports independent JS, HTML and Helper JSON then plays in a clean recipient",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1237,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:631:67",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                      "column": 16,
+                      "line": 94
+                    },
+                    "snippet": "  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 94
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n\n  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:631:67"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 27
+                      },
+                      "message": "Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js\n\n  25 | }\n  26 | async function home(page) {\n> 27 |     await page.evaluate(async () => {\n     |                ^\n  28 |         const { closeCurrentChat } = await import('/script.js');\n  29 |         await closeCurrentChat();\n  30 |     });\n    at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:216:19"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:08:10.777Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-maker-sh-84e6c--plays-in-a-clean-recipient/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-maker-sh-84e6c--plays-in-a-clean-recipient/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                    "column": 16,
+                    "line": 94
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-d2325ebb6a9511757d9a",
+          "file": "card-maker.e2e.js",
+          "line": 630,
+          "column": 44
+        },
+        {
+          "title": "soundscape maker keeps draft audio after library deletion and exports independent dual-channel previews",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1006,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:641:46",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                      "column": 16,
+                      "line": 94
+                    },
+                    "snippet": "  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 94
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n\n  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:641:46"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 27
+                      },
+                      "message": "Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js\n\n  25 | }\n  26 | async function home(page) {\n> 27 |     await page.evaluate(async () => {\n     |                ^\n  28 |         const { closeCurrentChat } = await import('/script.js');\n  29 |         await closeCurrentChat();\n  30 |     });\n    at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:216:19"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:08:15.800Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-soundsca-eb3f4-ndent-dual-channel-previews/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-soundsca-eb3f4-ndent-dual-channel-previews/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-soundsca-eb3f4-ndent-dual-channel-previews/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                    "column": 16,
+                    "line": 94
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-e3eacd0f843ee3b25c68",
+          "file": "card-maker.e2e.js",
+          "line": 640,
+          "column": 1
+        },
+        {
+          "title": "free collage and bilingual maker projects retain image/audio copies and export working shared JS, Helper and HTML without private notes",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1412,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:652:46",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                      "column": 16,
+                      "line": 94
+                    },
+                    "snippet": "  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 94
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8003/\", waiting until \"load\"\u001b[22m\n\n\n  92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),\n  93 |         );\n> 94 |     await page.goto('/');\n     |                ^\n  95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });\n  96 |     await page.waitForFunction(() => !document.getElementById('preloader'));\n  97 |     await page.unroute('**/api/settings/get');\n    at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:652:46"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 16,
+                        "line": 27
+                      },
+                      "message": "Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js\n\n  25 | }\n  26 | async function home(page) {\n> 27 |     await page.evaluate(async () => {\n     |                ^\n  28 |         const { closeCurrentChat } = await import('/script.js');\n  29 |         await closeCurrentChat();\n  30 |     });\n    at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:216:19"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:08:19.468Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-free-col-5cd65--HTML-without-private-notes/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-free-col-5cd65--HTML-without-private-notes/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated/card-maker.e2e.js-free-col-5cd65--HTML-without-private-notes/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                    "column": 16,
+                    "line": 94
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-b8ccb789e60042fdf0ea",
+          "file": "card-maker.e2e.js",
+          "line": 651,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-30T09:07:51.746Z",
+    "duration": 30173.171,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 7,
+    "flaky": 0
+  }
+}

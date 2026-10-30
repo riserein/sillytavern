@@ -1,0 +1,166 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-native.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/creative-upgrade/native-integrated-release-playwright.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/native-integrated-release",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-native.e2e.js"
+        ],
+        "timeout": 360000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-native.e2e.js",
+      "file": "card-native.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [
+                {
+                  "type": "runtime-sha256-at-test-start",
+                  "description": "a13afd2e96a542acc1ca5d342a7af53db798a6b78939f00038778536c12e86d3"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 67117,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:52:33.486Z",
+                  "annotations": [
+                    {
+                      "type": "runtime-sha256-at-test-start",
+                      "description": "a13afd2e96a542acc1ca5d342a7af53db798a6b78939f00038778536c12e86d3"
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-4a5d4960de66128e3708",
+          "file": "card-native.e2e.js",
+          "line": 2299,
+          "column": 37
+        },
+        {
+          "title": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [
+                {
+                  "type": "runtime-sha256-at-test-start",
+                  "description": "a13afd2e96a542acc1ca5d342a7af53db798a6b78939f00038778536c12e86d3"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 73749,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:53:40.924Z",
+                  "annotations": [
+                    {
+                      "type": "runtime-sha256-at-test-start",
+                      "description": "a13afd2e96a542acc1ca5d342a7af53db798a6b78939f00038778536c12e86d3"
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b87ee61e4f2719ca13e-e2b389695c3ddcb10ead",
+          "file": "card-native.e2e.js",
+          "line": 2299,
+          "column": 37
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-30T09:52:32.267Z",
+    "duration": 142755.56199999998,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

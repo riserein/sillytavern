@@ -1,0 +1,738 @@
+{
+  "status": "passed-for-executed-tests",
+  "executedTests": [
+    {
+      "title": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "saving local bindings and exporting an imported card never remove its unrelated carried player",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "two designer-bound roles retain different layouts and selected fonts while sharing one playlist",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · desktop",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · touch",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch",
+      "status": "passed",
+      "expectedStatus": "passed"
+    }
+  ],
+  "version": "2.3.0",
+  "largeFixture": false,
+  "coverage": "See executedTests and runner command/report for exact selection; no inferred full-suite claim.",
+  "verifiedAt": "2026-10-30T09:15:51.954Z",
+  "runtimeSha256": "6b429ce41d906683707526dc99a37ef3e82d4152434015c7138aaec2ccdd50e6",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "saving local bindings and exporting an imported card never remove its unrelated carried player",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "two designer-bound roles retain different layouts and selected fonts while sharing one playlist",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · desktop",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · touch",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1257498,
+      "milliseconds": 1152
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4480972,
+      "milliseconds": 3884
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 820506,
+      "milliseconds": 858
+    },
+    {
+      "operation": "journal-scenes-export",
+      "mobile": false,
+      "format": "json",
+      "bytes": 1917665,
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "One",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "One · 封面",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "One · 歌词",
+          "bytes": 39,
+          "encodedBytes": 39,
+          "external": false
+        },
+        {
+          "kind": "audio",
+          "name": "Two",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Two · 封面",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "场景封面",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "background",
+          "name": "场景背景",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 1057306,
+      "payloadBytes": 1415420,
+      "scriptBytes": 1915195,
+      "problems": [],
+      "jsonPlayerBytes": 1915195,
+      "pngPlayerBytes": 2553596,
+      "pngUncompactedPlayerBytes": 5107192,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1290655,
+      "milliseconds": 1774
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1917665,
+      "milliseconds": 1912
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 2631760,
+      "milliseconds": 2535
+    },
+    {
+      "operation": "journal-scenes-export",
+      "mobile": true,
+      "format": "json",
+      "bytes": 1885009,
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "One",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "One · 封面",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "One · 歌词",
+          "bytes": 39,
+          "encodedBytes": 39,
+          "external": false
+        },
+        {
+          "kind": "audio",
+          "name": "Two",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Two · 封面",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "场景封面",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "background",
+          "name": "场景背景",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 1032816,
+      "payloadBytes": 1382764,
+      "scriptBytes": 1882539,
+      "problems": [],
+      "jsonPlayerBytes": 1882539,
+      "pngPlayerBytes": 2510052,
+      "pngUncompactedPlayerBytes": 5020104,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1257999,
+      "milliseconds": 1761
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1885009,
+      "milliseconds": 2085
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 2588216,
+      "milliseconds": 2962
+    },
+    {
+      "operation": "soundscape-file",
+      "format": "json",
+      "mobile": false,
+      "bytes": 1703719
+    },
+    {
+      "operation": "soundscape-export",
+      "format": "json",
+      "mobile": false,
+      "bytes": 1703719,
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "Piano",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Piano · 封面",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "ambient-audio",
+          "name": "音景 · audio:085e68d31",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "音景 · cover:b4f367075",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 896244,
+      "payloadBytes": 1201391,
+      "scriptBytes": 1701253,
+      "problems": [],
+      "jsonPlayerBytes": 1701253,
+      "pngPlayerBytes": 2268340,
+      "pngUncompactedPlayerBytes": 4536680,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "operation": "soundscape-file",
+      "format": "png",
+      "mobile": false,
+      "bytes": 2346496
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1611430,
+      "milliseconds": 1925
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1703719,
+      "milliseconds": 2069
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 2346496,
+      "milliseconds": 2450
+    },
+    {
+      "operation": "soundscape-file",
+      "format": "json",
+      "mobile": true,
+      "bytes": 1703719
+    },
+    {
+      "operation": "soundscape-export",
+      "format": "json",
+      "mobile": true,
+      "bytes": 1703719,
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "Piano",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "Piano · 封面",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "ambient-audio",
+          "name": "音景 · audio:085e68d31",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "音景 · cover:b4f367075",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 896244,
+      "payloadBytes": 1201391,
+      "scriptBytes": 1701253,
+      "problems": [],
+      "jsonPlayerBytes": 1701253,
+      "pngPlayerBytes": 2268340,
+      "pngUncompactedPlayerBytes": 4536680,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "operation": "soundscape-file",
+      "format": "png",
+      "mobile": true,
+      "bytes": 2346496
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1611430,
+      "milliseconds": 1357
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1703719,
+      "milliseconds": 2275
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 2346496,
+      "milliseconds": 3442
+    },
+    {
+      "operation": "creative23-file",
+      "mobile": false,
+      "format": "json",
+      "bytes": 1385936,
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "CreativeSong",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "CreativeSong · 封面",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "CreativeSong · 译文与关联",
+          "bytes": 500,
+          "encodedBytes": 500,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "CreativeSong · 歌词",
+          "bytes": 39,
+          "encodedBytes": 39,
+          "external": false
+        },
+        {
+          "kind": "collage-image",
+          "name": "手账拼贴 · cover:4b65186d-9cb8-4fa4-8b45-68b43ad427f5",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 657102,
+      "payloadBytes": 883353,
+      "scriptBytes": 1383462,
+      "problems": [],
+      "jsonPlayerBytes": 1383462,
+      "pngPlayerBytes": 1844616,
+      "pngUncompactedPlayerBytes": 3689232,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "operation": "creative23-file",
+      "mobile": false,
+      "format": "png",
+      "bytes": 1922788
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1385936,
+      "milliseconds": 2146
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 1922788,
+      "milliseconds": 2677
+    },
+    {
+      "operation": "creative23-file",
+      "mobile": true,
+      "format": "json",
+      "bytes": 1351920,
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "CreativeSong",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "CreativeSong · 封面",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "CreativeSong · 译文与关联",
+          "bytes": 500,
+          "encodedBytes": 500,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "CreativeSong · 歌词",
+          "bytes": 39,
+          "encodedBytes": 39,
+          "external": false
+        },
+        {
+          "kind": "collage-image",
+          "name": "手账拼贴 · cover:8f8a7ae4-7f2d-4a3d-b0ff-b7dcc5b4c3c4",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 631592,
+      "payloadBytes": 849337,
+      "scriptBytes": 1349446,
+      "problems": [],
+      "jsonPlayerBytes": 1349446,
+      "pngPlayerBytes": 1799264,
+      "pngUncompactedPlayerBytes": 3598528,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "operation": "creative23-file",
+      "mobile": true,
+      "format": "png",
+      "bytes": 1877432
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1351920,
+      "milliseconds": 3051
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 1877432,
+      "milliseconds": 3631
+    }
+  ],
+  "performanceRecords": []
+}

@@ -1,0 +1,375 @@
+
+Running 72 tests using 1 worker
+
+(node:22711) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:22711) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/listening.e2e.js:23:1 › actual host favorites persist, ZIP includes them, batch addition/deletion preserves files and listening (45.2s)
+  ✓   2 tests/listening.e2e.js:47:1 › actual audio ramps cancel across rapid control changes, keep base volume and one Audio, and sleep ends a track without advancing (32.3s)
+  ✓   3 tests/listening.e2e.js:65:1 › one real minute deadline stops actual MP3 while the panel is closed and restores normal volume (1.3m)
+  ✓   4 tests/night-ui.e2e.js:120:1 › B queue edits change listening order without editing permanent collections, and reload restores the collection (36.6s)
+  ✓   5 tests/night-ui.e2e.js:174:1 › B browsing keeps audio playing; library search, batch memberships, descriptions and saved order work together (53.0s)
+  ✓   6 tests/night-ui.e2e.js:253:1 › B layout responds to the floating container, keeps mobile controls visible and respects real waiting and reduced motion (34.5s)
+  ✓   7 tests/player.e2e.js:212:1 › SillyTavern loads the extension and the empty player is usable (12.2s)
+  ✓   8 tests/player.e2e.js:228:1 › local imports play actual audio, seek, adjust volume, and keep playing with panel closed (24.5s)
+  ✓   9 tests/player.e2e.js:264:1 › manual switching and all four completion modes behave correctly (40.3s)
+  ✓  10 tests/player.e2e.js:303:1 › settings and IndexedDB music survive a real page reload without autoplay (31.4s)
+  ✓  11 tests/player.e2e.js:326:1 › audio URLs play and duplicate entries are rejected (22.3s)
+  ✓  12 tests/player.e2e.js:350:1 › invalid files, broken links and browser playback restrictions explain recovery (30.5s)
+  ✓  13 tests/player.e2e.js:383:1 › deleting a selected local track clears playback and its stored audio (25.0s)
+  ✓  14 tests/player.e2e.js:404:1 › failed compressed settings saves preserve prior artwork across reload; confirmed saves retire it (39.8s)
+  ✓  15 tests/player.e2e.js:466:1 › filenames are rendered as text, and the player fits a small screen (9.3s)
+  ✓  16 tests/player.e2e.js:496:1 › the launcher and window drag independently, preserve their positions and do not toggle on drag (17.7s)
+  ✓  17 tests/player.e2e.js:539:1 › dragging is bounded, a smaller viewport remains usable, and positions can be reset (11.8s)
+  ✓  18 tests/player.e2e.js:584:1 › all six palettes and both materials apply to both controls without interrupting music, and persist (25.2s)
+  ✓  19 tests/player.e2e.js:629:3 › touch dragging › touch moves the ball and header, and a cancelled gesture does not break the next click (10.0s)
+  ✓  20 tests/player.e2e.js:700:3 › touch dragging › touch drags the background crop and saves the selected area (9.0s)
+  ✓  21 tests/player.e2e.js:848:1 › import destinations, album rename and deletion preserve music and survive reload (28.2s)
+  ✓  22 tests/player.e2e.js:901:1 › shared songs, album-only removal and confirmed global deletion have distinct effects (44.9s)
+  ✘  23 tests/player.e2e.js:936:1 › one album binds multiple real cards, card changes never autoplay, and going home pauses music (48.5s)
+(node:32921) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:32921) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  24 tests/player.e2e.js:997:1 › going home cancels pending local audio loads without reopening a stale role playlist (50.0s)
+(node:33497) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:33497) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  25 tests/player.e2e.js:1059:1 › separate pages keep management away from playback and preserve audio across tabs (26.0s)
+  ✓  26 tests/player.e2e.js:1088:1 › recent and ranking pages record successful starts once, support replay, persist and clean up deletions (31.3s)
+  ✓  27 tests/player.e2e.js:1139:1 › recent page shows only 100 songs and rolling rankings drop expired plays (19.7s)
+  ✘  28 tests/player.e2e.js:1190:1 › cropping chooses the actual region, layers themes and materials, persists and removes stored images (20.5s)
+(node:34173) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34173) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  29 tests/player.e2e.js:1299:1 › crop dragging, cancellation and invalid image recovery work on a small screen (13.8s)
+  ✘  30 tests/player.e2e.js:1340:1 › mask transparency is independent per material, preserves clear mode, and persists across reloads (14.0s)
+(node:34587) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34587) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  31 tests/player.e2e.js:1428:1 › custom accent, background and text colors update both controls, preserve music and image, and restore presets (31.3s)
+  ✘  32 tests/player.e2e.js:1489:1 › click halos animate, clean up, respect reduced motion and never turn drags into clicks (15.8s)
+(node:35226) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:35226) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  33 tests/player.e2e.js:1527:1 › library and import are independent, and covers switch to synchronized embedded MP3 lyrics (38.1s)
+  ✘  34 tests/player.e2e.js:1582:1 › missing art uses bundled images; manual cover and LRC imports persist and delete with the song (51.2s)
+(node:36722) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:36722) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  35 tests/player.e2e.js:1634:1 › retired font selections fall back after reload without fetching removed files or losing local songs (35.9s)
+  ✓  36 tests/player.e2e.js:1676:1 › the bundled Poxiao font works offline, custom fonts persist, and font changes stay inside the player (27.9s)
+  ✓  37 tests/player.e2e.js:1725:1 › both compact bundled faces show their own previews, work without the font CDN, and support keyboard selection (16.5s)
+  ✓  38 tests/player.e2e.js:1776:1 › batch font imports preserve both files, reject duplicates and invalid files, and delete independently after reload (25.3s)
+  ✓  39 tests/player.e2e.js:1827:1 › a legacy single custom font survives upgrading to the preview library (15.7s)
+  ✓  40 tests/player.e2e.js:1854:1 › font previews fit mobile and failed bundled downloads keep the current font until a successful retry (10.6s)
+  ✓  41 tests/player.e2e.js:1883:1 › lyrics occupy the transparent full panel, preserve playback, and return with an explicit button or Escape (14.6s)
+  ✓  42 tests/player.e2e.js:1930:1 › frosted playlist menus are readable, keyboard accessible, and stay inside a phone-sized panel (17.7s)
+  ✓  43 tests/player.e2e.js:1974:1 › resizing clamps the panel, saves size and position, preserves audio and recovers after viewport changes (25.3s)
+  ✓  44 tests/player.e2e.js:2030:1 › system day/night changes update both controls while manual mode and custom colors remain saved (25.4s)
+  ✓  45 tests/player.e2e.js:2078:1 › only player clicks and blank areas trigger small optional ripples without intercepting tavern input (10.9s)
+  ✓  46 tests/player.e2e.js:2125:3 › touch resizing › the resize grip works with touch and keeps all edges visible (8.8s)
+  ✓  47 tests/player.e2e.js:2163:1 › checkbox ticks remain visible and scrollbars are slim without white tracks (13.9s)
+  ✓  48 tests/player.e2e.js:2201:1 › my music lists library first, creates an album from a song, and saves an independent playlist cover (26.9s)
+  ✓  49 tests/player.e2e.js:2280:1 › recent and library song controls pause and resume in place and stay in sync with the mini player (18.0s)
+  ✓  50 tests/player.e2e.js:2305:1 › vinyl mini bar animates only while playing and its queue uses two thirds of desktop and mobile player (37.5s)
+  ✘  51 tests/player.e2e.js:2359:1 › song details open as a two thirds bottom sheet and retain controls, focus and playback after cover edits (43.6s)
+(node:39869) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39869) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  52 tests/player.e2e.js:2417:1 › background saves leave no lingering message and the compact mini bar stays at the bottom in both color schemes (16.5s)
+  ✓  53 tests/player.e2e.js:2524:1 › online search plays real fixture audio, shows attribution, deduplicates saves and reloads without fetching on startup (24.8s)
+  ✓  54 tests/player.e2e.js:2560:1 › sharing unsupported platform songs produces explicit external bookmarks while unsupported playlists never import (18.0s)
+  ✓  55 tests/player.e2e.js:2596:1 › share previews are invalidated when edited, confirm target albums, and preserve local/platform mixed playback and binding (41.4s)
+  ✓  56 tests/player.e2e.js:2633:1 › failed and cancelled online searches leave local music usable and enforce rate-limit cooldown (14.2s)
+  ✓  57 tests/player.e2e.js:2662:1 › empty default catalog stays separate, can be hidden, and never invents preset songs (24.6s)
+  ✓  58 tests/player.e2e.js:2696:1 › cancelling an online request prevents stale results from replacing a later successful search (20.3s)
+  ✓  59 tests/player.e2e.js:2732:1 › bundled catalog updates do not fetch playlists at startup or overwrite copied songs and user memberships (40.4s)
+  ✓  60 tests/player.e2e.js:2814:1 › conditional playlist adapter previews every page, refuses overflow and reuses repeated source playlists (34.2s)
+  ✓  61 tests/player.e2e.js:2901:1 › official music embeds preserve metadata, pause native playback, stop on dismissal and never fabricate history (37.6s)
+  ✓  62 tests/player.e2e.js:2987:1 › expired platform audio is refreshed on manual retry and the real playback check requires advancing audio (22.0s)
+  ✓  63 tests/player.e2e.js:3033:1 › a large playlist can be explicitly selected to fit capacity without silently discarding tracks or source artwork (42.9s)
+  ✓  64 tests/player.e2e.js:3117:1 › a licensed permanent direct default plays through the real native player and viewing details does not copy it (26.2s)
+  ✓  65 tests/player.e2e.js:3179:1 › candidate official playback unloads on actual role exit without adding native history (27.5s)
+  ✓  66 tests/player.e2e.js:3236:1 › missing lyrics can be searched, previewed and confirmed without interrupting playback, then survive reload (39.1s)
+  ✓  67 tests/ui-design.e2e.js:6:1 › static icon validation rejects active formats, animations and huge dimensions before browser decode (520ms)
+  ✓  68 tests/ui-design.e2e.js:70:1 › controlled real-audio presentation changes four layouts without replacing or seeking Audio, on desktop and mobile viewport (10.3s)
+  ✘  69 tests/ui-design.e2e.js:164:1 › real SillyTavern switches, plays, navigates lyrics/queue and saves four designs without losing legacy settings (2.3m)
+(node:45002) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45002) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  70 tests/ui-design.e2e.js:334:1 › five real host launchers drag, control one audio and keep custom icons above a mobile input (44.4s)
+  ✓  71 tests/ui-design.e2e.js:476:1 › live designer previews one audio, preserves unapplied settings and manages safe templates on desktop and mobile (54.0s)
+  ✓  72 tests/ui-design.e2e.js:663:1 › 200-track shared player handles large artwork, layout changes and repeated disposal with one audio (20.2s)
+
+
+  1) tests/player.e2e.js:936:1 › one album binds multiple real cards, card changes never autoplay, and going home pauses music 
+
+    [31mTest timeout of 45000ms exceeded.[39m
+
+    Error: page.evaluate: Target page, context or browser has been closed
+
+      538 |
+      539 | async function removeTestCards(page, cards) {
+    > 540 |     await page.evaluate(async avatars => {
+          |                ^
+      541 |         const { closeCurrentChat, getCharacters } = await import('/script.js');
+      542 |         await closeCurrentChat();
+      543 |         for (const avatar of avatars) {
+        at removeTestCards (/workspace/sillytavern/tests/player.e2e.js:540:16)
+        at /workspace/sillytavern/tests/player.e2e.js:670:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-one-album-bi-740f6-and-going-home-pauses-music/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/full-release/player.e2e.js-one-album-bi-740f6-and-going-home-pauses-music/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-one-album-bi-740f6-and-going-home-pauses-music/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/full-release/player.e2e.js-one-album-bi-740f6-and-going-home-pauses-music/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/player.e2e.js:997:1 › going home cancels pending local audio loads without reopening a stale role playlist 
+
+    [31mTest timeout of 45000ms exceeded.[39m
+
+    Error: page.evaluate: Target page, context or browser has been closed
+
+      704 |         expect(await page.evaluate(() => SillyTavern.getContext().characterId)).toBeUndefined();
+      705 |     } finally {
+    > 706 |         await page.evaluate(async () => {
+          |                    ^
+      707 |             const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
+      708 |             if (window.__stmOriginalGet) LocalMusicStore.prototype.get = window.__stmOriginalGet;
+      709 |             window.__stmReleaseRead?.();
+        at /workspace/sillytavern/tests/player.e2e.js:706:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-going-home-c-9ed2f-ening-a-stale-role-playlist/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/full-release/player.e2e.js-going-home-c-9ed2f-ening-a-stale-role-playlist/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-going-home-c-9ed2f-ening-a-stale-role-playlist/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/full-release/player.e2e.js-going-home-c-9ed2f-ening-a-stale-role-playlist/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) tests/player.e2e.js:1190:1 › cropping chooses the actual region, layers themes and materials, persists and removes stored images 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m"0"[39m
+    Received: [31m"1"[39m
+
+      839 |     await saved;
+      840 |     expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::before').filter)).toBe('none');
+    > 841 |     expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::after').opacity)).toBe('0');
+          |                                                                                                                 ^
+      842 |     const filters = [];
+      843 |     for (const surface of ['matte', 'glass']) {
+      844 |         await page.locator(`[data-surface-choice="${surface}"]`).click();
+        at /workspace/sillytavern/tests/player.e2e.js:841:113
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-cropping-cho-ca584-s-and-removes-stored-images/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/full-release/player.e2e.js-cropping-cho-ca584-s-and-removes-stored-images/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-cropping-cho-ca584-s-and-removes-stored-images/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/full-release/player.e2e.js-cropping-cho-ca584-s-and-removes-stored-images/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) tests/player.e2e.js:1340:1 › mask transparency is independent per material, preserves clear mode, and persists across reloads 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m"0.2"[39m
+    Received: [31m"1"[39m
+
+      908 |     await page.getByRole('slider', { name: '遮罩透明度', exact: true }).fill('80');
+      909 |     await expect(page.locator('[data-role="mask-transparency"]')).toHaveText('80%');
+    > 910 |     expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::after').opacity)).toBe('0.2');
+          |                                                                                                                 ^
+      911 |     await page.getByRole('button', { name: '雾面', exact: true }).click();
+      912 |     await page.getByRole('slider', { name: '遮罩透明度', exact: true }).fill('25');
+      913 |     expect(await page.locator('#stm-player').evaluate(element => getComputedStyle(element, '::after').opacity)).toBe('0.75');
+        at /workspace/sillytavern/tests/player.e2e.js:910:113
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-mask-transpa-eeace-and-persists-across-reloads/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/full-release/player.e2e.js-mask-transpa-eeace-and-persists-across-reloads/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-mask-transpa-eeace-and-persists-across-reloads/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/full-release/player.e2e.js-mask-transpa-eeace-and-persists-across-reloads/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) tests/player.e2e.js:1489:1 › click halos animate, clean up, respect reduced motion and never turn drags into clicks 
+
+    Error: locator.evaluate: TypeError: Cannot read properties of undefined (reading 'effect')
+        at eval (eval at evaluate (:290:30), <anonymous>:4:27)
+        at UtilityScript.evaluate (<anonymous>:292:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:290:30), <anonymous>:4:27)
+        at UtilityScript.evaluate (<anonymous>:292:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /workspace/sillytavern/tests/player.e2e.js:982:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-click-halos--b8857-ever-turn-drags-into-clicks/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/full-release/player.e2e.js-click-halos--b8857-ever-turn-drags-into-clicks/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-click-halos--b8857-ever-turn-drags-into-clicks/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/full-release/player.e2e.js-click-halos--b8857-ever-turn-drags-into-clicks/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) tests/player.e2e.js:1582:1 › missing art uses bundled images; manual cover and LRC imports persist and delete with the song 
+
+    Error: Test timeout of 45000ms exceeded
+
+      1056 |     await playerPage(page, '曲库'); page.once('dialog', dialog => dialog.accept());
+      1057 |     await songAction(page, '删除：没有封面的歌');
+    > 1058 |     await expect.poll(() => page.evaluate(async keys => { const {LocalMusicStore} = await import('/scripts/extensions/third-party/sillytavern/local-store.js'); const store=new LocalMusicStore(); return (await Promise.all(keys.map(key=>store.get(key)))).every(value=>!value); }, keys)).toBe(true);
+           |     ^
+      1059 |     await expect(page.locator('.stm-track')).toHaveCount(0);
+      1060 | });
+      1061 |
+        at /workspace/sillytavern/tests/player.e2e.js:1058:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-missing-art--7cc0c-st-and-delete-with-the-song/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/full-release/player.e2e.js-missing-art--7cc0c-st-and-delete-with-the-song/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-missing-art--7cc0c-st-and-delete-with-the-song/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/full-release/player.e2e.js-missing-art--7cc0c-st-and-delete-with-the-song/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) tests/player.e2e.js:2359:1 › song details open as a two thirds bottom sheet and retain controls, focus and playback after cover edits 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeFocused[2m([22m[2m)[22m failed
+
+    Locator:  getByRole('button', { name: '歌曲详情：我的封面与歌词', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toBeFocused" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('button', { name: '歌曲详情：我的封面与歌词', exact: true })[22m
+    [2m    8 × locator resolved to <button type="button" class="stm-icon" aria-label="歌曲详情：我的封面与歌词" data-details-id="1f5da447-943c-4505-961d-09822be4ab91">⋯</button>[22m
+    [2m      - unexpected value "inactive"[22m
+
+
+      1507 |     }
+      1508 | });
+    > 1509 |
+           | ^
+      1510 | test('background saves leave no lingering message and the compact mini bar stays at the bottom in both color schemes', async ({ page }) => {
+      1511 |     await importBackground(page); await page.getByRole('button', {name:'使用此区域',exact:true}).click();
+      1512 |     await expect(page.locator('.stm-crop-editor')).toBeHidden();
+        at /workspace/sillytavern/tests/player.e2e.js:1509:64
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-song-details-2b67d--playback-after-cover-edits/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/full-release/player.e2e.js-song-details-2b67d--playback-after-cover-edits/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/full-release/player.e2e.js-song-details-2b67d--playback-after-cover-edits/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/full-release/player.e2e.js-song-details-2b67d--playback-after-cover-edits/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) tests/ui-design.e2e.js:164:1 › real SillyTavern switches, plays, navigates lyrics/queue and saves four designs without losing legacy settings 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('#stm-launcher')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('#stm-launcher')[22m
+
+
+      58 |  }
+      59 |  await page.getByRole('tab',{name:'外观',exact:true}).click();const saved=page.waitForResponse(response=>{if(!response.url().endsWith('/api/settings/save')||!response.ok())return false;try{const request=response.request(),body=request.headers()['content-encoding']==='gzip'?JSON.parse(gunzipSync(request.postDataBuffer()).toString()):request.postDataJSON();return body.extension_settings?.riserein_music_player?.uiDesign?.layout==='pure';}catch{return false;}});
+    > 60 |  await choose(page,'#stm-design-theme','cream');await saved;await page.reload();await expect(page.locator('#stm-launcher')).toBeVisible();await page.waitForFunction(()=>!document.getElementById('preloader'));await page.locator('#stm-launcher').click();await expect(page.locator('#stm-player')).toHaveAttribute('data-layout','pure');
+         |                                                                                                                             ^
+      61 |  const restored=await page.evaluate(()=>SillyTavern.getContext().extensionSettings.riserein_music_player);expect(restored.theme).toBe('night');expect(restored.fontPreset).toBe('sans');expect(restored.tracks.length).toBe(2);expect(await page.locator('#stm-player audio').evaluate(a=>a.paused)).toBe(true);
+      62 | });
+      63 | test('five real host launchers drag, control one audio and keep custom icons above a mobile input',async({page})=>{
+        at /workspace/sillytavern/tests/ui-design.e2e.js:60:125
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/full-release/ui-design.e2e.js-real-Sill-8e8a7-hout-losing-legacy-settings/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/full-release/ui-design.e2e.js-real-Sill-8e8a7-hout-losing-legacy-settings/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/full-release/ui-design.e2e.js-real-Sill-8e8a7-hout-losing-legacy-settings/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/full-release/ui-design.e2e.js-real-Sill-8e8a7-hout-losing-legacy-settings/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8 failed
+    tests/player.e2e.js:936:1 › one album binds multiple real cards, card changes never autoplay, and going home pauses music 
+    tests/player.e2e.js:997:1 › going home cancels pending local audio loads without reopening a stale role playlist 
+    tests/player.e2e.js:1190:1 › cropping chooses the actual region, layers themes and materials, persists and removes stored images 
+    tests/player.e2e.js:1340:1 › mask transparency is independent per material, preserves clear mode, and persists across reloads 
+    tests/player.e2e.js:1489:1 › click halos animate, clean up, respect reduced motion and never turn drags into clicks 
+    tests/player.e2e.js:1582:1 › missing art uses bundled images; manual cover and LRC imports persist and delete with the song 
+    tests/player.e2e.js:2359:1 › song details open as a two thirds bottom sheet and retain controls, focus and playback after cover edits 
+    tests/ui-design.e2e.js:164:1 › real SillyTavern switches, plays, navigates lyrics/queue and saves four designs without losing legacy settings 
+  64 passed (35.7m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

@@ -1,0 +1,38 @@
+
+Running 12 tests using 1 worker
+
+(node:43888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/journal-create.e2e.js:207:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (7.9s)
+  ✓   2 [desktop] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (8.1s)
+  ✓   3 [desktop] › tests/journal-create.e2e.js:465:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (12.0s)
+(node:44135) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44135) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   4 [mobile-320] › tests/journal-create.e2e.js:207:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (6.8s)
+  ✓   5 [mobile-320] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (8.1s)
+  ✓   6 [mobile-320] › tests/journal-create.e2e.js:465:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (11.3s)
+(node:44517) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44517) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [mobile-390] › tests/journal-create.e2e.js:207:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (7.1s)
+  ✓   8 [mobile-390] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (7.7s)
+  ✓   9 [mobile-390] › tests/journal-create.e2e.js:465:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (10.1s)
+(node:44768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 [mobile-412] › tests/journal-create.e2e.js:207:1 › free journal reuses real controls, queue and lyric reader through page/layout changes without interrupting music (7.4s)
+  ✓  11 [mobile-412] › tests/journal-create.e2e.js:287:1 › local collage art is real, safe templates carry bytes, and preview restores the original resource graph (6.3s)
+  ✓  12 [mobile-412] › tests/journal-create.e2e.js:465:1 › mouse/touch collage geometry stays independent, locked layers resist edits, and moving art does not restart playback (9.5s)
+
+  12 passed (1.9m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

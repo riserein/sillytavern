@@ -1,0 +1,20 @@
+
+Running 4 tests using 1 worker
+
+(node:48566) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:48566) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/card-native.e2e.js:548:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl (2.6m)
+  ✓  2 tests/card-native.e2e.js:548:5 › native PNG and JSON carry the shared player to a clean phone recipient · pure (2.8m)
+  ✓  3 tests/card-native.e2e.js:2293:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop (1.5m)
+  ✓  4 tests/card-native.e2e.js:2293:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch (1.3m)
+
+  Slow test file: tests/card-native.e2e.js (8.3m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  4 passed (8.3m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

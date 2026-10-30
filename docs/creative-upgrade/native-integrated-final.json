@@ -1,0 +1,135 @@
+{
+  "status": "incomplete-or-failed",
+  "executedTests": [
+    {
+      "title": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch",
+      "status": "failed",
+      "expectedStatus": "passed",
+      "annotations": [
+        {
+          "type": "runtime-sha256-at-test-start",
+          "description": "a13afd2e96a542acc1ca5d342a7af53db798a6b78939f00038778536c12e86d3"
+        }
+      ]
+    }
+  ],
+  "version": "2.3.0",
+  "largeFixture": false,
+  "coverage": "See executedTests and runner command/report for exact selection; no inferred full-suite claim.",
+  "verifiedAt": "2026-10-30T09:48:14.686Z",
+  "runtimeSha256": "a13afd2e96a542acc1ca5d342a7af53db798a6b78939f00038778536c12e86d3",
+  "runtimeHashMeaning": "file at report time; executedTests annotations record each test-start file hash",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch",
+      "status": "failed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "operation": "creative23-file",
+      "mobile": true,
+      "format": "json",
+      "bytes": 1707701,
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "CreativeSong",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "CreativeSong · 封面",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "CreativeSong · 译文与关联",
+          "bytes": 500,
+          "encodedBytes": 500,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "CreativeSong · 歌词",
+          "bytes": 39,
+          "encodedBytes": 39,
+          "external": false
+        },
+        {
+          "kind": "ambient-audio",
+          "name": "音景 · audio:085e68d31",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "collage-image",
+          "name": "手账拼贴 · cover:ade71d08-d640-4c54-835e-24bf54bdbc62",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 897264,
+      "payloadBytes": 1204478,
+      "scriptBytes": 1705227,
+      "problems": [],
+      "jsonPlayerBytes": 1705227,
+      "pngPlayerBytes": 2273636,
+      "pngUncompactedPlayerBytes": 4547272,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "operation": "creative23-file",
+      "mobile": true,
+      "format": "png",
+      "bytes": 2351808
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1707701,
+      "milliseconds": 1123
+    }
+  ],
+  "performanceRecords": []
+}

@@ -1,0 +1,93 @@
+
+Running 8 tests using 1 worker
+
+(node:47538) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:47538) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/player.e2e.js:936:1 › one album binds multiple real cards, card changes never autoplay, and going home pauses music (2.6m)
+(node:48567) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:48567) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 tests/player.e2e.js:997:1 › going home cancels pending local audio loads without reopening a stale role playlist (2.6m)
+(node:49094) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:49094) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 tests/player.e2e.js:1190:1 › cropping chooses the actual region, layers themes and materials, persists and removes stored images (35.0s)
+  ✓  4 tests/player.e2e.js:1340:1 › mask transparency is independent per material, preserves clear mode, and persists across reloads (25.8s)
+  ✓  5 tests/player.e2e.js:1490:1 › click halos animate, clean up, respect reduced motion and never turn drags into clicks (13.7s)
+  ✓  6 tests/player.e2e.js:1594:1 › missing art uses bundled images; manual cover and LRC imports persist and delete with the song (18.6s)
+  ✓  7 tests/player.e2e.js:2371:1 › song details open as a two thirds bottom sheet and retain controls, focus and playback after cover edits (22.2s)
+  ✓  8 tests/ui-design.e2e.js:164:1 › real SillyTavern switches, plays, navigates lyrics/queue and saves four designs without losing legacy settings (1.2m)
+
+
+  1) tests/player.e2e.js:936:1 › one album binds multiple real cards, card changes never autoplay, and going home pauses music 
+
+    [31mTest timeout of 150000ms exceeded.[39m
+
+    Error: page.evaluate: Target page, context or browser has been closed
+
+      538 |
+      539 | async function removeTestCards(page, cards) {
+    > 540 |     await page.evaluate(async avatars => {
+          |                ^
+      541 |         const { closeCurrentChat, getCharacters } = await import('/script.js');
+      542 |         await closeCurrentChat();
+      543 |         for (const avatar of avatars) {
+        at removeTestCards (/workspace/sillytavern/tests/player.e2e.js:540:16)
+        at /workspace/sillytavern/tests/player.e2e.js:670:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/full-retest/player.e2e.js-one-album-bi-740f6-and-going-home-pauses-music/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/full-retest/player.e2e.js-one-album-bi-740f6-and-going-home-pauses-music/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/full-retest/player.e2e.js-one-album-bi-740f6-and-going-home-pauses-music/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/full-retest/player.e2e.js-one-album-bi-740f6-and-going-home-pauses-music/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/player.e2e.js:997:1 › going home cancels pending local audio loads without reopening a stale role playlist 
+
+    [31mTest timeout of 150000ms exceeded.[39m
+
+    Error: page.evaluate: Target page, context or browser has been closed
+
+      704 |         expect(await page.evaluate(() => SillyTavern.getContext().characterId)).toBeUndefined();
+      705 |     } finally {
+    > 706 |         await page.evaluate(async () => {
+          |                    ^
+      707 |             const { LocalMusicStore } = await import('/scripts/extensions/third-party/sillytavern/local-store.js');
+      708 |             if (window.__stmOriginalGet) LocalMusicStore.prototype.get = window.__stmOriginalGet;
+      709 |             window.__stmReleaseRead?.();
+        at /workspace/sillytavern/tests/player.e2e.js:706:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/full-retest/player.e2e.js-going-home-c-9ed2f-ening-a-stale-role-playlist/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/full-retest/player.e2e.js-going-home-c-9ed2f-ening-a-stale-role-playlist/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/full-retest/player.e2e.js-going-home-c-9ed2f-ening-a-stale-role-playlist/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/full-retest/player.e2e.js-going-home-c-9ed2f-ening-a-stale-role-playlist/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/player.e2e.js:936:1 › one album binds multiple real cards, card changes never autoplay, and going home pauses music 
+    tests/player.e2e.js:997:1 › going home cancels pending local audio loads without reopening a stale role playlist 
+  6 passed (8.5m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

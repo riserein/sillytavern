@@ -1,0 +1,19 @@
+✔ TXT translations do not acquire a fabricated line-number match (7.101096ms)
+✔ timestamp matching accounts for both file offsets and still requires confirmation (5.442172ms)
+✔ time-axis edits retain associations even when chronological order changes (2.446433ms)
+✔ original words or physical-line changes never silently attach translations to different words (7.440748ms)
+✔ manual TXT associations survive later creation of the original LRC timeline (1.066442ms)
+✔ translation validation bounds fields and makes distribution an explicit licensed choice (1.165905ms)
+✔ repeated-stamp expansion is bounded without deleting the original lyric text (4.521522ms)
+✔ empty lyrics and unmatched blank lines render safely (1.165249ms)
+✔ binary ZIP preserves normalized translation sources and independent restored track metadata (50.980368ms)
+✔ portable packaging carries authorized translation data and omits explicitly local-only translations (6.891718ms)
+✔ classic exports cannot quietly discard a bilingual recording that needs the shared lyric reader (1.024732ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 306.636596

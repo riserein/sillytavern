@@ -1,0 +1,38 @@
+
+Running 1 test using 1 worker
+
+(node:35531) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:35531) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/card-accounts.e2e.js:63:1 › real SillyTavern accounts isolate library/drafts and reject an old page saving into the new account (0ms)
+
+
+  1) tests/card-accounts.e2e.js:63:1 › real SillyTavern accounts isolate library/drafts and reject an old page saving into the new account 
+
+    Error: ENOENT: no such file or directory, open '/proc/387092/cmdline'
+
+       6 |  if(process.env.ST_MULTI_FIXTURE!=='1')throw new Error('Requires explicit disposable multi-account fixture');
+       7 |  const marker=JSON.parse(await readFile('/workspace/scratch/stm-v133-multi-fixture.json','utf8'));
+    >  8 |  const command=(await readFile(`/proc/${marker.pid}/cmdline`,'utf8')).split('\0');
+         |                 ^
+       9 |  expect(marker.purpose).toBe('music-plugin-v133-isolation-only');expect(marker.port).toBe(8133);
+      10 |  expect(command[command.indexOf('--dataRoot')+1]).toBe('/workspace/scratch/stm-v133-multi-data');expect(command[command.indexOf('--port')+1]).toBe('8133');
+      11 | });
+        at /workspace/sillytavern/tests/card-accounts.e2e.js:8:17
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/final-accounts/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/final-accounts/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/card-accounts.e2e.js:63:1 › real SillyTavern accounts isolate library/drafts and reject an old page saving into the new account 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

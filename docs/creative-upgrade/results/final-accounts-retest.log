@@ -1,0 +1,57 @@
+
+Running 1 test using 1 worker
+
+(node:35898) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:35898) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@181Internal error: step id not found: fixture@181
+  ✘  1 tests/card-accounts.e2e.js:63:1 › real SillyTavern accounts isolate library/drafts and reject an old page saving into the new account (1.1m)
+
+
+  1) tests/card-accounts.e2e.js:63:1 › real SillyTavern accounts isolate library/drafts and reject an old page saving into the new account 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('#stm-launcher')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('#stm-launcher')[22m
+
+
+      61 |   await b.locator('[data-data=file]').setInputFiles({name:'account-A.zip',mimeType:'application/zip',buffer:zip});await expect(b.locator('[data-data=status]')).toContainText('备份校验通过');await b.locator('[data-data=preview]').click();await expect(b.locator('[data-data=status]')).toContainText('恢复计划已核对');await b.locator('[data-data=apply]').click();await expect(b.locator('[data-data=status]')).toContainText('恢复完成',{timeout:30000});
+      62 |   const saved=await request.post('/api/settings/get',{headers:await b.evaluate(()=>SillyTavern.getContext().getRequestHeaders())});expect(JSON.parse((await saved.json()).settings).extension_settings.riserein_music_player.tracks).toHaveLength(1);
+    > 63 |   await b.reload();await expect(b.locator('#stm-launcher')).toBeVisible();await b.locator('#stm-launcher').click();await b.getByRole('tab',{name:'播放',exact:true}).click();await b.locator('[data-action=play]').click();await expect.poll(()=>b.locator('#stm-player audio').evaluate(n=>!n.paused&&n.currentTime>0)).toBe(true);
+         |                                                             ^
+      64 |  }finally{await context.close().catch(()=>{});}
+      65 | });
+      66 |
+        at /workspace/sillytavern/tests/card-accounts.e2e.js:63:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/final-accounts-retest/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/final-accounts-retest/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/final-accounts-retest/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/final-accounts-retest/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/card-accounts.e2e.js:63:1 › real SillyTavern accounts isolate library/drafts and reject an old page saving into the new account 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

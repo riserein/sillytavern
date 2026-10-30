@@ -1,0 +1,111 @@
+
+Running 2 tests using 1 worker
+
+(node:55031) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:55031) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@230
+  ✘  1 tests/card-native.e2e.js:2299:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop (1.1m)
+(node:55501) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:55501) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@230
+  ✘  2 tests/card-native.e2e.js:2299:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch (54.6s)
+
+
+  1) tests/card-native.e2e.js:2299:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator:  locator('.stm-collage')
+    Expected: visible
+    Received: hidden
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('.stm-collage')[22m
+    [2m    9 × locator resolved to <section class="stm-collage" data-device="mobile" data-separate-title="false">…</section>[22m
+    [2m      - unexpected value "hidden"[22m
+
+
+      1313 |   await mkdir(screenshotDir,{recursive:true});await recipient.locator('#stm-player').screenshot({path:`${screenshotDir}/creative23-private-${file.format}-${mobile?'touch':'desktop'}.png`});await recipient.locator('[data-collage-page=lyrics]').click();await recipient.locator('#stm-player').screenshot({path:`${screenshotDir}/creative23-bilingual-${file.format}-${mobile?'touch':'desktop'}.png`});
+      1314 |   await recipient.evaluate(async()=>{await TavernHelper.createChatMessages([{role:'user',message:'Creative lifecycle.'},{role:'assistant',message:'First.'}]);const id=SillyTavern.getContext().chat.length-1;await TavernHelper.setChatMessages([{message_id:id,swipe_id:0,swipes:['First.','Second.']}]);const {swipe_right,saveChat,openCharacterChat}=await import('/script.js');await swipe_right();await saveChat({force:true});await openCharacterChat('RSCP_Test_Creative_'+crypto.randomUUID());});expect(await recipient.evaluate(()=>creativeOriginal.node.isConnected&&creativeOriginal.audio===document.querySelector('[data-riserein-card-player] audio')&&!creativeOriginal.audio.paused)).toBe(true);
+    > 1315 |   await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('.stm-visibility-menu [data-display-hide]').click();expect(await recipient.evaluate(()=>creativeOriginal.audio.paused&&creativeOriginal.aux.paused)).toBe(true);await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();await expect(recipient.locator('.stm-collage')).toBeVisible();expect(await recipient.evaluate(()=>creativeOriginal.audio.paused&&creativeOriginal.aux.paused)).toBe(true);await recipient.locator('.stm-collage [data-action=play]').click();await expect.poll(()=>recipient.evaluate(()=>!creativeOriginal.audio.paused&&!creativeOriginal.aux.paused)).toBe(true);await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);expect(await recipient.evaluate(()=>creativeOriginal.audio.paused&&creativeOriginal.aux.paused&&!creativeOriginal.aux.isConnected&&!creativeOriginal.audio.isConnected&&Object.values(creativeOriginal.api.resourceCounts).every(v=>v===0))).toBe(true);expect(await recipient.evaluate(()=>privateConnections.filter(r=>!r.closed).length)).toBe(0);await selectCard(recipient,received);await permit();await recipient.locator('[data-collage-page=notes]').click();await recipient.locator('[data-note-tab=mine]').click();await expect(recipient.locator('[data-note-list] li')).toHaveCount(1);await expect(recipient.locator('[data-note-list]')).toContainText('RECIPIENT_PRIVATE_'+file.format);await selectCard(recipient,blank);
+           |                                                                                                                                                                                                                                                                                                                                                                                                                                ^
+      1316 |  }
+      1317 | });
+      1318 |
+        at /workspace/sillytavern/tests/card-native.e2e.js:1315:416
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native-integrated-final/card-native.e2e.js-v2-3-fr-d290c--Helper-recipient-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native-integrated-final/card-native.e2e.js-v2-3-fr-d290c--Helper-recipient-·-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native-integrated-final/card-native.e2e.js-v2-3-fr-d290c--Helper-recipient-·-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native-integrated-final/card-native.e2e.js-v2-3-fr-d290c--Helper-recipient-·-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native-integrated-final/card-native.e2e.js-v2-3-fr-d290c--Helper-recipient-·-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-native.e2e.js:2299:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator:  locator('.stm-collage')
+    Expected: visible
+    Received: hidden
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('.stm-collage')[22m
+    [2m    9 × locator resolved to <section class="stm-collage" data-device="mobile" data-separate-title="false">…</section>[22m
+    [2m      - unexpected value "hidden"[22m
+
+
+      1313 |   await mkdir(screenshotDir,{recursive:true});await recipient.locator('#stm-player').screenshot({path:`${screenshotDir}/creative23-private-${file.format}-${mobile?'touch':'desktop'}.png`});await recipient.locator('[data-collage-page=lyrics]').click();await recipient.locator('#stm-player').screenshot({path:`${screenshotDir}/creative23-bilingual-${file.format}-${mobile?'touch':'desktop'}.png`});
+      1314 |   await recipient.evaluate(async()=>{await TavernHelper.createChatMessages([{role:'user',message:'Creative lifecycle.'},{role:'assistant',message:'First.'}]);const id=SillyTavern.getContext().chat.length-1;await TavernHelper.setChatMessages([{message_id:id,swipe_id:0,swipes:['First.','Second.']}]);const {swipe_right,saveChat,openCharacterChat}=await import('/script.js');await swipe_right();await saveChat({force:true});await openCharacterChat('RSCP_Test_Creative_'+crypto.randomUUID());});expect(await recipient.evaluate(()=>creativeOriginal.node.isConnected&&creativeOriginal.audio===document.querySelector('[data-riserein-card-player] audio')&&!creativeOriginal.audio.paused)).toBe(true);
+    > 1315 |   await recipient.locator('.stm-visibility-menu summary').click();await recipient.locator('.stm-visibility-menu [data-display-hide]').click();expect(await recipient.evaluate(()=>creativeOriginal.audio.paused&&creativeOriginal.aux.paused)).toBe(true);await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();await expect(recipient.locator('.stm-collage')).toBeVisible();expect(await recipient.evaluate(()=>creativeOriginal.audio.paused&&creativeOriginal.aux.paused)).toBe(true);await recipient.locator('.stm-collage [data-action=play]').click();await expect.poll(()=>recipient.evaluate(()=>!creativeOriginal.audio.paused&&!creativeOriginal.aux.paused)).toBe(true);await selectCard(recipient,blank);await expect(recipient.locator(root)).toHaveCount(0);expect(await recipient.evaluate(()=>creativeOriginal.audio.paused&&creativeOriginal.aux.paused&&!creativeOriginal.aux.isConnected&&!creativeOriginal.audio.isConnected&&Object.values(creativeOriginal.api.resourceCounts).every(v=>v===0))).toBe(true);expect(await recipient.evaluate(()=>privateConnections.filter(r=>!r.closed).length)).toBe(0);await selectCard(recipient,received);await permit();await recipient.locator('[data-collage-page=notes]').click();await recipient.locator('[data-note-tab=mine]').click();await expect(recipient.locator('[data-note-list] li')).toHaveCount(1);await expect(recipient.locator('[data-note-list]')).toContainText('RECIPIENT_PRIVATE_'+file.format);await selectCard(recipient,blank);
+           |                                                                                                                                                                                                                                                                                                                                                                                                                                ^
+      1316 |  }
+      1317 | });
+      1318 |
+        at /workspace/sillytavern/tests/card-native.e2e.js:1315:416
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native-integrated-final/card-native.e2e.js-v2-3-fr-23020-an-Helper-recipient-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/native-integrated-final/card-native.e2e.js-v2-3-fr-23020-an-Helper-recipient-·-touch/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/native-integrated-final/card-native.e2e.js-v2-3-fr-23020-an-Helper-recipient-·-touch/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/native-integrated-final/card-native.e2e.js-v2-3-fr-23020-an-Helper-recipient-·-touch/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/native-integrated-final/card-native.e2e.js-v2-3-fr-23020-an-Helper-recipient-·-touch/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/card-native.e2e.js:2299:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop 
+    tests/card-native.e2e.js:2299:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

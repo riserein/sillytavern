@@ -1,0 +1,390 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.card-export.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/creative-upgrade/maker-isolated-retest-playwright.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/maker-isolated-retest",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-maker.e2e.js"
+        ],
+        "timeout": 150000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-maker.e2e.js",
+      "file": "card-maker.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 150000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 164934,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 150000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 150000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 150000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 7,
+                        "line": 180
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  178 |             return node === old.node && node.__risereinPlayer.audio === old.audio && !old.audio.paused;\n  179 |         }),\n> 180 |     ).toBe(true);\n      |       ^\n  181 |     await expect\n  182 |         .poll(() => page.locator(root + ' audio').evaluate((audio) => audio.currentTime))\n  183 |         .toBeGreaterThanOrEqual(floor);\n    at continuous (/workspace/sillytavern/tests/card-maker.e2e.js:180:7)\n    at /workspace/sillytavern/tests/card-maker.e2e.js:529:9"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:10:01.775Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-2681b78b59441b4c7aff",
+          "file": "card-maker.e2e.js",
+          "line": 271,
+          "column": 5
+        },
+        {
+          "title": "maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 150000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 165277,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 150000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 150000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 150000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-maker.e2e.js",
+                        "column": 68,
+                        "line": 491
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[data-riserein-card-player] .lyrics .active')\nExpected: \u001b[32m\"第二句\"\u001b[39m\nReceived: \u001b[31m\"\"\u001b[39m\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-riserein-card-player] .lyrics .active')\u001b[22m\n\n\n  489 |         await recipient.locator(root + ' .seek').dispatchEvent('input');\n  490 |         await recipient.getByRole('button', { name: '显示角色音乐歌词', exact: true }).click();\n> 491 |         await expect(recipient.locator(root + ' .lyrics .active')).toHaveText('第二句');\n      |                                                                    ^\n  492 |         await recipient.getByRole('button', { name: '返回角色音乐封面', exact: true }).click();\n  493 |         await recipient.getByRole('button', { name: '暂停角色音乐', exact: true }).click();\n  494 |         const paused = await recipient.locator(root + ' audio').evaluate((audio) => audio.currentTime);\n    at /workspace/sillytavern/tests/card-maker.e2e.js:491:68"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:13:02.017Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/maker-isolated-retest/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-8f22af7492e03695974a",
+          "file": "card-maker.e2e.js",
+          "line": 271,
+          "column": 5
+        },
+        {
+          "title": "resource failures and edits prevent stale or partial exports without changing the original library",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 150000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 31083,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:16:03.438Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-e5d4104f60a71c608eef",
+          "file": "card-maker.e2e.js",
+          "line": 582,
+          "column": 1
+        },
+        {
+          "title": "maker shared design cassette exports independent JS, HTML and Helper JSON then plays in a clean recipient",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 68442,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:16:35.454Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-25181639bdc4d7d2e5d2",
+          "file": "card-maker.e2e.js",
+          "line": 630,
+          "column": 44
+        },
+        {
+          "title": "maker shared design journal exports independent JS, HTML and Helper JSON then plays in a clean recipient",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 180000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 55237,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:17:43.948Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-d2325ebb6a9511757d9a",
+          "file": "card-maker.e2e.js",
+          "line": 630,
+          "column": 44
+        },
+        {
+          "title": "soundscape maker keeps draft audio after library deletion and exports independent dual-channel previews",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 26552,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:18:39.236Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-e3eacd0f843ee3b25c68",
+          "file": "card-maker.e2e.js",
+          "line": 640,
+          "column": 1
+        },
+        {
+          "title": "free collage and bilingual maker projects retain image/audio copies and export working shared JS, Helper and HTML without private notes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 22107,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T09:19:05.816Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "729161938fb37a5a79d0-b8ccb789e60042fdf0ea",
+          "file": "card-maker.e2e.js",
+          "line": 651,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-30T09:10:00.440Z",
+    "duration": 568040.38,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

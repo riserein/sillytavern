@@ -1,0 +1,115 @@
+
+Running 15 tests using 1 worker
+
+(node:25653) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25653) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/card-native.e2e.js:41:1 › compact selected font stays fixed after native export and changes only on a new author export (2.0m)
+Internal error: step id not found: fixture@371
+  ✘   2 tests/card-native.e2e.js:548:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl (3.2m)
+(node:31250) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:31250) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 tests/card-native.e2e.js:548:5 › native PNG and JSON carry the shared player to a clean phone recipient · crystal (3.0m)
+  ✓   4 tests/card-native.e2e.js:548:5 › native PNG and JSON carry the shared player to a clean desktop recipient · cassette (3.2m)
+Internal error: step id not found: fixture@546
+  ✘   5 tests/card-native.e2e.js:548:5 › native PNG and JSON carry the shared player to a clean phone recipient · pure (3.4m)
+(node:37043) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:37043) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   6 tests/card-native.e2e.js:1080:1 › native export blocks missing resources, preserves the previous card, refreshes old bindings and removes only its own script on unbind (33.2s)
+  ✓   7 tests/card-native.e2e.js:1272:1 › saving local bindings and exporting an imported card never remove its unrelated carried player (22.9s)
+  ✓   8 tests/card-native.e2e.js:1404:1 › two designer-bound roles retain different layouts and selected fonts while sharing one playlist (1.8m)
+  ✓   9 tests/card-native.e2e.js:1534:1 › actual full plugin activation replaces a playing carried player without leaving audio or altering the foreign script (19.9s)
+  ✓  10 tests/card-native.e2e.js:1706:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · desktop (2.5m)
+  ✓  11 tests/card-native.e2e.js:1706:37 › journal scenes native PNG/JSON retain notes, one audio and role lifecycle · touch (2.3m)
+  ✓  12 tests/card-native.e2e.js:2017:37 › soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · desktop (1.7m)
+  ✓  13 tests/card-native.e2e.js:2017:37 › soundscape native PNG/JSON carries deduplicated ambience and isolated dual audio · touch (1.8m)
+  ✓  14 tests/card-native.e2e.js:2293:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop (2.1m)
+  ✓  15 tests/card-native.e2e.js:2293:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch (2.6m)
+
+
+  1) tests/card-native.e2e.js:548:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl 
+
+    [31mTest timeout of 180000ms exceeded.[39m
+
+    Error: locator.evaluate: Target page, context or browser has been closed
+    Call log:
+    [2m  - waiting for locator('[data-riserein-card-player] audio')[22m
+
+
+      856 |             await expect(recipient.locator('#stm-player')).toBeHidden();await expect(recipient.locator('.stm-launcher')).toBeHidden();
+      857 |             await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();await recipient.locator('.stm-launcher').click();
+    > 858 |             expect(await recipient.locator(root+' audio').evaluate(a=>a.paused)).toBe(true);
+          |                                                           ^
+      859 |             if (file.format === 'json') {
+      860 |                 await expect(recipient.locator('.stm-sleep-button')).toHaveAttribute('data-active','false');
+      861 |                 await recipient.getByRole('tab',{name:'曲库',exact:true}).click();
+        at /workspace/sillytavern/tests/card-native.e2e.js:858:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/final-native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/final-native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/final-native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/final-native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/final-native/card-native.e2e.js-native--c44ba-n-desktop-recipient-·-vinyl/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-native.e2e.js:548:5 › native PNG and JSON carry the shared player to a clean phone recipient · pure 
+
+    [31mTest timeout of 180000ms exceeded.[39m
+
+    Error: locator.click: Target page, context or browser has been closed
+    Call log:
+    [2m  - waiting for locator('[data-riserein-recovery]')[22m
+
+
+      855 |             await expect(recipient.locator(root)).toHaveCount(1);
+      856 |             await expect(recipient.locator('#stm-player')).toBeHidden();await expect(recipient.locator('.stm-launcher')).toBeHidden();
+    > 857 |             await recipient.locator('#extensionsMenuButton').click();await recipient.locator('[data-riserein-recovery]').click();await recipient.locator('.stm-launcher').click();
+          |                                                                                                                          ^
+      858 |             expect(await recipient.locator(root+' audio').evaluate(a=>a.paused)).toBe(true);
+      859 |             if (file.format === 'json') {
+      860 |                 await expect(recipient.locator('.stm-sleep-button')).toHaveAttribute('data-active','false');
+        at /workspace/sillytavern/tests/card-native.e2e.js:857:122
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/final-native/card-native.e2e.js-native--5785f-lean-phone-recipient-·-pure/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/final-native/card-native.e2e.js-native--5785f-lean-phone-recipient-·-pure/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/final-native/card-native.e2e.js-native--5785f-lean-phone-recipient-·-pure/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/final-native/card-native.e2e.js-native--5785f-lean-phone-recipient-·-pure/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/final-native/card-native.e2e.js-native--5785f-lean-phone-recipient-·-pure/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/card-native.e2e.js:548:5 › native PNG and JSON carry the shared player to a clean desktop recipient · vinyl 
+    tests/card-native.e2e.js:548:5 › native PNG and JSON carry the shared player to a clean phone recipient · pure 
+  13 passed (32.1m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

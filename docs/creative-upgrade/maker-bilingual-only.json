@@ -1,0 +1,20 @@
+{
+  "status": "passed-for-executed-tests",
+  "version": "2.3.0",
+  "runtimeSha256": "3234df1f2ac318bf69fdc31859da224a588cae89925c226f2d0258ab151e680d",
+  "verifiedAt": "2026-10-30T09:22:47.291Z",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientMusicDatabase": false,
+  "recipientPluginAssetsBlocked": true,
+  "audio": "real browser decoding/playback of original synthetic MP3, not music API mocks",
+  "mobile": "Chromium viewport/touch emulation, not physical hardware",
+  "results": [
+    {
+      "name": "bilingual-only songs automatically use the shared maker even when the author keeps the night layout",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ]
+}

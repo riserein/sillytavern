@@ -1,0 +1,20 @@
+{
+  "status": "passed-for-executed-tests",
+  "version": "2.3.0",
+  "runtimeSha256": "7691bd7040e1d722b3c6e181103072d9388d093377b180726a7c1b2da86f5995",
+  "verifiedAt": "2026-10-30T09:46:39.804Z",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientMusicDatabase": false,
+  "recipientPluginAssetsBlocked": true,
+  "audio": "real browser decoding/playback of original synthetic MP3, not music API mocks",
+  "mobile": "Chromium viewport/touch emulation, not physical hardware",
+  "results": [
+    {
+      "name": "maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ]
+}

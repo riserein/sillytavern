@@ -1,0 +1,179 @@
+
+Running 18 tests using 1 worker
+
+(node:22726) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:22726) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/reading.e2e.js:20:1 › rendered contrast matrix: all old palettes and all new layouts, schemes, surfaces and image extremes (43.5s)
+  ✓   2 [desktop] › tests/reading.e2e.js:53:1 › manual reading survives new LRC lines; resume, text clicks, keys, reopening and song changes preserve audio (8.1s)
+  ✓   3 [desktop] › tests/reading.e2e.js:90:1 › component background overrides retain unframed text and cannot defeat the shared reading surface (3.9s)
+  ✓   4 [desktop] › tests/reading.e2e.js:108:1 › destructive, error and warning text retain semantic contrast, including pressed buttons (3.8s)
+  ✓   5 [desktop] › tests/reading.e2e.js:131:1 › disposed role guard forwards an in-flight same-account host save through another extension wrapper (1.1s)
+  ✓   6 [desktop] › tests/reading.e2e.js:179:1 › all reading levels and lyric backgrounds protect custom colors; real touch swipes suspend follow (8.0s)
+  ✓   7 [desktop] › tests/reading.e2e.js:211:1 › old maker standalone preview uses the same readable colors and explicit lyric reader (3.0s)
+  ✘   8 [desktop] › tests/reading.e2e.js:235:1 › reading preferences persist through real IndexedDB binary ZIP restore including maker drafts (6.0s)
+(node:24771) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:24771) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [desktop] › tests/reading.e2e.js:261:1 › actual host reading controls, designer contrast warnings and layout changes retain one playing Audio (36.2s)
+(node:25790) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25790) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 [mobile-chromium-emulation] › tests/reading.e2e.js:20:1 › rendered contrast matrix: all old palettes and all new layouts, schemes, surfaces and image extremes (47.1s)
+  ✓  11 [mobile-chromium-emulation] › tests/reading.e2e.js:53:1 › manual reading survives new LRC lines; resume, text clicks, keys, reopening and song changes preserve audio (5.8s)
+  ✓  12 [mobile-chromium-emulation] › tests/reading.e2e.js:90:1 › component background overrides retain unframed text and cannot defeat the shared reading surface (4.7s)
+  ✓  13 [mobile-chromium-emulation] › tests/reading.e2e.js:108:1 › destructive, error and warning text retain semantic contrast, including pressed buttons (4.0s)
+  ✓  14 [mobile-chromium-emulation] › tests/reading.e2e.js:131:1 › disposed role guard forwards an in-flight same-account host save through another extension wrapper (1.2s)
+  ✓  15 [mobile-chromium-emulation] › tests/reading.e2e.js:179:1 › all reading levels and lyric backgrounds protect custom colors; real touch swipes suspend follow (8.4s)
+  ✓  16 [mobile-chromium-emulation] › tests/reading.e2e.js:211:1 › old maker standalone preview uses the same readable colors and explicit lyric reader (2.6s)
+  ✘  17 [mobile-chromium-emulation] › tests/reading.e2e.js:235:1 › reading preferences persist through real IndexedDB binary ZIP restore including maker drafts (6.7s)
+(node:27065) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:27065) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  18 [mobile-chromium-emulation] › tests/reading.e2e.js:261:1 › actual host reading controls, designer contrast warnings and layout changes retain one playing Audio (46.7s)
+
+
+  1) [desktop] › tests/reading.e2e.js:235:1 › reading preferences persist through real IndexedDB binary ZIP restore including maker drafts 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    [32m- Expected  - 0[39m
+    [31m+ Received  + 6[39m
+
+    [33m@@ -2,8 +2,14 @@[39m
+    [2m    "autoFollow": false,[22m
+    [2m    "displayMode": "flow",[22m
+    [2m    "level": "high",[22m
+    [2m    "lineHeight": 2.3,[22m
+    [2m    "lyricBackground": "transparent",[22m
+    [31m+   "lyricLanguage": "both",[39m
+    [2m    "lyricSize": 26,[22m
+    [2m    "nextLine": true,[22m
+    [31m+   "originalColor": null,[39m
+    [31m+   "translationColor": null,[39m
+    [31m+   "translationGap": 6,[39m
+    [31m+   "translationHeight": 1.7,[39m
+    [31m+   "translationSize": 16,[39m
+    [2m  }[22m
+
+      255 |     }, { prefix, tone: [...tone] });
+      256 |     expect(restored.draftDisplay).toBe('docked');expect(restored.offset).toBe(700);expect(restored.resume.id).toBe(restored.restoredId);expect(restored.resume.time).toBe(5);
+    > 257 |     expect(restored.reading).toEqual({ level: 'high', lyricSize: 26, lineHeight: 2.3, autoFollow: false, lyricBackground: 'transparent', displayMode: 'flow', nextLine: true });
+          |                              ^
+      258 |     expect({...restored.draftReading,displayMode:'flow',nextLine:true}).toEqual(restored.reading); expect(restored.oldDraft).toBe(true); expect(restored.bytes).toBe(tone.length); expect(restored.lyrics).toBe('[00:00]保留原文');
+      259 | });
+      260 |
+        at /workspace/sillytavern/tests/reading.e2e.js:257:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/reading-release/reading.e2e.js-reading-pre-60816-tore-including-maker-drafts-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/reading-release/reading.e2e.js-reading-pre-60816-tore-including-maker-drafts-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/reading-release/reading.e2e.js-reading-pre-60816-tore-including-maker-drafts-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/reading-release/reading.e2e.js-reading-pre-60816-tore-including-maker-drafts-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [mobile-chromium-emulation] › tests/reading.e2e.js:235:1 › reading preferences persist through real IndexedDB binary ZIP restore including maker drafts 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+    [32m- Expected  - 0[39m
+    [31m+ Received  + 6[39m
+
+    [33m@@ -2,8 +2,14 @@[39m
+    [2m    "autoFollow": false,[22m
+    [2m    "displayMode": "flow",[22m
+    [2m    "level": "high",[22m
+    [2m    "lineHeight": 2.3,[22m
+    [2m    "lyricBackground": "transparent",[22m
+    [31m+   "lyricLanguage": "both",[39m
+    [2m    "lyricSize": 26,[22m
+    [2m    "nextLine": true,[22m
+    [31m+   "originalColor": null,[39m
+    [31m+   "translationColor": null,[39m
+    [31m+   "translationGap": 6,[39m
+    [31m+   "translationHeight": 1.7,[39m
+    [31m+   "translationSize": 16,[39m
+    [2m  }[22m
+
+      255 |     }, { prefix, tone: [...tone] });
+      256 |     expect(restored.draftDisplay).toBe('docked');expect(restored.offset).toBe(700);expect(restored.resume.id).toBe(restored.restoredId);expect(restored.resume.time).toBe(5);
+    > 257 |     expect(restored.reading).toEqual({ level: 'high', lyricSize: 26, lineHeight: 2.3, autoFollow: false, lyricBackground: 'transparent', displayMode: 'flow', nextLine: true });
+          |                              ^
+      258 |     expect({...restored.draftReading,displayMode:'flow',nextLine:true}).toEqual(restored.reading); expect(restored.oldDraft).toBe(true); expect(restored.bytes).toBe(tone.length); expect(restored.lyrics).toBe('[00:00]保留原文');
+      259 | });
+      260 |
+        at /workspace/sillytavern/tests/reading.e2e.js:257:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/reading-release/reading.e2e.js-reading-pre-60816-tore-including-maker-drafts-mobile-chromium-emulation/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/reading-release/reading.e2e.js-reading-pre-60816-tore-including-maker-drafts-mobile-chromium-emulation/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/reading-release/reading.e2e.js-reading-pre-60816-tore-including-maker-drafts-mobile-chromium-emulation/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/reading-release/reading.e2e.js-reading-pre-60816-tore-including-maker-drafts-mobile-chromium-emulation/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [mobile-chromium-emulation] › tests/reading.e2e.js:261:1 › actual host reading controls, designer contrast warnings and layout changes retain one playing Audio 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveValue[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('#stm-lyric-size')
+    Expected: [32m"2[7m5[27m"[39m
+    Received: [31m"2[7m0[27m"[39m
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toHaveValue" with timeout 5000ms[22m
+    [2m  - waiting for locator('#stm-lyric-size')[22m
+    [2m    8 × locator resolved to <input min="18" max="30" step="1" type="range" id="stm-lyric-size"/>[22m
+    [2m      - unexpected value "20"[22m
+
+
+      296 |     await page.reload(); await page.waitForFunction(() => !document.getElementById('preloader')); await page.locator('#stm-launcher').click();
+      297 |     await page.getByRole('tab', { name: '外观', exact: true }).click();
+    > 298 |     await expect(page.locator('#stm-lyric-size')).toHaveValue('25'); await expect(page.locator('#stm-lyric-follow')).not.toBeChecked();
+          |                                                   ^
+      299 | });
+      300 |
+        at /workspace/sillytavern/tests/reading.e2e.js:298:51
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/reading-release/reading.e2e.js-actual-host-6275c-es-retain-one-playing-Audio-mobile-chromium-emulation/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/reading-release/reading.e2e.js-actual-host-6275c-es-retain-one-playing-Audio-mobile-chromium-emulation/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/reading-release/reading.e2e.js-actual-host-6275c-es-retain-one-playing-Audio-mobile-chromium-emulation/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/reading-release/reading.e2e.js-actual-host-6275c-es-retain-one-playing-Audio-mobile-chromium-emulation/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [desktop] › tests/reading.e2e.js:235:1 › reading preferences persist through real IndexedDB binary ZIP restore including maker drafts 
+    [mobile-chromium-emulation] › tests/reading.e2e.js:235:1 › reading preferences persist through real IndexedDB binary ZIP restore including maker drafts 
+    [mobile-chromium-emulation] › tests/reading.e2e.js:261:1 › actual host reading controls, designer contrast warnings and layout changes retain one playing Audio 
+  15 passed (4.3m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

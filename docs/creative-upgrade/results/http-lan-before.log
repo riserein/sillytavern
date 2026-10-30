@@ -1,0 +1,41 @@
+
+Running 1 test using 1 worker
+
+(node:49487) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:49487) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Internal error: step id not found: fixture@266
+  ✘  1 [desktop] › tests/journal-create.e2e.js:550:1 › HTTP LAN API availability: private diaries and collage IDs work on an actual insecure Chromium origin (5.0s)
+
+
+  1) [desktop] › tests/journal-create.e2e.js:550:1 › HTTP LAN API availability: private diaries and collage IDs work on an actual insecure Chromium origin 
+
+    Error: page.evaluate: TypeError: crypto.randomUUID is not a function
+        at collageElement (http://stm-insecure.test:8000/scripts/extensions/third-party/sillytavern/ui/collage-model.js:40:57)
+        at eval (eval at evaluate (:290:30), <anonymous>:15:25)
+        at async <anonymous>:316:30
+        at collageElement (http://stm-insecure.test:8000/scripts/extensions/third-party/sillytavern/ui/collage-model.js:40:57)
+        at eval (eval at evaluate (:290:30), <anonymous>:15:25)
+        at async <anonymous>:316:30
+        at /workspace/sillytavern/tests/journal-create.e2e.js:38:863
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/http-lan-before/journal-create.e2e.js-HTTP-6a062-al-insecure-Chromium-origin-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/http-lan-before/journal-create.e2e.js-HTTP-6a062-al-insecure-Chromium-origin-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/http-lan-before/journal-create.e2e.js-HTTP-6a062-al-insecure-Chromium-origin-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop] › tests/journal-create.e2e.js:550:1 › HTTP LAN API availability: private diaries and collage IDs work on an actual insecure Chromium origin 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

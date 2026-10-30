@@ -1,0 +1,30 @@
+
+Running 12 tests using 1 worker
+
+(node:30708) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30708) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/music-scenes.e2e.js:113:1 › scene switching preserves a shared song, paused intent, role isolation and hidden state on one Audio (8.0s)
+  ✓   2 [desktop] › tests/music-scenes.e2e.js:173:1 › author edits isolated drafts, orders songs, previews without publishing and survives a quota failure (4.8s)
+  ✓   3 [desktop] › tests/music-scenes.e2e.js:236:1 › journal reuses music controls and lyric DOM across real book pages and every lyric mode (6.7s)
+  ✓   4 [desktop] › tests/music-scenes.e2e.js:305:1 › author song notes render as text, follow the current song and can be hidden without deletion (5.3s)
+  ✓   5 [desktop] › tests/music-scenes.e2e.js:348:1 › four journal themes keep unframed readable text across schemes, materials and actual image layers (11.2s)
+  ✓   6 [desktop] › tests/music-scenes.e2e.js:444:1 › journal editor properties, scene preview and undo do not overwrite saved designs or recreate audio (5.2s)
+(node:31211) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:31211) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [mobile-chromium-emulation] › tests/music-scenes.e2e.js:113:1 › scene switching preserves a shared song, paused intent, role isolation and hidden state on one Audio (7.4s)
+  ✓   8 [mobile-chromium-emulation] › tests/music-scenes.e2e.js:173:1 › author edits isolated drafts, orders songs, previews without publishing and survives a quota failure (6.2s)
+  ✓   9 [mobile-chromium-emulation] › tests/music-scenes.e2e.js:236:1 › journal reuses music controls and lyric DOM across real book pages and every lyric mode (6.4s)
+  ✓  10 [mobile-chromium-emulation] › tests/music-scenes.e2e.js:305:1 › author song notes render as text, follow the current song and can be hidden without deletion (7.0s)
+  ✓  11 [mobile-chromium-emulation] › tests/music-scenes.e2e.js:348:1 › four journal themes keep unframed readable text across schemes, materials and actual image layers (12.4s)
+  ✓  12 [mobile-chromium-emulation] › tests/music-scenes.e2e.js:444:1 › journal editor properties, scene preview and undo do not overwrite saved designs or recreate audio (4.3s)
+
+  12 passed (1.5m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

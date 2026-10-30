@@ -1,0 +1,975 @@
+[
+  {
+    "log": "results/accounts-final.log",
+    "passed": 1,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/baseline-check.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/baseline-unit.log",
+    "passed": 192,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/bilingual-export-guard-unit.log",
+    "passed": 11,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/check-final.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/classic-final-build.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/collage-immutable.log",
+    "passed": 12,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/final-accounts-retest.log",
+    "passed": null,
+    "failed": 1,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/final-accounts.log",
+    "passed": null,
+    "failed": 1,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/final-data.log",
+    "passed": 13,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/final-maker.log",
+    "passed": 6,
+    "failed": 1,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/final-native.log",
+    "passed": 13,
+    "failed": 2,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/full-regression.log",
+    "passed": 64,
+    "failed": 8,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/full-retest.log",
+    "passed": 6,
+    "failed": 2,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/gallery-final.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/http-lan-after.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/http-lan-before.log",
+    "passed": null,
+    "failed": 1,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/large-baseline-final-1.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/large-baseline-final-2.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/large-baseline-final-3.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/large-baseline.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/large-collage-v230.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/large-free-final.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/large-v230-final-1.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/large-v230-final-2.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/large-v230-final-3.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/large-v230.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/maker-bilingual-only.log",
+    "passed": 1,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/maker-classic-final.log",
+    "passed": 1,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/maker-isolated-retest.log",
+    "passed": 5,
+    "failed": 2,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/maker-isolated.log",
+    "passed": null,
+    "failed": 7,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/modes-regression.log",
+    "passed": 13,
+    "failed": 3,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/modes-retest.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/native-current-build.log",
+    "passed": 2,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/native-final-retest.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/native-integrated-final.log",
+    "passed": null,
+    "failed": 2,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/native-integrated-release.log",
+    "passed": 2,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/native-integrated-retest.log",
+    "passed": null,
+    "failed": 2,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/native-lan-build.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/native-large-final-retest.log",
+    "passed": 1,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/native-large-final.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": true,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-browser-all.log",
+    "passed": 12,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-browser-drafts.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-browser-final-desktop.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-browser-final.log",
+    "passed": 20,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-browser-gestures-final.log",
+    "passed": 8,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-browser-gestures.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-browser-layouts.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-browser-release.log",
+    "passed": 24,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-browser.log",
+    "passed": 2,
+    "failed": 1,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-build.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-check.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-data-launch-failed.log",
+    "passed": null,
+    "failed": 11,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-data.log",
+    "passed": 11,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-final-build.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-native-launch-failed.log",
+    "passed": null,
+    "failed": 11,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-native-release.log",
+    "passed": 1,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-native-retest.log",
+    "passed": 3,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-native.log",
+    "passed": 10,
+    "failed": 1,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase1-unit.log",
+    "passed": 200,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-ambient-unit.log",
+    "passed": 9,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-browser-deletion.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-browser-early.log",
+    "passed": 2,
+    "failed": 1,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-browser-layouts.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-browser-release.log",
+    "passed": 16,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-browser-retest.log",
+    "passed": 3,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-browser-sleep.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-browser.log",
+    "passed": 12,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-build-early.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-build-final.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-build.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-check-final.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-check.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-data-early.log",
+    "passed": 54,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-data-ui-retest.log",
+    "passed": 2,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-data.log",
+    "passed": 12,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-final-build.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-lyrics-regression.log",
+    "passed": 24,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-maker-full.log",
+    "passed": 6,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-maker-retest.log",
+    "passed": 1,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-maker.log",
+    "passed": 1,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-native-files.log",
+    "passed": 1,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-native-release.log",
+    "passed": 1,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-native-retest.log",
+    "passed": 2,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-native.log",
+    "passed": null,
+    "failed": 2,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-release-build.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-unit-early.log",
+    "passed": 206,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-unit-final.log",
+    "passed": 211,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase2-unit.log",
+    "passed": 209,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-ambient-regression.log",
+    "passed": 24,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-build-distribution.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-build-final.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-build-release.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-build-resource-final.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-build-v230.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-check-early.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-check-final.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-check-release.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-check-release2.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-classic-build.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-collage-unit-early.log",
+    "passed": 221,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-creative-regression.log",
+    "passed": 24,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-journal-advanced.log",
+    "passed": 8,
+    "failed": 4,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-journal-art-retest.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-journal-browser-early.log",
+    "passed": 2,
+    "failed": 2,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-journal-browser-retest.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-journal-drag.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-journal-matrix.log",
+    "passed": 16,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-journal-release.log",
+    "passed": 32,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-journal-resource-final.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-journal-touch-drag.log",
+    "passed": 4,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-journal-unit-early.log",
+    "passed": 6,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-journal-unit-retest.log",
+    "passed": 6,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-native-build-early.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-native-retest.log",
+    "passed": 2,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-native.log",
+    "passed": null,
+    "failed": 2,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-notes-unit-early.log",
+    "passed": 221,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-raster-unit.log",
+    "passed": 8,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-runtime-release.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-translation-browser-early.log",
+    "passed": 3,
+    "failed": 1,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-translation-browser-resumed.log",
+    "passed": 15,
+    "failed": 1,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-translation-final.log",
+    "passed": 16,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-translation-unit.log",
+    "passed": 10,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-unit-early.log",
+    "passed": 211,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-unit-final.log",
+    "passed": 227,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-unit-release.log",
+    "passed": 229,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-unit-release2.log",
+    "passed": 229,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/phase3-unit-resumed.log",
+    "passed": 221,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/private-notes-zip-final.log",
+    "passed": 1,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/reading-backup-retest.log",
+    "passed": 2,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/reading-host-retest.log",
+    "passed": 2,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/reading-regression.log",
+    "passed": 15,
+    "failed": 3,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/role-binding-retest.log",
+    "passed": 2,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/runtime-cache-final-build.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/runtime-formatted-build.log",
+    "passed": null,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/scenes-regression.log",
+    "passed": 12,
+    "failed": null,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/unit-cache-final.log",
+    "passed": 229,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/unit-final.log",
+    "passed": 230,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  },
+  {
+    "log": "results/unit-lan-final.log",
+    "passed": 230,
+    "failed": 0,
+    "noTestsSelected": false,
+    "note": "Distinct runner selections and historical snapshots; do not sum retries as unique cases."
+  }
+]

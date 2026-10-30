@@ -1,0 +1,30 @@
+
+Running 4 tests using 1 worker
+
+(node:50178) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:50178) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/journal-create.e2e.js:550:1 › HTTP LAN API availability: private diaries and collage IDs work on an actual insecure Chromium origin (4.6s)
+(node:50346) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:50346) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [mobile-320] › tests/journal-create.e2e.js:550:1 › HTTP LAN API availability: private diaries and collage IDs work on an actual insecure Chromium origin (5.0s)
+(node:50661) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:50661) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [mobile-390] › tests/journal-create.e2e.js:550:1 › HTTP LAN API availability: private diaries and collage IDs work on an actual insecure Chromium origin (5.1s)
+(node:50813) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:50813) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 [mobile-412] › tests/journal-create.e2e.js:550:1 › HTTP LAN API availability: private diaries and collage IDs work on an actual insecure Chromium origin (5.3s)
+
+  4 passed (26.5s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

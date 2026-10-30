@@ -1,0 +1,63 @@
+{
+  "version": "2.3.0",
+  "rows": [
+    {
+      "file": "card-player/dist/native-runtime.js",
+      "before": [
+        {
+          "commit": "fbf8b78",
+          "bytes": 379481
+        },
+        {
+          "commit": "6074a73",
+          "bytes": 403409
+        },
+        {
+          "commit": "cfafb83",
+          "bytes": 429581
+        }
+      ],
+      "bytes": 475664,
+      "sha256": "a13afd2e96a542acc1ca5d342a7af53db798a6b78939f00038778536c12e86d3"
+    },
+    {
+      "file": "card-player/dist/shared-ui.js",
+      "before": [
+        {
+          "commit": "fbf8b78",
+          "bytes": 336378
+        },
+        {
+          "commit": "6074a73",
+          "bytes": 360181
+        },
+        {
+          "commit": "cfafb83",
+          "bytes": 381343
+        }
+      ],
+      "bytes": 418404,
+      "sha256": "7cc08e0d30e29f0082628e758dd1f2098f92333f2de5bfbc1c75cd467343a40a"
+    },
+    {
+      "file": "card-player/dist/runtime.js",
+      "before": [
+        {
+          "commit": "fbf8b78",
+          "bytes": 75076
+        },
+        {
+          "commit": "6074a73",
+          "bytes": 75096
+        },
+        {
+          "commit": "cfafb83",
+          "bytes": 79122
+        }
+      ],
+      "bytes": 87716,
+      "sha256": "7691bd7040e1d722b3c6e181103072d9388d093377b180726a7c1b2da86f5995"
+    }
+  ],
+  "note": "file bytes, not memory measurements"
+}

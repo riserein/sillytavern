@@ -1,0 +1,184 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - button "" [ref=e7] [cursor=pointer]
+      - text:                                        + No items                            ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☑ ☰ ☑ ☰ ☑ ☰ ☑ ☰ ☑ ☰ ☑ ☰ ☐ ☰ ☐ ☰ ☐ ☰                                  + No items      ☰ ☰ ☰ ☰ ☰ ☰ ☰  ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰  ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰  ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰ ☰                   +     No items 
+    - generic [ref=e8]:
+      - button "" [ref=e10] [cursor=pointer]
+      - text:                                                                        
+    - generic [ref=e11]:
+      - button "" [ref=e13] [cursor=pointer]
+      - text:                                               
+    - generic [ref=e14]:
+      - button "" [ref=e16] [cursor=pointer]
+      - text:                +     
+    - generic [ref=e17]:
+      - button "" [ref=e19] [cursor=pointer]
+      - text:                                   
+    - generic [ref=e20]:
+      - generic "Change Background Image" [ref=e21]:
+        - button "" [ref=e22] [cursor=pointer]
+      - text:       +                            
+    - generic [ref=e23]:
+      - button "" [ref=e25] [cursor=pointer]
+      - text:         +                                                                       +                                                                                +   + +  +     +        +        +        +                                              
+    - generic [ref=e26]:
+      - button "" [ref=e28] [cursor=pointer]
+      - text:                    
+    - generic [ref=e29]:
+      - button "" [ref=e31] [cursor=pointer]
+      - text:                                                     Group is empty.          No characters available                           
+  - generic:                      +                                                                                +    + +                  
+  - generic:                  
+  - generic [ref=e32]:
+    - text: 
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - img "SillyTavern Logo" [ref=e36]
+          - generic [ref=e37]: SillyTavern 1.19.0 'release' (06bde93)
+          - text: 
+          - button "" [ref=e38] [cursor=pointer]:
+            - generic [ref=e39]: 
+          - button "" [ref=e40] [cursor=pointer]:
+            - generic [ref=e41]: 
+        - generic [ref=e42]:
+          - generic [ref=e43]: Recent Chats
+          - generic [ref=e44]:
+            - button "" [ref=e45] [cursor=pointer]:
+              - generic [ref=e46]: 
+            - button "" [ref=e47] [cursor=pointer]:
+              - generic [ref=e48]: 
+            - button "" [ref=e49] [cursor=pointer]:
+              - generic [ref=e50]: 
+            - generic [ref=e51]: "|"
+            - button " Temporary Chat" [ref=e52] [cursor=pointer]:
+              - generic [ref=e53]: 
+              - generic [ref=e54]: Temporary Chat
+        - list [ref=e56]:
+          - listitem [ref=e57] [cursor=pointer]:
+            - 'generic "[Character] RSCP_Test_Export_Creative23_cfaa2ae File: RSCP_Test_Export_Creative23_cfaa2ae1.png" [ref=e58]':
+              - img "RSCP_Test_Export_Creative23_cfaa2ae" [ref=e59]
+            - generic [ref=e60]:
+              - generic [ref=e61]:
+                - generic "RSCP_Test_Creative_6dcd8b02-3706-469f-93c7-952550dfa905.jsonl" [ref=e62]:
+                  - strong [ref=e63]: RSCP_Test_Export_Creative23_cfaa2ae
+                  - text: – RSCP_Test_Creative_6dcd8b02-3706-469f-93c7-952550dfa905
+                - generic "October 30, 2026 9:51 AM" [ref=e64]: 10/30/2026
+                - generic [ref=e65]:
+                  - button "" [ref=e66]:
+                    - generic [ref=e67]: 
+                  - button "" [ref=e68]:
+                    - generic [ref=e69]: 
+                  - button "" [ref=e70]:
+                    - generic [ref=e71]: 
+              - generic [ref=e72]:
+                - generic "Opening one." [ref=e73]
+                - generic [ref=e74]:
+                  - generic [ref=e75]:
+                    - generic [ref=e76]: 
+                    - generic [ref=e77]: "1"
+                    - text: "|"
+                  - generic [ref=e78]: 524B
+          - listitem [ref=e79] [cursor=pointer]:
+            - 'generic "[Character] RSCP_Test_Export_Creative23_cfaa2ae File: RSCP_Test_Export_Creative23_cfaa2ae1.png" [ref=e80]':
+              - img "RSCP_Test_Export_Creative23_cfaa2ae" [ref=e81]
+            - generic [ref=e82]:
+              - generic [ref=e83]:
+                - generic "RSCP_Test_Export_Creative23_cfaa2ae - 2026-10-30@09h51m04s656ms.jsonl" [ref=e84]:
+                  - strong [ref=e85]: RSCP_Test_Export_Creative23_cfaa2ae
+                  - text: – RSCP_Test_Export_Creative23_cfaa2ae - 2026-10-30@09h51m04s656ms
+                - generic "October 30, 2026 9:51 AM" [ref=e86]: 10/30/2026
+                - generic [ref=e87]:
+                  - button "" [ref=e88]:
+                    - generic [ref=e89]: 
+                  - button "" [ref=e90]:
+                    - generic [ref=e91]: 
+                  - button "" [ref=e92]:
+                    - generic [ref=e93]: 
+              - generic [ref=e94]:
+                - generic "Second." [ref=e95]
+                - generic [ref=e96]:
+                  - generic [ref=e97]:
+                    - generic [ref=e98]: 
+                    - generic [ref=e99]: "3"
+                    - text: "|"
+                  - generic [ref=e100]: 824B
+          - listitem [ref=e101] [cursor=pointer]:
+            - 'generic "[Character] RSCP_Test_Export_Creative23_cfaa2ae File: RSCP_Test_Export_Creative23_cfaa2ae.png" [ref=e102]':
+              - img "RSCP_Test_Export_Creative23_cfaa2ae" [ref=e103]
+            - generic [ref=e104]:
+              - generic [ref=e105]:
+                - generic "RSCP_Test_Export_Creative23_cfaa2ae - 2026-10-30@09h50m29s961ms.jsonl" [ref=e106]:
+                  - strong [ref=e107]: RSCP_Test_Export_Creative23_cfaa2ae
+                  - text: – RSCP_Test_Export_Creative23_cfaa2ae - 2026-10-30@09h50m29s961ms
+                - generic "October 30, 2026 9:50 AM" [ref=e108]: 10/30/2026
+                - generic [ref=e109]:
+                  - button "" [ref=e110]:
+                    - generic [ref=e111]: 
+                  - button "" [ref=e112]:
+                    - generic [ref=e113]: 
+                  - button "" [ref=e114]:
+                    - generic [ref=e115]: 
+              - generic [ref=e116]:
+                - generic "Opening one." [ref=e117]
+                - generic [ref=e118]:
+                  - generic [ref=e119]:
+                    - generic [ref=e120]: 
+                    - generic [ref=e121]: "1"
+                    - text: "|"
+                  - generic [ref=e122]: 524B
+      - generic [ref=e123]:
+        - img [ref=e126] [cursor=pointer]
+        - generic [ref=e127]:
+          - generic [ref=e128]:
+            - generic [ref=e130]:
+              - generic [ref=e131]: Assistant
+              - text: 
+              - generic [ref=e132]: October 30, 2026 9:51 AM
+            - generic [ref=e133]:                
+            - text:       
+          - text:       
+          - generic [ref=e134]:
+            - paragraph [ref=e135]: If you're connected to an API, try asking me something!
+            - separator [ref=e136]
+            - paragraph [ref=e137]:
+              - strong [ref=e138]: "Hint:"
+              - text: Set any character as your welcome page assistant from their "More…" menu.
+      - generic [ref=e140]:
+        - text:                               
+        - generic [ref=e142]:
+          - button " API Connections" [ref=e143] [cursor=pointer]:
+            - generic [ref=e144]: 
+            - generic [ref=e145]: API Connections
+          - button " Character Management" [ref=e146] [cursor=pointer]:
+            - generic [ref=e147]: 
+            - generic [ref=e148]: Character Management
+          - button " Extensions" [ref=e149] [cursor=pointer]:
+            - generic [ref=e150]: 
+            - generic [ref=e151]: Extensions
+    - generic [ref=e154]:
+      - text:  
+      - generic [ref=e155]:
+        - generic [ref=e156]:
+          - generic [ref=e157] [cursor=pointer]: 
+          - generic "Extensions" [ref=e158] [cursor=pointer]: 
+        - textbox "Not connected to API!" [ref=e159]
+        - generic [ref=e160]:       
+  - text:                      1     
+  - status [ref=e161]
+  - status [ref=e162]
+  - status [ref=e163]
+  - status [ref=e164]
+  - status [ref=e165]
+  - status [ref=e166]
+  - status [ref=e167]
+  - status [ref=e168]
+  - status [ref=e169]
+  - status [ref=e170]
+  - status [ref=e171]
+  - status [ref=e172]
+```

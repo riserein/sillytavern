@@ -1,0 +1,229 @@
+{
+  "label": "v230",
+  "layout": "night",
+  "environment": "isolated desktop Chromium renderer with a 384 MiB V8 old-space limit (not a process-memory limit), not a physical phone",
+  "browser": "154.0.8037.57",
+  "embeddedAudioBytes": 30408704,
+  "runtimeSha256": "1b590e3571897d06960ed73ee802db47591c641530a5cad7589d55041a70ba57",
+  "performanceSamples": [
+    {
+      "label": "large-v230",
+      "samplingMilliseconds": 500,
+      "scope": "whole test browser/host including official Helper; not attributable solely to player",
+      "samples": [
+        {
+          "at": "2026-10-30T08:33:04.253Z",
+          "usedJSHeapBytes": 616392,
+          "rss": [
+            {
+              "type": "browser",
+              "pid": 14898,
+              "bytes": 130723840
+            },
+            {
+              "type": "renderer",
+              "pid": 15015,
+              "bytes": 35876864
+            },
+            {
+              "type": "renderer",
+              "pid": 15018,
+              "bytes": 52785152
+            },
+            {
+              "type": "renderer",
+              "pid": 15008,
+              "bytes": 64299008
+            },
+            {
+              "type": "GPU",
+              "pid": 14967,
+              "bytes": 40603648
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "pid": 14970,
+              "bytes": 62943232
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "pid": 14986,
+              "bytes": 23175168
+            }
+          ]
+        },
+        {
+          "at": "2026-10-30T08:33:07.764Z",
+          "usedJSHeapBytes": 60163780,
+          "rss": [
+            {
+              "type": "browser",
+              "pid": 14898,
+              "bytes": 135118848
+            },
+            {
+              "type": "renderer",
+              "pid": 15015,
+              "bytes": 35876864
+            },
+            {
+              "type": "renderer",
+              "pid": 15018,
+              "bytes": 286064640
+            },
+            {
+              "type": "renderer",
+              "pid": 15008,
+              "bytes": 94359552
+            },
+            {
+              "type": "GPU",
+              "pid": 14967,
+              "bytes": 40648704
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "pid": 14970,
+              "bytes": 63082496
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "pid": 14986,
+              "bytes": 23379968
+            }
+          ]
+        },
+        {
+          "at": "2026-10-30T08:33:08.276Z",
+          "usedJSHeapBytes": 61874556,
+          "rss": [
+            {
+              "type": "browser",
+              "pid": 14898,
+              "bytes": 134713344
+            },
+            {
+              "type": "renderer",
+              "pid": 15015,
+              "bytes": 35876864
+            },
+            {
+              "type": "renderer",
+              "pid": 15018,
+              "bytes": 307310592
+            },
+            {
+              "type": "renderer",
+              "pid": 15008,
+              "bytes": 94363648
+            },
+            {
+              "type": "GPU",
+              "pid": 14967,
+              "bytes": 49991680
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "pid": 14970,
+              "bytes": 63082496
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "pid": 14986,
+              "bytes": 23379968
+            }
+          ]
+        },
+        {
+          "at": "2026-10-30T08:33:08.868Z",
+          "usedJSHeapBytes": 61981068,
+          "rss": [
+            {
+              "type": "browser",
+              "pid": 14898,
+              "bytes": 157224960
+            },
+            {
+              "type": "renderer",
+              "pid": 15015,
+              "bytes": 35876864
+            },
+            {
+              "type": "renderer",
+              "pid": 15018,
+              "bytes": 278593536
+            },
+            {
+              "type": "renderer",
+              "pid": 15008,
+              "bytes": 94363648
+            },
+            {
+              "type": "GPU",
+              "pid": 14967,
+              "bytes": 48971776
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "pid": 14970,
+              "bytes": 63086592
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "pid": 14986,
+              "bytes": 23384064
+            },
+            {
+              "type": "audio.mojom.AudioService",
+              "pid": 15099,
+              "bytes": 36356096
+            }
+          ]
+        }
+      ],
+      "events": {
+        "longTasks": [
+          {
+            "start": 303.0999999998603,
+            "duration": 108
+          },
+          {
+            "start": 463.19999999995343,
+            "duration": 3046
+          },
+          {
+            "start": 4250.899999999907,
+            "duration": 219
+          }
+        ],
+        "roles": []
+      },
+      "maximumObservedJSHeapBytes": 61981068,
+      "maximumObservedSummedRssBytes": 737857536
+    }
+  ],
+  "result": {
+    "beforeHeapBytes": 83348008,
+    "afterHeapBytes": 109784492,
+    "mountMilliseconds": 350.4000000001397,
+    "firstCanPlayMilliseconds": 1355.4000000001397,
+    "maxHeartbeatGapMilliseconds": 440,
+    "progress": 0.077552,
+    "resourceCounts": {
+      "timers": 0,
+      "frames": 0,
+      "urls": 0,
+      "observers": 0,
+      "listeners": 0,
+      "requests": 0,
+      "fonts": 0,
+      "subscriptions": 0,
+      "blobs": 0,
+      "encodedAudio": 0,
+      "pendingDecodes": 0
+    },
+    "remainingRoots": 0
+  },
+  "milliseconds": 4580,
+  "status": "completed"
+}

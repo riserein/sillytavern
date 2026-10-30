@@ -1,0 +1,16 @@
+
+Running 2 tests using 1 worker
+
+(node:52922) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:52922) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/card-native.e2e.js:2299:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop (1.1m)
+  ✓  2 tests/card-native.e2e.js:2299:37 › v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch (1.1m)
+
+  2 passed (2.2m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

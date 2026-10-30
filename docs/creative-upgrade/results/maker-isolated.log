@@ -1,0 +1,350 @@
+
+Running 7 tests using 1 worker
+
+(node:40798) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:40798) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser (1.2s)
+(node:40948) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:40948) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser (1.5s)
+(node:41092) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41092) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 tests/card-maker.e2e.js:582:1 › resource failures and edits prevent stale or partial exports without changing the original library (1.1s)
+(node:41279) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41279) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 tests/card-maker.e2e.js:630:44 › maker shared design cassette exports independent JS, HTML and Helper JSON then plays in a clean recipient (1.2s)
+(node:41428) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41428) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 tests/card-maker.e2e.js:630:44 › maker shared design journal exports independent JS, HTML and Helper JSON then plays in a clean recipient (1.2s)
+(node:41563) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41563) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  6 tests/card-maker.e2e.js:640:1 › soundscape maker keeps draft audio after library deletion and exports independent dual-channel previews (1.0s)
+(node:41763) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41763) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  7 tests/card-maker.e2e.js:651:1 › free collage and bilingual maker projects retain image/audio copies and export working shared JS, Helper and HTML without private notes (1.4s)
+
+
+  1) tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:8003/", waiting until "load"[22m
+
+
+      92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),
+      93 |         );
+    > 94 |     await page.goto('/');
+         |                ^
+      95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });
+      96 |     await page.waitForFunction(() => !document.getElementById('preloader'));
+      97 |     await page.unroute('**/api/settings/get');
+        at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:274:58
+
+    Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js
+
+      25 | }
+      26 | async function home(page) {
+    > 27 |     await page.evaluate(async () => {
+         |                ^
+      28 |         const { closeCurrentChat } = await import('/script.js');
+      29 |         await closeCurrentChat();
+      30 |     });
+        at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:216:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/maker-isolated/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/maker-isolated/card-maker.e2e.js-maker-ex-b0a6b--in-a-fresh-desktop-browser/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:8003/", waiting until "load"[22m
+
+
+      92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),
+      93 |         );
+    > 94 |     await page.goto('/');
+         |                ^
+      95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });
+      96 |     await page.waitForFunction(() => !document.getElementById('preloader'));
+      97 |     await page.unroute('**/api/settings/get');
+        at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:274:58
+
+    Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js
+
+      25 | }
+      26 | async function home(page) {
+    > 27 |     await page.evaluate(async () => {
+         |                ^
+      28 |         const { closeCurrentChat } = await import('/script.js');
+      29 |         await closeCurrentChat();
+      30 |     });
+        at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:216:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/maker-isolated/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/maker-isolated/card-maker.e2e.js-maker-ex-1a6b8-ly-in-a-fresh-phone-browser/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) tests/card-maker.e2e.js:582:1 › resource failures and edits prevent stale or partial exports without changing the original library 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:8003/", waiting until "load"[22m
+
+
+      92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),
+      93 |         );
+    > 94 |     await page.goto('/');
+         |                ^
+      95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });
+      96 |     await page.waitForFunction(() => !document.getElementById('preloader'));
+      97 |     await page.unroute('**/api/settings/get');
+        at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:585:22
+
+    Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js
+
+      25 | }
+      26 | async function home(page) {
+    > 27 |     await page.evaluate(async () => {
+         |                ^
+      28 |         const { closeCurrentChat } = await import('/script.js');
+      29 |         await closeCurrentChat();
+      30 |     });
+        at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:216:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-resource-ff8ac-anging-the-original-library/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/maker-isolated/card-maker.e2e.js-resource-ff8ac-anging-the-original-library/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-resource-ff8ac-anging-the-original-library/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/maker-isolated/card-maker.e2e.js-resource-ff8ac-anging-the-original-library/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) tests/card-maker.e2e.js:630:44 › maker shared design cassette exports independent JS, HTML and Helper JSON then plays in a clean recipient 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:8003/", waiting until "load"[22m
+
+
+      92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),
+      93 |         );
+    > 94 |     await page.goto('/');
+         |                ^
+      95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });
+      96 |     await page.waitForFunction(() => !document.getElementById('preloader'));
+      97 |     await page.unroute('**/api/settings/get');
+        at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:631:67
+
+    Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js
+
+      25 | }
+      26 | async function home(page) {
+    > 27 |     await page.evaluate(async () => {
+         |                ^
+      28 |         const { closeCurrentChat } = await import('/script.js');
+      29 |         await closeCurrentChat();
+      30 |     });
+        at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:216:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-maker-sh-afa75--plays-in-a-clean-recipient/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/maker-isolated/card-maker.e2e.js-maker-sh-afa75--plays-in-a-clean-recipient/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-maker-sh-afa75--plays-in-a-clean-recipient/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/maker-isolated/card-maker.e2e.js-maker-sh-afa75--plays-in-a-clean-recipient/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) tests/card-maker.e2e.js:630:44 › maker shared design journal exports independent JS, HTML and Helper JSON then plays in a clean recipient 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:8003/", waiting until "load"[22m
+
+
+      92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),
+      93 |         );
+    > 94 |     await page.goto('/');
+         |                ^
+      95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });
+      96 |     await page.waitForFunction(() => !document.getElementById('preloader'));
+      97 |     await page.unroute('**/api/settings/get');
+        at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:631:67
+
+    Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js
+
+      25 | }
+      26 | async function home(page) {
+    > 27 |     await page.evaluate(async () => {
+         |                ^
+      28 |         const { closeCurrentChat } = await import('/script.js');
+      29 |         await closeCurrentChat();
+      30 |     });
+        at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:216:19
+
+    Error Context: test-results/maker-isolated/card-maker.e2e.js-maker-sh-84e6c--plays-in-a-clean-recipient/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-maker-sh-84e6c--plays-in-a-clean-recipient/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/maker-isolated/card-maker.e2e.js-maker-sh-84e6c--plays-in-a-clean-recipient/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) tests/card-maker.e2e.js:640:1 › soundscape maker keeps draft audio after library deletion and exports independent dual-channel previews 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:8003/", waiting until "load"[22m
+
+
+      92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),
+      93 |         );
+    > 94 |     await page.goto('/');
+         |                ^
+      95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });
+      96 |     await page.waitForFunction(() => !document.getElementById('preloader'));
+      97 |     await page.unroute('**/api/settings/get');
+        at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:641:46
+
+    Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js
+
+      25 | }
+      26 | async function home(page) {
+    > 27 |     await page.evaluate(async () => {
+         |                ^
+      28 |         const { closeCurrentChat } = await import('/script.js');
+      29 |         await closeCurrentChat();
+      30 |     });
+        at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:216:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-soundsca-eb3f4-ndent-dual-channel-previews/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/maker-isolated/card-maker.e2e.js-soundsca-eb3f4-ndent-dual-channel-previews/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-soundsca-eb3f4-ndent-dual-channel-previews/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/maker-isolated/card-maker.e2e.js-soundsca-eb3f4-ndent-dual-channel-previews/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) tests/card-maker.e2e.js:651:1 › free collage and bilingual maker projects retain image/audio copies and export working shared JS, Helper and HTML without private notes 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:8003/
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:8003/", waiting until "load"[22m
+
+
+      92 |             route.request().url().split('?')[0].endsWith('/manifest.json') ? route.continue() : route.abort(),
+      93 |         );
+    > 94 |     await page.goto('/');
+         |                ^
+      95 |     await page.waitForFunction(() => !!window.TavernHelper, {}, { timeout: 30000 });
+      96 |     await page.waitForFunction(() => !document.getElementById('preloader'));
+      97 |     await page.unroute('**/api/settings/get');
+        at session (/workspace/sillytavern/tests/card-maker.e2e.js:94:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:652:46
+
+    Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: chrome-error://chromewebdata/script.js
+
+      25 | }
+      26 | async function home(page) {
+    > 27 |     await page.evaluate(async () => {
+         |                ^
+      28 |         const { closeCurrentChat } = await import('/script.js');
+      29 |         await closeCurrentChat();
+      30 |     });
+        at home (/workspace/sillytavern/tests/card-maker.e2e.js:27:16)
+        at /workspace/sillytavern/tests/card-maker.e2e.js:216:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-free-col-5cd65--HTML-without-private-notes/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/maker-isolated/card-maker.e2e.js-free-col-5cd65--HTML-without-private-notes/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/maker-isolated/card-maker.e2e.js-free-col-5cd65--HTML-without-private-notes/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/maker-isolated/card-maker.e2e.js-free-col-5cd65--HTML-without-private-notes/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7 failed
+    tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh desktop browser 
+    tests/card-maker.e2e.js:271:5 › maker exports a real playlist to character JSON, reimport plays independently in a fresh phone browser 
+    tests/card-maker.e2e.js:582:1 › resource failures and edits prevent stale or partial exports without changing the original library 
+    tests/card-maker.e2e.js:630:44 › maker shared design cassette exports independent JS, HTML and Helper JSON then plays in a clean recipient 
+    tests/card-maker.e2e.js:630:44 › maker shared design journal exports independent JS, HTML and Helper JSON then plays in a clean recipient 
+    tests/card-maker.e2e.js:640:1 › soundscape maker keeps draft audio after library deletion and exports independent dual-channel previews 
+    tests/card-maker.e2e.js:651:1 › free collage and bilingual maker projects retain image/audio copies and export working shared JS, Helper and HTML without private notes 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

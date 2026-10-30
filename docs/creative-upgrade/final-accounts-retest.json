@@ -1,0 +1,152 @@
+{
+  "config": {
+    "configFile": "/workspace/sillytavern/playwright.accounts.config.js",
+    "rootDir": "/workspace/sillytavern/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/creative-upgrade/final-accounts-retest.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/sillytavern/test-results/final-accounts-retest",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/sillytavern/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "card-accounts.e2e.js"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "card-accounts.e2e.js",
+      "file": "card-accounts.e2e.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "real SillyTavern accounts isolate library/drafts and reject an old page saving into the new account",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 67953,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#stm-launcher')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#stm-launcher')\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#stm-launcher')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#stm-launcher')\u001b[22m\n\n    at /workspace/sillytavern/tests/card-accounts.e2e.js:63:61",
+                    "location": {
+                      "file": "/workspace/sillytavern/tests/card-accounts.e2e.js",
+                      "column": 61,
+                      "line": 63
+                    },
+                    "snippet": "  61 |   await b.locator('[data-data=file]').setInputFiles({name:'account-A.zip',mimeType:'application/zip',buffer:zip});await expect(b.locator('[data-data=status]')).toContainText('备份校验通过');await b.locator('[data-data=preview]').click();await expect(b.locator('[data-data=status]')).toContainText('恢复计划已核对');await b.locator('[data-data=apply]').click();await expect(b.locator('[data-data=status]')).toContainText('恢复完成',{timeout:30000});\n  62 |   const saved=await request.post('/api/settings/get',{headers:await b.evaluate(()=>SillyTavern.getContext().getRequestHeaders())});expect(JSON.parse((await saved.json()).settings).extension_settings.riserein_music_player.tracks).toHaveLength(1);\n> 63 |   await b.reload();await expect(b.locator('#stm-launcher')).toBeVisible();await b.locator('#stm-launcher').click();await b.getByRole('tab',{name:'播放',exact:true}).click();await b.locator('[data-action=play]').click();await expect.poll(()=>b.locator('#stm-player audio').evaluate(n=>!n.paused&&n.currentTime>0)).toBe(true);\n     |                                                             ^\n  64 |  }finally{await context.close().catch(()=>{});}\n  65 | });\n  66 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/sillytavern/tests/card-accounts.e2e.js",
+                        "column": 61,
+                        "line": 63
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#stm-launcher')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#stm-launcher')\u001b[22m\n\n\n  61 |   await b.locator('[data-data=file]').setInputFiles({name:'account-A.zip',mimeType:'application/zip',buffer:zip});await expect(b.locator('[data-data=status]')).toContainText('备份校验通过');await b.locator('[data-data=preview]').click();await expect(b.locator('[data-data=status]')).toContainText('恢复计划已核对');await b.locator('[data-data=apply]').click();await expect(b.locator('[data-data=status]')).toContainText('恢复完成',{timeout:30000});\n  62 |   const saved=await request.post('/api/settings/get',{headers:await b.evaluate(()=>SillyTavern.getContext().getRequestHeaders())});expect(JSON.parse((await saved.json()).settings).extension_settings.riserein_music_player.tracks).toHaveLength(1);\n> 63 |   await b.reload();await expect(b.locator('#stm-launcher')).toBeVisible();await b.locator('#stm-launcher').click();await b.getByRole('tab',{name:'播放',exact:true}).click();await b.locator('[data-action=play]').click();await expect.poll(()=>b.locator('#stm-player audio').evaluate(n=>!n.paused&&n.currentTime>0)).toBe(true);\n     |                                                             ^\n  64 |  }finally{await context.close().catch(()=>{});}\n  65 | });\n  66 |\n    at /workspace/sillytavern/tests/card-accounts.e2e.js:63:61"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-30T08:58:31.658Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/final-accounts-retest/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/workspace/sillytavern/test-results/final-accounts-retest/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/test-failed-2.png"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/workspace/sillytavern/test-results/final-accounts-retest/card-accounts.e2e.js-real--c9c31-saving-into-the-new-account/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/sillytavern/tests/card-accounts.e2e.js",
+                    "column": 61,
+                    "line": 63
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "caa230fccb85f643e6e7-d25817a7a6a32acb9ebd",
+          "file": "card-accounts.e2e.js",
+          "line": 63,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-30T08:58:29.820Z",
+    "duration": 75826.095,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

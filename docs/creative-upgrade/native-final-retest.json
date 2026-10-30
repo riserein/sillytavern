@@ -1,0 +1,274 @@
+{
+  "status": "passed-for-executed-tests",
+  "executedTests": [
+    {
+      "title": "native PNG and JSON carry the shared player to a clean desktop recipient · vinyl",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "native PNG and JSON carry the shared player to a clean phone recipient · pure",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop",
+      "status": "passed",
+      "expectedStatus": "passed"
+    },
+    {
+      "title": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch",
+      "status": "passed",
+      "expectedStatus": "passed"
+    }
+  ],
+  "version": "2.3.0",
+  "largeFixture": false,
+  "coverage": "See executedTests and runner command/report for exact selection; no inferred full-suite claim.",
+  "verifiedAt": "2026-10-30T09:32:30.871Z",
+  "runtimeSha256": "a13afd2e96a542acc1ca5d342a7af53db798a6b78939f00038778536c12e86d3",
+  "sillyTavern": "1.19.0",
+  "tavernHelper": "4.11.3",
+  "fullPluginInRecipient": false,
+  "recipientPluginAssetsBlocked": true,
+  "recipientMusicDatabase": false,
+  "nativeControls": "ST export control DOM click events, actual save/export handlers and browser downloads; PNG and JSON",
+  "audio": "actual Chromium decoding and playback of original synthetic MP3; HTTPS direct source uses a routed network fixture, not a verified external music host",
+  "llm": "real ST regenerate flow with fixture LLM/tokenizer responses",
+  "mobile": "Chromium viewport and touch emulation, not physical devices",
+  "results": [
+    {
+      "name": "native PNG and JSON carry the shared player to a clean desktop recipient · vinyl",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "native PNG and JSON carry the shared player to a clean phone recipient · pure",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · desktop",
+      "status": "passed",
+      "cleanup": "passed"
+    },
+    {
+      "name": "v2.3 free collage, bilingual lyrics and private diary survive native PNG/JSON on a clean Helper recipient · touch",
+      "status": "passed",
+      "cleanup": "passed"
+    }
+  ],
+  "exportMetrics": [
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 3611869,
+      "milliseconds": 2738
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4892416,
+      "milliseconds": 3348
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 3612673,
+      "milliseconds": 1751
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 4893488,
+      "milliseconds": 3674
+    },
+    {
+      "operation": "creative23-file",
+      "mobile": false,
+      "format": "json",
+      "bytes": 1385175,
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "CreativeSong",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "CreativeSong · 封面",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "CreativeSong · 译文与关联",
+          "bytes": 500,
+          "encodedBytes": 500,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "CreativeSong · 歌词",
+          "bytes": 39,
+          "encodedBytes": 39,
+          "external": false
+        },
+        {
+          "kind": "collage-image",
+          "name": "手账拼贴 · cover:002699a1-2092-4199-a5d6-d9c6eafeb51b",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 656082,
+      "payloadBytes": 881993,
+      "scriptBytes": 1382701,
+      "problems": [],
+      "jsonPlayerBytes": 1382701,
+      "pngPlayerBytes": 1843604,
+      "pngUncompactedPlayerBytes": 3687208,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "operation": "creative23-file",
+      "mobile": false,
+      "format": "png",
+      "bytes": 1921772
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1385175,
+      "milliseconds": 1606
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 1921772,
+      "milliseconds": 1400
+    },
+    {
+      "operation": "creative23-file",
+      "mobile": true,
+      "format": "json",
+      "bytes": 1385115,
+      "rows": [
+        {
+          "kind": "audio",
+          "name": "CreativeSong",
+          "bytes": 240162,
+          "encodedBytes": 320239,
+          "external": false
+        },
+        {
+          "kind": "cover",
+          "name": "CreativeSong · 封面",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "CreativeSong · 译文与关联",
+          "bytes": 500,
+          "encodedBytes": 500,
+          "external": false
+        },
+        {
+          "kind": "lyrics",
+          "name": "CreativeSong · 歌词",
+          "bytes": 39,
+          "encodedBytes": 39,
+          "external": false
+        },
+        {
+          "kind": "collage-image",
+          "name": "手账拼贴 · cover:6572d40f-94ea-4491-9d7c-9a44cabc9d29",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/forest.png",
+          "bytes": 92776,
+          "encodedBytes": 123727,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/moon.png",
+          "bytes": 68286,
+          "encodedBytes": 91071,
+          "external": false
+        },
+        {
+          "kind": "fallback",
+          "name": "assets/covers/sunroom.png",
+          "bytes": 93796,
+          "encodedBytes": 125087,
+          "external": false
+        }
+      ],
+      "embeddedBytes": 656082,
+      "payloadBytes": 881993,
+      "scriptBytes": 1382641,
+      "problems": [],
+      "jsonPlayerBytes": 1382641,
+      "pngPlayerBytes": 1843524,
+      "pngUncompactedPlayerBytes": 3687048,
+      "note": "JSON/PNG 估算仅为播放器部分，另加角色数据与头像。PNG 优化仅在双份元数据完全相同时生效。",
+      "static": "passed",
+      "browser": "not-tested",
+      "tavern": "not-tested"
+    },
+    {
+      "operation": "creative23-file",
+      "mobile": true,
+      "format": "png",
+      "bytes": 1921692
+    },
+    {
+      "operation": "native-import",
+      "format": "json",
+      "bytes": 1385115,
+      "milliseconds": 1915
+    },
+    {
+      "operation": "native-import",
+      "format": "png",
+      "bytes": 1921692,
+      "milliseconds": 1947
+    }
+  ],
+  "performanceRecords": []
+}
